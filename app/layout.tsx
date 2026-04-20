@@ -15,11 +15,20 @@ export const metadata: Metadata = {
     siteName: "OyaPlan",
     locale: "en_NG",
     type: "website",
+    images: [
+      {
+        url: "/og",
+        width: 1200,
+        height: 630,
+        alt: "OyaPlan: The Squad Outing Plan",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "OyaPlan | Lagos Outing Planner",
     description: "Stop debating, start outing. Get your Lagos plan in 60s.",
+    images: ["/og"],
   },
 };
 

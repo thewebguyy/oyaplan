@@ -127,14 +127,21 @@ export async function forgePlans(input: ForgeInput, allSpots: Spot[]): Promise<P
 
 function generateWhyItFits(spot: Spot, vibe: string, total: number, budget: number): string {
   const diff = budget - total;
-  const saving = diff > 0 ? `with ₦${diff.toLocaleString()} left over.` : "perfectly on budget.";
   
-  const reasons = [
-    `This spot is a ${vibe} favorite in ${spot.address.split(',')[1] || 'Lagos'} and fits your budget ${saving}`,
-    `Known for its ${spot.vibe_tags.join(', ')} vibes, it's the best value for your squad today.`,
-    `Great choice for a ${vibe} outing, keeping transport costs low while maximizing the food experience.`
-  ];
+  if (diff <= 2000 && diff >= 0) {
+    return "Right on budget. Spent well.";
+  }
 
-  const reasonIndex = (spot.name.length + spot.price_per_person) % reasons.length;
-  return reasons[reasonIndex];
+  const suggestions: Record<string, string> = {
+    "Chill": "an extra round of drinks",
+    "Foodie": "dessert and a starter",
+    "Party": "cover charge or transport home",
+    "Quick": "takeaway on the way back",
+    "Dinner": "a bottle for the table",
+    "Brunch": "cocktails or fresh juice"
+  };
+
+  const suggestion = suggestions[vibe] || "something extra for the squad";
+  
+  return `Your squad saves ₦${diff.toLocaleString()} under budget — enough for ${suggestion}.`;
 }

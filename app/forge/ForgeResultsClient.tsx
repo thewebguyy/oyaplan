@@ -57,43 +57,39 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900">Your Squad Plans Are Ready</h1>
-          <p className="text-gray-500">Pick the best vibe and share with the group chat.</p>
+          <h1 className="text-3xl font-black text-gray-900">Here's Your Plan.</h1>
+          <p className="text-gray-500">Top pick below — alternatives underneath.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button 
-            variant="outline" 
-            className="gap-2 border-[#008751] text-[#008751] hover:bg-[#008751]/5"
-            onClick={() => {
-              const text = plans.map((p, i) => `Plan ${i+1}: ${p.spot.name} - Total ₦${p.totalCost.toLocaleString()}`).join('\n');
-              navigator.clipboard.writeText(text);
-              alert('Summary copied to clipboard!');
-            }}
-          >
-            Copy All 3 Plans
-          </Button>
           <Link href="/">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 h-[52px]">
               <ArrowLeft className="w-4 h-4" />
               Adjust
             </Button>
           </Link>
           <Button 
             variant="default" 
-            className="bg-[#008751] hover:bg-[#007043] gap-2"
+            className="bg-[#008751] hover:bg-[#007043] gap-2 h-[52px]"
             onClick={() => window.location.reload()}
           >
             <RefreshCw className="w-4 h-4" />
-            Forge Another
+            Get Another Plan
           </Button>
         </div>
       </div>
 
       {plans.length > 0 ? (
-        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
-          {plans.map((plan, index) => (
-            <PlanCard key={plan.spot.id} plan={plan} index={index} />
-          ))}
+        <div className="space-y-8">
+          <div className="w-full">
+            <PlanCard key={plans[0].spot.id} plan={plans[0]} index={0} isTopPick={true} />
+          </div>
+          {plans.length > 1 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {plans.slice(1).map((plan, index) => (
+                <PlanCard key={plan.spot.id} plan={plan} index={index + 1} isTopPick={false} />
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-20 space-y-4 bg-white rounded-2xl shadow-sm border border-gray-100">

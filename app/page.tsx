@@ -31,52 +31,42 @@ export default async function LandingPage() {
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-16 pb-32 px-4">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-block px-4 py-1.5 mb-4 text-xs font-bold tracking-widest uppercase bg-white/20 rounded-full border border-white/30 backdrop-blur-sm">
-            100% Lagos Deterministic Engine
-          </div>
-          <h1 className="text-4xl md:text-6xl font-black leading-tight tracking-tighter">
+          <h1 className="text-5xl md:text-6xl font-black leading-tight tracking-tighter">
             Stop the group chat wahala. <br />
-            <span className="text-[#FCD116]">Get one complete plan in 60s.</span>
+            <span className="text-[#FCD116]">Get one complete plan in 3s.</span>
           </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-medium">
             Input 4 simple fields. Get the exact food cost, transport estimate, and "why it fits" note. Copy to WhatsApp and go.
           </p>
 
           {/* Form */}
-          <div className="mt-12">
+          <div className="mt-12 px-4 w-full">
             <ForgeForm areas={areas} />
           </div>
         </div>
-
-        {/* Decorative elements */}
-        <div className="absolute top-1/4 -left-20 w-64 h-64 bg-[#FCD116]/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse" />
       </div>
 
-      {/* Social Proof / Levels 3 Features */}
-      <div className="bg-white text-gray-900 py-16 px-4">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 text-center">
-          <div className="space-y-2">
-            <div className="text-3xl font-black text-[#008751]">60s</div>
-            <p className="font-bold uppercase text-xs tracking-widest text-gray-400">Planning Time</p>
-            <p className="text-sm text-gray-600">Faster than your squad's fastest replies.</p>
-          </div>
-          <div className="space-y-2">
-            <div className="text-3xl font-black text-[#008751]">100%</div>
-            <p className="font-bold uppercase text-xs tracking-widest text-gray-400">Price Accuracy</p>
-            <p className="text-sm text-gray-600">Deterministic estimates for Lagos mainland & islands.</p>
-          </div>
-          <div className="space-y-2">
-            <div className="text-3xl font-black text-[#008751]">1 Tap</div>
-            <p className="font-bold uppercase text-xs tracking-widest text-gray-400">WhatsApp Copy</p>
-            <p className="text-sm text-gray-600">Ready-to-paste text for the group chat.</p>
+      {/* Social Proof / Recent Plans */}
+      <div className="bg-white text-gray-900 py-12 px-4">
+        <div className="max-w-4xl mx-auto text-center space-y-4">
+          <p className="font-bold uppercase text-[13px] tracking-widest text-gray-400 mb-6">Recent plans</p>
+          <div className="flex flex-col md:flex-row justify-center gap-3">
+            <div className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm font-medium">
+              Yellow Chilli &middot; Ikeja &middot; <span className="text-[#008751] font-bold">₦19,400</span>
+            </div>
+            <div className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm font-medium">
+              Shiro Lagos &middot; VI &middot; <span className="text-[#008751] font-bold">₦71,500</span>
+            </div>
+            <div className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm font-medium">
+              White House &middot; Yaba &middot; <span className="text-[#008751] font-bold">₦5,500</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="py-8 text-center text-white/40 text-sm">
-        &copy; 2026 OyaPlan.com • Built for the Lagos Squad.
+      <footer className="py-8 text-center text-white/60 text-[15px]">
+        &copy; 2026 OyaPlan.com &middot; Built in Lagos.
       </footer>
     </main>
   );

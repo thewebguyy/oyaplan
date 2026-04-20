@@ -25,7 +25,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     startArea: "",
     squadSize: "2",
     budget: "50000",
-    vibe: "Lowkey",
+    vibe: "Chill",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,16 +38,16 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto border-none shadow-2xl bg-white/90 backdrop-blur-sm">
+    <Card className="w-full max-w-md mx-auto border border-gray-200 bg-white text-left text-gray-900">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="startArea">Where are you starting from?</Label>
+            <Label htmlFor="startArea" className="text-[14px] font-medium">Where are you coming from?</Label>
             <Select 
               onValueChange={(v: string | null) => setFormData({ ...formData, startArea: v ?? "" })}
               required
             >
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="min-h-[56px] h-14">
                 <SelectValue placeholder="Select Area" />
               </SelectTrigger>
               <SelectContent>
@@ -62,12 +62,12 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="squadSize">Squad Size</Label>
+              <Label htmlFor="squadSize" className="text-[14px] font-medium">How many people?</Label>
               <Select 
                 defaultValue={formData.squadSize}
                 onValueChange={(v: string | null) => setFormData({ ...formData, squadSize: v ?? "2" })}
               >
-                <SelectTrigger className="h-12">
+                <SelectTrigger className="min-h-[56px] h-14">
                   <SelectValue placeholder="Size" />
                 </SelectTrigger>
                 <SelectContent>
@@ -81,50 +81,51 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="vibe">The Vibe</Label>
+              <Label htmlFor="vibe" className="text-[14px] font-medium">The Vibe</Label>
               <Select 
                 defaultValue={formData.vibe}
-                onValueChange={(v: string | null) => setFormData({ ...formData, vibe: v ?? "Lowkey" })}
+                onValueChange={(v: string | null) => setFormData({ ...formData, vibe: v ?? "Chill" })}
               >
-                <SelectTrigger className="h-12">
+                <SelectTrigger className="min-h-[56px] h-14">
                   <SelectValue placeholder="Vibe" />
                 </SelectTrigger>
                 <SelectContent>
-                  {["Lowkey", "Chop Life", "Link Up", "Date Night", "Quick Lunch", "Squad Flex"].map((v) => (
-                    <SelectItem key={v} value={v}>
-                      {v}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="Chill">Chill Hangout</SelectItem>
+                  <SelectItem value="Foodie">Serious Chop</SelectItem>
+                  <SelectItem value="Party">Turn Up</SelectItem>
+                  <SelectItem value="Quick">Quick Link</SelectItem>
+                  <SelectItem value="Dinner">Date Night / Dinner</SelectItem>
+                  <SelectItem value="Brunch">Brunch Vibes</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="budget">Total Budget (₦)</Label>
+            <Label htmlFor="budget" className="text-[14px] font-medium">Total Budget (₦)</Label>
             <Select 
               defaultValue={formData.budget}
               onValueChange={(v: string | null) => setFormData({ ...formData, budget: v ?? "50000" })}
             >
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="min-h-[56px] h-14">
                 <SelectValue placeholder="Select Budget" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="15000">₦15,000 (Lowkey)</SelectItem>
-                <SelectItem value="30000">₦30,000 (Standard)</SelectItem>
-                <SelectItem value="50000">₦50,000 (Mid-range)</SelectItem>
-                <SelectItem value="100000">₦100,000 (Premium)</SelectItem>
-                <SelectItem value="250000">₦250,000 (Baller)</SelectItem>
+                <SelectItem value="15000">₦15,000 — Lowkey</SelectItem>
+                <SelectItem value="30000">₦30,000 — Standard Link</SelectItem>
+                <SelectItem value="50000">₦50,000 — Chop Life</SelectItem>
+                <SelectItem value="100000">₦100,000 — Big Boy Energy</SelectItem>
+                <SelectItem value="250000">₦250,000 — Baller</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Button 
             type="submit" 
-            className="w-full h-14 text-lg font-bold bg-[#008751] hover:bg-[#007043] transition-all transform active:scale-95"
+            className="w-full min-h-[56px] h-14 text-lg font-bold bg-[#008751] hover:bg-[#007043] transition-all transform active:scale-95"
             disabled={loading}
           >
-            {loading ? "Forging..." : "Forge It"}
+            {loading ? "Forging..." : "Get My Plan"}
           </Button>
         </form>
       </CardContent>
