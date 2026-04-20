@@ -1,6 +1,7 @@
 import ForgeForm from "@/components/ForgeForm";
 import { supabase } from "@/lib/supabase";
 import { Area } from "@/lib/types";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -40,8 +41,14 @@ export default async function LandingPage() {
           </p>
 
           {/* Form */}
-          <div className="mt-12 px-4 w-full">
+          <div className="mt-12 px-4 w-full space-y-4">
             <ForgeForm areas={areas} />
+            <Link 
+              href="/explore" 
+              className="inline-block text-white/70 hover:text-white text-sm font-medium transition-colors"
+            >
+              Not sure where to go? Browse by area →
+            </Link>
           </div>
         </div>
       </div>

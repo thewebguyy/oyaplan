@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -41,6 +41,7 @@ function squadLabel(n: number) {
 
 export default function ForgeForm({ areas }: ForgeFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [areaError, setAreaError] = useState(false);
   const [formData, setFormData] = useState({
@@ -48,7 +49,21 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     squadSize: "2",
     budget: "50000",
     vibe: "Chill",
+    pinnedSpotId: ""
   });
+
+  useEffect(() => {
+    const startArea = searchParams.get("startArea");
+    const pinnedSpotId = searchParams.get("pinnedSpotId");
+    
+    if (startArea || pinnedSpotId) {
+      setFormData(prev => ({
+        ...prev,
+        startArea: startArea || prev.startArea,
+        pinnedSpotId: pinnedSpotId || prev.pinnedSpotId
+      }));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +73,12 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     }
     setAreaError(false);
     setLoading(true);
-    const params = new URLSearchParams(formData);
+    
+    const params = new URLSearchParams();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value) params.append(key, value);
+    });
+    
     router.push(`/forge?${params.toString()}`);
   };
 
@@ -76,6 +96,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               <span className="text-base">📍</span> Where are you coming from?
             </Label>
             <Select
+              value={formData.startArea}
               onValueChange={(v: string | null) => {
                 setFormData({ ...formData, startArea: v ?? "" });
                 setAreaError(false);

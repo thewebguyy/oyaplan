@@ -16,6 +16,7 @@ interface ForgeResultsClientProps {
     squadSize?: string;
     budget?: string;
     vibe?: string;
+    pinnedSpotId?: string;
   };
 }
 
@@ -30,19 +31,19 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       squadSize: parseInt(params.squadSize || "2"),
       budget: parseInt(params.budget || "50000"),
       vibe: params.vibe || "Chill",
+      pinnedSpotId: (params as any).pinnedSpotId,
     };
 
     // 2. Generate plans (deterministic)
-    forgePlans(input, allSpots).then((generatedPlans) => {
-      setPlans(generatedPlans);
+    const generatedPlans = forgePlans(input, allSpots);
+    setPlans(generatedPlans);
 
-      // 3. Simulated loading time (as per new requirements)
-      const timer = setTimeout(() => {
-        setIsForging(false);
-      }, 2500); // 2.5s
+    // 3. Simulated loading time (as per new requirements)
+    const timer = setTimeout(() => {
+      setIsForging(false);
+    }, 2500); // 2.5s
 
-      return () => clearTimeout(timer);
-    });
+    return () => clearTimeout(timer);
   }, [allSpots, params]);
 
   if (isForging) {

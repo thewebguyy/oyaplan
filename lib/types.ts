@@ -16,6 +16,10 @@ export type Spot = {
   transport_matrix: Record<string, number>;
   is_featured: boolean;
   active: boolean;
+  category?: 'restaurant' | 'bar' | 'activity' | 'nature' | 'entertainment' | 'beach' | 'cafe' | 'experience';
+  has_food?: boolean;
+  typical_duration_hours?: number;
+  address_slug?: string;
 };
 
 export type ForgeInput = {
@@ -23,6 +27,7 @@ export type ForgeInput = {
   squadSize: number;
   budget: number;
   vibe: string;
+  pinnedSpotId?: string;
 };
 
 export type Plan = {
