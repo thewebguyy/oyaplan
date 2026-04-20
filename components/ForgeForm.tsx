@@ -44,7 +44,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="startArea">Where are you starting from?</Label>
             <Select 
-              onValueChange={(v) => setFormData({ ...formData, startArea: v })}
+              onValueChange={(v: string | null) => setFormData({ ...formData, startArea: v ?? "" })}
               required
             >
               <SelectTrigger className="h-12">
@@ -65,7 +65,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               <Label htmlFor="squadSize">Squad Size</Label>
               <Select 
                 defaultValue={formData.squadSize}
-                onValueChange={(v) => setFormData({ ...formData, squadSize: v })}
+                onValueChange={(v: string | null) => setFormData({ ...formData, squadSize: v ?? "2" })}
               >
                 <SelectTrigger className="h-12">
                   <SelectValue placeholder="Size" />
@@ -84,7 +84,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               <Label htmlFor="vibe">The Vibe</Label>
               <Select 
                 defaultValue={formData.vibe}
-                onValueChange={(v) => setFormData({ ...formData, vibe: v })}
+                onValueChange={(v: string | null) => setFormData({ ...formData, vibe: v ?? "Chill" })}
               >
                 <SelectTrigger className="h-12">
                   <SelectValue placeholder="Vibe" />
@@ -104,7 +104,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             <Label htmlFor="budget">Total Budget (₦)</Label>
             <Select 
               defaultValue={formData.budget}
-              onValueChange={(v) => setFormData({ ...formData, budget: v })}
+              onValueChange={(v: string | null) => setFormData({ ...formData, budget: v ?? "50000" })}
             >
               <SelectTrigger className="h-12">
                 <SelectValue placeholder="Select Budget" />

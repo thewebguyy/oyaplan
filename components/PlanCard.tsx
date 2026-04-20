@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Utensils, Car, Info } from "lucide-react";
 import { Plan } from "@/lib/types";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
+import { Button } from "@/components/ui/button";
 
 interface PlanCardProps {
   plan: Plan;
@@ -53,8 +54,26 @@ export default function PlanCard({ plan, index }: PlanCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="bg-gray-50 pt-6">
+      <CardFooter className="bg-gray-50 flex flex-col gap-3 pt-6">
         <WhatsAppCopyButton plan={plan} />
+        <div className="flex w-full gap-2">
+          <Button 
+            variant="outline" 
+            className="flex-1 text-xs"
+            onClick={() => {
+              const saved = JSON.parse(localStorage.getItem('savedPlans') || '[]');
+              localStorage.setItem('savedPlans', JSON.stringify([...saved, plan]));
+              alert('Plan saved to your device!');
+            }}
+          >
+            Save for later
+          </Button>
+          <div className="flex items-center gap-1 px-2 border rounded-md bg-white">
+            <span className="text-[10px] text-gray-400 uppercase font-bold">Price accurate?</span>
+            <button className="hover:text-green-600 transition-colors">👍</button>
+            <button className="hover:text-red-600 transition-colors">👎</button>
+          </div>
+        </div>
       </CardFooter>
     </Card>
   );

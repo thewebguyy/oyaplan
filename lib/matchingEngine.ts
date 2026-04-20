@@ -10,7 +10,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       if (!spot.vibe_tags.includes(vibe)) return false;
 
       // Calculate base costs
-      const foodCost = spot.price_per_person * squad_size * 1.1;
+      const foodCost = spot.price_per_person * squadSize * 1.1;
       const transportCost = spot.transport_matrix[startArea] || 5000; // Fallback transport cost
       const totalCost = foodCost + transportCost;
 
@@ -25,7 +25,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       return true;
     })
     .map((spot) => {
-      const foodCost = Math.round((spot.price_per_person * squad_size * 1.1) / 100) * 100;
+      const foodCost = Math.round((spot.price_per_person * squadSize * 1.1) / 100) * 100;
       const transportCost = spot.transport_matrix[startArea] || 5000;
       const totalCost = foodCost + transportCost;
 
@@ -37,10 +37,10 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       const vibeMatches = spot.vibe_tags.filter(t => t === vibe).length;
       const vibeScore = Math.min(vibeMatches * 5, 10);
 
-      // 3. Distance/Random Weight (10% weight)
-      const distanceWeight = Math.random() * 10;
+      // 3. Stable weight based on ID (to avoid random shifts)
+      const idWeight = spot.id.split('-')[0].split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
 
-      const totalScore = costScore + vibeScore + distanceWeight;
+      const totalScore = costScore + vibeScore + (idWeight / 1);
 
       // Generate "Why it fits"
       const whyItFits = generateWhyItFits(spot, vibe, totalCost, budget);
@@ -78,5 +78,7 @@ function generateWhyItFits(spot: Spot, vibe: string, total: number, budget: numb
     `Great choice for a ${vibe} outing, keeping transport costs low while maximizing the food experience.`
   ];
 
-  return reasons[Math.floor(Math.random() * reasons.length)];
+  // Deterministic reason selection
+  const reasonIndex = (spot.name.length + spot.price_per_person) % reasons.length;
+  return reasons[reasonIndex];
 }
