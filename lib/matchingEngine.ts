@@ -57,12 +57,25 @@ export function calculateZoneFare(origin: string, destination: string): number {
   return Math.round(roundTrip / 500) * 500;
 }
 
+const CATEGORY_MAP: Record<string, string[]> = {
+  "Eat and drink": ["restaurant", "bar", "cafe"],
+  "Activity and fun": ["activity", "entertainment", "experience"],
+  "Nature and outdoors": ["nature", "beach"]
+};
+
 export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
-  const { startArea, squadSize, budget, vibe, pinnedSpotId } = input;
+  const { startArea, squadSize, budget, vibe, pinnedSpotId, categoryGroup } = input;
 
   // 1. Filter and Score
   const scoredSpots = allSpots
     .filter((spot) => {
+      // Category Group Filter (runs before others)
+      if (categoryGroup && categoryGroup !== "Anywhere") {
+        const allowedCategories = CATEGORY_MAP[categoryGroup] || [];
+        const spotCategory = spot.category || "restaurant";
+        if (!allowedCategories.includes(spotCategory)) return false;
+      }
+
       // Must match vibe tag OR be the pinned spot
       if (spot.id === pinnedSpotId) return true;
       if (!spot.vibe_tags.includes(vibe)) return false;

@@ -28,6 +28,7 @@ export type ForgeInput = {
   budget: number;
   vibe: string;
   pinnedSpotId?: string;
+  categoryGroup?: string;
 };
 
 export type Plan = {

@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { Spot, Plan, ForgeInput } from "@/lib/types";
 import { forgePlans } from "@/lib/matchingEngine";
+import { supabase } from "@/lib/supabase";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { RefreshCw, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -17,33 +19,61 @@ interface ForgeResultsClientProps {
     budget?: string;
     vibe?: string;
     pinnedSpotId?: string;
+    categoryGroup?: string;
   };
 }
 
 export default function ForgeResultsClient({ allSpots, params }: ForgeResultsClientProps) {
   const [isForging, setIsForging] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [nearbySpots, setNearbySpots] = useState<Spot[]>([]);
+  const [targetAreaName, setTargetAreaName] = useState("");
+  const [forgeInput, setForgeInput] = useState<ForgeInput | null>(null);
 
   useEffect(() => {
-    // 1. Prepare input with safe fallbacks
-    const input: ForgeInput = {
-      startArea: params.startArea || "ikeja",
-      squadSize: parseInt(params.squadSize || "2"),
-      budget: parseInt(params.budget || "50000"),
-      vibe: params.vibe || "Chill",
-      pinnedSpotId: (params as any).pinnedSpotId,
+    const fetchPlans = async () => {
+      // 1. Prepare input with safe fallbacks
+      const input: ForgeInput = {
+        startArea: params.startArea || "ikeja",
+        squadSize: parseInt(params.squadSize || "2"),
+        budget: parseInt(params.budget || "50000"),
+        vibe: params.vibe || "Chill",
+        pinnedSpotId: (params as any).pinnedSpotId,
+        categoryGroup: (params as any).categoryGroup,
+      };
+
+      setForgeInput(input);
+
+      // 2. Generate plans (deterministic)
+      const generatedPlans = forgePlans(input, allSpots);
+      setPlans(generatedPlans);
+
+      if (generatedPlans.length === 0) {
+        const { data: areaData } = await supabase
+          .from("areas")
+          .select("name, spots(*)")
+          .eq("slug", input.startArea)
+          .single();
+        
+        if (areaData) {
+          setTargetAreaName(areaData.name);
+          const spots = (areaData.spots as Spot[])
+            ?.filter(s => s.active)
+            .sort((a, b) => a.price_per_person - b.price_per_person)
+            .slice(0, 3);
+          setNearbySpots(spots || []);
+        }
+      }
+
+      // 3. Simulated loading time
+      const timer = setTimeout(() => {
+        setIsForging(false);
+      }, 2500);
+
+      return () => clearTimeout(timer);
     };
 
-    // 2. Generate plans (deterministic)
-    const generatedPlans = forgePlans(input, allSpots);
-    setPlans(generatedPlans);
-
-    // 3. Simulated loading time (as per new requirements)
-    const timer = setTimeout(() => {
-      setIsForging(false);
-    }, 2500); // 2.5s
-
-    return () => clearTimeout(timer);
+    fetchPlans();
   }, [allSpots, params]);
 
   if (isForging) {
@@ -82,12 +112,12 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       {plans.length > 0 ? (
         <div className="space-y-8">
           <div className="w-full">
-            <PlanCard key={plans[0].spot.id} plan={plans[0]} index={0} isTopPick={true} />
+            <PlanCard key={plans[0].spot.id} plan={plans[0]} index={0} isTopPick={true} input={forgeInput!} />
           </div>
           {plans.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {plans.slice(1).map((plan, index) => (
-                <PlanCard key={plan.spot.id} plan={plan} index={index + 1} isTopPick={false} />
+                <PlanCard key={plan.spot.id} plan={plan} index={index + 1} isTopPick={false} input={forgeInput!} />
               ))}
             </div>
           )}
@@ -101,23 +131,37 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
             <Link href="/">
-              <Button variant="outline">Try Again</Button>
+              <Button variant="outline" className="rounded-xl h-12 px-8">Try Again</Button>
             </Link>
-            <Button 
-              className="bg-[#008751] hover:bg-[#007043]"
-              onClick={() => {
-                const currentBudget = parseInt(params.budget || "50000");
-                const newBudget = Math.floor(currentBudget * 1.2);
-                const urlParams = new URLSearchParams({
-                  ...params,
-                  budget: newBudget.toString()
-                });
-                window.location.href = `/forge?${urlParams.toString()}`;
-              }}
-            >
-              Re-run with +20% budget
-            </Button>
           </div>
+
+          {nearbySpots.length > 0 && (
+            <div className="mt-12 px-6 border-t border-gray-100 pt-10 text-left">
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-6">
+                Nothing in budget — but here's what's in {targetAreaName}
+              </h3>
+              <div className="grid grid-cols-1 gap-3">
+                {nearbySpots.map(spot => (
+                  <div key={spot.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl transition-all hover:border-[#008751]/30">
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm">{spot.name}</span>
+                        <Badge className="text-[9px] h-4 px-1.5 uppercase bg-green-50 text-[#008751] border-none font-black tracking-tighter">
+                          {spot.category}
+                        </Badge>
+                      </div>
+                      <span className="text-[11px] text-gray-400 font-medium">from ₦{spot.price_per_person.toLocaleString()} per person</span>
+                    </div>
+                    <Link href={`/explore/${params.startArea || "ikeja"}?pinned=${spot.id}`}>
+                      <Button variant="outline" size="sm" className="text-[11px] font-bold h-8 border-gray-200 rounded-lg px-4 hover:bg-gray-50 hover:text-[#008751]">
+                        Explore this spot
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

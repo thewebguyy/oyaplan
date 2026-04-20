@@ -2,17 +2,18 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Utensils, Car, Info, ThumbsUp, ThumbsDown, Activity } from "lucide-react";
-import { Plan } from "@/lib/types";
+import { Plan, ForgeInput } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
 
 interface PlanCardProps {
   plan: Plan;
   index: number;
+  input: ForgeInput;
   isTopPick?: boolean;
 }
 
-export default function PlanCard({ plan, index, isTopPick }: PlanCardProps) {
+export default function PlanCard({ plan, index, input, isTopPick }: PlanCardProps) {
   const [feedbackGiven, setFeedbackGiven] = useState(false);
 
   const handleFeedback = async (type: 'up' | 'down') => {
@@ -56,7 +57,7 @@ export default function PlanCard({ plan, index, isTopPick }: PlanCardProps) {
       
       <CardContent className={`space-y-4 ${isTopPick ? 'pt-6' : 'pt-4'}`}>
         <div className="w-full">
-          <WhatsAppCopyButton plan={plan} />
+          <WhatsAppCopyButton plan={plan} input={input} />
         </div>
 
         <div className="grid grid-cols-2 gap-4">

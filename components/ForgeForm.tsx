@@ -35,6 +35,13 @@ const VIBE_OPTIONS = [
   { value: "Brunch", label: "☀️ Brunch Vibes" },
 ];
 
+const CATEGORY_OPTIONS = [
+  { value: "Anywhere", label: "🌍 Anywhere — show everything" },
+  { value: "Eat and drink", label: "🍽️ Eat and drink" },
+  { value: "Activity and fun", label: "🎮 Activity and fun" },
+  { value: "Nature and outdoors", label: "🌳 Nature and outdoors" },
+];
+
 function squadLabel(n: number) {
   return n === 1 ? "1 person" : `${n} people`;
 }
@@ -49,18 +56,21 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     squadSize: "2",
     budget: "50000",
     vibe: "Chill",
+    categoryGroup: "Anywhere",
     pinnedSpotId: ""
   });
 
   useEffect(() => {
     const startArea = searchParams.get("startArea");
     const pinnedSpotId = searchParams.get("pinnedSpotId");
+    const categoryGroup = searchParams.get("categoryGroup");
     
-    if (startArea || pinnedSpotId) {
+    if (startArea || pinnedSpotId || categoryGroup) {
       setFormData(prev => ({
         ...prev,
         startArea: startArea || prev.startArea,
-        pinnedSpotId: pinnedSpotId || prev.pinnedSpotId
+        pinnedSpotId: pinnedSpotId || prev.pinnedSpotId,
+        categoryGroup: categoryGroup || prev.categoryGroup
       }));
     }
   }, [searchParams]);
@@ -76,7 +86,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     
     const params = new URLSearchParams();
     Object.entries(formData).forEach(([key, value]) => {
-      if (value) params.append(key, value);
+      if (value && value !== "Anywhere") params.append(key, value);
+      else if (value && key !== "categoryGroup") params.append(key, value);
     });
     
     router.push(`/forge?${params.toString()}`);
@@ -194,6 +205,39 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             </div>
           </div>
 
+          {/* Field: Category Group (Optional) */}
+          <div className="space-y-1.5">
+            <Label className="flex items-center justify-between text-[13px] font-semibold uppercase tracking-wider text-gray-500">
+              <span className="flex items-center gap-2">
+                <span className="text-base">🍴</span> What kind of outing?
+              </span>
+              <span className="text-[10px] lowercase text-gray-400 font-normal">(optional)</span>
+            </Label>
+            <Select
+              value={formData.categoryGroup}
+              onValueChange={(v: string | null) =>
+                setFormData({ ...formData, categoryGroup: v ?? "Anywhere" })
+              }
+            >
+              <SelectTrigger className={triggerCls}>
+                <SelectValue>
+                  {CATEGORY_OPTIONS.find((o) => o.value === formData.categoryGroup)?.label ?? "Anywhere"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl shadow-xl">
+                {CATEGORY_OPTIONS.map((o) => (
+                  <SelectItem
+                    key={o.value}
+                    value={o.value}
+                    className="text-base py-2.5"
+                  >
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Field: Budget */}
           <div className="space-y-1.5">
             <Label className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-gray-500">
@@ -248,3 +292,4 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     </Card>
   );
 }
+
