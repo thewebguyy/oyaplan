@@ -13,6 +13,17 @@ CREATE TABLE spots (
     area_id UUID REFERENCES areas(id),
     vibe_tags TEXT[] NOT NULL,
     price_per_person INTEGER NOT NULL,
+    price_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    price_source TEXT NOT NULL DEFAULT 'manual',
     transport_matrix JSONB NOT NULL, -- { area_slug: cost }
+    is_featured BOOLEAN DEFAULT false,
     active BOOLEAN DEFAULT true
+);
+
+-- Create Price Flags Table
+CREATE TABLE price_flags (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    spot_id UUID REFERENCES spots(id),
+    flag_type TEXT NOT NULL CHECK (flag_type IN ('up', 'down')),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

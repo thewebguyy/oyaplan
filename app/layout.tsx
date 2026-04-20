@@ -13,13 +13,6 @@ export const metadata: Metadata = {
     description: "One tap to copy a complete Lagos plan to WhatsApp.",
     url: "https://oyaplan.com",
     siteName: "OyaPlan",
-    images: [
-      {
-        url: "/og-image.png", // User would need to add this
-        width: 1200,
-        height: 630,
-      },
-    ],
     locale: "en_NG",
     type: "website",
   },

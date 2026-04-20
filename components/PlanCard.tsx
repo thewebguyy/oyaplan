@@ -74,6 +74,11 @@ export default function PlanCard({ plan, index }: PlanCardProps) {
             <button className="hover:text-red-600 transition-colors">👎</button>
           </div>
         </div>
+        <div className="w-full text-center mt-1">
+          <span className="text-[10px] text-gray-400 italic">
+            Prices last verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} via {plan.spot.price_source}
+          </span>
+        </div>
       </CardFooter>
     </Card>
   );

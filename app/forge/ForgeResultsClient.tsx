@@ -29,21 +29,20 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       startArea: params.startArea || "ikeja",
       squadSize: parseInt(params.squadSize || "2"),
       budget: parseInt(params.budget || "50000"),
-      vibe: params.vibe || "Chill",
+      vibe: params.vibe || "Lowkey",
     };
 
     // 2. Generate plans (deterministic)
-    const generatedPlans = forgePlans(input, allSpots);
-    setPlans(generatedPlans);
+    forgePlans(input, allSpots).then((generatedPlans) => {
+      setPlans(generatedPlans);
 
-    // 3. Simulated loading time (as per PRD Level 2)
-    const timer = setTimeout(() => {
-      setIsForging(false);
-    }, 60000); // 60s as per PRD
-    // Actually, PRD says "60-second timer animation" in Level 2. 
-    // I'll keep it 5s for now so the user isn't bored, but I'll make it configurable or keep the 60s logic in LoadingState.
+      // 3. Simulated loading time (as per new requirements)
+      const timer = setTimeout(() => {
+        setIsForging(false);
+      }, 2500); // 2.5s
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    });
   }, [allSpots, params]);
 
   if (isForging) {
@@ -103,9 +102,25 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           <p className="text-gray-500 max-w-md mx-auto px-4">
             Lagos is tough! Try increasing your budget or choosing a different starting area.
           </p>
-          <Link href="/">
-            <Button className="bg-[#008751] hover:bg-[#007043] mt-4">Try Again</Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
+            <Link href="/">
+              <Button variant="outline">Try Again</Button>
+            </Link>
+            <Button 
+              className="bg-[#008751] hover:bg-[#007043]"
+              onClick={() => {
+                const currentBudget = parseInt(params.budget || "50000");
+                const newBudget = Math.floor(currentBudget * 1.2);
+                const urlParams = new URLSearchParams({
+                  ...params,
+                  budget: newBudget.toString()
+                });
+                window.location.href = `/forge?${urlParams.toString()}`;
+              }}
+            >
+              Re-run with +20% budget
+            </Button>
+          </div>
         </div>
       )}
 

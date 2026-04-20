@@ -5,13 +5,13 @@ import { Progress } from "@/components/ui/progress";
 
 export default function LoadingState() {
   const [progress, setProgress] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(3);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
         if (oldProgress >= 100) return 100;
-        return oldProgress + (100 / 60);
+        return oldProgress + (100 / 3); // 3 seconds total
       });
       setTimeLeft((oldTime) => (oldTime <= 0 ? 0 : oldTime - 1));
     }, 1000);
@@ -20,14 +20,12 @@ export default function LoadingState() {
   }, []);
 
   const messages = [
-    "Checking traffic on Third Mainland Bridge...",
-    "Scanning menu prices in Ikeja...",
-    "Estimating Bolt costs for your squad...",
-    "Forging the perfect vibe...",
+    "Calculating realistic costs...",
+    "Finding the best fit for your squad...",
     "Finalizing your budget-friendly plan..."
   ];
 
-  const currentMessage = messages[Math.floor((60 - timeLeft) / 12)] || messages[messages.length - 1];
+  const currentMessage = messages[Math.floor(3 - timeLeft)] || messages[messages.length - 1];
 
   return (
     <div className="flex flex-col items-center justify-center space-y-8 p-8 max-w-md mx-auto text-center">

@@ -25,7 +25,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     startArea: "",
     squadSize: "2",
     budget: "50000",
-    vibe: "Chill",
+    vibe: "Lowkey",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -84,13 +84,13 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               <Label htmlFor="vibe">The Vibe</Label>
               <Select 
                 defaultValue={formData.vibe}
-                onValueChange={(v: string | null) => setFormData({ ...formData, vibe: v ?? "Chill" })}
+                onValueChange={(v: string | null) => setFormData({ ...formData, vibe: v ?? "Lowkey" })}
               >
                 <SelectTrigger className="h-12">
                   <SelectValue placeholder="Vibe" />
                 </SelectTrigger>
                 <SelectContent>
-                  {["Chill", "Foodie", "Party", "Quick", "Dinner", "Brunch"].map((v) => (
+                  {["Lowkey", "Chop Life", "Link Up", "Date Night", "Quick Lunch", "Squad Flex"].map((v) => (
                     <SelectItem key={v} value={v}>
                       {v}
                     </SelectItem>

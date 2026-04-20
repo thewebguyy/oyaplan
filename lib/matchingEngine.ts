@@ -1,48 +1,105 @@
+'use server';
+
 import { Spot, ForgeInput, Plan } from './types';
 
-export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
+// Use realistic Lagos 2026 Bolt formula: base ₦1,500 + ₦220 per km round-trip
+function calculateBoltFare(distanceKm: number): number {
+  const baseFare = 1500;
+  const perKmRate = 220;
+  const roundTripDistance = distanceKm * 2;
+  return Math.round((baseFare + (roundTripDistance * perKmRate)) / 100) * 100;
+}
+
+export async function forgePlans(input: ForgeInput, allSpots: Spot[]): Promise<Plan[]> {
   const { startArea, squadSize, budget, vibe } = input;
 
-  // 1. Filter and Score
-  const scoredSpots = allSpots
-    .filter((spot) => {
-      // Must match vibe tag
-      if (!spot.vibe_tags.includes(vibe)) return false;
+  // 1. Initial Filter
+  let candidateSpots = allSpots.filter((spot) => {
+    // Must match vibe tag
+    if (!spot.vibe_tags.includes(vibe)) return false;
 
-      // Calculate base costs
-      const foodCost = spot.price_per_person * squadSize * 1.1;
-      const transportCost = spot.transport_matrix[startArea] || 5000; // Fallback transport cost
+    // Calculate base food cost
+    const foodCost = spot.price_per_person * squadSize * 1.1;
+
+    // Quick filter using fallback transport cost before expensive API calls
+    const fallbackTransportCost = spot.transport_matrix[startArea] || 5000;
+    const totalCost = foodCost + fallbackTransportCost;
+
+    // Quick prune to avoid calling maps for completely out of budget items
+    if (totalCost > budget * 1.5) return false;
+
+    return true;
+  });
+
+  // Take top 10 candidates to limit Maps API calls
+  candidateSpots = candidateSpots.slice(0, 10);
+
+  // 2. Dynamic Transport Cost via Google Maps
+  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+  // TODO: Add your Google Maps API Key to .env.local as GOOGLE_MAPS_API_KEY
+  
+  const origins = `${startArea}, Lagos, Nigeria`;
+  const destinations = candidateSpots.map(s => `${s.address}, Lagos, Nigeria`).join('|');
+
+  let distances: (number | null)[] = candidateSpots.map(() => null);
+
+  if (GOOGLE_MAPS_API_KEY && candidateSpots.length > 0) {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origins)}&destinations=${encodeURIComponent(destinations)}&key=${GOOGLE_MAPS_API_KEY}`
+      );
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const row = data.rows[0];
+        distances = row.elements.map((element: any) => {
+          if (element.status === 'OK') {
+            return element.distance.value / 1000; // convert meters to km
+          }
+          return null;
+        });
+      }
+    } catch (e) {
+      console.error("Google Maps API failed, falling back to matrix", e);
+    }
+  }
+
+  // 3. Final Filter and Score
+  const scoredSpots = candidateSpots
+    .map((spot, index) => {
+      const foodCost = Math.round((spot.price_per_person * squadSize * 1.1) / 100) * 100;
+      
+      let transportCost = spot.transport_matrix[startArea] || 5000;
+      if (distances[index] !== null) {
+        transportCost = calculateBoltFare(distances[index]!);
+      }
+
       const totalCost = foodCost + transportCost;
-
+      return { spot, foodCost, transportCost, totalCost };
+    })
+    .filter(({ transportCost, totalCost }) => {
       // Transport cost must be <= 35% of budget
       if (transportCost > budget * 0.35) return false;
-
-      // Total cost must not exceed budget by more than 10% (slight flex)
-      // Actually PRD says "without exceeding" but usually deterministic engines allow a tiny bit of flex or strict. 
-      // I'll stick to strict for now:
+      // Total cost must not exceed budget
       if (totalCost > budget) return false;
-
       return true;
     })
-    .map((spot) => {
-      const foodCost = Math.round((spot.price_per_person * squadSize * 1.1) / 100) * 100;
-      const transportCost = spot.transport_matrix[startArea] || 5000;
-      const totalCost = foodCost + transportCost;
+    .map(({ spot, foodCost, transportCost, totalCost }) => {
+      // Scoring Algorithm
+      // Reward plans closest to (but not over) budget
+      const costScore = (1 - Math.abs(budget - totalCost) / budget) * 80;
 
-      // Scoring
-      // 1. Cost Score (80% weight): Closer to budget is better
-      const costScore = (totalCost / budget) * 80;
-
-      // 2. Vibe Match Score (10% weight): If multiple tags match
+      // Vibe Match Score
       const vibeMatches = spot.vibe_tags.filter(t => t === vibe).length;
       const vibeScore = Math.min(vibeMatches * 5, 10);
 
-      // 3. Stable weight based on ID (to avoid random shifts)
+      // Featured Boost
+      const featuredBoost = spot.is_featured ? 30 : 0;
+
+      // Stable weight based on ID (to avoid random shifts)
       const idWeight = spot.id.split('-')[0].split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
 
-      const totalScore = costScore + vibeScore + (idWeight / 1);
+      const totalScore = costScore + vibeScore + featuredBoost + (idWeight / 1);
 
-      // Generate "Why it fits"
       const whyItFits = generateWhyItFits(spot, vibe, totalCost, budget);
 
       return {
@@ -78,7 +135,6 @@ function generateWhyItFits(spot: Spot, vibe: string, total: number, budget: numb
     `Great choice for a ${vibe} outing, keeping transport costs low while maximizing the food experience.`
   ];
 
-  // Deterministic reason selection
   const reasonIndex = (spot.name.length + spot.price_per_person) % reasons.length;
   return reasons[reasonIndex];
 }
