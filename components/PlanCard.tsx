@@ -67,14 +67,13 @@ export default function PlanCard({ plan, index, isTopPick }: PlanCardProps) {
       </CardContent>
 
       <CardFooter className="bg-white border-t border-gray-50 flex justify-between items-center py-3">
-        <span className="text-[10px] text-gray-400 italic">
-          Prices verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-gray-400 uppercase font-bold">Prices accurate?</span>
-          <button className="text-gray-400 hover:text-green-600 transition-colors">👍</button>
-          <button className="text-gray-400 hover:text-red-600 transition-colors">👎</button>
-        </div>
+        {plan.spot.price_updated_at && plan.spot.price_source ? (
+          <span className="text-[10px] text-gray-400 italic">
+            Prices verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}
+          </span>
+        ) : (
+          <span className="text-[10px] text-gray-400 italic">Prices estimated</span>
+        )}
       </CardFooter>
     </Card>
   );

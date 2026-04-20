@@ -29,7 +29,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       startArea: params.startArea || "ikeja",
       squadSize: parseInt(params.squadSize || "2"),
       budget: parseInt(params.budget || "50000"),
-      vibe: params.vibe || "Lowkey",
+      vibe: params.vibe || "Chill",
     };
 
     // 2. Generate plans (deterministic)

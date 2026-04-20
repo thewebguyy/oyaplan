@@ -11,8 +11,8 @@ export type Spot = {
   area_id: string;
   vibe_tags: string[];
   price_per_person: number;
-  price_updated_at: string;
-  price_source: string;
+  price_updated_at?: string;
+  price_source?: string;
   transport_matrix: Record<string, number>;
   is_featured: boolean;
   active: boolean;

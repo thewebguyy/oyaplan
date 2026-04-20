@@ -21,6 +21,7 @@ interface ForgeFormProps {
 export default function ForgeForm({ areas }: ForgeFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [areaError, setAreaError] = useState(false);
   const [formData, setFormData] = useState({
     startArea: "",
     squadSize: "2",
@@ -30,9 +31,12 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.startArea) {
+      setAreaError(true);
+      return;
+    }
+    setAreaError(false);
     setLoading(true);
-    
-    // Level 2: Loading state with animation handled in parent/page
     const params = new URLSearchParams(formData);
     router.push(`/forge?${params.toString()}`);
   };
@@ -44,10 +48,12 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="startArea" className="text-[14px] font-medium">Where are you coming from?</Label>
             <Select 
-              onValueChange={(v: string | null) => setFormData({ ...formData, startArea: v ?? "" })}
-              required
+              onValueChange={(v: string | null) => {
+                setFormData({ ...formData, startArea: v ?? "" });
+                setAreaError(false);
+              }}
             >
-              <SelectTrigger className="min-h-[56px] h-14">
+              <SelectTrigger className={`min-h-[56px] h-14 ${areaError ? 'border-red-500 ring-1 ring-red-500' : ''}`}>
                 <SelectValue placeholder="Select Area" />
               </SelectTrigger>
               <SelectContent>
@@ -58,6 +64,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 ))}
               </SelectContent>
             </Select>
+            {areaError && (
+              <p className="text-red-500 text-xs font-medium mt-1">⚠️ Please select your starting area first.</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
