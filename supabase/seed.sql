@@ -63,7 +63,7 @@ INSERT INTO spots (name, address, area_id, vibe_tags, price_per_person, transpor
 
 -- Apapa Spots
 ('Apapa Club', 'Apapa', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '{"Chill", "Dinner", "Fancy"}', 9000, '{"apapa": 1000, "surulere": 3500, "vi": 4500}', true),
-('Oceanic Seafood', 'Apapa', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '{"Foodie", "Dinner", "Chill"}', 12000, '{"apapa": 1200, "surulere": 4000, "vi": 5000}', true)
+('Oceanic Seafood', 'Apapa', 'cccccccc-cccc-cccc-cccc-cccccccccccc', '{"Foodie", "Dinner", "Chill"}', 12000, '{"apapa": 1200, "surulere": 4000, "vi": 5000}', true),
 
 -- More Spots (to reach 80)
 ('Mega Chicken Ikeja', 'Ikeja', '11111111-1111-1111-1111-111111111111', '{"Quick", "Casual"}', 4000, '{"ikeja": 800}', true),
