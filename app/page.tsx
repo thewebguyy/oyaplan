@@ -2,8 +2,9 @@ import ForgeForm from "@/components/ForgeForm";
 import { supabase } from "@/lib/supabase";
 import { Area } from "@/lib/types";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 async function getAreas() {
   const { data: areas, error } = await supabase
@@ -13,19 +14,25 @@ async function getAreas() {
   
   if (error) {
     console.error("Error fetching areas:", error);
-    // Fallback areas if DB is not seeded yet
-    return [
-      { id: "1", name: "Ikeja", slug: "ikeja" },
-      { id: "2", name: "Lekki Phase 1", slug: "lekki-phase-1" },
-      { id: "3", name: "Victoria Island", slug: "vi" },
-      { id: "4", name: "Surulere", slug: "surulere" },
-    ];
+    return [];
   }
   return areas;
 }
 
+async function getPlanCount() {
+  const { count, error } = await supabase
+    .from("plan_requests")
+    .select("*", { count: "exact", head: true });
+  
+  if (error) return 0;
+  return count || 0;
+}
+
 export default async function LandingPage() {
-  const areas = await getAreas();
+  const [areas, planCount] = await Promise.all([
+    getAreas(),
+    getPlanCount()
+  ]);
 
   return (
     <main className="min-h-screen bg-[#008751] text-white">
@@ -42,32 +49,25 @@ export default async function LandingPage() {
 
           {/* Form */}
           <div className="mt-12 px-4 w-full space-y-4">
-            <ForgeForm areas={areas} />
-            <Link 
-              href="/explore" 
-              className="inline-block text-white/70 hover:text-white text-sm font-medium transition-colors"
-            >
-              Not sure where to go? Browse by area →
-            </Link>
+            <Suspense fallback={<div className="h-96 animate-pulse bg-white/10 rounded-2xl" />}>
+              <ForgeForm areas={areas} />
+            </Suspense>
           </div>
         </div>
       </div>
 
-      {/* Social Proof / Recent Plans */}
-      <div className="bg-white text-gray-900 py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-4">
-          <p className="font-bold uppercase text-[13px] tracking-widest text-gray-400 mb-6">Recent plans</p>
-          <div className="flex flex-col md:flex-row justify-center gap-3">
-            <div className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm font-medium">
-              Yellow Chilli &middot; Ikeja &middot; <span className="text-[#008751] font-bold">₦19,400</span>
-            </div>
-            <div className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm font-medium">
-              Shiro Lagos &middot; VI &middot; <span className="text-[#008751] font-bold">₦71,500</span>
-            </div>
-            <div className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg text-sm font-medium">
-              White House &middot; Yaba &middot; <span className="text-[#008751] font-bold">₦5,500</span>
-            </div>
-          </div>
+      {/* Social Proof */}
+      <div className="bg-white text-gray-900 py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-xl md:text-2xl font-bold tracking-tight text-gray-900">
+            {planCount > 0 ? (
+              <>
+                Join <span className="text-[#008751] font-black">{planCount.toLocaleString('en-NG')}</span> Lagos squads who have already planned their outing.
+              </>
+            ) : (
+              "Be the first Lagos squad to plan your outing today."
+            )}
+          </p>
         </div>
       </div>
 

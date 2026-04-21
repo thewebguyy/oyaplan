@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://oyaplan.com/</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://oyaplan.com/explore</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url><loc>https://oyaplan.com/explore/ikeja</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/gbagada</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/yaba</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/surulere</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/ogudu</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/agege</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/lekki-phase-1</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/vi</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/ikoyi</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/maryland</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/ebute-metta</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://oyaplan.com/explore/apapa</loc><lastmod>2026-04-21</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+</urlset>

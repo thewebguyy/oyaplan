@@ -5,6 +5,7 @@ import "./globals.css";
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://oyaplan.com"),
   title: "OyaPlan | Stop the group chat wahala",
   description: "Get one complete Lagos outing plan in 60 seconds. Accurate food costs, transport estimates, and squad-ready vibes.",
   keywords: ["Lagos", "Planning", "Outing", "Squad", "Food", "Transport", "Nigeria"],
@@ -30,6 +31,11 @@ export const metadata: Metadata = {
     description: "Stop debating, start outing. Get your Lagos plan in 60s.",
     images: ["/og"],
   },
+  manifest: "/manifest.json",
+};
+
+export const viewport = {
+  themeColor: "#008751",
 };
 
 export default function RootLayout({

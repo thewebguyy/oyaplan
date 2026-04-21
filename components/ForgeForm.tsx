@@ -13,6 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Area } from "@/lib/types";
+import Link from "next/link";
 
 interface ForgeFormProps {
   areas: Area[];
@@ -64,13 +65,17 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     const startArea = searchParams.get("startArea");
     const pinnedSpotId = searchParams.get("pinnedSpotId");
     const categoryGroup = searchParams.get("categoryGroup");
+    const budget = searchParams.get("budget");
+    const vibe = searchParams.get("vibe");
     
-    if (startArea || pinnedSpotId || categoryGroup) {
+    if (startArea || pinnedSpotId || categoryGroup || budget || vibe) {
       setFormData(prev => ({
         ...prev,
         startArea: startArea || prev.startArea,
         pinnedSpotId: pinnedSpotId || prev.pinnedSpotId,
-        categoryGroup: categoryGroup || prev.categoryGroup
+        categoryGroup: categoryGroup || prev.categoryGroup,
+        budget: budget || prev.budget,
+        vibe: vibe || prev.vibe,
       }));
     }
   }, [searchParams]);
@@ -277,7 +282,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="size-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                Forging your plan…
+                Finding your squad's plan…
               </span>
             ) : (
               "🚀 Get My Plan"
@@ -288,8 +293,29 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             Usually ready in under 3 seconds ⚡
           </p>
         </form>
+        
+        <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+          <ExploreLink formData={formData} />
+        </div>
       </CardContent>
     </Card>
+  );
+}
+
+function ExploreLink({ formData }: { formData: any }) {
+  const params = new URLSearchParams();
+  if (formData.budget) params.append("budget", formData.budget);
+  if (formData.vibe) params.append("vibe", formData.vibe);
+  
+  const href = params.toString() ? `/explore?${params.toString()}` : "/explore";
+
+  return (
+    <Link 
+      href={href} 
+      className="inline-block text-white/70 hover:text-white text-sm font-medium transition-colors"
+    >
+      Not sure where to go? Browse by area →
+    </Link>
   );
 }
 
