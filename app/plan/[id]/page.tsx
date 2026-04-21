@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MapPin, Utensils, Car, Info, ArrowRight } from "lucide-react";
 
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: PlanPageProps): Promise<Metad
     openGraph: {
       title: `Squad plan at ${spotName} — OyaPlan`,
       description: `Total cost: ₦${totalCost} for ${squadSize} people. See the full breakdown.`,
-      images: ["/og"],
+      images: [`/plan/${id}/og`],
       type: "website",
     },
   };
@@ -50,20 +51,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
     .single();
 
   if (!plan) {
-    return (
-      <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="text-5xl mb-6">🏜️</div>
-        <h1 className="type-heading text-text-primary mb-2">Plan not found</h1>
-        <p className="type-body text-text-muted mb-8 max-w-xs mx-auto">
-          This plan has expired or doesn't exist. Link might be broken.
-        </p>
-        <Link href="/">
-          <Button className="bg-brand-green hover:bg-brand-green-70 text-white h-14 px-10 rounded-[12px] type-label tap-feedback shadow-none border-none">
-            Go to Planner
-          </Button>
-        </Link>
-      </main>
-    );
+    notFound();
   }
 
   const hasFood = plan.spot?.has_food !== false;

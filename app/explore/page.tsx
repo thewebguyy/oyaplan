@@ -22,6 +22,7 @@ export default async function ExploreIndex({
   const { data: areasData } = await supabase
     .from("areas")
     .select("*, spots(active)")
+    .eq("active", true)
     .order("name");
 
   const areas = (areasData || [])

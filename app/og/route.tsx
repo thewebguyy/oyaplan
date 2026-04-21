@@ -15,40 +15,71 @@ export async function GET() {
           alignItems: 'center',
           justifyContent: 'center',
           fontFamily: 'sans-serif',
+          padding: '40px',
         }}
       >
+        {/* Wordmark */}
+        <div style={{ display: 'flex', fontSize: 48, fontWeight: 900, letterSpacing: '-0.05em', marginBottom: '20px' }}>
+          <span style={{ color: 'white' }}>Oya</span>
+          <span style={{ color: '#FCD116' }}>Plan</span>
+        </div>
+
+        {/* Rule */}
+        <div style={{ width: '80%', height: '2px', background: 'white', opacity: 0.2, marginBottom: '60px' }} />
+
+        {/* Headline */}
         <div
           style={{
-            fontSize: 64,
-            fontWeight: 'bold',
+            fontSize: 72,
+            fontWeight: 900,
             color: 'white',
             textAlign: 'center',
-            marginBottom: 24,
+            letterSpacing: '-0.03em',
+            lineHeight: 1.1,
+            maxWidth: '900px',
+            marginBottom: '24px',
           }}
         >
           Stop the group chat wahala.
         </div>
+        
         <div
           style={{
-            fontSize: 32,
+            fontSize: 40,
             color: '#FCD116',
             textAlign: 'center',
-            marginBottom: 80,
+            fontWeight: 700,
           }}
         >
-          Get your Lagos plan in 60 seconds.
+          Get your Lagos squad plan in 3s.
         </div>
+
+        {/* Footer Tagline */}
         <div
           style={{
             position: 'absolute',
-            bottom: 40,
-            right: 40,
+            bottom: 60,
+            right: 80,
             fontSize: 24,
             color: 'white',
-            fontWeight: 'bold',
+            fontWeight: 700,
+            opacity: 0.6,
           }}
         >
-          OyaPlan.com
+          Lagos Squad Planner
+        </div>
+        
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 60,
+            left: 80,
+            fontSize: 20,
+            color: 'white',
+            opacity: 0.4,
+          }}
+        >
+          oyaplan.com
         </div>
       </div>
     ),

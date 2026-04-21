@@ -10,7 +10,9 @@ Follow these steps to deploy OyaPlan to production on Vercel.
   2. `0002_plan_requests.sql`
   3. `0003_shared_plans.sql`
   4. `0004_tester_feedback.sql`
-  5. Apply any additional RLS hardening (refer to Phase 6 notes if not already in migrations).
+  5. `0005_operator_listings.sql`
+  6. `0006_area_active_flag.sql`
+  7. Apply any additional RLS hardening (refer to Phase 6 notes if not already in migrations).
 - Ensure **Row Level Security (RLS)** is enabled on all tables.
 
 ## 2. GitHub Connection

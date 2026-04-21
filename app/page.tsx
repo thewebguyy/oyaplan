@@ -1,4 +1,5 @@
 import ForgeForm from "@/components/ForgeForm";
+import ErrorBanner from "@/components/ErrorBanner";
 import { supabase } from "@/lib/supabase";
 import { Area } from "@/lib/types";
 import Link from "next/link";
@@ -8,7 +9,7 @@ export const revalidate = 300;
 
 export default async function LandingPage() {
   const [areasResult, planCountResult, recentPlansResult] = await Promise.all([
-    supabase.from("areas").select("*").order("name"),
+    supabase.from("areas").select("*").eq("active", true).order("name"),
     supabase.from("plan_requests").select("*", { count: "exact", head: true }),
     supabase.from("shared_plans").select(`
       total_cost,
@@ -27,6 +28,9 @@ export default async function LandingPage() {
 
   return (
     <main className="min-h-screen bg-brand-green text-white antialiased">
+      <Suspense fallback={null}>
+        <ErrorBanner />
+      </Suspense>
       {/* Hero Section */}
       <div className="relative pt-20 pb-32 px-4 overflow-visible">
         <div className="max-w-4xl mx-auto text-center space-y-8">

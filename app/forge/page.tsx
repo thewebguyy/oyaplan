@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import ForgeResultsClient from "./ForgeResultsClient";
-
+import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -30,17 +30,8 @@ export default async function ForgePage({
     .select("*, areas(*)")
     .eq("active", true);
 
-  if (error || !allSpots) {
-    console.error("Error fetching spots:", error);
-    return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center p-8 bg-white rounded-xl shadow-sm border">
-          <h2 className="text-xl font-bold mb-2">Supabase not connected</h2>
-          <p className="text-gray-500 mb-4">Please set up your environment variables.</p>
-          <a href="/" className="text-[#008751] font-bold">Return Home</a>
-        </div>
-      </main>
-    );
+  if (error || !allSpots || allSpots.length === 0) {
+    redirect("/?error=spots_unavailable");
   }
 
   return (

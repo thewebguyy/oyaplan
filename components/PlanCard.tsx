@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Link as LinkIcon } from "lucide-react";
+import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
