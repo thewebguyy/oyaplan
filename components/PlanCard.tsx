@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Utensils, Car, Info, ThumbsUp, ThumbsDown, Activity } from "lucide-react";
+import { MapPin, Utensils, Car, Info, ThumbsUp, ThumbsDown, Activity, Sparkles } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
@@ -11,9 +11,10 @@ interface PlanCardProps {
   index: number;
   input: ForgeInput;
   isTopPick?: boolean;
+  originalBudget?: number;
 }
 
-export default function PlanCard({ plan, index, input, isTopPick }: PlanCardProps) {
+export default function PlanCard({ plan, index, input, isTopPick, originalBudget }: PlanCardProps) {
   const [feedbackGiven, setFeedbackGiven] = useState(false);
 
   const handleFeedback = async (type: 'up' | 'down') => {
@@ -29,6 +30,23 @@ export default function PlanCard({ plan, index, input, isTopPick }: PlanCardProp
   };
 
   const hasFood = plan.spot.has_food !== false;
+
+  // Budget Stretch Logic
+  const diff = originalBudget ? originalBudget - plan.totalCost : 0;
+  const showIndicator = originalBudget && diff >= 2000;
+
+  const getSuggestion = () => {
+    const vibe = plan.spot.vibe_tags[0];
+    const suggestions: Record<string, string> = {
+      Chill: "an extra round of drinks",
+      Foodie: "dessert and a starter",
+      Party: "transport home or cover charge",
+      Quick: "takeaway on the way back",
+      Dinner: "a bottle for the table",
+      Brunch: "cocktails or a smoothie bowl",
+    };
+    return suggestions[vibe] || "something extra for the squad";
+  };
 
   return (
     <Card className={`overflow-hidden border-2 shadow-lg hover:shadow-xl transition-shadow bg-white ${isTopPick ? 'border-[#008751]' : 'border-[#008751]/10'}`}>
@@ -77,11 +95,22 @@ export default function PlanCard({ plan, index, input, isTopPick }: PlanCardProp
           </div>
         </div>
 
-        <div className="flex gap-2 items-start opacity-80 pt-2">
-          <Info className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
-          <p className="text-sm text-gray-500 italic">
-            "{plan.whyItFits}"
-          </p>
+        <div className="space-y-4">
+          <div className="flex gap-2 items-start opacity-80">
+            <Info className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
+            <p className="text-sm text-gray-500 italic">
+              "{plan.whyItFits}"
+            </p>
+          </div>
+
+          {showIndicator && (
+            <div className={`flex items-center gap-2 rounded-xl transition-all ${diff >= 10000 ? 'bg-green-50 px-4 py-2 border border-green-100' : ''}`}>
+              <Sparkles className={`w-4 h-4 text-[#008751] ${diff >= 10000 ? 'animate-pulse' : ''}`} />
+              <p className={`font-bold text-[#008751] ${diff >= 10000 ? 'text-sm' : 'text-xs'}`}>
+                ₦{diff.toLocaleString()} left over — enough for {getSuggestion()}.
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
 

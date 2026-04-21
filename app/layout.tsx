@@ -38,6 +38,8 @@ export const viewport = {
   themeColor: "#008751",
 };
 
+import NavBar from "@/components/NavBar";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,7 +48,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} antialiased`}>
-        {children}
+        <NavBar />
+        <div className="pt-14">
+          {children}
+        </div>
       </body>
     </html>
   );

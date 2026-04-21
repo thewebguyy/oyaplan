@@ -114,12 +114,26 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       {plans.length > 0 ? (
         <div className="space-y-8">
           <div className="w-full">
-            <PlanCard key={plans[0].spot.id} plan={plans[0]} index={0} isTopPick={true} input={forgeInput!} />
+            <PlanCard 
+              key={plans[0].spot.id} 
+              plan={plans[0]} 
+              index={0} 
+              isTopPick={true} 
+              input={forgeInput!} 
+              originalBudget={forgeInput?.budget}
+            />
           </div>
           {plans.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {plans.slice(1).map((plan, index) => (
-                <PlanCard key={plan.spot.id} plan={plan} index={index + 1} isTopPick={false} input={forgeInput!} />
+                <PlanCard 
+                  key={plan.spot.id} 
+                  plan={plan} 
+                  index={index + 1} 
+                  isTopPick={false} 
+                  input={forgeInput!} 
+                  originalBudget={forgeInput?.budget}
+                />
               ))}
             </div>
           )}
