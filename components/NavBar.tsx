@@ -40,13 +40,16 @@ export default function NavBar() {
               <div key={link.href} className="flex items-center">
                 <Link
                   href={link.href}
-                  className={`type-label h-[56px] flex items-center border-b-4 transition-all duration-150 ${
+                  className={`type-label relative h-[56px] flex items-center transition-all duration-150 ${
                     isActive 
-                      ? "text-brand-green border-brand-green" 
-                      : "text-text-secondary border-transparent hover:text-brand-green"
+                      ? "text-brand-green" 
+                      : "text-text-secondary hover:text-brand-green"
                   }`}
                 >
                   {link.name}
+                  <div className={`absolute bottom-0 left-0 right-0 h-1 bg-brand-green transition-all duration-300 ${
+                    isActive ? "opacity-100" : "opacity-0"
+                  }`} style={{ transitionTimingFunction: 'var(--motion-considered)' }} />
                 </Link>
                 {idx === 1 && !link.desktopOnly && (
                   <div className="ml-6 h-4 w-[1px] bg-border-default" />
@@ -59,7 +62,7 @@ export default function NavBar() {
         {/* Mobile CTA */}
         <div className="md:hidden">
           <Link href="/">
-            <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-8 px-4 tap-feedback">
+            <Button className="bg-brand-yellow text-text-primary font-[900] rounded-full type-label h-8 px-4 tap-feedback border-none hover:bg-brand-yellow/90">
               Plan Now
             </Button>
           </Link>

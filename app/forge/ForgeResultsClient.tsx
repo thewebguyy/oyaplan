@@ -97,10 +97,13 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
-      {/* Redesigned Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+      {/* Results Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-1">
-          <h1 className="type-heading text-text-primary">We found the best link for you.</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-1.5 bg-brand-yellow rotate-45 shrink-0" />
+            <h1 className="type-heading text-text-primary">We found the best link for you.</h1>
+          </div>
           <p className="type-caption text-text-muted">
             Based on <span className="text-text-secondary font-[700] lowercase">{startAreaLabel}</span> & <span className="text-text-secondary font-[700]">₦{forgeInput?.budget.toLocaleString()}</span> for <span className="text-text-secondary font-[700]">{forgeInput?.squadSize} people</span>.
           </p>
@@ -125,7 +128,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       {plans.length > 0 ? (
         <div className="space-y-12">
           {/* Plan 1: Full Width */}
-          <div className="w-full">
+          <div className="w-full animate-slide-up animation-delay-0">
             <PlanCard 
               key={plans[0].spot.id} 
               plan={plans[0]} 
@@ -140,14 +143,15 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           {plans.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {plans.slice(1, 3).map((plan, index) => (
-                <PlanCard 
-                  key={plan.spot.id} 
-                  plan={plan} 
-                  index={index + 1} 
-                  isTopPick={false} 
-                  input={forgeInput!} 
-                  originalBudget={forgeInput?.budget}
-                />
+                <div key={plan.spot.id} className={`animate-slide-up ${index === 0 ? 'animation-delay-80' : 'animation-delay-160'}`}>
+                  <PlanCard 
+                    plan={plan} 
+                    index={index + 1} 
+                    isTopPick={false} 
+                    input={forgeInput!} 
+                    originalBudget={forgeInput?.budget}
+                  />
+                </div>
               ))}
             </div>
           )}
@@ -155,7 +159,21 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       ) : (
         /* Redesigned Empty State */
         <div className="text-center py-24 px-6 bg-white rounded-[24px] border border-border-default space-y-6">
-          <div className="text-5xl">😕</div>
+          <div className="flex justify-center pb-2">
+            <div 
+              className="animate-in fade-in slide-in-from-right-8 duration-400"
+              style={{ animationTimingFunction: 'var(--motion-considered)' }}
+            >
+              <svg width="64" height="36" viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="64" height="28" rx="4" fill="#FCD116"/>
+                <rect y="12" width="64" height="4" fill="#008751" fillOpacity="0.3"/>
+                <rect x="8" y="4" width="20" height="8" rx="1" fill="#008751"/>
+                <rect x="36" y="4" width="20" height="8" rx="1" fill="#008751"/>
+                <circle cx="16" cy="30" r="6" fill="#1A1A1A"/>
+                <circle cx="48" cy="30" r="6" fill="#1A1A1A"/>
+              </svg>
+            </div>
+          </div>
           <div className="space-y-2">
             <h2 className="type-heading text-text-primary">No perfect match found.</h2>
             <p className="type-body text-text-muted max-w-md mx-auto">

@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Area } from "@/lib/types";
 import Link from "next/link";
 
+import { ChevronDown } from "lucide-react";
+
 interface ForgeFormProps {
   areas: Area[];
 }
@@ -59,6 +61,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [areaError, setAreaError] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [formData, setFormData] = useState({
     startArea: "",
     squadSize: "2",
@@ -78,6 +81,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     const daypart = searchParams.get("daypart");
     
     if (startArea || pinnedSpotId || categoryGroup || budget || vibe || daypart) {
+      if (categoryGroup && categoryGroup !== "Anywhere" || daypart && daypart !== "Any time") {
+        setShowAdvanced(true);
+      }
       setFormData(prev => ({
         ...prev,
         startArea: startArea || prev.startArea,
@@ -205,56 +211,73 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           </div>
         </div>
 
-        {/* Optional Row: Category + Daypart */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className={labelCls}>
-              <span className="text-[14px]">🍴</span> Category
-            </Label>
-            <Select
-              value={formData.categoryGroup}
-              onValueChange={(v: string | null) =>
-                setFormData({ ...formData, categoryGroup: v ?? "Anywhere" })
-              }
-            >
-              <SelectTrigger className={triggerCls}>
-                <SelectValue>
-                  {CATEGORY_OPTIONS.find((o) => o.value === formData.categoryGroup)?.label ?? "Anywhere"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                {CATEGORY_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value} className="type-body py-3">
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Advanced Toggle */}
+        <div className="pt-2">
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center gap-2 type-caption text-text-muted hover:text-text-secondary transition-colors"
+          >
+            <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${showAdvanced ? "rotate-180" : ""}`} />
+            ⚙ Refine further
+          </button>
+        </div>
 
-          <div className="space-y-2">
-            <Label className={labelCls}>
-              <span className="text-[14px]">🕒</span> Time
-            </Label>
-            <Select
-              value={formData.daypart}
-              onValueChange={(v: string | null) =>
-                setFormData({ ...formData, daypart: v ?? "Any time" })
-              }
-            >
-              <SelectTrigger className={triggerCls}>
-                <SelectValue>
-                  {DAYPART_OPTIONS.find((o) => o.value === formData.daypart)?.label ?? "Any time"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                {DAYPART_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value} className="type-body py-3">
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {/* Optional Row: Category + Daypart */}
+        <div 
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${showAdvanced ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"}`}
+          style={{ transitionDuration: 'var(--motion-considered)' }}
+        >
+          <div className="grid grid-cols-2 gap-4 pt-4">
+            <div className="space-y-2">
+              <Label className={labelCls}>
+                <span className="text-[14px]">🍴</span> Category
+              </Label>
+              <Select
+                value={formData.categoryGroup}
+                onValueChange={(v: string | null) =>
+                  setFormData({ ...formData, categoryGroup: v ?? "Anywhere" })
+                }
+              >
+                <SelectTrigger className={triggerCls}>
+                  <SelectValue>
+                    {CATEGORY_OPTIONS.find((o) => o.value === formData.categoryGroup)?.label ?? "Anywhere"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {CATEGORY_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value} className="type-body py-3">
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className={labelCls}>
+                <span className="text-[14px]">🕒</span> Time
+              </Label>
+              <Select
+                value={formData.daypart}
+                onValueChange={(v: string | null) =>
+                  setFormData({ ...formData, daypart: v ?? "Any time" })
+                }
+              >
+                <SelectTrigger className={triggerCls}>
+                  <SelectValue>
+                    {DAYPART_OPTIONS.find((o) => o.value === formData.daypart)?.label ?? "Any time"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {DAYPART_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value} className="type-body py-3">
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 

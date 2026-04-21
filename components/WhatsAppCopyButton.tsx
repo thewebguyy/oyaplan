@@ -17,6 +17,7 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
   const [sharing, setSharing] = useState(false);
   const [shareError, setShareError] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
 
   const ensureShareUrl = async () => {
     if (shareUrl) return shareUrl;
@@ -43,6 +44,10 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
   const isMobile = typeof navigator !== 'undefined' && /Android|iPhone/i.test(navigator.userAgent);
 
   const handleAction = async () => {
+    // Physical press effect
+    setIsPressed(true);
+    setTimeout(() => setIsPressed(false), 80);
+
     const url = await ensureShareUrl();
     const text = `*OyaPlan: The Squad Outing Plan* 🇳🇬
 
@@ -78,14 +83,17 @@ View full plan: ${url || "https://oyaplan.com"}`;
     }
   };
 
-  const waGreen = "#25D366";
 
   return (
     <div className="flex flex-col gap-2 w-full">
       <Button 
         onClick={handleAction}
         disabled={sharing}
-        className={`w-full type-subheading flex items-center justify-center gap-2 h-[52px] transition-all duration-150 rounded-[10px] tap-feedback border-2 ${
+        style={{ 
+          transform: isPressed ? 'scale(0.96)' : 'scale(1)',
+          transition: isPressed ? 'transform 80ms ease-out' : 'transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1)'
+        }}
+        className={`w-full type-subheading flex items-center justify-center gap-2 h-[52px] rounded-[10px] tap-feedback border-2 whatsapp-confirm ${
           copied 
             ? "bg-brand-green border-brand-green text-white" 
             : variant === 'filled'

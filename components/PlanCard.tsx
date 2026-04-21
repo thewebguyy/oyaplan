@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity } from "lucide-react";
+import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Sparkles } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
@@ -46,51 +46,56 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
   };
 
   return (
-    <div className={`overflow-hidden rounded-[16px] border-2 transition-all duration-300 bg-white ${
+    <div className={`overflow-hidden rounded-[24px] border-2 transition-all duration-300 bg-white ${
       isTopPick 
-        ? "border-brand-green shadow-[0px_8px_32px_rgba(0,135,81,0.15)]" 
-        : "border-border-default shadow-[0px_2px_8px_rgba(0,0,0,0.06)]"
+        ? "border-brand-green shadow-[0px_32px_64px_rgba(0,0,0,0.18)] card-lift relative z-10" 
+        : "border-border-default shadow-[0px_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.10)]"
     }`}>
       {/* Top Zone: Identity */}
-      <div className={`p-6 ${isTopPick ? "bg-brand-green text-white" : "bg-surface-grey text-text-primary border-b border-border-default"}`}>
-        <div className="flex justify-between items-start mb-4">
+      <div className={`p-8 ${isTopPick ? "bg-brand-green text-white" : "bg-surface-grey text-text-primary border-b border-border-default"}`}>
+        <div className="flex justify-between items-start mb-6">
           <div className={`px-2 py-1 rounded-[6px] type-label ${isTopPick ? "bg-white text-brand-green" : "bg-border-default text-text-muted"}`}>
             {isTopPick ? "Best Match" : "Alternative"}
           </div>
-          <div className="text-right">
-            <p className={`${isTopPick ? "text-[32px] font-[900]" : "type-heading text-brand-green"}`}>
+          <div className="text-right flex flex-col">
+            <p className={`${isTopPick ? "text-[52px]" : "type-heading text-brand-green"} font-[900] leading-none`}>
               ₦{plan.totalCost.toLocaleString()}
             </p>
+            {isTopPick && (
+              <p className="type-caption text-white/60 mt-1">
+                for {input.squadSize} {Number(input.squadSize) === 1 ? 'person' : 'people'}
+              </p>
+            )}
           </div>
         </div>
         
-        <h3 className={`type-heading ${isTopPick ? "text-white" : "text-text-primary"}`}>
+        <h3 className={`${isTopPick ? "text-[22px] font-[800] text-white" : "type-heading text-text-primary"}`}>
           {plan.spot.name}
         </h3>
         
-        <div className={`flex items-center gap-1.5 mt-1 type-caption ${isTopPick ? "text-white/80" : "text-text-muted"}`}>
+        <div className={`flex items-center gap-1.5 mt-2 type-caption ${isTopPick ? "text-white/80" : "text-text-muted"}`}>
           <MapPin className="w-[14px] h-[14px] shrink-0" />
           <span className="truncate">{plan.spot.address}</span>
         </div>
       </div>
       
       {/* Bottom Zone: Action */}
-      <div className="p-5 space-y-5">
+      <div className="p-8 space-y-6">
         {/* Primary Action */}
         <div className="w-full">
           <WhatsAppCopyButton plan={plan} input={input} variant={isTopPick ? "filled" : "outlined"} />
         </div>
 
         {/* Cost Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 bg-surface-grey border border-border-default rounded-[12px]">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
             <div className="flex items-center gap-2 text-text-muted type-label mb-1">
               {hasFood ? <Utensils className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
               {hasFood ? "Food/Drinks" : "Activity"}
             </div>
             <p className="type-subheading text-text-primary">₦{plan.foodCost.toLocaleString()}</p>
           </div>
-          <div className="p-3 bg-surface-grey border border-border-default rounded-[12px]">
+          <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
             <div className="flex items-center gap-2 text-text-muted type-label mb-1">
               <Car className="w-3 h-3" />
               Transport
@@ -101,13 +106,14 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
 
         {/* Note & Indicators */}
         <div className="space-y-4">
-          <p className="type-body text-text-secondary">
+          <p className="type-body text-text-secondary leading-relaxed">
             {plan.whyItFits}
           </p>
 
           {showIndicator && (
-            <div className="p-3 bg-brand-green-5 border border-brand-green-15 rounded-[12px]">
-              <p className="type-caption text-brand-green font-[700]">
+            <div className="p-4 bg-brand-yellow-15 border border-brand-yellow-40 rounded-[12px] flex items-start gap-3">
+              <Sparkles className="w-4 h-4 text-brand-yellow fill-brand-yellow shrink-0 mt-0.5" />
+              <p className="type-caption text-text-primary font-[700]">
                 ₦{diff.toLocaleString()} left over — enough for {getSuggestion()}.
               </p>
             </div>
@@ -115,7 +121,7 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
         </div>
 
         {/* Footer: Verification & Feedback */}
-        <div className="pt-4 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="type-caption text-text-muted">
             {plan.spot.price_updated_at ? (
               <span>Verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}</span>
