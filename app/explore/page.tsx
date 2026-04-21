@@ -6,8 +6,8 @@ import { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Explore Lagos Outings by Area — OyaPlan",
-  description: "Browse spots, restaurants, activities, and hidden gems across all Lagos areas. Find your next squad outing.",
+  title: "Explore Lagos Outings by Zone — OyaPlan",
+  description: "Browse spots, restaurants, activities, and hidden gems across all Lagos zones. Find your next squad outing.",
   openGraph: {
     images: ["/og"],
   }
@@ -19,10 +19,33 @@ export default async function ExploreIndex({
   searchParams: Promise<{ budget?: string; vibe?: string }> 
 }) {
   const params = await searchParams;
+  
+  // Fetch Zones
+  const { data: zonesData } = await supabase
+    .from("zones")
+    .select("*")
+    .order("name");
+    
+  // Fetch Spots to aggregate counts
+  const { data: spotsData } = await supabase
+    .from("spots")
+    .select("zone, active, area_id")
+    .eq("active", true);
+
+  const zones = (zonesData || []).map((zone: any) => {
+    const zoneSpots = (spotsData || []).filter((s: any) => s.zone === zone.slug);
+    const uniqueAreas = new Set(zoneSpots.map((s: any) => s.area_id));
+    return {
+      ...zone,
+      activeSpotCount: zoneSpots.length,
+      areaCount: uniqueAreas.size
+    };
+  }).filter((zone: any) => zone.activeSpotCount > 0);
+
+  // Fetch Areas for the collapsed section
   const { data: areasData } = await supabase
     .from("areas")
     .select("*, spots(active)")
-    .eq("active", true)
     .order("name");
 
   const areas = (areasData || [])
@@ -51,29 +74,63 @@ export default async function ExploreIndex({
             Back to Planner
           </Link>
           <h1 className="type-display text-text-primary">Explore Lagos</h1>
-          <p className="type-body text-text-muted mt-2">Select an area to see what's happening.</p>
+          <p className="type-body text-text-muted mt-2">Select a zone to see what's happening.</p>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 mt-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {areas?.map((area: any) => {
-            const areaParams = new URLSearchParams();
-            if (params.budget) areaParams.append("budget", params.budget);
-            if (params.vibe) areaParams.append("vibe", params.vibe);
-            const href = areaParams.toString() ? `/explore/${area.slug}?${areaParams.toString()}` : `/explore/${area.slug}`;
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {zones?.map((zone: any) => {
+            const zoneParams = new URLSearchParams();
+            if (params.budget) zoneParams.append("budget", params.budget);
+            if (params.vibe) zoneParams.append("vibe", params.vibe);
+            const href = zoneParams.toString() ? `/explore/${zone.slug}?${zoneParams.toString()}` : `/explore/${zone.slug}`;
 
             return (
               <Link 
-                key={area.id} 
+                key={zone.id} 
                 href={href}
-                className="group p-8 bg-white border border-border-default rounded-[20px] hover:border-brand-green hover:shadow-[0px_8px_24px_rgba(0,135,81,0.08)] transition-all text-left tap-feedback"
+                className="group p-8 bg-white border border-border-default rounded-[20px] hover:border-brand-green hover:shadow-[0px_8px_24px_rgba(0,135,81,0.08)] transition-all text-left tap-feedback flex flex-col justify-between"
               >
-                <h3 className="type-heading text-text-primary group-hover:text-brand-green transition-colors lowercase first-letter:uppercase">{area.name}</h3>
-                <p className="type-caption text-text-muted mt-2">{area.activeSpotCount} spots to discover</p>
+                <div>
+                  <h3 className="type-heading text-text-primary group-hover:text-brand-green transition-colors">{zone.name}</h3>
+                  <p className="type-caption text-text-muted mt-1">{zone.areaCount} areas</p>
+                  <p className="type-body text-text-muted mt-4">{zone.description}</p>
+                </div>
+                <div className="mt-8 pt-4 border-t border-border-default">
+                  <span className="type-label text-brand-green">{zone.activeSpotCount} active spots</span>
+                </div>
               </Link>
             );
           })}
+        </div>
+
+        <div className="mt-16 border-t border-border-default pt-8">
+          <details className="group">
+            <summary className="list-none cursor-pointer flex items-center gap-2 type-label text-text-primary hover:text-brand-green transition-colors tap-feedback outline-none select-none">
+              Browse by specific area <span className="text-text-muted group-open:rotate-90 transition-transform duration-300">→</span>
+            </summary>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+              {areas?.map((area: any) => {
+                const areaParams = new URLSearchParams();
+                if (params.budget) areaParams.append("budget", params.budget);
+                if (params.vibe) areaParams.append("vibe", params.vibe);
+                const href = areaParams.toString() ? `/explore/${area.slug}?${areaParams.toString()}` : `/explore/${area.slug}`;
+
+                return (
+                  <Link 
+                    key={area.id} 
+                    href={href}
+                    className="group p-6 bg-surface-grey border border-border-default rounded-[16px] hover:border-brand-green hover:shadow-[0px_4px_12px_rgba(0,135,81,0.05)] transition-all text-left tap-feedback"
+                  >
+                    <h3 className="type-subheading text-text-primary group-hover:text-brand-green transition-colors lowercase first-letter:uppercase">{area.name}</h3>
+                    <p className="type-caption text-text-muted mt-1">{area.activeSpotCount} spots</p>
+                  </Link>
+                );
+              })}
+            </div>
+          </details>
         </div>
       </div>
     </main>

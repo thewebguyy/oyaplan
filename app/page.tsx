@@ -8,7 +8,7 @@ import { Suspense } from "react";
 export const revalidate = 300;
 
 export default async function LandingPage() {
-  const [areasResult, planCountResult, recentPlansResult] = await Promise.all([
+  const [areasResult, planCountResult, recentPlansResult, trendingResult] = await Promise.all([
     supabase.from("areas").select("*").eq("active", true).order("name"),
     supabase.from("plan_requests").select("*", { count: "exact", head: true }),
     supabase.from("shared_plans").select(`
@@ -19,12 +19,14 @@ export default async function LandingPage() {
           name
         )
       )
-    `).order("created_at", { ascending: false }).limit(4)
+    `).order("created_at", { ascending: false }).limit(4),
+    supabase.from("spots").select("id, name, zone, trending_score").gt("trending_score", 0).order("trending_score", { ascending: false }).limit(5)
   ]);
 
   const areas = areasResult.data || [];
   const planCount = planCountResult.count || 0;
   const recentPlans = (recentPlansResult.data || []).filter(p => p.spots && (p.spots as any).areas);
+  const trendingSpots = trendingResult.data || [];
 
   return (
     <main className="min-h-screen bg-brand-green text-white antialiased">
@@ -52,6 +54,30 @@ export default async function LandingPage() {
           </div>
         </div>
       </div>
+
+      {/* Trending Spots Section */}
+      {trendingSpots.length > 0 && (
+        <div className="bg-white py-16 px-4 border-b border-border-default">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🔥</span>
+              <h2 className="type-subheading text-text-primary">Trending in Lagos this week</h2>
+            </div>
+            <div className="flex overflow-x-auto gap-4 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {trendingSpots.map((spot: any) => (
+                <Link 
+                  key={spot.id} 
+                  href={`/explore/${spot.zone}?pinnedSpotId=${spot.id}`} 
+                  className="min-w-[200px] p-5 border border-border-default rounded-[16px] bg-surface-grey hover:border-brand-green hover:shadow-[0px_4px_12px_rgba(0,135,81,0.08)] transition-all tap-feedback shrink-0 flex flex-col justify-between"
+                >
+                  <h3 className="type-label text-text-primary mb-1 truncate">{spot.name}</h3>
+                  <p className="type-caption text-text-muted capitalize">{spot.zone}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Social Proof Section */}
       <div className="bg-[#004d2e] text-white py-24 px-4 overflow-hidden">

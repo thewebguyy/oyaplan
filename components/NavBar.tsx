@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { ChevronLeft } from "lucide-react";
 
 export default function NavBar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Hide on feedback and list-your-spot pages (if standalone)
   if (pathname === "/feedback" || pathname === "/list-your-spot") return null;
@@ -17,14 +19,25 @@ export default function NavBar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-[56px] bg-white border-b border-border-default z-50 flex items-center justify-between px-6">
-      {/* Left: Wordmark */}
-      <Link href="/" className="flex items-center">
-        <span className="text-[20px] font-[800] tracking-tight">
-          <span className="text-text-primary">Oya</span>
-          <span className="text-brand-green">Plan</span>
-        </span>
-      </Link>
+    <nav className="fixed top-0 left-0 right-0 h-[56px] bg-white border-b border-border-default z-50 flex items-center justify-between px-4 md:px-6">
+      {/* Left: Back (Mobile) + Wordmark */}
+      <div className="flex items-center gap-1 md:gap-0">
+        {pathname !== "/" && (
+          <button 
+            onClick={() => router.back()} 
+            className="md:hidden p-2 -ml-2 text-text-primary hover:text-brand-green transition-colors tap-feedback"
+            aria-label="Go back"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+        )}
+        <Link href="/" className="flex items-center tap-feedback">
+          <span className="text-[20px] font-[800] tracking-tight">
+            <span className="text-text-primary">Oya</span>
+            <span className="text-brand-green">Plan</span>
+          </span>
+        </Link>
+      </div>
 
       {/* Center: Tagline (Desktop) */}
       <div className="hidden md:block absolute left-1/2 -translate-x-1/2">
@@ -61,11 +74,19 @@ export default function NavBar() {
 
         {/* Mobile CTA */}
         <div className="md:hidden">
-          <Link href="/">
-            <Button className="bg-brand-yellow text-text-primary font-[900] rounded-full type-label h-8 px-4 tap-feedback border-none hover:bg-brand-yellow/90">
-              Plan Now
-            </Button>
-          </Link>
+          {pathname !== "/explore" ? (
+            <Link href="/explore">
+              <Button className="bg-brand-yellow text-text-primary font-[900] rounded-full type-label h-8 px-4 tap-feedback border-none hover:bg-brand-yellow/90">
+                Explore
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/">
+              <Button className="bg-brand-green text-white font-[900] rounded-full type-label h-8 px-4 tap-feedback border-none hover:bg-brand-green-70">
+                Plan Now
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

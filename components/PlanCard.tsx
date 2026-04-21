@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Sparkles } from "lucide-react";
+import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
-import { Button } from "./ui/button";
+import { useMobile } from "./hooks/useMobile";
 
 interface PlanCardProps {
   plan: Plan;
@@ -15,6 +15,8 @@ interface PlanCardProps {
 
 export default function PlanCard({ plan, index, input, isTopPick, originalBudget }: PlanCardProps) {
   const [feedbackGiven, setFeedbackGiven] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isMobile = useMobile();
 
   const handleFeedback = async (type: 'up' | 'down') => {
     setFeedbackGiven(true);
@@ -86,68 +88,90 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
           <WhatsAppCopyButton plan={plan} input={input} variant={isTopPick ? "filled" : "outlined"} />
         </div>
 
-        {/* Cost Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
-            <div className="flex items-center gap-2 text-text-muted type-label mb-1">
-              {hasFood ? <Utensils className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
-              {hasFood ? "Food/Drinks" : "Activity"}
-            </div>
-            <p className="type-subheading text-text-primary">₦{plan.foodCost.toLocaleString()}</p>
-          </div>
-          <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
-            <div className="flex items-center gap-2 text-text-muted type-label mb-1">
-              <Car className="w-3 h-3" />
-              Transport
-            </div>
-            <p className="type-subheading text-text-primary">₦{plan.transportCost.toLocaleString()}</p>
-          </div>
-        </div>
+        {isMobile && !isExpanded && (
+          <button 
+            onClick={() => setIsExpanded(true)}
+            className="w-full flex items-center justify-center gap-2 type-label text-brand-green py-2 tap-feedback"
+          >
+            See full breakdown <ChevronDown className="w-4 h-4" />
+          </button>
+        )}
 
-        {/* Note & Indicators */}
-        <div className="space-y-4">
-          <p className="type-body text-text-secondary leading-relaxed">
-            {plan.whyItFits}
-          </p>
-
-          {showIndicator && (
-            <div className="p-4 bg-brand-yellow-15 border border-brand-yellow-40 rounded-[12px] flex items-start gap-3">
-              <Sparkles className="w-4 h-4 text-brand-yellow fill-brand-yellow shrink-0 mt-0.5" />
-              <p className="type-caption text-text-primary font-[700]">
-                ₦{diff.toLocaleString()} left over — enough for {getSuggestion()}.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Footer: Verification & Feedback */}
-        <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="type-caption text-text-muted">
-            {plan.spot.price_updated_at ? (
-              <span>Verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}</span>
-            ) : (
-              <span>Estimated prices</span>
-            )}
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {feedbackGiven ? (
-              <span className="type-label text-brand-green">Thanks!</span>
-            ) : (
-              <>
-                <span className="type-label text-text-muted">Price right?</span>
-                <div className="flex gap-1">
-                  <button onClick={() => handleFeedback('up')} className="p-1.5 hover:bg-brand-green-5 rounded-md text-text-muted hover:text-brand-green transition-colors">
-                    <ThumbsUp className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => handleFeedback('down')} className="p-1.5 hover:bg-red-50 rounded-md text-text-muted hover:text-error transition-colors">
-                    <ThumbsDown className="w-3.5 h-3.5" />
-                  </button>
+        {(!isMobile || isExpanded) && (
+          <>
+            {/* Cost Grid */}
+            <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
+                <div className="flex items-center gap-2 text-text-muted type-label mb-1">
+                  {hasFood ? <Utensils className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
+                  {hasFood ? "Food/Drinks" : "Activity"}
                 </div>
-              </>
+                <p className="type-subheading text-text-primary">₦{plan.foodCost.toLocaleString()}</p>
+              </div>
+              <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
+                <div className="flex items-center gap-2 text-text-muted type-label mb-1">
+                  <Car className="w-3 h-3" />
+                  Transport
+                </div>
+                <p className="type-subheading text-text-primary">₦{plan.transportCost.toLocaleString()}</p>
+              </div>
+            </div>
+
+            {/* Note & Indicators */}
+            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <p className="type-body text-text-secondary leading-relaxed">
+                {plan.whyItFits}
+              </p>
+
+              {showIndicator && (
+                <div className="p-4 bg-brand-yellow-15 border border-brand-yellow-40 rounded-[12px] flex items-start gap-3">
+                  <Sparkles className="w-4 h-4 text-brand-yellow fill-brand-yellow shrink-0 mt-0.5" />
+                  <p className="type-caption text-text-primary font-[700]">
+                    ₦{diff.toLocaleString()} left over — enough for {getSuggestion()}.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer: Verification & Feedback */}
+            <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="type-caption text-text-muted">
+                {plan.spot.price_updated_at ? (
+                  <span>Verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}</span>
+                ) : (
+                  <span>Estimated prices</span>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-3">
+                {feedbackGiven ? (
+                  <span className="type-label text-brand-green">Thanks!</span>
+                ) : (
+                  <>
+                    <span className="type-label text-text-muted">Price right?</span>
+                    <div className="flex gap-1">
+                      <button onClick={() => handleFeedback('up')} className="p-1.5 hover:bg-brand-green-5 rounded-md text-text-muted hover:text-brand-green transition-colors tap-feedback min-w-[44px] min-h-[44px] flex items-center justify-center">
+                        <ThumbsUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleFeedback('down')} className="p-1.5 hover:bg-red-50 rounded-md text-text-muted hover:text-error transition-colors tap-feedback min-w-[44px] min-h-[44px] flex items-center justify-center">
+                        <ThumbsDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {isMobile && isExpanded && (
+              <button 
+                onClick={() => setIsExpanded(false)}
+                className="w-full flex items-center justify-center gap-2 type-label text-text-muted py-4 mt-4 border-t border-border-default tap-feedback"
+              >
+                Hide breakdown <ChevronUp className="w-4 h-4" />
+              </button>
             )}
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

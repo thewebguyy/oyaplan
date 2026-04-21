@@ -121,13 +121,13 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   const labelCls = "flex items-center gap-2 type-label text-text-secondary";
 
   return (
-    <div className="w-full bg-white border border-border-default p-6 md:p-8 rounded-[20px] text-left">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="w-full bg-white border border-border-default p-5 md:p-8 rounded-[20px] text-left">
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:gap-4">
 
         {/* Field: Starting Area */}
-        <div className="space-y-2">
+        <div className="col-span-2 sm:col-span-1 space-y-1.5">
           <Label className={labelCls}>
-            <span className="text-[14px]">📍</span> Where are you coming from?
+            <span className="text-[14px]">📍</span> Starting area
           </Label>
           <Select
             value={formData.startArea}
@@ -141,7 +141,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 areaError ? "border-error ring-2 ring-error/10" : ""
               }`}
             >
-              <SelectValue placeholder="Pick your area…" />
+              <SelectValue placeholder="Pick area…" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
               {areas.map((area) => (
@@ -153,14 +153,39 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           </Select>
           {areaError && (
             <p className="type-caption text-error flex items-center gap-1 mt-1 animate-in slide-in-from-top-1">
-              <span>⚠️</span> Please select your starting area first.
+              <span>⚠️</span> Required
             </p>
           )}
         </div>
 
+        {/* Field: Budget */}
+        <div className="col-span-2 sm:col-span-1 space-y-1.5">
+          <Label className={labelCls}>
+            <span className="text-[14px]">💰</span> Total budget
+          </Label>
+          <Select
+            value={formData.budget}
+            onValueChange={(v: string | null) =>
+              setFormData({ ...formData, budget: v ?? "50000" })
+            }
+          >
+            <SelectTrigger className={triggerCls}>
+              <SelectValue>
+                {BUDGET_OPTIONS.find((o) => o.value === formData.budget)?.label ?? "Select budget"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              {BUDGET_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value} className="type-body py-3">
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Row: Squad Size + Vibe */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
+        <div className="col-span-1 space-y-1.5">
             <Label className={labelCls}>
               <span className="text-[14px]">👥</span> Squad size
             </Label>
@@ -185,7 +210,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="col-span-1 space-y-1.5">
             <Label className={labelCls}>
               <span className="text-[14px]">🎭</span> The vibe
             </Label>
@@ -209,10 +234,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               </SelectContent>
             </Select>
           </div>
-        </div>
 
         {/* Advanced Toggle */}
-        <div className="pt-2">
+        <div className="col-span-2 pt-1">
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
@@ -225,7 +249,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
         {/* Optional Row: Category + Daypart */}
         <div 
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${showAdvanced ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"}`}
+          className={`col-span-2 overflow-hidden transition-all duration-300 ease-in-out ${showAdvanced ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"}`}
           style={{ transitionDuration: 'var(--motion-considered)' }}
         >
           <div className="grid grid-cols-2 gap-4 pt-4">
@@ -281,34 +305,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           </div>
         </div>
 
-        {/* Field: Budget */}
-        <div className="space-y-2">
-          <Label className={labelCls}>
-            <span className="text-[14px]">💰</span> Total budget (₦)
-          </Label>
-          <Select
-            value={formData.budget}
-            onValueChange={(v: string | null) =>
-              setFormData({ ...formData, budget: v ?? "50000" })
-            }
-          >
-            <SelectTrigger className={triggerCls}>
-              <SelectValue>
-                {BUDGET_OPTIONS.find((o) => o.value === formData.budget)?.label ?? "Select budget"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              {BUDGET_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value} className="type-body py-3">
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Submit */}
-        <div className="space-y-4 pt-2">
+        <div className="col-span-2 space-y-4 pt-2">
           <Button
             type="submit"
             className="relative w-full h-[56px] rounded-[12px] bg-brand-green hover:bg-brand-green-70 text-white type-subheading overflow-hidden tap-feedback"
