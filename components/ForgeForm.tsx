@@ -43,6 +43,14 @@ const CATEGORY_OPTIONS = [
   { value: "Nature and outdoors", label: "🌳 Nature and outdoors" },
 ];
 
+const DAYPART_OPTIONS = [
+  { value: "Any time", label: "⏰ Any time" },
+  { value: "Morning", label: "☀️ Morning (Before 12pm)" },
+  { value: "Afternoon", label: "🌤️ Afternoon (12pm – 5pm)" },
+  { value: "Evening", label: "🌆 Evening (5pm – 9pm)" },
+  { value: "Night", label: "🌙 Night (After 9pm)" },
+];
+
 function squadLabel(n: number) {
   return n === 1 ? "1 person" : `${n} people`;
 }
@@ -58,6 +66,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     budget: "50000",
     vibe: "Chill",
     categoryGroup: "Anywhere",
+    daypart: "Any time",
     pinnedSpotId: ""
   });
 
@@ -67,8 +76,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     const categoryGroup = searchParams.get("categoryGroup");
     const budget = searchParams.get("budget");
     const vibe = searchParams.get("vibe");
+    const daypart = searchParams.get("daypart");
     
-    if (startArea || pinnedSpotId || categoryGroup || budget || vibe) {
+    if (startArea || pinnedSpotId || categoryGroup || budget || vibe || daypart) {
       setFormData(prev => ({
         ...prev,
         startArea: startArea || prev.startArea,
@@ -76,6 +86,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
         categoryGroup: categoryGroup || prev.categoryGroup,
         budget: budget || prev.budget,
         vibe: vibe || prev.vibe,
+        daypart: daypart || prev.daypart,
       }));
     }
   }, [searchParams]);
@@ -91,8 +102,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     
     const params = new URLSearchParams();
     Object.entries(formData).forEach(([key, value]) => {
-      if (value && value !== "Anywhere") params.append(key, value);
-      else if (value && key !== "categoryGroup") params.append(key, value);
+      if (value && value !== "Anywhere" && value !== "Any time") params.append(key, value);
+      else if (value && key !== "categoryGroup" && key !== "daypart") params.append(key, value);
     });
     
     router.push(`/forge?${params.toString()}`);
@@ -231,6 +242,39 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               </SelectTrigger>
               <SelectContent className="rounded-xl shadow-xl">
                 {CATEGORY_OPTIONS.map((o) => (
+                  <SelectItem
+                    key={o.value}
+                    value={o.value}
+                    className="text-base py-2.5"
+                  >
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Field: Daypart (Optional) */}
+          <div className="space-y-1.5">
+            <Label className="flex items-center justify-between text-[13px] font-semibold uppercase tracking-wider text-gray-500">
+              <span className="flex items-center gap-2">
+                <span className="text-base">🕒</span> When are you going?
+              </span>
+              <span className="text-[10px] lowercase text-gray-400 font-normal">(optional)</span>
+            </Label>
+            <Select
+              value={formData.daypart}
+              onValueChange={(v: string | null) =>
+                setFormData({ ...formData, daypart: v ?? "Any time" })
+              }
+            >
+              <SelectTrigger className={triggerCls}>
+                <SelectValue>
+                  {DAYPART_OPTIONS.find((o) => o.value === formData.daypart)?.label ?? "Any time"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl shadow-xl">
+                {DAYPART_OPTIONS.map((o) => (
                   <SelectItem
                     key={o.value}
                     value={o.value}

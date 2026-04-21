@@ -39,7 +39,9 @@ export default function WhatsAppCopyButton({ plan, input }: WhatsAppCopyButtonPr
     }
   };
 
-  const handleCopy = async () => {
+  const isMobile = typeof navigator !== 'undefined' && /Android|iPhone/i.test(navigator.userAgent);
+
+  const handleAction = async () => {
     const url = await ensureShareUrl();
     const text = `*OyaPlan: The Squad Outing Plan* 🇳🇬
 
@@ -56,9 +58,13 @@ ${plan.whyItFits}
 
 View full plan: ${url || "https://oyaplan.com"}`;
 
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (isMobile) {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    } else {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleShareLink = async () => {
@@ -73,7 +79,7 @@ View full plan: ${url || "https://oyaplan.com"}`;
   return (
     <div className="flex flex-col gap-2 w-full">
       <Button 
-        onClick={handleCopy}
+        onClick={handleAction}
         disabled={sharing}
         className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-black flex items-center justify-center gap-2 h-[52px] transition-all rounded-xl shadow-md active:scale-[0.98]"
       >
@@ -82,7 +88,13 @@ View full plan: ${url || "https://oyaplan.com"}`;
         ) : (
           <MessageSquare className="w-5 h-5" />
         )}
-        {copied ? "Copied! Paste in group chat ✓" : "Copy Plan for WhatsApp"}
+        {copied ? (
+          "Copied! Paste in group chat ✓"
+        ) : isMobile ? (
+          "Send via WhatsApp"
+        ) : (
+          "Copy Plan for WhatsApp"
+        )}
       </Button>
       
       <Button

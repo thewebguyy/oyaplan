@@ -42,6 +42,19 @@ export default async function AdminDashboard({
 
   if (!allRequests) return <div>Error loading data</div>;
 
+  // 3. Fetch Observations & Suggestions
+  const { data: observations } = await supabase
+    .from("tester_observations")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const unresolvedCount = observations?.filter(o => !o.resolved).length || 0;
+
+  const { data: suggestions } = await supabase
+    .from("spot_suggestions")
+    .select("*")
+    .order("created_at", { ascending: false });
+
   // Aggregations
   const vibeCounts = allRequests.reduce((acc: any, r) => {
     acc[r.vibe] = (acc[r.vibe] || 0) + 1;
@@ -214,6 +227,71 @@ export default async function AdminDashboard({
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Tester Observations */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-gray-900">Tester Observations</h2>
+            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-black uppercase rounded-full">
+              {unresolvedCount} unresolved
+            </span>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                  <th className="px-6 py-3">Time</th>
+                  <th className="px-6 py-3">Tester</th>
+                  <th className="px-6 py-3">Device</th>
+                  <th className="px-6 py-3">What they tried</th>
+                  <th className="px-6 py-3">Frustration</th>
+                  <th className="px-6 py-3">Wish List</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {observations?.map((o) => (
+                  <tr key={o.id} className={`text-sm font-medium ${!o.resolved ? 'bg-yellow-50/30' : ''}`}>
+                    <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(o.created_at)}</td>
+                    <td className="px-6 py-4 font-bold">{o.tester_name}</td>
+                    <td className="px-6 py-4 text-xs">{o.device_and_network}</td>
+                    <td className="px-6 py-4 truncate max-w-[150px]" title={o.what_they_tried}>{o.what_they_tried}</td>
+                    <td className="px-6 py-4 truncate max-w-[150px] text-red-500" title={o.what_frustrated_them}>{o.what_frustrated_them || "—"}</td>
+                    <td className="px-6 py-4 truncate max-w-[150px] text-[#008751]" title={o.what_they_wished_existed}>{o.what_they_wished_existed || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Spot Suggestions */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-black text-gray-900">Spot Suggestions</h2>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                  <th className="px-6 py-3">Time</th>
+                  <th className="px-6 py-3">Spot Name</th>
+                  <th className="px-6 py-3">Area</th>
+                  <th className="px-6 py-3">Price</th>
+                  <th className="px-6 py-3">WhatsApp</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {suggestions?.map((s) => (
+                  <tr key={s.id} className={`text-sm font-medium ${!s.reviewed ? 'bg-blue-50/30' : ''}`}>
+                    <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(s.created_at)}</td>
+                    <td className="px-6 py-4 font-bold">{s.spot_name}</td>
+                    <td className="px-6 py-4">{s.area_name}</td>
+                    <td className="px-6 py-4">₦{s.rough_price_per_person?.toLocaleString() || "—"}</td>
+                    <td className="px-6 py-4 text-gray-400 font-mono text-xs">{s.suggester_whatsapp || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </main>

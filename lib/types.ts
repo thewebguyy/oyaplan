@@ -29,6 +29,7 @@ export type ForgeInput = {
   vibe: string;
   pinnedSpotId?: string;
   categoryGroup?: string;
+  daypart?: 'Morning' | 'Afternoon' | 'Evening' | 'Night' | 'Any time';
 };
 
 export type Plan = {

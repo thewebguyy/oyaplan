@@ -64,11 +64,27 @@ const CATEGORY_MAP: Record<string, string[]> = {
 };
 
 export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
-  const { startArea, squadSize, budget, vibe, pinnedSpotId, categoryGroup } = input;
+  const { startArea, squadSize, budget, vibe, pinnedSpotId, categoryGroup, daypart } = input;
 
   // 1. Filter and Score
   const scoredSpots = allSpots
     .filter((spot) => {
+      // Daypart Filter
+      if (daypart && daypart !== "Any time") {
+        const cat = spot.category || "restaurant";
+        const duration = spot.typical_duration_hours || 0;
+
+        if (daypart === "Morning") {
+          // Morning: cafe, restaurant, nature, experience, activity. Exclude bar, entertainment, beach.
+          if (["bar", "entertainment", "beach"].includes(cat)) return false;
+        } else if (daypart === "Night") {
+          // Night: bar, restaurant, entertainment, experience. Exclude nature, beach, activity > 2.
+          if (["nature", "beach"].includes(cat)) return false;
+          if (cat === "activity" && duration > 2) return false;
+        }
+        // Afternoon and Evening allow all
+      }
+
       // Category Group Filter (runs before others)
       if (categoryGroup && categoryGroup !== "Anywhere") {
         const allowedCategories = CATEGORY_MAP[categoryGroup] || [];

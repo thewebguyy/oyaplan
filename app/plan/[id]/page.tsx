@@ -79,6 +79,13 @@ export default async function PlanPage({ params }: PlanPageProps) {
         </Link>
       </div>
 
+      {/* Expiry / Trust Banner */}
+      <div className="bg-yellow-50 border-b border-yellow-100 py-2.5 px-6 text-center">
+        <p className="text-[10px] md:text-xs font-black text-yellow-700 uppercase tracking-widest">
+          Plan generated on {new Date(plan.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} — Prices may have changed.
+        </p>
+      </div>
+
       {/* Plan Hero */}
       <div className="bg-[#008751] text-white py-12 px-6 text-center">
         <div className="max-w-md mx-auto space-y-4">

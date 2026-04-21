@@ -20,6 +20,7 @@ interface ForgeResultsClientProps {
     vibe?: string;
     pinnedSpotId?: string;
     categoryGroup?: string;
+    daypart?: string;
   };
 }
 
@@ -40,6 +41,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         vibe: params.vibe || "Chill",
         pinnedSpotId: (params as any).pinnedSpotId,
         categoryGroup: (params as any).categoryGroup,
+        daypart: (params as any).daypart,
       };
 
       setForgeInput(input);
