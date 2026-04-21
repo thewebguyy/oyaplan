@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { ArrowLeft, MapPin } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 
@@ -44,7 +43,7 @@ export default async function ExploreArea({ params, searchParams }: Props) {
     .eq("slug", areaSlug)
     .single();
 
-  if (!area) return <div>Area not found</div>;
+  if (!area) return <div className="p-20 text-center type-heading">Area not found</div>;
 
   // Process spots with budget awareness
   const spots = (area.spots || []).filter((s: any) => s.active !== false).map((spot: any) => {
@@ -58,29 +57,29 @@ export default async function ExploreArea({ params, searchParams }: Props) {
   });
 
   return (
-    <main className="min-h-screen bg-white text-gray-900 pb-20">
+    <main className="min-h-screen bg-white text-text-primary pb-20 antialiased">
       {/* Context Banner */}
       {budget && vibe && (
-        <div className="bg-[#008751] text-white py-3 px-4">
-          <div className="max-w-4xl mx-auto flex items-center justify-between text-sm font-bold">
-            <p>Showing spots in {area.name} that match your ₦{budget.toLocaleString()} {vibe} outing</p>
-            <Link href={`/explore/${areaSlug}`} className="underline text-white/80 hover:text-white">Clear filters</Link>
+        <div className="bg-brand-green text-white py-3 px-4">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <p className="type-label">Showing spots in <span className="lowercase first-letter:uppercase">{area.name}</span> for your ₦{budget.toLocaleString()} outing</p>
+            <Link href={`/explore/${areaSlug}`} className="type-label text-white/80 hover:text-white underline">Clear</Link>
           </div>
         </div>
       )}
 
-      <div className="bg-gray-50 border-b border-gray-100 py-8 px-4">
+      <div className="bg-surface-grey border-b border-border-default py-12 px-4">
         <div className="max-w-4xl mx-auto">
-          <Link href="/explore" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4">
+          <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-6 tap-feedback">
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Areas</span>
+            Back to Areas
           </Link>
-          <h1 className="text-4xl font-black tracking-tight">{area.name}</h1>
-          <p className="text-gray-500 mt-1">Found {spots.length} spots in this area.</p>
+          <h1 className="type-display text-text-primary lowercase first-letter:uppercase">{area.name}</h1>
+          <p className="type-body text-text-muted mt-2">Found {spots.length} spots in this area.</p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 mt-10 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 mt-12 space-y-6">
         {spots.length > 0 ? (
           spots.map((spot: any) => {
             const prefillParams = new URLSearchParams();
@@ -92,32 +91,39 @@ export default async function ExploreArea({ params, searchParams }: Props) {
             return (
               <div 
                 key={spot.id} 
-                className={`p-6 border rounded-2xl transition-all ${
+                className={`p-8 border rounded-[20px] transition-all duration-200 ${
                   spot.fitsBudget 
-                    ? "bg-white border-gray-100 shadow-sm" 
-                    : "bg-gray-50/50 border-gray-100 opacity-60"
+                    ? "bg-white border-border-default" 
+                    : "bg-surface-grey border-border-default opacity-50"
                 }`}
               >
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="space-y-2 text-left">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-xl font-bold">{spot.name}</h3>
-                      <Badge variant="outline" className="bg-white">{spot.category}</Badge>
-                      {budget && spot.fitsBudget && (
-                        <Badge className="bg-[#008751] text-white border-none">Fits your budget</Badge>
-                      )}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-4 text-left flex-1">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <h3 className="type-heading text-text-primary">{spot.name}</h3>
+                        <div className="bg-surface-grey text-text-muted px-2 py-0.5 rounded-[4px] text-[10px] font-[700] uppercase tracking-tighter border border-border-default">
+                          {spot.category}
+                        </div>
+                        {budget && spot.fitsBudget && (
+                          <div className="bg-brand-green text-white px-2 py-0.5 rounded-[4px] text-[10px] font-[700] uppercase tracking-tighter">
+                            Fits your budget
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 type-caption text-text-muted">
+                        <MapPin className="w-[14px] h-[14px] shrink-0" />
+                        {spot.address}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-500">
-                      <MapPin className="w-4 h-4" />
-                      {spot.address}
-                    </div>
-                    <p className="text-sm font-bold text-[#008751]">
+                    
+                    <p className="type-subheading text-brand-green">
                       Avg ₦{spot.price_per_person.toLocaleString()} per person
                     </p>
                   </div>
                   
-                  <Link href={`/?${prefillParams.toString()}`}>
-                    <Button className="bg-[#008751] hover:bg-[#007043] rounded-xl font-bold h-12 px-6 w-full md:w-auto">
+                  <Link href={`/?${prefillParams.toString()}`} className="w-full md:w-auto">
+                    <Button className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-[48px] px-8 rounded-[10px] tap-feedback w-full shadow-none border-none">
                       Plan around this spot
                     </Button>
                   </Link>
@@ -126,8 +132,8 @@ export default async function ExploreArea({ params, searchParams }: Props) {
             );
           })
         ) : (
-          <div className="text-center py-20">
-            <p className="text-gray-400 font-medium">No spots found in this area yet.</p>
+          <div className="text-center py-20 bg-surface-grey rounded-[24px] border border-border-default">
+            <p className="type-body text-text-muted">No spots found in this area yet.</p>
           </div>
         )}
       </div>

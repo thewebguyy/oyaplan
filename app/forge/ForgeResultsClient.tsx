@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabase";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { RefreshCw, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -94,23 +93,27 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
     );
   }
 
+  const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput?.startArea)?.areas?.name || forgeInput?.startArea;
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900">Here's Your Plan.</h1>
-          <p className="text-gray-500">Top pick below — alternatives underneath.</p>
+    <div className="max-w-4xl mx-auto space-y-12 pb-20">
+      {/* Redesigned Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+        <div className="space-y-1">
+          <h1 className="type-heading text-text-primary">We found the best link for you.</h1>
+          <p className="type-caption text-text-muted">
+            Based on <span className="text-text-secondary font-[700] lowercase">{startAreaLabel}</span> & <span className="text-text-secondary font-[700]">₦{forgeInput?.budget.toLocaleString()}</span> for <span className="text-text-secondary font-[700]">{forgeInput?.squadSize} people</span>.
+          </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex items-center gap-3">
           <Link href="/">
-            <Button variant="outline" className="gap-2 h-[52px]">
-              <ArrowLeft className="w-4 h-4" />
-              Adjust
-            </Button>
+            <button className="type-label text-text-secondary hover:text-brand-green transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-[10px]">
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Change details
+            </button>
           </Link>
           <Button 
-            variant="default" 
-            className="bg-[#008751] hover:bg-[#007043] gap-2 h-[52px]"
+            className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-[44px] px-6 rounded-[10px] tap-feedback flex items-center gap-2 border-none shadow-none"
             onClick={() => window.location.reload()}
           >
             <RefreshCw className="w-4 h-4" />
@@ -120,7 +123,8 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       </div>
 
       {plans.length > 0 ? (
-        <div className="space-y-8">
+        <div className="space-y-12">
+          {/* Plan 1: Full Width */}
           <div className="w-full">
             <PlanCard 
               key={plans[0].spot.id} 
@@ -131,9 +135,11 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
               originalBudget={forgeInput?.budget}
             />
           </div>
+          
+          {/* Plans 2 & 3: Grid */}
           {plans.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {plans.slice(1).map((plan, index) => (
+              {plans.slice(1, 3).map((plan, index) => (
                 <PlanCard 
                   key={plan.spot.id} 
                   plan={plan} 
@@ -147,38 +153,40 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           )}
         </div>
       ) : (
-        <div className="text-center py-20 space-y-4 bg-white rounded-2xl shadow-sm border border-gray-100">
-          <div className="text-6xl">😕</div>
-          <h2 className="text-2xl font-bold">No perfect match found.</h2>
-          <p className="text-gray-500 max-w-md mx-auto px-4">
-            Lagos is tough! Try increasing your budget or choosing a different starting area.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
-            <Link href="/">
-              <Button variant="outline" className="rounded-xl h-12 px-8">Try Again</Button>
-            </Link>
+        /* Redesigned Empty State */
+        <div className="text-center py-24 px-6 bg-white rounded-[24px] border border-border-default space-y-6">
+          <div className="text-5xl">😕</div>
+          <div className="space-y-2">
+            <h2 className="type-heading text-text-primary">No perfect match found.</h2>
+            <p className="type-body text-text-muted max-w-md mx-auto">
+              Lagos is tough! Try increasing your budget or choosing a different starting area.
+            </p>
           </div>
+          
+          <Link href="/">
+            <Button className="bg-brand-green text-white type-label h-12 px-10 rounded-[12px] tap-feedback shadow-none">Try Again</Button>
+          </Link>
 
           {nearbySpots.length > 0 && (
-            <div className="mt-12 px-6 border-t border-gray-100 pt-10 text-left">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-6">
-                Nothing in budget — but here's what's in {targetAreaName}
+            <div className="mt-16 pt-12 border-t border-border-default text-left max-w-2xl mx-auto">
+              <h3 className="type-label text-text-muted mb-8 text-center md:text-left">
+                Nothing in budget — but here's what's in {targetAreaName || "that area"}
               </h3>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-4">
                 {nearbySpots.map(spot => (
-                  <div key={spot.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-xl transition-all hover:border-[#008751]/30">
-                    <div className="flex flex-col items-start gap-1">
+                  <div key={spot.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 bg-surface-grey border border-border-default rounded-[16px] gap-4">
+                    <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm">{spot.name}</span>
-                        <Badge className="text-[9px] h-4 px-1.5 uppercase bg-green-50 text-[#008751] border-none font-black tracking-tighter">
+                        <span className="type-subheading text-text-primary">{spot.name}</span>
+                        <div className="bg-brand-green-5 text-brand-green px-2 py-0.5 rounded-[4px] text-[10px] font-[700] uppercase tracking-tighter">
                           {spot.category}
-                        </Badge>
+                        </div>
                       </div>
-                      <span className="text-[11px] text-gray-400 font-medium">from ₦{spot.price_per_person.toLocaleString()} per person</span>
+                      <p className="type-caption text-text-muted">from ₦{spot.price_per_person.toLocaleString()} per person</p>
                     </div>
-                    <Link href={`/explore/${params.startArea || "ikeja"}?pinned=${spot.id}`}>
-                      <Button variant="outline" size="sm" className="text-[11px] font-bold h-8 border-gray-200 rounded-lg px-4 hover:bg-gray-50 hover:text-[#008751]">
-                         Explore this spot
+                    <Link href={`/explore/${params.startArea || "ikeja"}?pinned=${spot.id}`} className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full sm:w-auto type-label h-10 px-6 border-border-default text-text-primary hover:bg-white rounded-[8px]">
+                         Explore spot
                       </Button>
                     </Link>
                   </div>
@@ -188,21 +196,22 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           )}
 
           {/* Spot Suggestion Form */}
-          <div className="mt-8 px-6 pt-6 border-t border-gray-50">
+          <div className="mt-12 pt-8 border-t border-border-default">
             <SpotSuggestionForm currentArea={targetAreaName || params.startArea || "Lagos"} />
           </div>
         </div>
       )}
 
+      {/* Redesigned Footer */}
       {plans.length > 0 && (
-        <div className="text-center pt-8">
-          <p className="text-sm text-gray-400 mb-4 italic">
+        <div className="text-center pt-12 space-y-4">
+          <p className="type-body text-text-muted">
             "Stop the wahala. Just pick one and send it."
           </p>
-          <div className="flex items-center justify-center gap-4 text-xs font-bold uppercase tracking-widest text-gray-400">
+          <div className="flex items-center justify-center gap-4 type-label text-text-muted opacity-50 uppercase tracking-[0.1em]">
             <span>Deterministic Engine v1.0</span>
-            <span>•</span>
-            <span>Lagos Mainland/Island Data</span>
+            <span className="text-border-default">•</span>
+            <span>Lagos Data</span>
           </div>
         </div>
       )}
@@ -246,7 +255,7 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
 
   if (success) {
     return (
-      <p className="text-xs font-bold text-[#008751] animate-in fade-in duration-300">
+      <p className="type-label text-brand-green animate-in fade-in">
         Thanks — we'll look into it.
       </p>
     );
@@ -256,7 +265,7 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
     return (
       <button 
         onClick={() => setExpanded(true)}
-        className="text-xs font-bold text-gray-400 hover:text-[#008751] transition-colors"
+        className="type-label text-text-muted hover:text-text-secondary transition-colors"
       >
         Know a spot that should be here? Add it &rarr;
       </button>
@@ -264,56 +273,49 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 animate-in slide-in-from-top-2 duration-200">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto animate-in slide-in-from-top-2">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="sm:col-span-1">
-          <Input 
-            required
-            placeholder="Spot name"
-            className="h-10 text-xs rounded-lg border-gray-100 bg-gray-50 focus:bg-white transition-all"
-            value={formData.name}
-            onChange={e => setFormData({...formData, name: e.target.value})}
-          />
-        </div>
-        <div>
-          <Select 
-            value={formData.price}
-            onValueChange={v => setFormData({...formData, price: v || ""})}
-          >
-            <SelectTrigger className="h-10 text-xs rounded-lg border-gray-100 bg-gray-50">
-              <SelectValue placeholder="Price / person" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="15000">₦15,000 range</SelectItem>
-              <SelectItem value="30000">₦30,000 range</SelectItem>
-              <SelectItem value="50000">₦50,000 range</SelectItem>
-              <SelectItem value="100000">₦100,000 range</SelectItem>
-              <SelectItem value="250000">₦250,000 range</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Input 
-            placeholder="WhatsApp (optional)"
-            className="h-10 text-xs rounded-lg border-gray-100 bg-gray-50 focus:bg-white transition-all"
-            value={formData.whatsapp}
-            onChange={e => setFormData({...formData, whatsapp: e.target.value})}
-          />
-        </div>
+        <Input 
+          required
+          placeholder="Spot name"
+          className="h-12 type-body rounded-[10px] border-border-default bg-surface-grey focus:bg-white focus-ring transition-all"
+          value={formData.name}
+          onChange={e => setFormData({...formData, name: e.target.value})}
+        />
+        <Select 
+          value={formData.price}
+          onValueChange={v => setFormData({...formData, price: v || ""})}
+        >
+          <SelectTrigger className="h-12 type-body rounded-[10px] border-border-default bg-surface-grey focus:bg-white focus-ring">
+            <SelectValue placeholder="Price / person" />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value="15000">₦15,000 range</SelectItem>
+            <SelectItem value="30000">₦30,000 range</SelectItem>
+            <SelectItem value="50000">₦50,000 range</SelectItem>
+            <SelectItem value="100000">₦100,000 range</SelectItem>
+            <SelectItem value="250000">₦250,000 range</SelectItem>
+          </SelectContent>
+        </Select>
+        <Input 
+          placeholder="WhatsApp (optional)"
+          className="h-12 type-body rounded-[10px] border-border-default bg-surface-grey focus:bg-white focus-ring transition-all"
+          value={formData.whatsapp}
+          onChange={e => setFormData({...formData, whatsapp: e.target.value})}
+        />
       </div>
-      <div className="flex items-center justify-between">
-        <p className="text-[10px] text-gray-400 font-medium italic">
+      <div className="flex items-center justify-between gap-4">
+        <p className="type-caption text-text-muted text-left">
           We'll notify you when it's added.
         </p>
         <div className="flex items-center gap-3">
-          {error && <span className="text-[10px] font-bold text-red-500">Something went wrong</span>}
+          {error && <span className="type-caption text-error">Something went wrong</span>}
           <Button 
             type="submit" 
             disabled={loading}
-            size="sm" 
-            className="bg-[#008751] hover:bg-[#007043] text-white text-[11px] font-black h-8 px-4 rounded-lg"
+            className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-10 px-6 rounded-[8px] tap-feedback shadow-none border-none"
           >
-            {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : "Suggest this spot"}
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Suggest spot"}
           </Button>
         </div>
       </div>

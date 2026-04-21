@@ -8,24 +8,34 @@ export default function LoadingState() {
   const messages = [
     "Calculating realistic costs...",
     "Finding the best fit for your squad...",
-    "Finalizing your budget-friendly plan..."
+    "Finalizing your budget-friendly plan...",
+    "Optimizing transport routes...",
+    "Verifying spot availability...",
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % messages.length);
-    }, 600);
+    }, 1500);
 
     return () => clearInterval(timer);
   }, [messages.length]);
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-6 p-8 max-w-md mx-auto text-center min-h-[40vh]">
-      <div className="flex items-center gap-3">
-        <div className="w-4 h-4 rounded-full bg-[#008751] animate-pulse"></div>
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">OyaPlan</h2>
+    <div className="flex flex-col items-center justify-center space-y-6 py-20 max-w-[320px] mx-auto text-center animate-in fade-in duration-500">
+      {/* Wordmark */}
+      <div className="type-heading flex items-center">
+        <span>Oya</span>
+        <span className="text-brand-green">Plan</span>
       </div>
-      <p className="text-[15px] text-gray-600 font-medium transition-opacity duration-300">
+
+      {/* Progress Bar */}
+      <div className="w-full h-[3px] bg-brand-green-15 rounded-full overflow-hidden">
+        <div className="w-full h-full bg-brand-green animate-progress" />
+      </div>
+
+      {/* Rotating Message */}
+      <p className="type-body text-text-secondary h-6 transition-all duration-300">
         {messages[messageIndex]}
       </p>
     </div>

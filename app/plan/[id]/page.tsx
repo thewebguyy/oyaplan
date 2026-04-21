@@ -52,13 +52,13 @@ export default async function PlanPage({ params }: PlanPageProps) {
   if (!plan) {
     return (
       <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
-        <div className="text-6xl mb-4">🏜️</div>
-        <h1 className="text-2xl font-black text-gray-900 mb-2">Plan not found</h1>
-        <p className="text-gray-500 mb-8 max-w-xs">
+        <div className="text-5xl mb-6">🏜️</div>
+        <h1 className="type-heading text-text-primary mb-2">Plan not found</h1>
+        <p className="type-body text-text-muted mb-8 max-w-xs mx-auto">
           This plan has expired or doesn't exist. Link might be broken.
         </p>
         <Link href="/">
-          <Button className="bg-[#008751] hover:bg-[#007043] rounded-xl font-bold h-12 px-8">
+          <Button className="bg-brand-green hover:bg-brand-green-70 text-white h-14 px-10 rounded-[12px] type-label tap-feedback shadow-none border-none">
             Go to Planner
           </Button>
         </Link>
@@ -69,92 +69,88 @@ export default async function PlanPage({ params }: PlanPageProps) {
   const hasFood = plan.spot?.has_food !== false;
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="bg-[#008751] py-6 px-6 border-b border-white/10 flex items-center justify-between">
-        <Link href="/" className="inline-block">
-          <span className="text-2xl font-black tracking-tighter text-white">
-            OyaPlan<span className="text-white/40 font-normal">.com</span>
-          </span>
-        </Link>
-        <Link href="/" className="text-white font-bold text-xs hover:underline flex items-center gap-1">
-          Plan your own &rarr;
-        </Link>
-      </div>
+    <main className="min-h-screen bg-surface-grey flex flex-col antialiased">
+      {/* Premium Header */}
+      <div className="bg-brand-green pt-12 pb-24 px-6 text-center">
+        <div className="max-w-md mx-auto space-y-12">
+          <Link href="/" className="inline-block tap-feedback">
+            <span className="text-2xl font-[900] tracking-tighter">
+              <span className="text-white">Oya</span>
+              <span className="text-brand-yellow">Plan</span>
+            </span>
+          </Link>
 
-      {/* Expiry / Trust Banner */}
-      <div className="bg-yellow-50 border-b border-yellow-100 py-2.5 px-6 text-center">
-        <p className="text-[10px] md:text-xs font-black text-yellow-700 uppercase tracking-widest">
-          Plan generated on {new Date(plan.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} — Prices may have changed.
-        </p>
-      </div>
-
-      {/* Plan Hero */}
-      <div className="bg-[#008751] text-white py-12 px-6 text-center">
-        <div className="max-w-md mx-auto space-y-4">
-          <div className="inline-flex bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">
-            {plan.vibe} Outing — {plan.squad_size} People
-          </div>
-          <h1 className="text-4xl font-black tracking-tight">{plan.spot?.name}</h1>
-          <div className="pt-2">
-            <span className="text-white/70 text-sm font-bold uppercase tracking-wider">Total Cost</span>
-            <div className="text-5xl font-black">₦{plan.total_cost.toLocaleString()}</div>
+          <div className="space-y-4">
+            <div className="inline-flex bg-white/10 px-4 py-1.5 rounded-full type-label text-white uppercase tracking-widest">
+              {plan.vibe} Outing — {plan.squad_size} People
+            </div>
+            <h1 className="type-display text-white">{plan.spot?.name}</h1>
           </div>
         </div>
       </div>
 
-      {/* Breakdown */}
-      <div className="max-w-md mx-auto w-full -mt-6 px-4 space-y-6 pb-20">
-        <div className="bg-white rounded-3xl shadow-xl shadow-black/5 border border-gray-100 overflow-hidden">
+      {/* Floating Breakdown Card */}
+      <div className="max-w-md mx-auto w-full -mt-12 px-4 space-y-6 pb-20 relative z-10">
+        {/* Expiry Banner */}
+        <div className="bg-brand-yellow text-text-primary py-3 px-6 rounded-t-[20px] text-center border-b border-black/5 shadow-sm">
+          <p className="type-label uppercase tracking-widest text-[10px] md:text-[11px]">
+            Generated on {new Date(plan.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </p>
+        </div>
+
+        <div className="bg-white rounded-b-[20px] shadow-[0px_24px_48px_rgba(0,0,0,0.15)] border border-border-default overflow-hidden">
           <div className="p-8 space-y-8">
-            {/* Costs */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-gray-400 text-[11px] font-black uppercase tracking-wider">
+            {/* Total Cost Display */}
+            <div className="text-center pb-4 border-b border-border-default">
+              <span className="type-label text-text-muted uppercase tracking-wider">Landed Cost</span>
+              <div className="text-5xl font-[900] text-brand-green mt-1">₦{plan.total_cost.toLocaleString()}</div>
+            </div>
+
+            {/* Cost Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-surface-grey border border-border-default rounded-[12px] space-y-1">
+                <div className="flex items-center gap-2 text-text-muted type-label">
                   {hasFood ? <Utensils className="w-3 h-3" /> : <Utensils className="w-3 h-3" />}
-                  {hasFood ? "Food/Drinks" : "Entry/Activity"}
+                  {hasFood ? "Food/Drink" : "Activity"}
                 </div>
-                <div className="text-xl font-bold text-gray-900">₦{plan.food_cost.toLocaleString()}</div>
+                <div className="type-subheading text-text-primary">₦{plan.food_cost.toLocaleString()}</div>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-gray-400 text-[11px] font-black uppercase tracking-wider">
+              <div className="p-4 bg-surface-grey border border-border-default rounded-[12px] space-y-1">
+                <div className="flex items-center gap-2 text-text-muted type-label">
                   <Car className="w-3 h-3" />
                   Transport
                 </div>
-                <div className="text-xl font-bold text-gray-900">₦{plan.transport_cost.toLocaleString()}</div>
+                <div className="type-subheading text-text-primary">₦{plan.transport_cost.toLocaleString()}</div>
               </div>
             </div>
-
-            <div className="h-px bg-gray-100" />
 
             {/* Why it fits */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-400 text-[11px] font-black uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-text-muted type-label">
                 <Info className="w-3 h-3" />
                 Why it fits
               </div>
-              <p className="text-gray-600 font-medium italic leading-relaxed">
-                "{plan.why_it_fits}"
+              <p className="type-body text-text-secondary leading-relaxed">
+                {plan.why_it_fits}
               </p>
             </div>
 
-            <div className="h-px bg-gray-100" />
-
             {/* Location */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-400 text-[11px] font-black uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-text-muted type-label">
                 <MapPin className="w-3 h-3" />
-                Full Address
+                Address
               </div>
-              <p className="text-gray-900 font-bold">
+              <p className="type-subheading text-text-primary">
                 {plan.spot?.address}
               </p>
             </div>
           </div>
 
-          {/* CTA */}
-          <div className="p-6 bg-gray-50 border-t border-gray-100">
+          {/* CTA Section */}
+          <div className="p-6 bg-surface-grey border-t border-border-default">
             <Link href="/">
-              <Button className="w-full bg-[#008751] hover:bg-[#007043] h-14 rounded-2xl font-black text-lg flex items-center justify-center gap-2 shadow-lg shadow-[#008751]/20">
+              <Button className="w-full bg-brand-green hover:bg-brand-green-70 h-[56px] rounded-[12px] type-subheading text-white flex items-center justify-center gap-2 tap-feedback shadow-none border-none">
                 Plan your own outing
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -162,9 +158,14 @@ export default async function PlanPage({ params }: PlanPageProps) {
           </div>
         </div>
         
-        <p className="text-center text-gray-400 text-xs font-medium">
-          Generated with OyaPlan — Lagos Outing Planner
-        </p>
+        <div className="text-center space-y-2">
+          <p className="type-caption text-text-muted">
+            Generated with OyaPlan &middot; Lagos Outing Planner
+          </p>
+          <Link href="/" className="type-label text-brand-green hover:underline inline-block">
+            oyaplan.com
+          </Link>
+        </div>
       </div>
     </main>
   );

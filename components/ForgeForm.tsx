@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { Area } from "@/lib/types";
 import Link from "next/link";
 
@@ -22,7 +21,7 @@ interface ForgeFormProps {
 const SQUAD_OPTIONS = [1, 2, 3, 4, 5, 6, 8, 10, 12];
 const BUDGET_OPTIONS = [
   { value: "15000", label: "₦15,000 — Lowkey" },
-  { value: "30000", label: "₦30,000 — Standard Link" },
+  { value: "30000", label: "₦30,000 — Standard" },
   { value: "50000", label: "₦50,000 — Chop Life" },
   { value: "100000", label: "₦100,000 — Big Boy Energy" },
   { value: "250000", label: "₦250,000 — Baller" },
@@ -32,23 +31,23 @@ const VIBE_OPTIONS = [
   { value: "Foodie", label: "🍽️ Serious Chop" },
   { value: "Party",  label: "🎉 Turn Up" },
   { value: "Quick",  label: "⚡ Quick Link" },
-  { value: "Dinner", label: "🌙 Date Night / Dinner" },
+  { value: "Dinner", label: "🌙 Date Night" },
   { value: "Brunch", label: "☀️ Brunch Vibes" },
 ];
 
 const CATEGORY_OPTIONS = [
-  { value: "Anywhere", label: "🌍 Anywhere — show everything" },
-  { value: "Eat and drink", label: "🍽️ Eat and drink" },
-  { value: "Activity and fun", label: "🎮 Activity and fun" },
-  { value: "Nature and outdoors", label: "🌳 Nature and outdoors" },
+  { value: "Anywhere", label: "🌍 Anywhere" },
+  { value: "Eat and drink", label: "🍽️ Eat & drink" },
+  { value: "Activity and fun", label: "🎮 Activity & fun" },
+  { value: "Nature and outdoors", label: "🌳 Nature" },
 ];
 
 const DAYPART_OPTIONS = [
   { value: "Any time", label: "⏰ Any time" },
-  { value: "Morning", label: "☀️ Morning (Before 12pm)" },
-  { value: "Afternoon", label: "🌤️ Afternoon (12pm – 5pm)" },
-  { value: "Evening", label: "🌆 Evening (5pm – 9pm)" },
-  { value: "Night", label: "🌙 Night (After 9pm)" },
+  { value: "Morning", label: "☀️ Morning" },
+  { value: "Afternoon", label: "🌤️ Afternoon" },
+  { value: "Evening", label: "🌆 Evening" },
+  { value: "Night", label: "🌙 Night" },
 ];
 
 function squadLabel(n: number) {
@@ -111,124 +110,106 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   };
 
   const triggerCls =
-    "h-14 w-full rounded-xl border-2 border-gray-200 bg-gray-50 px-4 text-base font-medium text-gray-800 hover:bg-gray-100 transition-all focus-visible:ring-2 focus-visible:ring-[#008751]/40 focus-visible:border-[#008751]";
+    "h-[56px] w-full rounded-[12px] border border-border-default bg-surface-grey px-4 type-body text-text-primary hover:bg-gray-100 transition-all focus-ring data-[state=open]:bg-white";
+
+  const labelCls = "flex items-center gap-2 type-label text-text-secondary";
 
   return (
-    <Card className="w-full max-w-lg mx-auto border border-white/20 bg-white shadow-2xl shadow-black/20 text-left text-gray-900 rounded-2xl overflow-hidden">
-      <CardContent className="p-6 sm:p-8">
-        <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="w-full bg-white border border-border-default p-6 md:p-8 rounded-[20px] text-left">
+      <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* Field: Where are you coming from */}
-          <div className="space-y-1.5">
-            <Label className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-gray-500">
-              <span className="text-base">📍</span> Where are you coming from?
+        {/* Field: Starting Area */}
+        <div className="space-y-2">
+          <Label className={labelCls}>
+            <span className="text-[14px]">📍</span> Where are you coming from?
+          </Label>
+          <Select
+            value={formData.startArea}
+            onValueChange={(v: string | null) => {
+              setFormData({ ...formData, startArea: v ?? "" });
+              setAreaError(false);
+            }}
+          >
+            <SelectTrigger
+              className={`${triggerCls} ${
+                areaError ? "border-error ring-2 ring-error/10" : ""
+              }`}
+            >
+              <SelectValue placeholder="Pick your area…" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              {areas.map((area) => (
+                <SelectItem key={area.id} value={area.slug} className="type-body py-3">
+                  {area.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {areaError && (
+            <p className="type-caption text-error flex items-center gap-1 mt-1 animate-in slide-in-from-top-1">
+              <span>⚠️</span> Please select your starting area first.
+            </p>
+          )}
+        </div>
+
+        {/* Row: Squad Size + Vibe */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className={labelCls}>
+              <span className="text-[14px]">👥</span> Squad size
             </Label>
             <Select
-              value={formData.startArea}
-              onValueChange={(v: string | null) => {
-                setFormData({ ...formData, startArea: v ?? "" });
-                setAreaError(false);
-              }}
+              value={formData.squadSize}
+              onValueChange={(v: string | null) =>
+                setFormData({ ...formData, squadSize: v ?? "2" })
+              }
             >
-              <SelectTrigger
-                className={`${triggerCls} ${
-                  areaError
-                    ? "border-red-400 bg-red-50 ring-2 ring-red-300/40"
-                    : ""
-                }`}
-              >
-                <SelectValue placeholder="Pick your area…" />
+              <SelectTrigger className={triggerCls}>
+                <SelectValue>
+                  {squadLabel(Number(formData.squadSize))}
+                </SelectValue>
               </SelectTrigger>
-              <SelectContent className="rounded-xl shadow-xl">
-                {areas.map((area) => (
-                  <SelectItem
-                    key={area.id}
-                    value={area.slug}
-                    className="text-base py-2.5"
-                  >
-                    {area.name}
+              <SelectContent className="rounded-xl">
+                {SQUAD_OPTIONS.map((s) => (
+                  <SelectItem key={s} value={s.toString()} className="type-body py-3">
+                    {squadLabel(s)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {areaError && (
-              <p className="flex items-center gap-1.5 text-red-500 text-xs font-medium mt-1 animate-in slide-in-from-top-1 duration-150">
-                <span>⚠️</span> Please select your starting area first.
-              </p>
-            )}
           </div>
 
-          {/* Divider */}
-          <div className="h-px bg-gray-100" />
-
-          {/* Row: Squad Size + Vibe */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-gray-500">
-                <span className="text-base">👥</span> Squad size
-              </Label>
-              <Select
-                value={formData.squadSize}
-                onValueChange={(v: string | null) =>
-                  setFormData({ ...formData, squadSize: v ?? "2" })
-                }
-              >
-                <SelectTrigger className={triggerCls}>
-                  <SelectValue>
-                    {squadLabel(Number(formData.squadSize))}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="rounded-xl shadow-xl">
-                  {SQUAD_OPTIONS.map((s) => (
-                    <SelectItem
-                      key={s}
-                      value={s.toString()}
-                      className="text-base py-2.5"
-                    >
-                      {squadLabel(s)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-gray-500">
-                <span className="text-base">🎭</span> The vibe
-              </Label>
-              <Select
-                value={formData.vibe}
-                onValueChange={(v: string | null) =>
-                  setFormData({ ...formData, vibe: v ?? "Chill" })
-                }
-              >
-                <SelectTrigger className={triggerCls}>
-                  <SelectValue>
-                    {VIBE_OPTIONS.find((o) => o.value === formData.vibe)?.label ?? "Pick vibe"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="rounded-xl shadow-xl">
-                  {VIBE_OPTIONS.map((o) => (
-                    <SelectItem
-                      key={o.value}
-                      value={o.value}
-                      className="text-base py-2.5"
-                    >
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label className={labelCls}>
+              <span className="text-[14px]">🎭</span> The vibe
+            </Label>
+            <Select
+              value={formData.vibe}
+              onValueChange={(v: string | null) =>
+                setFormData({ ...formData, vibe: v ?? "Chill" })
+              }
+            >
+              <SelectTrigger className={triggerCls}>
+                <SelectValue>
+                  {VIBE_OPTIONS.find((o) => o.value === formData.vibe)?.label ?? "Pick vibe"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                {VIBE_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value} className="type-body py-3">
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+        </div>
 
-          {/* Field: Category Group (Optional) */}
-          <div className="space-y-1.5">
-            <Label className="flex items-center justify-between text-[13px] font-semibold uppercase tracking-wider text-gray-500">
-              <span className="flex items-center gap-2">
-                <span className="text-base">🍴</span> What kind of outing?
-              </span>
-              <span className="text-[10px] lowercase text-gray-400 font-normal">(optional)</span>
+        {/* Optional Row: Category + Daypart */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className={labelCls}>
+              <span className="text-[14px]">🍴</span> Category
             </Label>
             <Select
               value={formData.categoryGroup}
@@ -241,13 +222,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                   {CATEGORY_OPTIONS.find((o) => o.value === formData.categoryGroup)?.label ?? "Anywhere"}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent className="rounded-xl shadow-xl">
+              <SelectContent className="rounded-xl">
                 {CATEGORY_OPTIONS.map((o) => (
-                  <SelectItem
-                    key={o.value}
-                    value={o.value}
-                    className="text-base py-2.5"
-                  >
+                  <SelectItem key={o.value} value={o.value} className="type-body py-3">
                     {o.label}
                   </SelectItem>
                 ))}
@@ -255,13 +232,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             </Select>
           </div>
 
-          {/* Field: Daypart (Optional) */}
-          <div className="space-y-1.5">
-            <Label className="flex items-center justify-between text-[13px] font-semibold uppercase tracking-wider text-gray-500">
-              <span className="flex items-center gap-2">
-                <span className="text-base">🕒</span> When are you going?
-              </span>
-              <span className="text-[10px] lowercase text-gray-400 font-normal">(optional)</span>
+          <div className="space-y-2">
+            <Label className={labelCls}>
+              <span className="text-[14px]">🕒</span> Time
             </Label>
             <Select
               value={formData.daypart}
@@ -274,76 +247,66 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                   {DAYPART_OPTIONS.find((o) => o.value === formData.daypart)?.label ?? "Any time"}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent className="rounded-xl shadow-xl">
+              <SelectContent className="rounded-xl">
                 {DAYPART_OPTIONS.map((o) => (
-                  <SelectItem
-                    key={o.value}
-                    value={o.value}
-                    className="text-base py-2.5"
-                  >
+                  <SelectItem key={o.value} value={o.value} className="type-body py-3">
                     {o.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+        </div>
 
-          {/* Field: Budget */}
-          <div className="space-y-1.5">
-            <Label className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-gray-500">
-              <span className="text-base">💰</span> Total budget (₦)
-            </Label>
-            <Select
-              value={formData.budget}
-              onValueChange={(v: string | null) =>
-                setFormData({ ...formData, budget: v ?? "50000" })
-              }
-            >
-              <SelectTrigger className={triggerCls}>
-                <SelectValue>
-                  {BUDGET_OPTIONS.find((o) => o.value === formData.budget)?.label ?? "Select budget"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl shadow-xl">
-                {BUDGET_OPTIONS.map((o) => (
-                  <SelectItem
-                    key={o.value}
-                    value={o.value}
-                    className="text-base py-2.5"
-                  >
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Field: Budget */}
+        <div className="space-y-2">
+          <Label className={labelCls}>
+            <span className="text-[14px]">💰</span> Total budget (₦)
+          </Label>
+          <Select
+            value={formData.budget}
+            onValueChange={(v: string | null) =>
+              setFormData({ ...formData, budget: v ?? "50000" })
+            }
+          >
+            <SelectTrigger className={triggerCls}>
+              <SelectValue>
+                {BUDGET_OPTIONS.find((o) => o.value === formData.budget)?.label ?? "Select budget"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              {BUDGET_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value} className="type-body py-3">
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-          {/* Submit */}
+        {/* Submit */}
+        <div className="space-y-4 pt-2">
           <Button
             type="submit"
-            className="w-full h-14 text-[17px] font-black rounded-xl bg-[#008751] hover:bg-[#007043] text-white shadow-lg shadow-[#008751]/30 transition-all duration-200 active:scale-[0.98] mt-1"
+            className="relative w-full h-[56px] rounded-[12px] bg-brand-green hover:bg-brand-green-70 text-white type-subheading overflow-hidden tap-feedback"
             disabled={loading}
           >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="size-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                Finding your squad's plan…
-              </span>
-            ) : (
-              "🚀 Get My Plan"
-            )}
+            {loading && <div className="absolute inset-0 shimmer-bg" />}
+            <span className="relative z-10">
+              {loading ? "Finding your squad's plan…" : "🚀 Get My Plan"}
+            </span>
           </Button>
 
-          <p className="text-center text-[12px] text-gray-400 font-medium pt-0.5">
+          <p className="text-center type-caption text-text-muted">
             Usually ready in under 3 seconds ⚡
           </p>
-        </form>
-        
-        <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-          <ExploreLink formData={formData} />
         </div>
-      </CardContent>
-    </Card>
+      </form>
+      
+      <div className="mt-8 pt-6 border-t border-border-default text-center">
+        <ExploreLink formData={formData} />
+      </div>
+    </div>
   );
 }
 
@@ -357,7 +320,7 @@ function ExploreLink({ formData }: { formData: any }) {
   return (
     <Link 
       href={href} 
-      className="inline-block text-white/70 hover:text-white text-sm font-medium transition-colors"
+      className="type-caption text-text-muted hover:text-text-secondary hover:underline transition-all"
     >
       Not sure where to go? Browse by area →
     </Link>

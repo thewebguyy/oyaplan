@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Utensils, Car, Info, ThumbsUp, ThumbsDown, Activity, Sparkles } from "lucide-react";
+import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Link as LinkIcon } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
+import { Button } from "./ui/button";
 
 interface PlanCardProps {
   plan: Plan;
@@ -30,8 +30,6 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
   };
 
   const hasFood = plan.spot.has_food !== false;
-
-  // Budget Stretch Logic
   const diff = originalBudget ? originalBudget - plan.totalCost : 0;
   const showIndicator = originalBudget && diff >= 2000;
 
@@ -49,107 +47,104 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
   };
 
   return (
-    <Card className={`overflow-hidden border-2 shadow-lg hover:shadow-xl transition-shadow bg-white ${isTopPick ? 'border-[#008751]' : 'border-[#008751]/10'}`}>
-      <CardHeader className={`${isTopPick ? 'bg-[#008751] text-white' : 'bg-[#008751]/5 text-gray-900 border-b border-[#008751]/10'} ${isTopPick ? 'p-6' : 'p-4'}`}>
-        <div className="flex justify-between items-start mb-2">
-          {isTopPick ? (
-            <Badge className="bg-white text-[#008751] font-bold uppercase tracking-wider">Best Match</Badge>
-          ) : (
-            <Badge className="bg-[#008751] text-white">Plan {index + 1}</Badge>
-          )}
+    <div className={`overflow-hidden rounded-[16px] border-2 transition-all duration-300 bg-white ${
+      isTopPick 
+        ? "border-brand-green shadow-[0px_8px_32px_rgba(0,135,81,0.15)]" 
+        : "border-border-default shadow-[0px_2px_8px_rgba(0,0,0,0.06)]"
+    }`}>
+      {/* Top Zone: Identity */}
+      <div className={`p-6 ${isTopPick ? "bg-brand-green text-white" : "bg-surface-grey text-text-primary border-b border-border-default"}`}>
+        <div className="flex justify-between items-start mb-4">
+          <div className={`px-2 py-1 rounded-[6px] type-label ${isTopPick ? "bg-white text-brand-green" : "bg-border-default text-text-muted"}`}>
+            {isTopPick ? "Best Match" : "Alternative"}
+          </div>
           <div className="text-right">
-            <span className={`text-sm ${isTopPick ? 'text-white/80' : 'text-gray-500'}`}>Landed Cost</span>
-            <p className={`font-bold ${isTopPick ? 'text-3xl text-white' : 'text-xl text-[#008751]'}`}>
+            <p className={`${isTopPick ? "text-[32px] font-[900]" : "type-heading text-brand-green"}`}>
               ₦{plan.totalCost.toLocaleString()}
             </p>
           </div>
         </div>
-        <CardTitle className={`font-bold ${isTopPick ? 'text-3xl' : 'text-xl mt-2'}`}>
+        
+        <h3 className={`type-heading ${isTopPick ? "text-white" : "text-text-primary"}`}>
           {plan.spot.name}
-        </CardTitle>
-        <div className={`flex items-center gap-1 text-sm ${isTopPick ? 'text-white/90' : 'text-gray-600'}`}>
-          <MapPin className="w-4 h-4" />
-          {plan.spot.address}
+        </h3>
+        
+        <div className={`flex items-center gap-1.5 mt-1 type-caption ${isTopPick ? "text-white/80" : "text-text-muted"}`}>
+          <MapPin className="w-[14px] h-[14px] shrink-0" />
+          <span className="truncate">{plan.spot.address}</span>
         </div>
-      </CardHeader>
+      </div>
       
-      <CardContent className={`space-y-4 ${isTopPick ? 'pt-6' : 'pt-4'}`}>
+      {/* Bottom Zone: Action */}
+      <div className="p-5 space-y-5">
+        {/* Primary Action */}
         <div className="w-full">
-          <WhatsAppCopyButton plan={plan} input={input} />
+          <WhatsAppCopyButton plan={plan} input={input} variant={isTopPick ? "filled" : "outlined"} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className={`p-3 bg-gray-50 rounded-lg border border-gray-100`}>
-            <div className="flex items-center gap-2 text-gray-500 text-xs mb-1 uppercase tracking-wider font-semibold">
+        {/* Cost Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3 bg-surface-grey border border-border-default rounded-[12px]">
+            <div className="flex items-center gap-2 text-text-muted type-label mb-1">
               {hasFood ? <Utensils className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
-              {hasFood ? "Food/Drinks" : "Entry/Activity"}
+              {hasFood ? "Food/Drinks" : "Activity"}
             </div>
-            <p className={`font-bold ${isTopPick ? 'text-lg' : 'text-base'}`}>₦{plan.foodCost.toLocaleString()}</p>
+            <p className="type-subheading text-text-primary">₦{plan.foodCost.toLocaleString()}</p>
           </div>
-          <div className={`p-3 bg-gray-50 rounded-lg border border-gray-100`}>
-            <div className="flex items-center gap-2 text-gray-500 text-xs mb-1 uppercase tracking-wider font-semibold">
+          <div className="p-3 bg-surface-grey border border-border-default rounded-[12px]">
+            <div className="flex items-center gap-2 text-text-muted type-label mb-1">
               <Car className="w-3 h-3" />
               Transport
             </div>
-            <p className={`font-bold ${isTopPick ? 'text-lg' : 'text-base'}`}>₦{plan.transportCost.toLocaleString()}</p>
+            <p className="type-subheading text-text-primary">₦{plan.transportCost.toLocaleString()}</p>
           </div>
         </div>
 
+        {/* Note & Indicators */}
         <div className="space-y-4">
-          <div className="flex gap-2 items-start opacity-80">
-            <Info className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
-            <p className="text-sm text-gray-500 italic">
-              "{plan.whyItFits}"
-            </p>
-          </div>
+          <p className="type-body text-text-secondary">
+            {plan.whyItFits}
+          </p>
 
           {showIndicator && (
-            <div className={`flex items-center gap-2 rounded-xl transition-all ${diff >= 10000 ? 'bg-green-50 px-4 py-2 border border-green-100' : ''}`}>
-              <Sparkles className={`w-4 h-4 text-[#008751] ${diff >= 10000 ? 'animate-pulse' : ''}`} />
-              <p className={`font-bold text-[#008751] ${diff >= 10000 ? 'text-sm' : 'text-xs'}`}>
+            <div className="p-3 bg-brand-green-5 border border-brand-green-15 rounded-[12px]">
+              <p className="type-caption text-brand-green font-[700]">
                 ₦{diff.toLocaleString()} left over — enough for {getSuggestion()}.
               </p>
             </div>
           )}
         </div>
-      </CardContent>
 
-      <CardFooter className="bg-white border-t border-gray-50 flex justify-between items-center py-3">
-        <div className="flex flex-col gap-1">
-          {plan.spot.price_updated_at && plan.spot.price_source ? (
-            <span className="text-[10px] text-gray-400 italic">
-              Prices verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}
-            </span>
-          ) : (
-            <span className="text-[10px] text-gray-400 italic">Prices estimated</span>
-          )}
+        {/* Footer: Verification & Feedback */}
+        <div className="pt-4 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="type-caption text-text-muted">
+            {plan.spot.price_updated_at ? (
+              <span>Verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}</span>
+            ) : (
+              <span>Estimated prices</span>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {feedbackGiven ? (
+              <span className="type-label text-brand-green">Thanks!</span>
+            ) : (
+              <>
+                <span className="type-label text-text-muted">Price right?</span>
+                <div className="flex gap-1">
+                  <button onClick={() => handleFeedback('up')} className="p-1.5 hover:bg-brand-green-5 rounded-md text-text-muted hover:text-brand-green transition-colors">
+                    <ThumbsUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button onClick={() => handleFeedback('down')} className="p-1.5 hover:bg-red-50 rounded-md text-text-muted hover:text-error transition-colors">
+                    <ThumbsDown className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-        
-        <div className="flex items-center gap-3">
-          {feedbackGiven ? (
-            <span className="text-[11px] font-bold text-[#008751] animate-in fade-in slide-in-from-right-1">Thanks for the feedback</span>
-          ) : (
-            <>
-              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Price right?</span>
-              <div className="flex gap-1">
-                <button 
-                  onClick={() => handleFeedback('up')}
-                  className="p-1.5 hover:bg-green-50 rounded text-gray-400 hover:text-[#008751] transition-colors"
-                >
-                  <ThumbsUp className="w-3.5 h-3.5" />
-                </button>
-                <button 
-                  onClick={() => handleFeedback('down')}
-                  className="p-1.5 hover:bg-red-50 rounded text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <ThumbsDown className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
 

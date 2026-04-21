@@ -9,6 +9,7 @@ export type Spot = {
   name: string;
   address: string;
   area_id: string;
+  areas?: Area;
   vibe_tags: string[];
   price_per_person: number;
   price_updated_at?: string;
@@ -21,7 +22,7 @@ export type Spot = {
   typical_duration_hours?: number;
   address_slug?: string;
 };
-
+     
 export type ForgeInput = {
   startArea: string;
   squadSize: number;

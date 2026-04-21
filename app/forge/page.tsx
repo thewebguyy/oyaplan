@@ -27,7 +27,7 @@ export default async function ForgePage({
   // Fetch all active spots once
   const { data: allSpots, error } = await supabase
     .from("spots")
-    .select("*")
+    .select("*, areas(*)")
     .eq("active", true);
 
   if (error || !allSpots) {

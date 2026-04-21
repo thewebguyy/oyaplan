@@ -32,30 +32,30 @@ export default async function ExploreIndex({
     .filter((area: any) => area.activeSpotCount > 0);
 
   return (
-    <main className="min-h-screen bg-white text-gray-900 pb-20">
+    <main className="min-h-screen bg-white text-text-primary pb-20 antialiased">
       {/* Context Banner */}
       {params.budget && params.vibe && (
-        <div className="bg-[#008751] text-white py-3 px-4">
-          <div className="max-w-4xl mx-auto flex items-center justify-between text-sm font-bold">
-            <p>Showing spots that match your ₦{parseInt(params.budget).toLocaleString()} {params.vibe} outing</p>
-            <Link href="/explore" className="underline text-white/80 hover:text-white">Clear filters</Link>
+        <div className="bg-brand-green text-white py-3 px-4">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <p className="type-label">Showing spots for your ₦{parseInt(params.budget).toLocaleString()} {params.vibe} outing</p>
+            <Link href="/explore" className="type-label text-white/80 hover:text-white underline">Clear</Link>
           </div>
         </div>
       )}
 
-      <div className="bg-gray-50 border-b border-gray-100 py-8 px-4">
+      <div className="bg-surface-grey border-b border-border-default py-12 px-4">
         <div className="max-w-4xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4">
+          <Link href="/" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-6 tap-feedback">
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Back to Planner</span>
+            Back to Planner
           </Link>
-          <h1 className="text-4xl font-black tracking-tight">Explore Lagos</h1>
-          <p className="text-gray-500 mt-1">Select an area to see what's happening.</p>
+          <h1 className="type-display text-text-primary">Explore Lagos</h1>
+          <p className="type-body text-text-muted mt-2">Select an area to see what's happening.</p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 mt-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="max-w-4xl mx-auto px-4 mt-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {areas?.map((area: any) => {
             const areaParams = new URLSearchParams();
             if (params.budget) areaParams.append("budget", params.budget);
@@ -66,10 +66,10 @@ export default async function ExploreIndex({
               <Link 
                 key={area.id} 
                 href={href}
-                className="group p-6 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-[#008751]/20 transition-all text-left"
+                className="group p-8 bg-white border border-border-default rounded-[20px] hover:border-brand-green hover:shadow-[0px_8px_24px_rgba(0,135,81,0.08)] transition-all text-left tap-feedback"
               >
-                <h3 className="text-xl font-bold group-hover:text-[#008751] transition-colors">{area.name}</h3>
-                <p className="text-gray-400 text-sm mt-1">{area.activeSpotCount} spots to discover</p>
+                <h3 className="type-heading text-text-primary group-hover:text-brand-green transition-colors lowercase first-letter:uppercase">{area.name}</h3>
+                <p className="type-caption text-text-muted mt-2">{area.activeSpotCount} spots to discover</p>
               </Link>
             );
           })}

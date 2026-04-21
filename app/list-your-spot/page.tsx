@@ -13,8 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Loader2, Star, ShieldCheck, Zap } from "lucide-react";
+import { CheckCircle2, Loader2, Star, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 const LAGOS_AREAS = [
@@ -116,14 +115,14 @@ export default function ListYourSpotPage() {
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
-        <CheckCircle2 className="w-20 h-20 text-[#008751] mb-6" />
-        <h1 className="text-3xl font-black text-gray-900 mb-2">Thanks {formData.ownerName}.</h1>
-        <p className="text-gray-500 mb-8 max-w-sm">
-          We will contact you on WhatsApp within 24 hours.
+      <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center antialiased">
+        <CheckCircle2 className="w-20 h-20 text-brand-green mb-8" />
+        <h1 className="type-display text-text-primary mb-4">Thanks {formData.ownerName}.</h1>
+        <p className="type-body text-text-muted mb-12 max-w-sm mx-auto">
+          We will contact you on WhatsApp within 24 hours to finalize your listing.
         </p>
         <Link href="/">
-          <Button className="bg-[#008751] hover:bg-[#007043] h-14 px-10 rounded-2xl font-black text-lg shadow-lg shadow-[#008751]/20">
+          <Button className="bg-brand-green hover:bg-brand-green-70 text-white h-[56px] px-10 rounded-[12px] type-subheading tap-feedback shadow-none border-none">
             Go back to OyaPlan
           </Button>
         </Link>
@@ -132,65 +131,62 @@ export default function ListYourSpotPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white antialiased">
       {/* Header Section */}
-      <section className="bg-[#008751] text-white pt-12 pb-24 px-6">
-        <div className="max-w-6xl mx-auto space-y-12">
-          <Link href="/" className="inline-block">
-            <span className="text-2xl font-black tracking-tighter text-white">
-              OyaPlan<span className="text-white/40 font-normal">.com</span>
+      <section className="bg-brand-green text-white pt-12 pb-24 px-6">
+        <div className="max-w-6xl mx-auto space-y-16">
+          <Link href="/" className="inline-block tap-feedback">
+            <span className="text-2xl font-[900] tracking-tighter">
+              <span className="text-white">Oya</span>
+              <span className="text-brand-yellow">Plan</span>
             </span>
           </Link>
 
-          <div className="max-w-3xl space-y-4">
-            <h1 className="text-4xl md:text-6xl font-black leading-tight tracking-tighter">
-              Get in front of Lagos squads who are ready to spend
+          <div className="max-w-3xl space-y-6">
+            <h1 className="type-display text-white">
+              Get in front of Lagos squads ready to spend
             </h1>
-            <p className="text-xl md:text-2xl text-white/80 font-medium">
+            <p className="type-body text-white/80 max-w-2xl">
               OyaPlan generates outing plans for budget-conscious Lagos groups. When your spot is featured, you appear first for searches that match your area and vibe.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t border-white/10">
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <span className="text-[#FCD116]">🎯</span> Intent-matched
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pt-12 border-t border-white/10">
+            <div className="space-y-3">
+              <h3 className="type-subheading text-white flex items-center gap-2">
+                <span className="text-brand-yellow">🎯</span> Intent-matched
               </h3>
-              <p className="text-white/70">Users who see your spot have already decided to go out and spend money</p>
+              <p className="type-body text-white/70">Users who see your spot have already decided to go out and spend money today.</p>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <span className="text-[#FCD116]">💰</span> Budget-transparent
+            <div className="space-y-3">
+              <h3 className="type-subheading text-white flex items-center gap-2">
+                <span className="text-brand-yellow">💰</span> Budget-transparent
               </h3>
-              <p className="text-white/70">Your spot appears when someone's budget genuinely fits what you charge</p>
+              <p className="type-body text-white/70">Your spot appears when someone's budget genuinely fits what you charge.</p>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <span className="text-[#FCD116]">💬</span> WhatsApp-native
+            <div className="space-y-3">
+              <h3 className="type-subheading text-white flex items-center gap-2">
+                <span className="text-brand-yellow">💬</span> WhatsApp-native
               </h3>
-              <p className="text-white/70">Every plan gets copied to a WhatsApp group chat — your spot name travels with it.</p>
+              <p className="type-body text-white/70">Every plan is copied to a WhatsApp group chat — your spot name travels with it.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Tier Selection */}
-      <section className="max-w-6xl mx-auto px-6 -mt-12 mb-24">
-        <div className="text-center mb-12 hidden md:block">
-           {/* This space intentionally left for visual breathing room */}
-        </div>
-        
+      <section className="max-w-6xl mx-auto px-6 -mt-12 mb-32">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Basic Tier */}
-          <div className="bg-white border-2 border-gray-100 rounded-3xl p-8 flex flex-col shadow-sm">
-            <h3 className="text-2xl font-black text-gray-900 mb-2">Basic</h3>
-            <div className="text-4xl font-black text-gray-900 mb-6">₦0<span className="text-base text-gray-400 font-medium">/month</span></div>
-            <p className="text-gray-500 font-medium flex-grow mb-8">
+          <div className="bg-white border border-border-default rounded-[24px] p-8 flex flex-col hover:border-brand-green/30 transition-all">
+            <h3 className="type-heading text-text-primary mb-2">Basic</h3>
+            <div className="text-4xl font-[900] text-text-primary mb-6">₦0<span className="type-label text-text-muted ml-2">/month</span></div>
+            <p className="type-body text-text-muted flex-grow mb-8">
               Your spot in the database. Appears in relevant searches. No placement guarantee.
             </p>
             <Button 
               variant="outline" 
-              className="w-full h-14 rounded-2xl border-2 border-gray-200 font-bold text-gray-600 hover:bg-gray-50"
+              className="w-full h-14 rounded-[12px] border-border-default type-label text-text-secondary hover:bg-surface-grey tap-feedback"
               onClick={() => scrollToForm("Basic")}
             >
               Select Basic
@@ -198,19 +194,19 @@ export default function ListYourSpotPage() {
           </div>
 
           {/* Featured Tier */}
-          <div className="bg-white border-2 border-[#008751] rounded-3xl p-8 flex flex-col shadow-xl shadow-[#008751]/10 relative transform md:scale-105 z-10">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#FCD116] text-black text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md">
+          <div className="bg-white border-2 border-brand-green rounded-[24px] p-8 flex flex-col shadow-[0px_24px_48px_rgba(0,135,81,0.1)] relative transform md:scale-105 z-10">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-yellow text-text-primary type-label uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md text-[10px]">
               Most Popular
             </div>
-            <h3 className="text-2xl font-black text-[#008751] mb-2 flex items-center gap-2">
-              Featured <Star className="w-5 h-5 fill-[#FCD116] text-[#FCD116]" />
+            <h3 className="type-heading text-brand-green mb-2 flex items-center gap-2">
+              Featured <Star className="w-5 h-5 fill-brand-yellow text-brand-yellow" />
             </h3>
-            <div className="text-4xl font-black text-gray-900 mb-6">₦25,000<span className="text-base text-gray-400 font-medium">/month</span></div>
-            <p className="text-gray-600 font-medium flex-grow mb-8 leading-relaxed">
+            <div className="text-4xl font-[900] text-text-primary mb-6">₦25,000<span className="type-label text-text-muted ml-2">/month</span></div>
+            <p className="type-body text-text-secondary flex-grow mb-8 leading-relaxed">
               Priority placement. Your spot surfaces first for matching searches in your area. "Featured" badge on your plan card.
             </p>
             <Button 
-              className="w-full h-14 rounded-2xl bg-[#008751] hover:bg-[#007043] text-white font-black text-lg shadow-lg shadow-[#008751]/20"
+              className="w-full h-14 rounded-[12px] bg-brand-green hover:bg-brand-green-70 text-white type-subheading tap-feedback shadow-none border-none"
               onClick={() => scrollToForm("Featured")}
             >
               Choose Featured
@@ -218,16 +214,16 @@ export default function ListYourSpotPage() {
           </div>
 
           {/* Premium Tier */}
-          <div className="bg-white border-2 border-[#008751]/40 rounded-3xl p-8 flex flex-col shadow-lg">
-            <h3 className="text-2xl font-black text-[#008751] mb-2 flex items-center gap-2">
+          <div className="bg-white border border-border-default rounded-[24px] p-8 flex flex-col hover:border-brand-green/30 transition-all">
+            <h3 className="type-heading text-brand-green mb-2 flex items-center gap-2">
               Premium <ShieldCheck className="w-5 h-5" />
             </h3>
-            <div className="text-4xl font-black text-gray-900 mb-6">₦50,000<span className="text-base text-gray-400 font-medium">/month</span></div>
-            <p className="text-gray-600 font-medium flex-grow mb-8 leading-relaxed">
-              City-wide priority. Appears in searches across all areas for relevant vibes. "OyaPlan Verified" badge. Monthly performance report.
+            <div className="text-4xl font-[900] text-text-primary mb-6">₦50,000<span className="type-label text-text-muted ml-2">/month</span></div>
+            <p className="type-body text-text-secondary flex-grow mb-8 leading-relaxed">
+              City-wide priority. Appears in searches across all areas for relevant vibes. "OyaPlan Verified" badge.
             </p>
             <Button 
-              className="w-full h-14 rounded-2xl border-2 border-[#008751] text-[#008751] bg-white hover:bg-green-50 font-black text-lg"
+              className="w-full h-14 rounded-[12px] border border-brand-green text-brand-green bg-white hover:bg-brand-green-5 type-subheading tap-feedback shadow-none"
               onClick={() => scrollToForm("Premium")}
             >
               Choose Premium
@@ -238,32 +234,32 @@ export default function ListYourSpotPage() {
 
       {/* Form Section */}
       <section ref={formRef} className="max-w-3xl mx-auto px-6 pb-32">
-        <div className="space-y-8 bg-gray-50 rounded-[40px] p-8 md:p-12 border border-gray-100">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-black text-gray-900">List My Spot</h2>
-            <p className="text-gray-500 font-medium">Complete the form below and we'll get you started.</p>
+        <div className="bg-surface-grey rounded-[32px] p-8 md:p-16 border border-border-default space-y-12">
+          <div className="space-y-3">
+            <h2 className="type-display text-text-primary">List My Spot</h2>
+            <p className="type-body text-text-muted">Complete the form below and we'll get you started.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="businessName" className="font-bold">Business Name *</Label>
+                <Label htmlFor="businessName" className="type-label text-text-secondary">Business Name</Label>
                 <Input 
                   id="businessName" 
                   required 
                   placeholder="e.g. Yellow Chilli"
-                  className="h-14 rounded-xl"
+                  className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring"
                   value={formData.businessName}
                   onChange={e => setFormData({...formData, businessName: e.target.value})}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ownerName" className="font-bold">Owner or Manager Name *</Label>
+                <Label htmlFor="ownerName" className="type-label text-text-secondary">Owner or Manager</Label>
                 <Input 
                   id="ownerName" 
                   required 
-                  placeholder="e.g. John Doe"
-                  className="h-14 rounded-xl"
+                  placeholder="Full name"
+                  className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring"
                   value={formData.ownerName}
                   onChange={e => setFormData({...formData, ownerName: e.target.value})}
                 />
@@ -272,25 +268,25 @@ export default function ListYourSpotPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="whatsapp" className="font-bold">WhatsApp Number *</Label>
+                <Label htmlFor="whatsapp" className="type-label text-text-secondary">WhatsApp Number</Label>
                 <Input 
                   id="whatsapp" 
                   required 
                   placeholder="+234..."
-                  className="h-14 rounded-xl"
+                  className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring"
                   value={formData.whatsappNumber}
                   onChange={e => setFormData({...formData, whatsappNumber: e.target.value})}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="font-bold">Area *</Label>
+                <Label className="type-label text-text-secondary">Area</Label>
                 <Select 
                   required
                   value={formData.areaSlug}
                   onValueChange={v => setFormData({...formData, areaSlug: v || ""})}
                 >
-                  <SelectTrigger className="h-14 rounded-xl">
-                    <SelectValue placeholder="Select Lagos area" />
+                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
+                    <SelectValue placeholder="Select area" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
                     {LAGOS_AREAS.map(area => (
@@ -303,14 +299,14 @@ export default function ListYourSpotPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="font-bold">Spot Category *</Label>
+                <Label className="type-label text-text-secondary">Spot Category</Label>
                 <Select 
                   required
                   value={formData.spotCategory}
                   onValueChange={v => setFormData({...formData, spotCategory: v || ""})}
                 >
-                  <SelectTrigger className="h-14 rounded-xl">
-                    <SelectValue placeholder="What kind of spot?" />
+                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
+                    <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
                     {CATEGORIES.map(cat => (
@@ -320,14 +316,14 @@ export default function ListYourSpotPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-bold">Approx. Price per Person *</Label>
+                <Label className="type-label text-text-secondary">Typical Price per Person</Label>
                 <Select 
                   required
                   value={formData.priceRange}
                   onValueChange={v => setFormData({...formData, priceRange: v || ""})}
                 >
-                  <SelectTrigger className="h-14 rounded-xl">
-                    <SelectValue placeholder="Typical spend" />
+                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
+                    <SelectValue placeholder="Spend range" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
                     {PRICE_RANGES.map(range => (
@@ -340,13 +336,13 @@ export default function ListYourSpotPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="font-bold">Listing Tier *</Label>
+                <Label className="type-label text-text-secondary">Listing Tier</Label>
                 <Select 
                   required
                   value={formData.listingTier}
                   onValueChange={v => setFormData({...formData, listingTier: v || "Featured"})}
                 >
-                  <SelectTrigger className="h-14 rounded-xl">
+                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -357,13 +353,13 @@ export default function ListYourSpotPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-bold">Monthly Marketing Budget</Label>
+                <Label className="type-label text-text-secondary">Marketing Budget</Label>
                 <Select 
                   value={formData.monthlyBudget}
                   onValueChange={v => setFormData({...formData, monthlyBudget: v || ""})}
                 >
-                  <SelectTrigger className="h-14 rounded-xl">
-                    <SelectValue placeholder="Intelligence gathering" />
+                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
+                    <SelectValue placeholder="Monthly spend" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
                     {BUDGET_OPTIONS.map(opt => (
@@ -375,40 +371,43 @@ export default function ListYourSpotPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="howHeard" className="font-bold">How did you hear about us?</Label>
+              <Label htmlFor="howHeard" className="type-label text-text-secondary">How did you hear about us?</Label>
               <Input 
                 id="howHeard" 
-                placeholder="e.g. Twitter, Referral, Instagram"
-                className="h-14 rounded-xl"
+                placeholder="e.g. Twitter, Referral"
+                className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring"
                 value={formData.howHeard}
                 onChange={e => setFormData({...formData, howHeard: e.target.value})}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes" className="font-bold">Additional Notes</Label>
+              <Label htmlFor="notes" className="type-label text-text-secondary">Additional Notes</Label>
               <Textarea 
                 id="notes" 
                 placeholder="Anything else we should know?"
-                className="rounded-xl min-h-[100px]"
+                className="rounded-[12px] type-body bg-white border-border-default focus-ring min-h-[120px]"
                 value={formData.notes}
                 onChange={e => setFormData({...formData, notes: e.target.value})}
               />
             </div>
 
-            {error && <p className="text-red-500 font-bold text-center">{error}</p>}
+            {error && <p className="type-label text-error text-center">{error}</p>}
 
             <Button 
               type="submit" 
               disabled={loading}
-              className="w-full h-14 bg-[#008751] hover:bg-[#007043] text-white font-black text-xl rounded-2xl shadow-xl shadow-[#008751]/20 active:scale-[0.98] transition-all"
+              className="w-full h-[64px] bg-brand-green hover:bg-brand-green-70 text-white type-subheading rounded-[16px] tap-feedback shadow-none border-none relative overflow-hidden group"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="w-6 h-6 animate-spin" /> Submitting...
+                  <Loader2 className="w-5 h-5 animate-spin" /> Submitting...
                 </span>
               ) : (
-                "Submit My Listing Interest"
+                <>
+                  <span className="relative z-10">Submit My Listing Interest</span>
+                  <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                </>
               )}
             </Button>
           </form>
