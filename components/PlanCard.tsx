@@ -90,6 +90,7 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
 
         {isMobile && !isExpanded && (
           <button 
+            type="button"
             onClick={() => setIsExpanded(true)}
             className="w-full flex items-center justify-center gap-2 type-label text-brand-green py-2 tap-feedback"
           >
@@ -164,6 +165,7 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
 
             {isMobile && isExpanded && (
               <button 
+                type="button"
                 onClick={() => setIsExpanded(false)}
                 className="w-full flex items-center justify-center gap-2 type-label text-text-muted py-4 mt-4 border-t border-border-default tap-feedback"
               >
