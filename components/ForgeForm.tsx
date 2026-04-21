@@ -95,6 +95,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     e.preventDefault();
     if (!formData.startArea) {
       setAreaError(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     setAreaError(false);

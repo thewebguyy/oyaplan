@@ -8,8 +8,16 @@ import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, ArrowLeft } from "lucide-react";
+import { RefreshCw, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ForgeResultsClientProps {
   allSpots: Spot[];
@@ -170,7 +178,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
                     </div>
                     <Link href={`/explore/${params.startArea || "ikeja"}?pinned=${spot.id}`}>
                       <Button variant="outline" size="sm" className="text-[11px] font-bold h-8 border-gray-200 rounded-lg px-4 hover:bg-gray-50 hover:text-[#008751]">
-                        Explore this spot
+                         Explore this spot
                       </Button>
                     </Link>
                   </div>
@@ -178,6 +186,11 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
               </div>
             </div>
           )}
+
+          {/* Spot Suggestion Form */}
+          <div className="mt-8 px-6 pt-6 border-t border-gray-50">
+            <SpotSuggestionForm currentArea={targetAreaName || params.startArea || "Lagos"} />
+          </div>
         </div>
       )}
 
@@ -194,5 +207,116 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         </div>
       )}
     </div>
+  );
+}
+
+function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "30000",
+    whatsapp: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(false);
+
+    try {
+      const { error: insertError } = await supabase.from("spot_suggestions").insert({
+        spot_name: formData.name,
+        area_name: currentArea,
+        rough_price_per_person: parseInt(formData.price),
+        suggester_whatsapp: formData.whatsapp || null
+      });
+
+      if (insertError) throw insertError;
+      setSuccess(true);
+    } catch (err) {
+      console.error(err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <p className="text-xs font-bold text-[#008751] animate-in fade-in duration-300">
+        Thanks — we'll look into it.
+      </p>
+    );
+  }
+
+  if (!expanded) {
+    return (
+      <button 
+        onClick={() => setExpanded(true)}
+        className="text-xs font-bold text-gray-400 hover:text-[#008751] transition-colors"
+      >
+        Know a spot that should be here? Add it &rarr;
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 animate-in slide-in-from-top-2 duration-200">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="sm:col-span-1">
+          <Input 
+            required
+            placeholder="Spot name"
+            className="h-10 text-xs rounded-lg border-gray-100 bg-gray-50 focus:bg-white transition-all"
+            value={formData.name}
+            onChange={e => setFormData({...formData, name: e.target.value})}
+          />
+        </div>
+        <div>
+          <Select 
+            value={formData.price}
+            onValueChange={v => setFormData({...formData, price: v || ""})}
+          >
+            <SelectTrigger className="h-10 text-xs rounded-lg border-gray-100 bg-gray-50">
+              <SelectValue placeholder="Price / person" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="15000">₦15,000 range</SelectItem>
+              <SelectItem value="30000">₦30,000 range</SelectItem>
+              <SelectItem value="50000">₦50,000 range</SelectItem>
+              <SelectItem value="100000">₦100,000 range</SelectItem>
+              <SelectItem value="250000">₦250,000 range</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Input 
+            placeholder="WhatsApp (optional)"
+            className="h-10 text-xs rounded-lg border-gray-100 bg-gray-50 focus:bg-white transition-all"
+            value={formData.whatsapp}
+            onChange={e => setFormData({...formData, whatsapp: e.target.value})}
+          />
+        </div>
+      </div>
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] text-gray-400 font-medium italic">
+          We'll notify you when it's added.
+        </p>
+        <div className="flex items-center gap-3">
+          {error && <span className="text-[10px] font-bold text-red-500">Something went wrong</span>}
+          <Button 
+            type="submit" 
+            disabled={loading}
+            size="sm" 
+            className="bg-[#008751] hover:bg-[#007043] text-white text-[11px] font-black h-8 px-4 rounded-lg"
+          >
+            {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : "Suggest this spot"}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }

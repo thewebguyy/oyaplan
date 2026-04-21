@@ -1,7 +1,21 @@
 import { supabase } from "@/lib/supabase";
 import ForgeResultsClient from "./ForgeResultsClient";
 
+import { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Your Lagos Squad Plan — OyaPlan",
+    description: "Here's your personalised outing plan. Copy it to WhatsApp and go.",
+    openGraph: {
+      title: "Your Lagos Squad Plan — OyaPlan",
+      description: "Here's your personalised outing plan. Copy it to WhatsApp and go.",
+      images: ["/og"],
+    }
+  };
+}
 
 export default async function ForgePage({
   searchParams,

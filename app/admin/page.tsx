@@ -55,6 +55,14 @@ export default async function AdminDashboard({
     .select("*")
     .order("created_at", { ascending: false });
 
+  const { data: inquiries } = await supabase
+    .from("operator_inquiries")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const totalInquiries = inquiries?.length || 0;
+  const unconvertedInquiries = inquiries?.filter(i => !i.converted).length || 0;
+
   // Aggregations
   const vibeCounts = allRequests.reduce((acc: any, r) => {
     acc[r.vibe] = (acc[r.vibe] || 0) + 1;
@@ -287,6 +295,61 @@ export default async function AdminDashboard({
                     <td className="px-6 py-4">{s.area_name}</td>
                     <td className="px-6 py-4">₦{s.rough_price_per_person?.toLocaleString() || "—"}</td>
                     <td className="px-6 py-4 text-gray-400 font-mono text-xs">{s.suggester_whatsapp || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Operator Inquiries */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-gray-900">Operator Inquiries</h2>
+            <div className="flex gap-2">
+              <span className="px-3 py-1 bg-green-100 text-[#008751] text-xs font-black uppercase rounded-full">
+                {totalInquiries} total
+              </span>
+              <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-black uppercase rounded-full">
+                {unconvertedInquiries} unconverted
+              </span>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                  <th className="px-6 py-3">Time</th>
+                  <th className="px-6 py-3">Business Name</th>
+                  <th className="px-6 py-3">Owner</th>
+                  <th className="px-6 py-3">WhatsApp</th>
+                  <th className="px-6 py-3">Area</th>
+                  <th className="px-6 py-3">Tier</th>
+                  <th className="px-6 py-3">Budget</th>
+                  <th className="px-6 py-3">Contacted</th>
+                  <th className="px-6 py-3">Converted</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {inquiries?.map((i) => (
+                  <tr key={i.id} className={`text-sm font-medium ${!i.contacted ? 'bg-yellow-50/30' : ''}`}>
+                    <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(i.created_at)}</td>
+                    <td className="px-6 py-4 font-bold">{i.business_name}</td>
+                    <td className="px-6 py-4">{i.owner_name}</td>
+                    <td className="px-6 py-4 text-gray-400 font-mono text-xs">{i.whatsapp_number}</td>
+                    <td className="px-6 py-4 capitalize">{i.area_slug}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                        i.listing_tier === 'Premium' ? 'bg-purple-100 text-purple-700' :
+                        i.listing_tier === 'Featured' ? 'bg-green-100 text-[#008751]' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {i.listing_tier}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">₦{i.monthly_budget_ngn?.toLocaleString() || "—"}</td>
+                    <td className="px-6 py-4">{i.contacted ? "✅" : "❌"}</td>
+                    <td className="px-6 py-4">{i.converted ? "✅" : "❌"}</td>
                   </tr>
                 ))}
               </tbody>

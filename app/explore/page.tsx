@@ -19,10 +19,17 @@ export default async function ExploreIndex({
   searchParams: Promise<{ budget?: string; vibe?: string }> 
 }) {
   const params = await searchParams;
-  const { data: areas } = await supabase
+  const { data: areasData } = await supabase
     .from("areas")
-    .select("*, spots(id)")
+    .select("*, spots(active)")
     .order("name");
+
+  const areas = (areasData || [])
+    .map((area: any) => ({
+      ...area,
+      activeSpotCount: area.spots?.filter((s: any) => s.active).length || 0
+    }))
+    .filter((area: any) => area.activeSpotCount > 0);
 
   return (
     <main className="min-h-screen bg-white text-gray-900 pb-20">
@@ -62,7 +69,7 @@ export default async function ExploreIndex({
                 className="group p-6 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-[#008751]/20 transition-all text-left"
               >
                 <h3 className="text-xl font-bold group-hover:text-[#008751] transition-colors">{area.name}</h3>
-                <p className="text-gray-400 text-sm mt-1">{area.spots?.length || 0} spots to discover</p>
+                <p className="text-gray-400 text-sm mt-1">{area.activeSpotCount} spots to discover</p>
               </Link>
             );
           })}

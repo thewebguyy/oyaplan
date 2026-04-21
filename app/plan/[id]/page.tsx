@@ -70,12 +70,14 @@ export default async function PlanPage({ params }: PlanPageProps) {
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Brand Header */}
-      <div className="bg-white py-6 px-6 border-b border-gray-100 text-center">
+      <div className="bg-[#008751] py-6 px-6 border-b border-white/10 flex items-center justify-between">
         <Link href="/" className="inline-block">
-          <span className="text-2xl font-black tracking-tighter text-[#008751]">
-            OyaPlan<span className="text-gray-300 font-normal">.com</span>
+          <span className="text-2xl font-black tracking-tighter text-white">
+            OyaPlan<span className="text-white/40 font-normal">.com</span>
           </span>
+        </Link>
+        <Link href="/" className="text-white font-bold text-xs hover:underline flex items-center gap-1">
+          Plan your own &rarr;
         </Link>
       </div>
 

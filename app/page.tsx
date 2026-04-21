@@ -87,8 +87,11 @@ export default async function LandingPage() {
       </div>
 
       {/* Footer */}
-      <footer className="py-8 text-center text-white/60 text-[15px]">
-        &copy; 2026 OyaPlan.com &middot; Built in Lagos.
+      <footer className="py-8 text-center text-white/60 text-[15px] space-y-2">
+        <p>&copy; 2026 OyaPlan.com &middot; Built in Lagos.</p>
+        <Link href="/list-your-spot" className="text-white/40 hover:text-white transition-colors text-xs font-medium">
+          Own a Lagos spot? Get listed &rarr;
+        </Link>
       </footer>
     </main>
   );

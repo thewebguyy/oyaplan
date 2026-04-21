@@ -12,6 +12,7 @@ export default function NavBar() {
   const links = [
     { name: "Plan", href: "/" },
     { name: "Explore", href: "/explore" },
+    { name: "List Your Spot", href: "/list-your-spot", desktopOnly: true },
   ];
 
   return (
@@ -31,7 +32,7 @@ export default function NavBar() {
               href={link.href}
               className={`text-[11px] font-black uppercase tracking-widest transition-colors ${
                 isActive ? "text-[#008751]" : "text-gray-400 hover:text-gray-600"
-              }`}
+              } ${link.desktopOnly ? "hidden md:block" : ""}`}
             >
               {link.name}
             </Link>
