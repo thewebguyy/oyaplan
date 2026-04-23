@@ -55,7 +55,10 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
       // Save to localStorage
       try {
-        localStorage.setItem("oyaplan_last_inputs", JSON.stringify(input));
+        localStorage.setItem("oyaplan_last_inputs", JSON.stringify({
+          ...input,
+          timestamp: Date.now()
+        }));
       } catch (e) {}
 
       // 2. Generate plans (deterministic)

@@ -77,7 +77,11 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     try {
       const stored = localStorage.getItem("oyaplan_last_inputs");
       if (stored) {
-        setLastInputs(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+        if (parsed.timestamp && Date.now() - parsed.timestamp < thirtyDays) {
+          setLastInputs(parsed);
+        }
       }
     } catch (e) {}
   }, []);
