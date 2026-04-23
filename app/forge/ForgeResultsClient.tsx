@@ -53,11 +53,29 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
       setForgeInput(input);
 
+      // Save to localStorage
+      try {
+        localStorage.setItem("oyaplan_last_inputs", JSON.stringify(input));
+      } catch (e) {}
+
       // 2. Generate plans (deterministic)
       const generatedPlans = forgePlans(input, allSpots);
       setPlans(generatedPlans);
 
       if (generatedPlans.length === 0) {
+        // We want to know if the vibe is valid but the budget is too low
+        const vibeSpots = allSpots.filter(s => s.vibe_tags.includes(input.vibe));
+        const prices = vibeSpots.map(s => s.price_per_person * input.squadSize * (s.has_food !== false ? 1.1 : 1.0));
+        
+        if (prices.length > 0) {
+          const sortedPrices = [...prices].sort((a, b) => a - b);
+          const min = sortedPrices[0];
+          const max = sortedPrices[sortedPrices.length - 1];
+          const median = sortedPrices[Math.floor(sortedPrices.length / 2)];
+          
+          (input as any).vibeMetrics = { min, median, max };
+        }
+
         const { data: areaData } = await supabase
           .from("areas")
           .select("name, spots(*)")
@@ -94,6 +112,10 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
   }
 
   const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput?.startArea)?.areas?.name || forgeInput?.startArea;
+  const vibeMetrics = (forgeInput as any)?.vibeMetrics;
+  const recoveryBudget = (vibeMetrics && forgeInput && forgeInput.budget < vibeMetrics.median) 
+    ? vibeMetrics.median 
+    : (forgeInput?.budget || 0) * 1.2;
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
@@ -158,7 +180,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         </div>
       ) : (
         /* Redesigned Empty State */
-        <div className="text-center py-24 px-6 bg-white rounded-[24px] border border-border-default space-y-6">
+        <div className="text-center py-24 px-6 bg-white rounded-[24px] border border-border-default space-y-8">
           <div className="flex justify-center pb-2">
             <div 
               className="animate-in fade-in slide-in-from-right-8 duration-400"
@@ -181,9 +203,32 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             </p>
           </div>
           
-          <Link href="/">
-            <Button className="bg-brand-green text-white type-label h-12 px-10 rounded-[12px] tap-feedback shadow-none">Try Again</Button>
-          </Link>
+          <div className="space-y-4">
+            {vibeMetrics && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                <p className="type-caption text-text-muted">
+                  Your budget may be tight for <span className="lowercase">{forgeInput?.vibe}</span> outings. Here is what <span className="lowercase">{forgeInput?.vibe}</span> usually costs in Lagos:
+                </p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <div className="px-3 py-1.5 bg-surface-grey border border-border-default rounded-full type-caption text-text-muted">
+                    Lowkey: from ₦{vibeMetrics.min.toLocaleString()}
+                  </div>
+                  <div className="px-3 py-1.5 bg-surface-grey border border-border-default rounded-full type-caption text-text-muted">
+                    Standard: around ₦{vibeMetrics.median.toLocaleString()}
+                  </div>
+                  <div className="px-3 py-1.5 bg-surface-grey border border-border-default rounded-full type-caption text-text-muted">
+                    Premium: from ₦{vibeMetrics.max.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <Link href={`/?startArea=${forgeInput?.startArea}&budget=${Math.round(recoveryBudget)}&vibe=${forgeInput?.vibe}&squadSize=${forgeInput?.squadSize}`}>
+              <Button className="bg-brand-green text-white type-label h-12 px-10 rounded-[12px] tap-feedback shadow-none">
+                Try ₦{Math.round(recoveryBudget).toLocaleString()} budget
+              </Button>
+            </Link>
+          </div>
 
           {nearbySpots.length > 0 && (
             <div className="mt-16 pt-12 border-t border-border-default text-left max-w-2xl mx-auto">
@@ -213,9 +258,10 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             </div>
           )}
 
-          {/* Spot Suggestion Form */}
-          <div className="mt-12 pt-8 border-t border-border-default">
-            <SpotSuggestionForm currentArea={targetAreaName || params.startArea || "Lagos"} />
+          <div className="mt-12 pt-8 border-t border-border-default text-center">
+            <Link href="/suggest-a-spot" className="type-label text-text-muted hover:text-text-secondary hover:underline transition-all">
+              Know a spot that should be here? Suggest it &rarr;
+            </Link>
           </div>
         </div>
       )}
@@ -235,11 +281,6 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       )}
     </div>
   );
-}
-
-function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
-  const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [formData, setFormData] = useState({

@@ -117,6 +117,11 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
             )}
           </div>
         </div>
+        <div className="max-w-4xl mx-auto px-4 mt-20 pt-12 border-t border-border-default text-center">
+          <Link href="/suggest-a-spot" className="type-label text-text-muted hover:text-text-secondary hover:underline transition-all">
+            Know a spot that should be here? Suggest it &rarr;
+          </Link>
+        </div>
       </main>
     );
   }
@@ -219,10 +224,19 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
             );
           })
         ) : (
-          <div className="text-center py-20 bg-surface-grey rounded-[24px] border border-border-default">
+          <div className="text-center py-20 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
             <p className="type-body text-text-muted">No spots found in this area yet.</p>
+            <Link href="/suggest-a-spot" className="type-label text-brand-green hover:underline inline-block">
+              Know a hidden gem here? Suggest it &rarr;
+            </Link>
           </div>
         )}
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 mt-20 pt-12 border-t border-border-default text-center">
+        <Link href="/suggest-a-spot" className="type-label text-text-muted hover:text-text-secondary hover:underline transition-all">
+          Know a spot that should be here? Suggest it &rarr;
+        </Link>
       </div>
     </main>
   );

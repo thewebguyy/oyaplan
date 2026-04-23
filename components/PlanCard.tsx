@@ -136,11 +136,23 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
 
             {/* Footer: Verification & Feedback */}
             <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-              <div className="type-caption text-text-muted">
-                {plan.spot.price_updated_at ? (
-                  <span>Verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} via {plan.spot.price_source}</span>
-                ) : (
-                  <span>Estimated prices</span>
+              <div className="type-caption">
+                {plan.spot.price_updated_at ? (() => {
+                  const updatedDate = new Date(plan.spot.price_updated_at);
+                  const daysSince = Math.floor((new Date().getTime() - updatedDate.getTime()) / (1000 * 60 * 60 * 24));
+                  const isStale = daysSince > 90;
+                  const dateStr = updatedDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                  
+                  return (
+                    <span style={isStale ? { color: '#B45309' } : {}} className={isStale ? "" : "text-text-muted"}>
+                      {isStale 
+                        ? `Prices last verified ${dateStr} — confirm before you go` 
+                        : `Verified ${dateStr} via ${plan.spot.price_source || 'manual'}`
+                      }
+                    </span>
+                  );
+                })() : (
+                  <span className="text-text-muted">Estimated prices</span>
                 )}
               </div>
               

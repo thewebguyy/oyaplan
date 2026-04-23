@@ -114,9 +114,14 @@ export default async function LandingPage() {
       {/* Footer */}
       <footer className="py-12 text-center text-white/60 space-y-3">
         <p className="type-body text-white/50">&copy; 2026 OyaPlan.com &middot; Built in Lagos.</p>
-        <Link href="/list-your-spot" className="type-label text-white/40 hover:text-white transition-colors">
-          Own a Lagos spot? Get listed &rarr;
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+          <Link href="/list-your-spot" className="type-label text-white/40 hover:text-white transition-colors">
+            Own a Lagos spot? Get listed &rarr;
+          </Link>
+          <Link href="/suggest-a-spot" className="type-label text-white/40 hover:text-white transition-colors">
+            Know a hidden gem? Suggest a spot &rarr;
+          </Link>
+        </div>
       </footer>
     </main>
   );

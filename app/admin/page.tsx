@@ -28,6 +28,9 @@ export default async function AdminDashboard({
 
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const sixtyDaysAgo = new Date();
+  sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
   
   const { count: plansThisWeek } = await supabase
     .from("plan_requests")
@@ -42,7 +45,7 @@ export default async function AdminDashboard({
 
   if (!allRequests) return <div>Error loading data</div>;
 
-  // 3. Fetch Observations & Suggestions
+  // 3. Fetch Observations & Suggestions & Stale Spots
   const { data: observations } = await supabase
     .from("tester_observations")
     .select("*")
@@ -59,6 +62,13 @@ export default async function AdminDashboard({
     .from("operator_inquiries")
     .select("*")
     .order("created_at", { ascending: false });
+
+  const { data: staleSpots } = await supabase
+    .from("spots")
+    .select("id, name, price_updated_at, verified_by, active")
+    .lt("price_updated_at", sixtyDaysAgo.toISOString())
+    .eq("active", true)
+    .order("price_updated_at", { ascending: true });
 
   const totalInquiries = inquiries?.length || 0;
   const unconvertedInquiries = inquiries?.filter(i => !i.converted).length || 0;
@@ -129,6 +139,51 @@ export default async function AdminDashboard({
               <p className="text-2xl font-black text-[#008751]">{c.value?.toLocaleString()}</p>
             </div>
           ))}
+        </div>
+
+        {/* Price Freshness Monitoring */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-gray-900">Price Freshness Monitoring</h2>
+            <span className={`px-3 py-1 text-xs font-black uppercase rounded-full ${
+              (staleSpots?.length || 0) > 0 ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"
+            }`}>
+              {staleSpots?.length || 0} spots need verification
+            </span>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                  <th className="px-6 py-3">Spot Name</th>
+                  <th className="px-6 py-3">Last Verified</th>
+                  <th className="px-6 py-3">Source</th>
+                  <th className="px-6 py-3 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {staleSpots?.map((s) => (
+                  <tr key={s.id} className="text-sm font-medium">
+                    <td className="px-6 py-4 font-bold">{s.name}</td>
+                    <td className="px-6 py-4 text-gray-400">{timeAgo(s.price_updated_at)}</td>
+                    <td className="px-6 py-4 text-xs">{s.verified_by || "manual"}</td>
+                    <td className="px-6 py-4 text-right">
+                      <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[10px] font-black uppercase">
+                        STALE
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {(!staleSpots || staleSpots.length === 0) && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-gray-400 text-sm italic">
+                      All spot prices are fresh (verified within last 60 days).
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

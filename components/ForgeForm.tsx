@@ -62,6 +62,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   const [loading, setLoading] = useState(false);
   const [areaError, setAreaError] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [lastInputs, setLastInputs] = useState<any>(null);
   const [formData, setFormData] = useState({
     startArea: "",
     squadSize: "2",
@@ -71,6 +72,15 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     daypart: "Any time",
     pinnedSpotId: ""
   });
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("oyaplan_last_inputs");
+      if (stored) {
+        setLastInputs(JSON.parse(stored));
+      }
+    } catch (e) {}
+  }, []);
 
   useEffect(() => {
     const startArea = searchParams.get("startArea");
@@ -95,6 +105,24 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
       }));
     }
   }, [searchParams]);
+
+  const handleTryAgain = () => {
+    if (lastInputs) {
+      setFormData({
+        ...formData,
+        startArea: lastInputs.startArea || "",
+        squadSize: lastInputs.squadSize?.toString() || "2",
+        budget: lastInputs.budget?.toString() || "50000",
+        vibe: lastInputs.vibe || "Chill",
+        categoryGroup: lastInputs.categoryGroup || "Anywhere",
+        daypart: lastInputs.daypart || "Any time",
+        pinnedSpotId: lastInputs.pinnedSpotId || ""
+      });
+      if (lastInputs.categoryGroup !== "Anywhere" || lastInputs.daypart !== "Any time") {
+        setShowAdvanced(true);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,6 +150,20 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
   return (
     <div className="w-full bg-white border border-border-default p-5 md:p-8 rounded-[20px] text-left">
+      {lastInputs && (
+        <div className="mb-6 p-3 bg-surface-grey border border-border-default rounded-[12px] flex items-center justify-between animate-in fade-in slide-in-from-top-1">
+          <p className="type-caption text-text-muted">
+            Last time: <span className="font-[700] text-text-secondary">{lastInputs.vibe} · {areas.find(a => a.slug === lastInputs.startArea)?.name || lastInputs.startArea} · ₦{parseInt(lastInputs.budget).toLocaleString()} · {lastInputs.squadSize} {parseInt(lastInputs.squadSize) === 1 ? 'person' : 'people'}</span>
+          </p>
+          <button 
+            type="button" 
+            onClick={handleTryAgain}
+            className="type-label text-brand-green hover:underline tap-feedback"
+          >
+            Try again →
+          </button>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:gap-4">
 
         {/* Field: Starting Area */}

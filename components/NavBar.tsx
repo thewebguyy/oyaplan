@@ -10,7 +10,7 @@ export default function NavBar() {
   const router = useRouter();
 
   // Hide on feedback and list-your-spot pages (if standalone)
-  if (pathname === "/feedback" || pathname === "/list-your-spot") return null;
+  if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
 
   const links = [
     { name: "Plan", href: "/" },
