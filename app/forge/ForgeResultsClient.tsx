@@ -284,6 +284,11 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       )}
     </div>
   );
+}
+
+function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [formData, setFormData] = useState({
