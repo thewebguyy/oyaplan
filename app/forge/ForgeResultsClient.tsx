@@ -262,9 +262,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           )}
 
           <div className="mt-12 pt-8 border-t border-border-default text-center">
-            <Link href="/suggest-a-spot" className="type-label text-text-muted hover:text-text-secondary hover:underline transition-all">
-              Know a spot that should be here? Suggest it &rarr;
-            </Link>
+            <SpotSuggestionForm currentArea={forgeInput?.startArea || "Unknown"} />
           </div>
         </div>
       )}

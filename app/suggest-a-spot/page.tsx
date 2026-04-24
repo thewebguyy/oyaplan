@@ -23,14 +23,16 @@ export default function SuggestSpotPage() {
     setError(false);
 
     try {
-      // In a real app, this would go to a 'suggestions' table.
-      // For now, we'll log it and simulate success to keep it zero-friction.
-      console.log("Suggestion received:", formData);
-      
-      // Simulate network delay
-      await new Promise(r => setTimeout(r, 1500));
+      const { error: insertError } = await supabase.from("spot_suggestions").insert({
+        spot_name: formData.spotName,
+        area_name: formData.location,
+        vibe_description: `${formData.vibe}: ${formData.comment}`
+      });
+
+      if (insertError) throw insertError;
       setSuccess(true);
     } catch (err) {
+      console.error(err);
       setError(true);
     } finally {
       setLoading(false);
