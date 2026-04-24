@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Sparkles, MapPin, Tag } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Sparkles, MapPin, Tag, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function SuggestSpotPage() {
@@ -74,7 +74,7 @@ export default function SuggestSpotPage() {
           Back
         </Link>
 
-        <div className="bg-white border border-border-default rounded-[32px] p-8 md:p-12 shadow-sm space-y-10">
+        <div className="bg-white border border-border-default rounded-[32px] p-8 md:p-12 shadow-sm space-y-10 relative z-10">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-yellow/10 rounded-full">
               <Sparkles className="w-3.5 h-3.5 text-brand-yellow fill-brand-yellow" />
@@ -155,10 +155,16 @@ export default function SuggestSpotPage() {
             )}
 
             <Button
+              type="submit"
               disabled={loading}
               className="w-full bg-brand-green hover:bg-brand-green-70 text-white type-label h-[60px] rounded-[18px] shadow-lg shadow-brand-green/10 tap-feedback flex items-center justify-center gap-2 border-none"
             >
-              {loading ? "Sending..." : "Submit Suggestion"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Sending...
+                </>
+              ) : "Submit Suggestion"}
             </Button>
           </form>
         </div>

@@ -378,9 +378,14 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
           <Button 
             type="submit" 
             disabled={loading}
-            className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-10 px-6 rounded-[8px] tap-feedback shadow-none border-none"
+            className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-10 px-6 rounded-[8px] tap-feedback shadow-none border-none flex items-center gap-2"
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Suggest spot"}
+            {loading ? (
+              <>
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Sending...
+              </>
+            ) : "Suggest spot"}
           </Button>
         </div>
       </div>
