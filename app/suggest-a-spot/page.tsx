@@ -167,6 +167,7 @@ export default function SuggestSpotPage() {
               ) : "Submit Suggestion"}
             </Button>
           </form>
+          <div className="h-24 md:hidden" aria-hidden="true" />
         </div>
 
         <div className="mt-12 text-center opacity-50">

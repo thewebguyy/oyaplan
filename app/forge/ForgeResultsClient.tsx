@@ -269,7 +269,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
       {/* Redesigned Footer */}
       {plans.length > 0 && (
-        <div className="text-center pt-12 space-y-4">
+        <div className="text-center pt-12 space-y-4 pb-32 md:pb-12">
           <p className="type-body text-text-muted">
             "Stop the wahala. Just pick one and send it."
           </p>
@@ -277,6 +277,27 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             <span>Deterministic Engine v1.0</span>
             <span className="text-border-default">•</span>
             <span>Lagos Data</span>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Mobile Actions */}
+      {plans.length > 0 && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-border-default z-40 animate-in fade-in slide-in-from-bottom-4">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex-1">
+              <Button variant="outline" className="w-full type-label h-12 rounded-[12px] border-border-default text-text-primary tap-feedback">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Change
+              </Button>
+            </Link>
+            <Button 
+              className="flex-1 bg-brand-green text-white type-label h-12 rounded-[12px] border-none tap-feedback shadow-lg shadow-brand-green/10"
+              onClick={() => window.location.reload()}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              New Plan
+            </Button>
           </div>
         </div>
       )}

@@ -92,7 +92,7 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
           <button 
             type="button"
             onClick={() => setIsExpanded(true)}
-            className="w-full flex items-center justify-center gap-2 type-label text-brand-green py-2 tap-feedback"
+            className="w-full flex items-center justify-center gap-2 type-label text-brand-green py-5 mt-2 tap-feedback border border-brand-green-15 rounded-[12px]"
           >
             See full breakdown <ChevronDown className="w-4 h-4" />
           </button>
@@ -179,7 +179,7 @@ export default function PlanCard({ plan, index, input, isTopPick, originalBudget
               <button 
                 type="button"
                 onClick={() => setIsExpanded(false)}
-                className="w-full flex items-center justify-center gap-2 type-label text-text-muted py-4 mt-4 border-t border-border-default tap-feedback"
+                className="w-full flex items-center justify-center gap-2 type-label text-text-muted py-5 mt-4 border-t border-border-default tap-feedback"
               >
                 Hide breakdown <ChevronUp className="w-4 h-4" />
               </button>

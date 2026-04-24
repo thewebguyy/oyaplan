@@ -295,10 +295,11 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
         {/* Optional Row: Category + Daypart */}
         <div 
-          className={`col-span-2 overflow-hidden transition-all duration-300 ease-in-out ${showAdvanced ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0"}`}
+          className={`col-span-2 overflow-hidden transition-all duration-300 ease-in-out ${showAdvanced ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"} grid`}
           style={{ transitionDuration: 'var(--motion-considered)' }}
         >
-          <div className="grid grid-cols-2 gap-4 pt-4">
+          <div className="overflow-hidden min-h-0">
+            <div className="grid grid-cols-2 gap-4 pt-4">
             <div className="space-y-2">
               <Label className={labelCls}>
                 <Utensils className="w-3.5 h-3.5 text-brand-green" /> Category
@@ -350,6 +351,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             </div>
           </div>
         </div>
+      </div>
 
         {/* Submit */}
         <div className="col-span-2 space-y-4 pt-2">
