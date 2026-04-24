@@ -23,6 +23,10 @@
   --color-foreground: var(--foreground);
   --color-error: var(--error);
   --color-success: var(--success);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 }
 
 :root {
@@ -53,6 +57,12 @@
 
   --background: #FFFFFF;
   --foreground: #0A0A0A;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A0A;
+  
+  --accent: #F7F7F7;
+  --accent-foreground: #0A0A0A;
   
   --radius: 12px;
 
