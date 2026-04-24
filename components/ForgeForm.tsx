@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Area } from "@/lib/types";
 import Link from "next/link";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MapPin, Wallet, Users, Music, Utensils, Clock, Sparkles } from "lucide-react";
 
 interface ForgeFormProps {
   areas: Area[];
@@ -148,7 +148,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   };
 
   const triggerCls =
-    "h-[56px] w-full rounded-[12px] border border-border-default bg-surface-grey px-4 type-body text-text-primary hover:bg-gray-100 transition-all focus-ring data-[state=open]:bg-white";
+    "h-[56px] w-full rounded-[16px] border border-border-default bg-surface-grey px-4 type-body text-text-primary hover:bg-white hover:border-brand-green-40 hover:shadow-[0px_4px_12px_rgba(0,0,0,0.04)] transition-all duration-200 focus-ring data-[state=open]:bg-white data-[state=open]:border-brand-green data-[state=open]:shadow-[0px_8px_24px_rgba(0,135,81,0.08)]";
 
   const labelCls = "flex items-center gap-2 type-label text-text-secondary";
 
@@ -173,7 +173,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
         {/* Field: Starting Area */}
         <div className="col-span-2 sm:col-span-1 space-y-1.5">
           <Label className={labelCls}>
-            <span className="text-[14px]">📍</span> Starting area
+            <MapPin className="w-3.5 h-3.5 text-brand-green" /> Starting area
           </Label>
           <Select
             value={formData.startArea}
@@ -207,7 +207,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
         {/* Field: Budget */}
         <div className="col-span-2 sm:col-span-1 space-y-1.5">
           <Label className={labelCls}>
-            <span className="text-[14px]">💰</span> Total budget
+            <Wallet className="w-3.5 h-3.5 text-brand-green" /> Total budget
           </Label>
           <Select
             value={formData.budget}
@@ -233,7 +233,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
         {/* Row: Squad Size + Vibe */}
         <div className="col-span-1 space-y-1.5">
             <Label className={labelCls}>
-              <span className="text-[14px]">👥</span> Squad size
+              <Users className="w-3.5 h-3.5 text-brand-green" /> Squad size
             </Label>
             <Select
               value={formData.squadSize}
@@ -258,7 +258,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
           <div className="col-span-1 space-y-1.5">
             <Label className={labelCls}>
-              <span className="text-[14px]">🎭</span> The vibe
+              <Music className="w-3.5 h-3.5 text-brand-green" /> The vibe
             </Label>
             <Select
               value={formData.vibe}
@@ -301,7 +301,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div className="grid grid-cols-2 gap-4 pt-4">
             <div className="space-y-2">
               <Label className={labelCls}>
-                <span className="text-[14px]">🍴</span> Category
+                <Utensils className="w-3.5 h-3.5 text-brand-green" /> Category
               </Label>
               <Select
                 value={formData.categoryGroup}
@@ -326,7 +326,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
             <div className="space-y-2">
               <Label className={labelCls}>
-                <span className="text-[14px]">🕒</span> Time
+                <Clock className="w-3.5 h-3.5 text-brand-green" /> Time
               </Label>
               <Select
                 value={formData.daypart}

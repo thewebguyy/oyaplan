@@ -353,7 +353,7 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
           value={formData.price}
           onValueChange={v => setFormData({...formData, price: v || ""})}
         >
-          <SelectTrigger className="h-12 type-body rounded-[10px] border-border-default bg-surface-grey focus:bg-white focus-ring">
+          <SelectTrigger className="h-12 type-body rounded-[12px] border-border-default bg-surface-grey hover:bg-white hover:border-brand-green-40 transition-all focus-ring data-[state=open]:bg-white data-[state=open]:border-brand-green">
             <SelectValue placeholder="Price / person" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
