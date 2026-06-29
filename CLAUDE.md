@@ -519,17 +519,36 @@ These are documented gaps, not oversights. Do not add to this list without a pla
 
 | Issue | Severity | Status |
 |---|---|---|
-| Admin auth via query param | Critical | Replace with cookie session (Month 1) |
-| No error handling on Supabase calls in pages | Critical | Wrap in try/catch with ErrorBanner fallback (Month 1) |
+| Admin auth via query param | Critical | **RESOLVED** — Supabase Auth (P0-1, Sprint 1) |
+| No error handling on Supabase calls in pages | Critical | **RESOLVED** — PageError + error-flag pattern (P0-2, Sprint 1) |
 | No rate limiting on anonymous writes | Critical | Add Edge middleware (Month 1) |
-| Zero automated tests | High | Install Vitest, write matchingEngine tests (Month 2) |
-| No CI/CD pipeline | High | GitHub Actions: lint + typecheck + test (Month 2) |
+| Zero automated tests | High | Install Vitest, write matchingEngine tests (P1-4, Sprint 1) |
+| No CI/CD pipeline | High | **RESOLVED** — GitHub Actions: typecheck + build + test + lint (P0-3, Sprint 1) |
+| Pre-existing ESLint errors (39 errors, 12 warnings) | Medium | CI lint gate blocks new violations; cleanup by file below |
 | Inline Supabase queries in page files | High | Extract to lib/queries/ (Month 1) |
-| Full spot table scan on every forge | High | Push filters to DB layer (Month 2) |
+| Full spot table scan on every forge | High | Push filters to DB layer (P1-5, Sprint 1) |
 | WhatsApp numbers stored in plaintext | High | Encrypt at rest (Month 3) |
 | No error monitoring (Sentry) | Medium | Add Sentry integration (Month 1) |
 | Admin dashboard loads all rows unbounded | Medium | Add cursor pagination (Month 3) |
 | trending_score is a manual integer | Low | Build update procedure (Month 3) |
+
+### Pre-existing ESLint errors — cleanup order
+
+New code is protected: CI blocks lint errors in any file touched by a PR. The 39 remaining errors are in files not yet touched by Sprint 1. Recommended cleanup order (highest value / lowest risk first):
+
+| File | Error type | Risk |
+|---|---|---|
+| `app/forge/ForgeResultsClient.tsx` | `no-explicit-any`, `no-unused-vars` | Medium — core UI, manual test required |
+| `components/ForgeForm.tsx` | `react-hooks/exhaustive-deps`, `no-unused-vars` | Medium — form logic, manual test required |
+| `components/PlanCard.tsx` | `no-explicit-any` | Low — display only |
+| `components/WhatsAppCopyButton.tsx` | `no-explicit-any` | High risk — do not touch without real device test |
+| `lib/matchingEngine.ts` | `no-explicit-any` | Medium — covered by P1-4 tests before touching |
+| `app/feedback/page.tsx` | `no-explicit-any` | Low — form page |
+| `app/suggest-a-spot/page.tsx` | `no-explicit-any` | Low — form page |
+| `app/list-your-spot/page.tsx` | `no-explicit-any` | Low — form page |
+| `app/not-found.tsx` | `no-explicit-any` | Low — error page |
+| `components/ui/input.tsx`, `textarea.tsx` | shadcn primitives | **Do not edit** — shadcn managed files |
+| `seed-zones.js`, `check-zones.js`, `.gemini/scratch/*.js` | `no-require-imports` | Low — scripts never imported by app, ignore or add eslintignore |
 
 ---
 
