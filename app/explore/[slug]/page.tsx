@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import PageError from "@/components/PageError";
 
 export const dynamic = "force-dynamic";
 
@@ -14,25 +15,24 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  
-  // Try zone first
-  const { data: zone } = await supabase.from("zones").select("name").eq("slug", slug).single();
-  if (zone) {
-    return {
-      title: `Explore ${zone.name} — OyaPlan`,
-      description: `Discover spots in ${zone.name} Lagos.`,
-    };
+  try {
+    const { data: zone } = await supabase.from("zones").select("name").eq("slug", slug).single();
+    if (zone) {
+      return {
+        title: `Explore ${zone.name} — OyaPlan`,
+        description: `Discover spots in ${zone.name} Lagos.`,
+      };
+    }
+    const { data: area } = await supabase.from("areas").select("name").eq("slug", slug).single();
+    if (area) {
+      return {
+        title: `${area.name} Outing Spots — OyaPlan`,
+        description: `Restaurants, activities, and experiences in ${area.name}, Lagos. Budget-friendly squad planning.`,
+      };
+    }
+  } catch {
+    // fall through to default
   }
-
-  // Fallback to area
-  const { data: area } = await supabase.from("areas").select("name").eq("slug", slug).single();
-  if (area) {
-    return {
-      title: `${area.name} Outing Spots — OyaPlan`,
-      description: `Restaurants, activities, and experiences in ${area.name}, Lagos. Budget-friendly squad planning.`,
-    };
-  }
-
   return { title: "Explore — OyaPlan" };
 }
 
@@ -43,30 +43,57 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   const vibe = urlParams.vibe || null;
 
   // 1. Try Zone View
-  const { data: zoneData } = await supabase
-    .from("zones")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+  let zoneData: { id: string; name: string; slug: string; description: string } | null = null;
+  let zoneQueryError = false;
+  try {
+    const { data, error } = await supabase
+      .from("zones")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    if (error && error.code !== "PGRST116") zoneQueryError = true;
+    else zoneData = data;
+  } catch {
+    zoneQueryError = true;
+  }
+
+  if (zoneQueryError) {
+    return <PageError message="We could not load this zone. Please try again." href="/explore" linkLabel="Back to Explore" />;
+  }
 
   if (zoneData) {
-    const { data: areasData } = await supabase
-      .from("areas")
-      .select("*, spots!inner(active, zone)")
-      .eq("spots.zone", slug)
-      .eq("spots.active", true)
-      .order("name");
-
-    const areasMap = new Map();
-    (areasData || []).forEach((area: any) => {
-      if (!areasMap.has(area.id)) {
-        areasMap.set(area.id, {
-          ...area,
-          activeSpotCount: area.spots?.length || 0
+    let areas: Array<{ id: string; name: string; slug: string; activeSpotCount: number }> = [];
+    let zoneAreasError = false;
+    try {
+      const { data: areasData, error } = await supabase
+        .from("areas")
+        .select("*, spots!inner(active, zone)")
+        .eq("spots.zone", slug)
+        .eq("spots.active", true)
+        .order("name");
+      if (error) {
+        zoneAreasError = true;
+      } else {
+        const areasMap = new Map<string, { id: string; name: string; slug: string; activeSpotCount: number }>();
+        (areasData || []).forEach((area) => {
+          if (!areasMap.has(area.id)) {
+            areasMap.set(area.id, {
+              id: area.id,
+              name: area.name,
+              slug: area.slug,
+              activeSpotCount: (area.spots as Array<unknown>)?.length || 0,
+            });
+          }
         });
+        areas = Array.from(areasMap.values());
       }
-    });
-    const areas = Array.from(areasMap.values());
+    } catch {
+      zoneAreasError = true;
+    }
+
+    if (zoneAreasError) {
+      return <PageError message="We could not load areas for this zone. Please try again." href="/explore" linkLabel="Back to Explore" />;
+    }
 
     return (
       <main className="min-h-screen bg-white text-text-primary pb-20 antialiased">
@@ -92,7 +119,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
         <div className="max-w-4xl mx-auto px-4 mt-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {areas?.map((area: any) => {
+            {areas?.map((area) => {
               const areaParams = new URLSearchParams();
               if (urlParams.budget) areaParams.append("budget", urlParams.budget);
               if (urlParams.vibe) areaParams.append("vibe", urlParams.vibe);
@@ -127,22 +154,36 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   }
 
   // 2. Try Area View
-  const { data: area } = await supabase
-    .from("areas")
-    .select("*, spots(*)")
-    .eq("slug", slug)
-    .single();
-
-  if (!area) {
-    notFound();
+  let area: { id: string; name: string; slug: string; spots: Array<{ id: string; name: string; active: boolean; category: string; address: string; price_per_person: number; fitsBudget?: boolean }> } | null = null;
+  let areaFetchError = false;
+  try {
+    const { data, error } = await supabase
+      .from("areas")
+      .select("*, spots(*)")
+      .eq("slug", slug)
+      .single();
+    if (error) {
+      if (error.code === "PGRST116") notFound();
+      areaFetchError = true;
+    } else {
+      area = data;
+    }
+  } catch {
+    areaFetchError = true;
   }
 
+  if (areaFetchError) {
+    return <PageError message="We could not load this area. Please try again." href="/explore" linkLabel="Back to Explore" />;
+  }
+
+  if (!area) notFound();
+
   // Process spots with budget awareness
-  const spots = (area.spots || []).filter((s: any) => s.active !== false).map((spot: any) => {
+  const spots = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
     const estimatedTotal = spot.price_per_person * 2 * 1.1;
     const fitsBudget = budget ? estimatedTotal <= budget : true;
     return { ...spot, fitsBudget };
-  }).sort((a: any, b: any) => {
+  }).sort((a, b) => {
     if (a.fitsBudget && !b.fitsBudget) return -1;
     if (!a.fitsBudget && b.fitsBudget) return 1;
     return 0;
@@ -173,7 +214,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
       <div className="max-w-4xl mx-auto px-4 mt-12 space-y-6">
         {spots.length > 0 ? (
-          spots.map((spot: any) => {
+          spots.map((spot) => {
             const prefillParams = new URLSearchParams();
             prefillParams.append("startArea", slug);
             prefillParams.append("pinnedSpotId", spot.id);

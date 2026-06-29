@@ -63,6 +63,11 @@ const CATEGORY_MAP: Record<string, string[]> = {
   "Nature and outdoors": ["nature", "beach"]
 };
 
+export function getAllowedCategories(categoryGroup: string | undefined): string[] | null {
+  if (!categoryGroup || categoryGroup === "Anywhere") return null;
+  return CATEGORY_MAP[categoryGroup] ?? null;
+}
+
 export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
   const { startArea, squadSize, budget, vibe, pinnedSpotId, categoryGroup, daypart } = input;
 
@@ -104,7 +109,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       const activityCost = Math.round((spot.price_per_person * squadSize * buffer) / 100) * 100;
       
       // Transport Cost: Matrix override or Zone Formula
-      const transportCost = spot.transport_matrix?.[startArea] || calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      const transportCost = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
       
       const totalCost = activityCost + transportCost;
 
@@ -119,7 +124,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
     })
     .map(({ spot, activityCost, transportCost, totalCost }) => {
       // Scoring Algorithm
-      let costScore = (1 - Math.abs(budget - totalCost) / budget) * 80;
+      const costScore = (1 - Math.abs(budget - totalCost) / budget) * 80;
       const vibeMatches = spot.vibe_tags.filter(t => t === vibe).length;
       const vibeScore = Math.min(vibeMatches * 5, 10);
       const featuredBoost = spot.is_featured ? 30 : 0;
@@ -154,7 +159,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       results_count: sortedPlans.length,
       top_spot_id: sortedPlans[0]?.spot.id || null
     }).then(); // Fire and forget
-  } catch (e) {
+  } catch {
     // Silent swallow
   }
 
