@@ -1,24 +1,16 @@
+import { createServerClient } from "@/lib/supabase-server";
 import { supabase } from "@/lib/supabase";
+import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboard({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ key?: string }> 
-}) {
-  const { key } = await searchParams;
-  const adminKey = process.env.ADMIN_KEY;
+export default async function AdminDashboard() {
+  const serverClient = await createServerClient();
+  const { data: { user } } = await serverClient.auth.getUser();
 
-  if (!key || key !== adminKey) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
-          <h1 className="text-xl font-bold text-gray-900">Access denied</h1>
-        </div>
-      </main>
-    );
+  if (!user) {
+    redirect('/admin/login');
   }
 
   // 1. Basic Counts
@@ -74,17 +66,17 @@ export default async function AdminDashboard({
   const unconvertedInquiries = inquiries?.filter(i => !i.converted).length || 0;
 
   // Aggregations
-  const vibeCounts = allRequests.reduce((acc: any, r) => {
+  const vibeCounts = allRequests.reduce<Record<string, number>>((acc, r) => {
     acc[r.vibe] = (acc[r.vibe] || 0) + 1;
     return acc;
   }, {});
-  const popularVibe = Object.entries(vibeCounts).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || "N/A";
+  const popularVibe = Object.entries(vibeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
 
-  const areaCounts = allRequests.reduce((acc: any, r) => {
+  const areaCounts = allRequests.reduce<Record<string, number>>((acc, r) => {
     acc[r.start_area] = (acc[r.start_area] || 0) + 1;
     return acc;
   }, {});
-  const popularArea = Object.entries(areaCounts).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] || "N/A";
+  const popularArea = Object.entries(areaCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
 
   const budgetRanges = {
     "Under ₦20k": 0,
@@ -123,7 +115,14 @@ export default async function AdminDashboard({
           <h1 className="text-3xl font-black tracking-tighter text-[#008751]">
             OyaPlan Intelligence
           </h1>
-          <span className="text-sm font-medium text-gray-400">Admin Mode</span>
+          <form action={signOutAdmin}>
+            <button
+              type="submit"
+              className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              Sign out
+            </button>
+          </form>
         </header>
 
         {/* Summary Cards */}
@@ -201,7 +200,7 @@ export default async function AdminDashboard({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {Object.entries(vibeCounts).sort((a: any, b: any) => b[1] - a[1]).map(([v, count]: any) => (
+                {Object.entries(vibeCounts).sort((a, b) => b[1] - a[1]).map(([v, count]) => (
                   <tr key={v} className="text-sm font-medium">
                     <td className="px-6 py-4">{v}</td>
                     <td className="px-6 py-4">{count}</td>
@@ -227,7 +226,7 @@ export default async function AdminDashboard({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {Object.entries(areaCounts).sort((a: any, b: any) => b[1] - a[1]).map(([area, count]: any) => (
+                {Object.entries(areaCounts).sort((a, b) => b[1] - a[1]).map(([area, count]) => (
                   <tr key={area} className="text-sm font-medium">
                     <td className="px-6 py-4 capitalize">{area}</td>
                     <td className="px-6 py-4 text-right font-black">{count}</td>
@@ -250,7 +249,7 @@ export default async function AdminDashboard({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {Object.entries(budgetRanges).map(([range, count]: any) => (
+                {Object.entries(budgetRanges).map(([range, count]) => (
                   <tr key={range} className="text-sm font-medium">
                     <td className="px-6 py-4">{range}</td>
                     <td className="px-6 py-4 text-right font-black">{count}</td>
