@@ -526,7 +526,7 @@ These are documented gaps, not oversights. Do not add to this list without a pla
 | No CI/CD pipeline | High | **RESOLVED** — GitHub Actions: typecheck + build + test + lint (P0-3, Sprint 1) |
 | Pre-existing ESLint errors (39 errors, 12 warnings) | Medium | CI lint gate blocks new violations; cleanup by file below |
 | Inline Supabase queries in page files | High | Extract to lib/queries/ (Month 1) |
-| Full spot table scan on every forge | High | Push filters to DB layer (P1-5, Sprint 1) |
+| Full spot table scan on every forge | High | **RESOLVED** — Category SQL pre-filter + DB indexes (P1-5, Sprint 1). Vibe pre-filter deferred (requires two-query merge for pinnedSpotId; complexity exceeds benefit at current scale). |
 | WhatsApp numbers stored in plaintext | High | Encrypt at rest (Month 3) |
 | No error monitoring (Sentry) | Medium | Add Sentry integration (Month 1) |
 | Admin dashboard loads all rows unbounded | Medium | Add cursor pagination (Month 3) |

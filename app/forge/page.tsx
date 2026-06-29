@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { getAllowedCategories } from "@/lib/matchingEngine";
 import ForgeResultsClient from "./ForgeResultsClient";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
@@ -24,12 +25,21 @@ export default async function ForgePage({
 }) {
   const resolvedParams = await searchParams;
 
+  const categoryGroup = typeof resolvedParams.categoryGroup === "string" ? resolvedParams.categoryGroup : undefined;
+  const allowedCategories = getAllowedCategories(categoryGroup);
+
   let allSpots;
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from("spots")
       .select("*, areas(*)")
       .eq("active", true);
+
+    if (allowedCategories) {
+      query = query.in("category", allowedCategories);
+    }
+
+    const { data, error } = await query;
 
     if (error || !data || data.length === 0) {
       redirect("/?error=spots_unavailable");

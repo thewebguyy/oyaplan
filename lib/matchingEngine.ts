@@ -63,6 +63,11 @@ const CATEGORY_MAP: Record<string, string[]> = {
   "Nature and outdoors": ["nature", "beach"]
 };
 
+export function getAllowedCategories(categoryGroup: string | undefined): string[] | null {
+  if (!categoryGroup || categoryGroup === "Anywhere") return null;
+  return CATEGORY_MAP[categoryGroup] ?? null;
+}
+
 export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
   const { startArea, squadSize, budget, vibe, pinnedSpotId, categoryGroup, daypart } = input;
 
