@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/supabase-server";
 import { supabase } from "@/lib/supabase";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
+import PageError from "@/components/PageError";
 
 export const dynamic = "force-dynamic";
 
@@ -13,67 +14,75 @@ export default async function AdminDashboard() {
     redirect('/admin/login');
   }
 
-  // 1. Basic Counts
-  const { count: totalPlans } = await supabase
-    .from("plan_requests")
-    .select("*", { count: "exact", head: true });
-
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
   const sixtyDaysAgo = new Date();
   sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
-  
-  const { count: plansThisWeek } = await supabase
-    .from("plan_requests")
-    .select("*", { count: "exact", head: true })
-    .gte("created_at", sevenDaysAgo.toISOString());
 
-  // 2. Fetch all for aggregation (small scale)
-  const { data: allRequests } = await supabase
-    .from("plan_requests")
-    .select("*")
-    .order("created_at", { ascending: false });
+  // Fetch all dashboard data — allRequests is critical for aggregations; others degrade to empty
+  let adminFetchError = false;
+  let totalPlans = 0;
+  let plansThisWeek = 0;
+  let allRequests: Array<Record<string, string | number>> = [];
+  let observations: Array<{ id: string; resolved: boolean; created_at: string; tester_name: string; device_and_network: string; what_they_tried: string; what_frustrated_them: string | null; what_they_wished_existed: string | null }> = [];
+  let suggestions: Array<{ id: string; created_at: string; reviewed: boolean; spot_name: string; area_name: string; rough_price_per_person: number | null; suggester_whatsapp: string | null }> = [];
+  let inquiries: Array<{ id: string; created_at: string; converted: boolean; contacted: boolean; business_name: string; owner_name: string; whatsapp_number: string; area_slug: string; listing_tier: string; monthly_budget_ngn: number | null }> = [];
+  let staleSpots: Array<{ id: string; name: string; price_updated_at: string; verified_by: string | null; active: boolean }> = [];
 
-  if (!allRequests) return <div>Error loading data</div>;
+  try {
+    const [
+      totalPlansResult,
+      plansThisWeekResult,
+      allRequestsResult,
+      observationsResult,
+      suggestionsResult,
+      inquiriesResult,
+      staleSpotsResult,
+    ] = await Promise.all([
+      supabase.from("plan_requests").select("*", { count: "exact", head: true }),
+      supabase.from("plan_requests").select("*", { count: "exact", head: true }).gte("created_at", sevenDaysAgo.toISOString()),
+      supabase.from("plan_requests").select("*").order("created_at", { ascending: false }),
+      supabase.from("tester_observations").select("*").order("created_at", { ascending: false }),
+      supabase.from("spot_suggestions").select("*").order("created_at", { ascending: false }),
+      supabase.from("operator_inquiries").select("*").order("created_at", { ascending: false }),
+      supabase.from("spots").select("id, name, price_updated_at, verified_by, active").lt("price_updated_at", sixtyDaysAgo.toISOString()).eq("active", true).order("price_updated_at", { ascending: true }),
+    ]);
 
-  // 3. Fetch Observations & Suggestions & Stale Spots
-  const { data: observations } = await supabase
-    .from("tester_observations")
-    .select("*")
-    .order("created_at", { ascending: false });
+    if (!allRequestsResult.error) {
+      totalPlans = totalPlansResult.count || 0;
+      plansThisWeek = plansThisWeekResult.count || 0;
+      allRequests = (allRequestsResult.data || []) as typeof allRequests;
+      observations = (observationsResult.data || []) as typeof observations;
+      suggestions = (suggestionsResult.data || []) as typeof suggestions;
+      inquiries = (inquiriesResult.data || []) as typeof inquiries;
+      staleSpots = (staleSpotsResult.data || []) as typeof staleSpots;
+    } else {
+      adminFetchError = true;
+    }
+  } catch {
+    adminFetchError = true;
+  }
 
-  const unresolvedCount = observations?.filter(o => !o.resolved).length || 0;
+  if (adminFetchError) {
+    return <PageError message="Could not load admin dashboard data. Please try again." href="/admin" linkLabel="Retry" />;
+  }
 
-  const { data: suggestions } = await supabase
-    .from("spot_suggestions")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  const { data: inquiries } = await supabase
-    .from("operator_inquiries")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  const { data: staleSpots } = await supabase
-    .from("spots")
-    .select("id, name, price_updated_at, verified_by, active")
-    .lt("price_updated_at", sixtyDaysAgo.toISOString())
-    .eq("active", true)
-    .order("price_updated_at", { ascending: true });
-
-  const totalInquiries = inquiries?.length || 0;
-  const unconvertedInquiries = inquiries?.filter(i => !i.converted).length || 0;
+  const unresolvedCount = observations.filter(o => !o.resolved).length;
+  const totalInquiries = inquiries.length;
+  const unconvertedInquiries = inquiries.filter(i => !i.converted).length;
 
   // Aggregations
   const vibeCounts = allRequests.reduce<Record<string, number>>((acc, r) => {
-    acc[r.vibe] = (acc[r.vibe] || 0) + 1;
+    const vibe = String(r.vibe || "");
+    acc[vibe] = (acc[vibe] || 0) + 1;
     return acc;
   }, {});
   const popularVibe = Object.entries(vibeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
 
   const areaCounts = allRequests.reduce<Record<string, number>>((acc, r) => {
-    acc[r.start_area] = (acc[r.start_area] || 0) + 1;
+    const area = String(r.start_area || "");
+    acc[area] = (acc[area] || 0) + 1;
     return acc;
   }, {});
   const popularArea = Object.entries(areaCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
@@ -85,9 +94,10 @@ export default async function AdminDashboard() {
     "Over ₦100k": 0
   };
   allRequests.forEach(r => {
-    if (r.budget < 20000) budgetRanges["Under ₦20k"]++;
-    else if (r.budget < 50000) budgetRanges["₦20k–₦50k"]++;
-    else if (r.budget < 100000) budgetRanges["₦50k–₦100k"]++;
+    const b = Number(r.budget);
+    if (b < 20000) budgetRanges["Under ₦20k"]++;
+    else if (b < 50000) budgetRanges["₦20k–₦50k"]++;
+    else if (b < 100000) budgetRanges["₦50k–₦100k"]++;
     else budgetRanges["Over ₦100k"]++;
   });
 
@@ -278,11 +288,11 @@ export default async function AdminDashboard() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {recentRequests.map((r) => (
-                <tr key={r.id} className="text-sm font-medium">
-                  <td className="px-6 py-4 text-gray-400">{timeAgo(r.created_at)}</td>
+                <tr key={String(r.id)} className="text-sm font-medium">
+                  <td className="px-6 py-4 text-gray-400">{timeAgo(String(r.created_at))}</td>
                   <td className="px-6 py-4 capitalize">{r.start_area}</td>
                   <td className="px-6 py-4">{r.vibe}</td>
-                  <td className="px-6 py-4">₦{r.budget.toLocaleString()}</td>
+                  <td className="px-6 py-4">₦{Number(r.budget).toLocaleString()}</td>
                   <td className="px-6 py-4">{r.squad_size}</td>
                   <td className="px-6 py-4 text-right">{r.results_count}</td>
                 </tr>
@@ -318,8 +328,8 @@ export default async function AdminDashboard() {
                     <td className="px-6 py-4 font-bold">{o.tester_name}</td>
                     <td className="px-6 py-4 text-xs">{o.device_and_network}</td>
                     <td className="px-6 py-4 truncate max-w-[150px]" title={o.what_they_tried}>{o.what_they_tried}</td>
-                    <td className="px-6 py-4 truncate max-w-[150px] text-red-500" title={o.what_frustrated_them}>{o.what_frustrated_them || "—"}</td>
-                    <td className="px-6 py-4 truncate max-w-[150px] text-[#008751]" title={o.what_they_wished_existed}>{o.what_they_wished_existed || "—"}</td>
+                    <td className="px-6 py-4 truncate max-w-[150px] text-red-500" title={o.what_frustrated_them ?? undefined}>{o.what_frustrated_them ?? "—"}</td>
+                    <td className="px-6 py-4 truncate max-w-[150px] text-[#008751]" title={o.what_they_wished_existed ?? undefined}>{o.what_they_wished_existed ?? "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -342,13 +352,13 @@ export default async function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {suggestions?.map((s) => (
+                {suggestions.map((s) => (
                   <tr key={s.id} className={`text-sm font-medium ${!s.reviewed ? 'bg-blue-50/30' : ''}`}>
                     <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(s.created_at)}</td>
                     <td className="px-6 py-4 font-bold">{s.spot_name}</td>
                     <td className="px-6 py-4">{s.area_name}</td>
-                    <td className="px-6 py-4">₦{s.rough_price_per_person?.toLocaleString() || "—"}</td>
-                    <td className="px-6 py-4 text-gray-400 font-mono text-xs">{s.suggester_whatsapp || "—"}</td>
+                    <td className="px-6 py-4">₦{s.rough_price_per_person?.toLocaleString() ?? "—"}</td>
+                    <td className="px-6 py-4 text-gray-400 font-mono text-xs">{s.suggester_whatsapp ?? "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -385,7 +395,7 @@ export default async function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {inquiries?.map((i) => (
+                {inquiries.map((i) => (
                   <tr key={i.id} className={`text-sm font-medium ${!i.contacted ? 'bg-yellow-50/30' : ''}`}>
                     <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(i.created_at)}</td>
                     <td className="px-6 py-4 font-bold">{i.business_name}</td>
@@ -401,7 +411,7 @@ export default async function AdminDashboard() {
                         {i.listing_tier}
                       </span>
                     </td>
-                    <td className="px-6 py-4">₦{i.monthly_budget_ngn?.toLocaleString() || "—"}</td>
+                    <td className="px-6 py-4">₦{i.monthly_budget_ngn?.toLocaleString() ?? "—"}</td>
                     <td className="px-6 py-4">{i.contacted ? "✅" : "❌"}</td>
                     <td className="px-6 py-4">{i.converted ? "✅" : "❌"}</td>
                   </tr>

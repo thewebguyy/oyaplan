@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MapPin, Utensils, Car, Info, ArrowRight } from "lucide-react";
+import PageError from "@/components/PageError";
 
 export const dynamic = "force-dynamic";
 
@@ -13,45 +14,62 @@ interface PlanPageProps {
 
 export async function generateMetadata({ params }: PlanPageProps): Promise<Metadata> {
   const { id } = await params;
-  const { data: plan } = await supabase
-    .from("shared_plans")
-    .select("*, spot:spots(*)")
-    .eq("id", id)
-    .single();
+  try {
+    const { data: plan } = await supabase
+      .from("shared_plans")
+      .select("*, spot:spots(*)")
+      .eq("id", id)
+      .single();
 
-  if (!plan) {
+    if (!plan) {
+      return { title: "Plan Not Found | OyaPlan" };
+    }
+
+    const spotName = plan.spot?.name || "Unknown Spot";
+    const totalCost = plan.total_cost.toLocaleString();
+    const squadSize = plan.squad_size;
+
     return {
-      title: "Plan Not Found | OyaPlan",
-    };
-  }
-
-  const spotName = plan.spot?.name || "Unknown Spot";
-  const totalCost = plan.total_cost.toLocaleString();
-  const squadSize = plan.squad_size;
-
-  return {
-    title: `Squad plan at ${spotName} — OyaPlan`,
-    description: `Total cost: ₦${totalCost} for ${squadSize} people. See the full breakdown.`,
-    openGraph: {
       title: `Squad plan at ${spotName} — OyaPlan`,
       description: `Total cost: ₦${totalCost} for ${squadSize} people. See the full breakdown.`,
-      images: [`/plan/${id}/og`],
-      type: "website",
-    },
-  };
+      openGraph: {
+        title: `Squad plan at ${spotName} — OyaPlan`,
+        description: `Total cost: ₦${totalCost} for ${squadSize} people. See the full breakdown.`,
+        images: [`/plan/${id}/og`],
+        type: "website",
+      },
+    };
+  } catch {
+    return { title: "OyaPlan" };
+  }
 }
 
 export default async function PlanPage({ params }: PlanPageProps) {
   const { id } = await params;
 
-  const { data: plan } = await supabase
-    .from("shared_plans")
-    .select("*, spot:spots(*)")
-    .eq("id", id)
-    .single();
+  let plan;
+  let planFetchError = false;
+  try {
+    const { data, error } = await supabase
+      .from("shared_plans")
+      .select("*, spot:spots(*)")
+      .eq("id", id)
+      .single();
 
-  if (!plan) {
-    notFound();
+    if (error) {
+      if (error.code === "PGRST116") notFound();
+      planFetchError = true;
+    } else if (!data) {
+      notFound();
+    } else {
+      plan = data;
+    }
+  } catch {
+    planFetchError = true;
+  }
+
+  if (planFetchError) {
+    return <PageError message="We could not load this plan. Please try again." href="/" linkLabel="Plan a new outing" />;
   }
 
   const hasFood = plan.spot?.has_food !== false;

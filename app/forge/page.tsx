@@ -23,22 +23,27 @@ export default async function ForgePage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedParams = await searchParams;
-  
-  // Fetch all active spots once
-  const { data: allSpots, error } = await supabase
-    .from("spots")
-    .select("*, areas(*)")
-    .eq("active", true);
 
-  if (error || !allSpots || allSpots.length === 0) {
+  let allSpots;
+  try {
+    const { data, error } = await supabase
+      .from("spots")
+      .select("*, areas(*)")
+      .eq("active", true);
+
+    if (error || !data || data.length === 0) {
+      redirect("/?error=spots_unavailable");
+    }
+    allSpots = data;
+  } catch {
     redirect("/?error=spots_unavailable");
   }
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <ForgeResultsClient 
-        allSpots={allSpots || []} 
-        params={resolvedParams as any} 
+      <ForgeResultsClient
+        allSpots={allSpots}
+        params={resolvedParams as Record<string, string | string[] | undefined>}
       />
     </main>
   );

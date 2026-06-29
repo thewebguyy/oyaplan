@@ -1,5 +1,6 @@
 import ForgeForm from "@/components/ForgeForm";
 import ErrorBanner from "@/components/ErrorBanner";
+import PageError from "@/components/PageError";
 import { supabase } from "@/lib/supabase";
 import { Area } from "@/lib/types";
 import Link from "next/link";
@@ -8,25 +9,51 @@ import { Suspense } from "react";
 export const revalidate = 300;
 
 export default async function LandingPage() {
-  const [areasResult, planCountResult, recentPlansResult, trendingResult] = await Promise.all([
-    supabase.from("areas").select("*").eq("active", true).order("name"),
-    supabase.from("plan_requests").select("*", { count: "exact", head: true }),
-    supabase.from("shared_plans").select(`
-      total_cost,
-      spots (
-        name,
-        areas (
-          name
-        )
-      )
-    `).order("created_at", { ascending: false }).limit(4),
-    supabase.from("spots").select("id, name, zone, trending_score").gt("trending_score", 0).order("trending_score", { ascending: false }).limit(5)
-  ]);
+  // Areas are critical — the form cannot render without them.
+  // Supplementary data (plan count, recent plans, trending) degrades to empty.
+  let areas: Area[] = [];
+  let planCount = 0;
+  let recentPlans: Array<{ total_cost: number; spots: { name: string; areas: { name: string } } }> = [];
+  let trendingSpots: Array<{ id: string; name: string; zone: string }> = [];
 
-  const areas = areasResult.data || [];
-  const planCount = planCountResult.count || 0;
-  const recentPlans = (recentPlansResult.data || []).filter(p => p.spots && (p.spots as any).areas);
-  const trendingSpots = trendingResult.data || [];
+  let landingFetchError = false;
+  try {
+    const [areasResult, planCountResult, recentPlansResult, trendingResult] = await Promise.all([
+      supabase.from("areas").select("*").eq("active", true).order("name"),
+      supabase.from("plan_requests").select("*", { count: "exact", head: true }),
+      supabase.from("shared_plans").select(`
+        total_cost,
+        spots (
+          name,
+          areas (
+            name
+          )
+        )
+      `).order("created_at", { ascending: false }).limit(4),
+      supabase.from("spots").select("id, name, zone, trending_score").gt("trending_score", 0).order("trending_score", { ascending: false }).limit(5)
+    ]);
+
+    if (areasResult.error) {
+      landingFetchError = true;
+    } else {
+      areas = (areasResult.data || []) as Area[];
+      planCount = planCountResult.count || 0;
+      recentPlans = ((recentPlansResult.data || []) as unknown as typeof recentPlans).filter(p => p.spots?.areas);
+      trendingSpots = (trendingResult.data || []) as typeof trendingSpots;
+    }
+  } catch {
+    landingFetchError = true;
+  }
+
+  if (landingFetchError) {
+    return (
+      <PageError
+        message="We could not load the planner right now. Please try again in a moment."
+        href="/"
+        linkLabel="Try again"
+      />
+    );
+  }
 
   return (
     <main className="min-h-screen bg-brand-green text-white antialiased">
@@ -41,7 +68,7 @@ export default async function LandingPage() {
             <span className="text-brand-yellow">Get one complete plan in 3s.</span>
           </h1>
           <p className="type-body text-white/80 max-w-2xl mx-auto">
-            Input 4 simple fields. Get the exact food cost, transport estimate, and "why it fits" note. Copy to WhatsApp and go.
+            Input 4 simple fields. Get the exact food cost, transport estimate, and &ldquo;why it fits&rdquo; note. Copy to WhatsApp and go.
           </p>
 
           {/* Form Card Container */}
@@ -64,10 +91,10 @@ export default async function LandingPage() {
               <h2 className="type-subheading text-text-primary">Trending in Lagos this week</h2>
             </div>
             <div className="flex overflow-x-auto gap-4 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              {trendingSpots.map((spot: any) => (
-                <Link 
-                  key={spot.id} 
-                  href={`/explore/${spot.zone}?pinnedSpotId=${spot.id}`} 
+              {trendingSpots.map((spot) => (
+                <Link
+                  key={spot.id}
+                  href={`/explore/${spot.zone}?pinnedSpotId=${spot.id}`}
                   className="min-w-[200px] p-5 border border-border-default rounded-[16px] bg-surface-grey hover:border-brand-green hover:shadow-[0px_4px_12px_rgba(0,135,81,0.08)] transition-all tap-feedback shrink-0 flex flex-col justify-between"
                 >
                   <h3 className="type-label text-text-primary mb-1 truncate">{spot.name}</h3>
@@ -86,7 +113,7 @@ export default async function LandingPage() {
             <div className="space-y-6">
               <h2 className="type-label text-white/60">Recently planned outings</h2>
               <div className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 overflow-x-auto pb-4 md:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                {recentPlans.map((plan: any, i) => (
+                {recentPlans.map((plan, i) => (
                   <div key={i} className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 flex items-center gap-2 shrink-0">
                     <span className="type-label text-white/90 lowercase first-letter:uppercase">{plan.spots.name}</span>
                     <span className="text-white/20">&bull;</span>
