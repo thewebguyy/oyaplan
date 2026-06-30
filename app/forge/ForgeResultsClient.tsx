@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Spot, Plan, ForgeInput } from "@/lib/types";
 import { forgePlans } from "@/lib/matchingEngine";
 import { supabase } from "@/lib/supabase";
+import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
   const [nearbySpots, setNearbySpots] = useState<Spot[]>([]);
   const [targetAreaName, setTargetAreaName] = useState("");
   const [forgeInput, setForgeInput] = useState<ForgeInput | null>(null);
+  const [vibeMetrics, setVibeMetrics] = useState<{ min: number; median: number; max: number } | null>(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -46,9 +48,9 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         squadSize: parseInt(params.squadSize || "2"),
         budget: parseInt(params.budget || "50000"),
         vibe: params.vibe || "Chill",
-        pinnedSpotId: (params as any).pinnedSpotId,
-        categoryGroup: (params as any).categoryGroup,
-        daypart: (params as any).daypart,
+        pinnedSpotId: params.pinnedSpotId,
+        categoryGroup: params.categoryGroup,
+        daypart: params.daypart as ForgeInput['daypart'],
       };
 
       setForgeInput(input);
@@ -59,7 +61,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           ...input,
           timestamp: Date.now()
         }));
-      } catch (e) {}
+      } catch { /* ignore localStorage errors */ }
 
       // 2. Generate plans (deterministic)
       const generatedPlans = forgePlans(input, allSpots);
@@ -72,11 +74,11 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         
         if (prices.length > 0) {
           const sortedPrices = [...prices].sort((a, b) => a - b);
-          const min = sortedPrices[0];
-          const max = sortedPrices[sortedPrices.length - 1];
-          const median = sortedPrices[Math.floor(sortedPrices.length / 2)];
-          
-          (input as any).vibeMetrics = { min, median, max };
+          setVibeMetrics({
+            min: sortedPrices[0],
+            max: sortedPrices[sortedPrices.length - 1],
+            median: sortedPrices[Math.floor(sortedPrices.length / 2)],
+          });
         }
 
         const { data: areaData } = await supabase
@@ -115,8 +117,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
   }
 
   const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput?.startArea)?.areas?.name || forgeInput?.startArea;
-  const vibeMetrics = (forgeInput as any)?.vibeMetrics;
-  const recoveryBudget = (vibeMetrics && forgeInput && forgeInput.budget < vibeMetrics.median) 
+  const recoveryBudget = (vibeMetrics && forgeInput && forgeInput.budget < vibeMetrics.median)
     ? vibeMetrics.median 
     : (forgeInput?.budget || 0) * 1.2;
 
@@ -236,7 +237,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           {nearbySpots.length > 0 && (
             <div className="mt-16 pt-12 border-t border-border-default text-left max-w-2xl mx-auto">
               <h3 className="type-label text-text-muted mb-8 text-center md:text-left">
-                Nothing in budget — but here's what's in {targetAreaName || "that area"}
+                Nothing in budget — but here&apos;s what&apos;s in {targetAreaName || "that area"}
               </h3>
               <div className="grid grid-cols-1 gap-4">
                 {nearbySpots.map(spot => (
@@ -271,7 +272,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       {plans.length > 0 && (
         <div className="text-center pt-12 space-y-4 pb-32 md:pb-12">
           <p className="type-body text-text-muted">
-            "Stop the wahala. Just pick one and send it."
+            &quot;Stop the wahala. Just pick one and send it.&quot;
           </p>
           <div className="flex items-center justify-center gap-4 type-label text-text-muted opacity-50 uppercase tracking-[0.1em]">
             <span>Deterministic Engine v1.0</span>
@@ -321,28 +322,25 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
     setLoading(true);
     setError(false);
 
-    try {
-      const { error: insertError } = await supabase.from("spot_suggestions").insert({
-        spot_name: formData.name,
-        area_name: currentArea,
-        rough_price_per_person: parseInt(formData.price),
-        suggester_whatsapp: formData.whatsapp || null
-      });
+    const result = await submitSpotSuggestion({
+      spotName: formData.name,
+      areaName: currentArea,
+      roughPricePerPerson: parseInt(formData.price),
+      suggesterWhatsapp: formData.whatsapp || null,
+    });
 
-      if (insertError) throw insertError;
+    setLoading(false);
+    if (result.success) {
       setSuccess(true);
-    } catch (err) {
-      console.error(err);
+    } else {
       setError(true);
-    } finally {
-      setLoading(false);
     }
   };
 
   if (success) {
     return (
       <p className="type-label text-brand-green animate-in fade-in">
-        Thanks — we'll look into it.
+        Thanks — we&apos;ll look into it.
       </p>
     );
   }
@@ -392,7 +390,7 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
       </div>
       <div className="flex items-center justify-between gap-4">
         <p className="type-caption text-text-muted text-left">
-          We'll notify you when it's added.
+          We&apos;ll notify you when it&apos;s added.
         </p>
         <div className="flex items-center gap-3">
           {error && <span className="type-caption text-error">Something went wrong</span>}

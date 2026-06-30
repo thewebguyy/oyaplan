@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import { submitOperatorInquiry } from "@/lib/actions/submitOperatorInquiry";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,30 +86,24 @@ export default function ListYourSpotPage() {
     setLoading(true);
     setError(null);
 
-    try {
-      const { error: insertError } = await supabase.from("operator_inquiries").insert({
-        business_name: formData.businessName,
-        owner_name: formData.ownerName,
-        whatsapp_number: formData.whatsappNumber,
-        area_slug: formData.areaSlug,
-        spot_category: formData.spotCategory,
-        price_per_person_range: formData.priceRange,
-        listing_tier: formData.listingTier,
-        monthly_budget_ngn: formData.monthlyBudget === "Under ₦50k" ? 25000 : 
-                           formData.monthlyBudget === "₦50k–₦150k" ? 100000 :
-                           formData.monthlyBudget === "₦150k–₦500k" ? 300000 :
-                           formData.monthlyBudget === "Over ₦500k" ? 750000 : null,
-        how_they_heard: formData.howHeard || null,
-        additional_notes: formData.notes || null
-      });
+    const result = await submitOperatorInquiry({
+      businessName: formData.businessName,
+      ownerName: formData.ownerName,
+      whatsappNumber: formData.whatsappNumber,
+      areaSlug: formData.areaSlug,
+      spotCategory: formData.spotCategory,
+      priceRange: formData.priceRange,
+      listingTier: formData.listingTier,
+      monthlyBudget: formData.monthlyBudget,
+      howHeard: formData.howHeard,
+      notes: formData.notes,
+    });
 
-      if (insertError) throw insertError;
+    setLoading(false);
+    if (result.success) {
       setSubmitted(true);
-    } catch (err: any) {
-      console.error(err);
+    } else {
       setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -162,7 +156,7 @@ export default function ListYourSpotPage() {
               <h3 className="type-subheading text-white flex items-center gap-2">
                 <span className="text-brand-yellow">💰</span> Budget-transparent
               </h3>
-              <p className="type-body text-white/70">Your spot appears when someone's budget genuinely fits what you charge.</p>
+              <p className="type-body text-white/70">Your spot appears when someone&apos;s budget genuinely fits what you charge.</p>
             </div>
             <div className="space-y-3">
               <h3 className="type-subheading text-white flex items-center gap-2">
@@ -203,7 +197,7 @@ export default function ListYourSpotPage() {
             </h3>
             <div className="text-4xl font-[900] text-text-primary mb-6">₦25,000<span className="type-label text-text-muted ml-2">/month</span></div>
             <p className="type-body text-text-secondary flex-grow mb-8 leading-relaxed">
-              Priority placement. Your spot surfaces first for matching searches in your area. "Featured" badge on your plan card.
+              Priority placement. Your spot surfaces first for matching searches in your area. &quot;Featured&quot; badge on your plan card.
             </p>
             <Button 
               className="w-full h-14 rounded-[12px] bg-brand-green hover:bg-brand-green-70 text-white type-subheading tap-feedback shadow-none border-none"
@@ -220,7 +214,7 @@ export default function ListYourSpotPage() {
             </h3>
             <div className="text-4xl font-[900] text-text-primary mb-6">₦50,000<span className="type-label text-text-muted ml-2">/month</span></div>
             <p className="type-body text-text-secondary flex-grow mb-8 leading-relaxed">
-              City-wide priority. Appears in searches across all areas for relevant vibes. "OyaPlan Verified" badge.
+              City-wide priority. Appears in searches across all areas for relevant vibes. &quot;OyaPlan Verified&quot; badge.
             </p>
             <Button 
               className="w-full h-14 rounded-[12px] border border-brand-green text-brand-green bg-white hover:bg-brand-green-5 type-subheading tap-feedback shadow-none"
@@ -237,7 +231,7 @@ export default function ListYourSpotPage() {
         <div className="bg-surface-grey rounded-[32px] p-8 md:p-16 border border-border-default space-y-12">
           <div className="space-y-3">
             <h2 className="type-display text-text-primary">List My Spot</h2>
-            <p className="type-body text-text-muted">Complete the form below and we'll get you started.</p>
+            <p className="type-body text-text-muted">Complete the form below and we&apos;ll get you started.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">

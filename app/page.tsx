@@ -2,6 +2,7 @@ import ForgeForm from "@/components/ForgeForm";
 import ErrorBanner from "@/components/ErrorBanner";
 import PageError from "@/components/PageError";
 import { supabase } from "@/lib/supabase";
+import { captureServerException } from "@/lib/sentry";
 import { Area } from "@/lib/types";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -41,7 +42,8 @@ export default async function LandingPage() {
       recentPlans = ((recentPlansResult.data || []) as unknown as typeof recentPlans).filter(p => p.spots?.areas);
       trendingSpots = (trendingResult.data || []) as typeof trendingSpots;
     }
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     landingFetchError = true;
   }
 
