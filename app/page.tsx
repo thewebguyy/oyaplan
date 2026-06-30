@@ -1,8 +1,10 @@
 import ForgeForm from "@/components/ForgeForm";
 import ErrorBanner from "@/components/ErrorBanner";
 import PageError from "@/components/PageError";
-import { supabase } from "@/lib/supabase";
 import { captureServerException } from "@/lib/sentry";
+import { getActiveAreas } from "@/lib/queries/areas";
+import { getPlanCount, getRecentSharedPlans } from "@/lib/queries/plans";
+import { getTrendingSpots } from "@/lib/queries/spots";
 import { Area } from "@/lib/types";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -20,26 +22,18 @@ export default async function LandingPage() {
   let landingFetchError = false;
   try {
     const [areasResult, planCountResult, recentPlansResult, trendingResult] = await Promise.all([
-      supabase.from("areas").select("*").eq("active", true).order("name"),
-      supabase.from("plan_requests").select("*", { count: "exact", head: true }),
-      supabase.from("shared_plans").select(`
-        total_cost,
-        spots (
-          name,
-          areas (
-            name
-          )
-        )
-      `).order("created_at", { ascending: false }).limit(4),
-      supabase.from("spots").select("id, name, zone, trending_score").gt("trending_score", 0).order("trending_score", { ascending: false }).limit(5)
+      getActiveAreas(),
+      getPlanCount(),
+      getRecentSharedPlans(4),
+      getTrendingSpots(5),
     ]);
 
     if (areasResult.error) {
       landingFetchError = true;
     } else {
       areas = (areasResult.data || []) as Area[];
-      planCount = planCountResult.count || 0;
-      recentPlans = ((recentPlansResult.data || []) as unknown as typeof recentPlans).filter(p => p.spots?.areas);
+      planCount = planCountResult.data;
+      recentPlans = recentPlansResult.data || [];
       trendingSpots = (trendingResult.data || []) as typeof trendingSpots;
     }
   } catch (e) {

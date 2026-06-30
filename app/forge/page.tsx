@@ -1,6 +1,6 @@
-import { supabase } from "@/lib/supabase";
 import { getAllowedCategories } from "@/lib/matchingEngine";
 import { captureServerException } from "@/lib/sentry";
+import { getForgeSpots } from "@/lib/queries/spots";
 import ForgeResultsClient from "./ForgeResultsClient";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
@@ -31,16 +31,7 @@ export default async function ForgePage({
 
   let allSpots;
   try {
-    let query = supabase
-      .from("spots")
-      .select("*, areas(*)")
-      .eq("active", true);
-
-    if (allowedCategories) {
-      query = query.in("category", allowedCategories);
-    }
-
-    const { data, error } = await query;
+    const { data, error } = await getForgeSpots(allowedCategories ?? undefined);
 
     if (error || !data || data.length === 0) {
       redirect("/?error=spots_unavailable");

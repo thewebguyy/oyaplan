@@ -1,5 +1,6 @@
-import { supabase } from "@/lib/supabase";
 import { captureServerException } from "@/lib/sentry";
+import { getZoneBySlug, getZoneNameBySlug } from "@/lib/queries/zones";
+import { getAreasByZone, getAreaWithSpots, getAreaNameBySlug } from "@/lib/queries/areas";
 import Link from "next/link";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,14 +18,14 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const { data: zone } = await supabase.from("zones").select("name").eq("slug", slug).single();
+    const { data: zone } = await getZoneNameBySlug(slug);
     if (zone) {
       return {
         title: `Explore ${zone.name} — OyaPlan`,
         description: `Discover spots in ${zone.name} Lagos.`,
       };
     }
-    const { data: area } = await supabase.from("areas").select("name").eq("slug", slug).single();
+    const { data: area } = await getAreaNameBySlug(slug);
     if (area) {
       return {
         title: `${area.name} Outing Spots — OyaPlan`,
@@ -47,12 +48,8 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   let zoneData: { id: string; name: string; slug: string; description: string } | null = null;
   let zoneQueryError = false;
   try {
-    const { data, error } = await supabase
-      .from("zones")
-      .select("*")
-      .eq("slug", slug)
-      .single();
-    if (error && error.code !== "PGRST116") zoneQueryError = true;
+    const { data, error } = await getZoneBySlug(slug);
+    if (error) zoneQueryError = true;
     else zoneData = data;
   } catch (e) {
     captureServerException(e);
@@ -67,27 +64,11 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     let areas: Array<{ id: string; name: string; slug: string; activeSpotCount: number }> = [];
     let zoneAreasError = false;
     try {
-      const { data: areasData, error } = await supabase
-        .from("areas")
-        .select("*, spots!inner(active, zone)")
-        .eq("spots.zone", slug)
-        .eq("spots.active", true)
-        .order("name");
+      const { data, error } = await getAreasByZone(slug);
       if (error) {
         zoneAreasError = true;
       } else {
-        const areasMap = new Map<string, { id: string; name: string; slug: string; activeSpotCount: number }>();
-        (areasData || []).forEach((area) => {
-          if (!areasMap.has(area.id)) {
-            areasMap.set(area.id, {
-              id: area.id,
-              name: area.name,
-              slug: area.slug,
-              activeSpotCount: (area.spots as Array<unknown>)?.length || 0,
-            });
-          }
-        });
-        areas = Array.from(areasMap.values());
+        areas = data || [];
       }
     } catch (e) {
       captureServerException(e);
@@ -160,16 +141,12 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   let area: { id: string; name: string; slug: string; spots: Array<{ id: string; name: string; active: boolean; category: string; address: string; price_per_person: number; fitsBudget?: boolean }> } | null = null;
   let areaFetchError = false;
   try {
-    const { data, error } = await supabase
-      .from("areas")
-      .select("*, spots(*)")
-      .eq("slug", slug)
-      .single();
+    const { data, error, notFound: isNotFound } = await getAreaWithSpots(slug);
+    if (isNotFound) notFound();
     if (error) {
-      if (error.code === "PGRST116") notFound();
       areaFetchError = true;
     } else {
-      area = data;
+      area = data as { id: string; name: string; slug: string; spots: Array<{ id: string; name: string; active: boolean; category: string; address: string; price_per_person: number; fitsBudget?: boolean }> };
     }
   } catch (e) {
     captureServerException(e);

@@ -1,6 +1,8 @@
 import { createServerClient } from "@/lib/supabase-server";
 import { captureServerException } from "@/lib/sentry";
-import { supabase } from "@/lib/supabase";
+import { getAllPlanRequests, getPlanCount, getPlanCountSince } from "@/lib/queries/plans";
+import { getStaleSpotsForAdmin } from "@/lib/queries/spots";
+import { getTesterObservations, getSpotSuggestions, getOperatorInquiries } from "@/lib/queries/admin";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
 import PageError from "@/components/PageError";
@@ -41,18 +43,18 @@ export default async function AdminDashboard() {
       inquiriesResult,
       staleSpotsResult,
     ] = await Promise.all([
-      supabase.from("plan_requests").select("*", { count: "exact", head: true }),
-      supabase.from("plan_requests").select("*", { count: "exact", head: true }).gte("created_at", sevenDaysAgo.toISOString()),
-      supabase.from("plan_requests").select("*").order("created_at", { ascending: false }),
-      supabase.from("tester_observations").select("*").order("created_at", { ascending: false }),
-      supabase.from("spot_suggestions").select("*").order("created_at", { ascending: false }),
-      supabase.from("operator_inquiries").select("*").order("created_at", { ascending: false }),
-      supabase.from("spots").select("id, name, price_updated_at, verified_by, active").lt("price_updated_at", sixtyDaysAgo.toISOString()).eq("active", true).order("price_updated_at", { ascending: true }),
+      getPlanCount(),
+      getPlanCountSince(sevenDaysAgo.toISOString()),
+      getAllPlanRequests(),
+      getTesterObservations(),
+      getSpotSuggestions(),
+      getOperatorInquiries(),
+      getStaleSpotsForAdmin(sixtyDaysAgo.toISOString()),
     ]);
 
     if (!allRequestsResult.error) {
-      totalPlans = totalPlansResult.count || 0;
-      plansThisWeek = plansThisWeekResult.count || 0;
+      totalPlans = totalPlansResult.data;
+      plansThisWeek = plansThisWeekResult.data;
       allRequests = (allRequestsResult.data || []) as typeof allRequests;
       observations = (observationsResult.data || []) as typeof observations;
       suggestions = (suggestionsResult.data || []) as typeof suggestions;

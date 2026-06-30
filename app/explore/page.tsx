@@ -1,5 +1,6 @@
-import { supabase } from "@/lib/supabase";
 import { captureServerException } from "@/lib/sentry";
+import { getAreasWithSpotCounts } from "@/lib/queries/areas";
+import { getAllZones, getActiveSpotsByZone } from "@/lib/queries/zones";
 import PageError from "@/components/PageError";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -28,9 +29,9 @@ export default async function ExploreIndex({
   let fetchError = false;
   try {
     const [zonesResult, spotsResult, areasResult] = await Promise.all([
-      supabase.from("zones").select("*").order("name"),
-      supabase.from("spots").select("zone, active, area_id").eq("active", true),
-      supabase.from("areas").select("*, spots(active)").order("name"),
+      getAllZones(),
+      getActiveSpotsByZone(),
+      getAreasWithSpotCounts(),
     ]);
 
     if (zonesResult.error || spotsResult.error || areasResult.error) {
@@ -47,12 +48,7 @@ export default async function ExploreIndex({
         };
       }).filter((zone) => zone.activeSpotCount > 0);
 
-      areas = (areasResult.data || [])
-        .map((area) => ({
-          ...area,
-          activeSpotCount: (area.spots as Array<{ active: boolean }> | null)?.filter((s) => s.active).length || 0,
-        }))
-        .filter((area) => area.activeSpotCount > 0);
+      areas = (areasResult.data || []).filter((area) => area.activeSpotCount > 0);
     }
   } catch (e) {
     captureServerException(e);
