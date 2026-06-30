@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { captureServerException } from "@/lib/sentry";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -39,7 +40,8 @@ export async function generateMetadata({ params }: PlanPageProps): Promise<Metad
         type: "website",
       },
     };
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     return { title: "OyaPlan" };
   }
 }
@@ -64,7 +66,8 @@ export default async function PlanPage({ params }: PlanPageProps) {
     } else {
       plan = data;
     }
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     planFetchError = true;
   }
 

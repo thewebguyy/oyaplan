@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { captureServerException } from "@/lib/sentry";
 import PageError from "@/components/PageError";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -53,7 +54,8 @@ export default async function ExploreIndex({
         }))
         .filter((area) => area.activeSpotCount > 0);
     }
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     fetchError = true;
   }
 

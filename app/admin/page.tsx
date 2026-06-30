@@ -1,4 +1,5 @@
 import { createServerClient } from "@/lib/supabase-server";
+import { captureServerException } from "@/lib/sentry";
 import { supabase } from "@/lib/supabase";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
@@ -60,7 +61,8 @@ export default async function AdminDashboard() {
     } else {
       adminFetchError = true;
     }
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     adminFetchError = true;
   }
 
