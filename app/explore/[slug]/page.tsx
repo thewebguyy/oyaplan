@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { captureServerException } from "@/lib/sentry";
 import Link from "next/link";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,8 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: `Restaurants, activities, and experiences in ${area.name}, Lagos. Budget-friendly squad planning.`,
       };
     }
-  } catch {
-    // fall through to default
+  } catch (e) {
+    captureServerException(e);
   }
   return { title: "Explore — OyaPlan" };
 }
@@ -53,7 +54,8 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
       .single();
     if (error && error.code !== "PGRST116") zoneQueryError = true;
     else zoneData = data;
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     zoneQueryError = true;
   }
 
@@ -87,7 +89,8 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
         });
         areas = Array.from(areasMap.values());
       }
-    } catch {
+    } catch (e) {
+      captureServerException(e);
       zoneAreasError = true;
     }
 
@@ -168,7 +171,8 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     } else {
       area = data;
     }
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     areaFetchError = true;
   }
 

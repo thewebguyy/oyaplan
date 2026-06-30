@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { getAllowedCategories } from "@/lib/matchingEngine";
+import { captureServerException } from "@/lib/sentry";
 import ForgeResultsClient from "./ForgeResultsClient";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
@@ -45,7 +46,8 @@ export default async function ForgePage({
       redirect("/?error=spots_unavailable");
     }
     allSpots = data;
-  } catch {
+  } catch (e) {
+    captureServerException(e);
     redirect("/?error=spots_unavailable");
   }
 

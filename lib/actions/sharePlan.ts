@@ -1,6 +1,7 @@
 'use server';
 
 import { supabase } from '../supabase';
+import { captureServerException } from '../sentry';
 import { Plan, ForgeInput } from '../types';
 
 export async function createShareablePlan(plan: Plan, input: ForgeInput): Promise<string | null> {
@@ -22,13 +23,13 @@ export async function createShareablePlan(plan: Plan, input: ForgeInput): Promis
       .single();
 
     if (error) {
-      console.error('Error creating shareable plan:', error);
+      captureServerException(new Error(`sharePlan Supabase error: ${error.message}`));
       return null;
     }
 
     return data.id;
   } catch (e) {
-    console.error('Unexpected error sharing plan:', e);
+    captureServerException(e);
     return null;
   }
 }
