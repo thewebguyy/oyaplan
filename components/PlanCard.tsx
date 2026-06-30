@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
-import { supabase } from "@/lib/supabase";
+import { submitPriceFlag } from "@/lib/actions/submitPriceFlag";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
 import { useMobile } from "./hooks/useMobile";
 
@@ -13,21 +13,14 @@ interface PlanCardProps {
   originalBudget?: number;
 }
 
-export default function PlanCard({ plan, index, input, isTopPick, originalBudget }: PlanCardProps) {
+export default function PlanCard({ plan, input, isTopPick, originalBudget }: PlanCardProps) {
   const [feedbackGiven, setFeedbackGiven] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = useMobile();
 
-  const handleFeedback = async (type: 'up' | 'down') => {
+  const handleFeedback = (type: 'up' | 'down') => {
     setFeedbackGiven(true);
-    try {
-      await supabase.from('price_flags').insert({
-        spot_id: plan.spot.id,
-        flag_type: type
-      });
-    } catch (e) {
-      console.error("Feedback error:", e);
-    }
+    submitPriceFlag(plan.spot.id, type).catch(() => {});
   };
 
   const hasFood = plan.spot.has_food !== false;

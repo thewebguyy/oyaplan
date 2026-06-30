@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Sparkles, MapPin, Tag, Loader2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { ArrowLeft, CheckCircle2, Sparkles, MapPin, Loader2 } from "lucide-react";
+import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 
 export default function SuggestSpotPage() {
   const [loading, setLoading] = useState(false);
@@ -22,20 +22,17 @@ export default function SuggestSpotPage() {
     setLoading(true);
     setError(false);
 
-    try {
-      const { error: insertError } = await supabase.from("spot_suggestions").insert({
-        spot_name: formData.spotName,
-        area_name: formData.location,
-        vibe_description: `${formData.vibe}: ${formData.comment}`
-      });
+    const result = await submitSpotSuggestion({
+      spotName: formData.spotName,
+      areaName: formData.location,
+      vibeDescription: `${formData.vibe}: ${formData.comment}`,
+    });
 
-      if (insertError) throw insertError;
+    setLoading(false);
+    if (result.success) {
       setSuccess(true);
-    } catch (err) {
-      console.error(err);
+    } else {
       setError(true);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -51,7 +48,7 @@ export default function SuggestSpotPage() {
           <div className="space-y-2">
             <h1 className="type-heading text-text-primary">Thanks for the plug!</h1>
             <p className="type-body text-text-muted">
-              We'll verify {formData.spotName} and add it to the engine if it fits the vibes.
+              We&apos;ll verify {formData.spotName} and add it to the engine if it fits the vibes.
             </p>
           </div>
           <div className="pt-4">
@@ -121,7 +118,7 @@ export default function SuggestSpotPage() {
             </div>
 
             <div className="space-y-3">
-              <label className="type-label text-text-secondary ml-1">What's the vibe?</label>
+              <label className="type-label text-text-secondary ml-1">What&apos;s the vibe?</label>
               <div className="flex flex-wrap gap-3">
                 {["Chill", "High Energy", "Date Night", "Work Friendly", "Group Party"].map((v) => (
                   <button
