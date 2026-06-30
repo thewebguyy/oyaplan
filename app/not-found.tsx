@@ -11,7 +11,7 @@ export default function NotFound() {
         </span>
         
         <div className="space-y-3">
-          <h1 className="type-heading text-text-primary">This plan doesn't exist.</h1>
+          <h1 className="type-heading text-text-primary">This plan doesn&apos;t exist.</h1>
           <p className="type-body text-text-secondary">
             Maybe it was deleted, or the link was wrong. Come plan a new one.
           </p>

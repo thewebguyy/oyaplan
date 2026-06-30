@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // One-off scripts never imported by the app; use CommonJS require
+    "seed-zones.js",
+    "check-zones.js",
+    ".gemini/**",
   ]),
 ]);
 
