@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Spot, Plan, ForgeInput } from "@/lib/types";
 import { forgePlans } from "@/lib/matchingEngine";
-import { supabase } from "@/lib/supabase";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
@@ -81,20 +80,14 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           });
         }
 
-        const { data: areaData } = await supabase
-          .from("areas")
-          .select("name, spots(*)")
-          .eq("slug", input.startArea)
-          .single();
-        
-        if (areaData) {
-          setTargetAreaName(areaData.name);
-          const spots = (areaData.spots as Spot[])
-            ?.filter(s => s.active)
-            .sort((a, b) => a.price_per_person - b.price_per_person)
-            .slice(0, 3);
-          setNearbySpots(spots || []);
-        }
+        const areaSpots = allSpots.filter(s => s.areas?.slug === input.startArea);
+        const areaName = areaSpots[0]?.areas?.name;
+        if (areaName) setTargetAreaName(areaName);
+        const nearby = areaSpots
+          .filter(s => s.active)
+          .sort((a, b) => a.price_per_person - b.price_per_person)
+          .slice(0, 3);
+        setNearbySpots(nearby);
       }
 
       // 3. Simulated loading time
