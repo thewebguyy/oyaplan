@@ -1,6 +1,6 @@
 'use server';
 
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@/lib/supabase-server';
 import { invalidatePriceCache } from '@/lib/queries/priceAggregation';
 
 export class ModerationError extends Error {
@@ -11,18 +11,21 @@ export class ModerationError extends Error {
 }
 
 export async function approvePriceSubmission(
-  submissionId: string,
-  adminId: string
+  submissionId: string
 ): Promise<{ id: string; status: string; spotId: string }> {
   if (!submissionId || typeof submissionId !== 'string') {
     throw new ModerationError('submissionId is required');
   }
-  if (!adminId || typeof adminId !== 'string') {
-    throw new ModerationError('adminId is required');
+
+  const serverClient = await createServerClient();
+  const { data: { user }, error: authError } = await serverClient.auth.getUser();
+
+  if (authError || !user) {
+    throw new ModerationError('Unauthorized: not authenticated');
   }
 
   // Get the submission to find the spot
-  const { data: submission, error: fetchError } = await supabase
+  const { data: submission, error: fetchError } = await serverClient
     .from('price_submissions')
     .select('id, spot_id, status')
     .eq('id', submissionId)
@@ -32,18 +35,25 @@ export async function approvePriceSubmission(
     throw new ModerationError(`Submission not found: ${fetchError?.message}`);
   }
 
-  // Update status to approved
-  const { error: updateError } = await supabase
+  // Only allow update if status is 'pending' (idempotency)
+  const { data: updated, error: updateError } = await serverClient
     .from('price_submissions')
     .update({
       status: 'approved',
       reviewed_at: new Date().toISOString(),
-      reviewed_by: adminId,
+      reviewed_by: user.id,
     })
-    .eq('id', submissionId);
+    .eq('id', submissionId)
+    .eq('status', 'pending')
+    .select('status')
+    .single();
 
   if (updateError) {
     throw new ModerationError(`Failed to approve: ${updateError.message}`);
+  }
+
+  if (!updated) {
+    throw new ModerationError('Submission already reviewed or not found');
   }
 
   // Invalidate cache
@@ -58,14 +68,10 @@ export async function approvePriceSubmission(
 
 export async function rejectPriceSubmission(
   submissionId: string,
-  adminId: string,
   rejectionReason: string
 ): Promise<{ id: string; status: string; spotId: string }> {
   if (!submissionId || typeof submissionId !== 'string') {
     throw new ModerationError('submissionId is required');
-  }
-  if (!adminId || typeof adminId !== 'string') {
-    throw new ModerationError('adminId is required');
   }
   if (!rejectionReason || typeof rejectionReason !== 'string') {
     throw new ModerationError('rejectionReason is required');
@@ -74,8 +80,15 @@ export async function rejectPriceSubmission(
     throw new ModerationError('rejectionReason must be 500 characters or less');
   }
 
+  const serverClient = await createServerClient();
+  const { data: { user }, error: authError } = await serverClient.auth.getUser();
+
+  if (authError || !user) {
+    throw new ModerationError('Unauthorized: not authenticated');
+  }
+
   // Get the submission to find the spot
-  const { data: submission, error: fetchError } = await supabase
+  const { data: submission, error: fetchError } = await serverClient
     .from('price_submissions')
     .select('id, spot_id, status')
     .eq('id', submissionId)
@@ -85,19 +98,26 @@ export async function rejectPriceSubmission(
     throw new ModerationError(`Submission not found: ${fetchError?.message}`);
   }
 
-  // Update status to rejected
-  const { error: updateError } = await supabase
+  // Only allow update if status is 'pending' (idempotency)
+  const { data: updated, error: updateError } = await serverClient
     .from('price_submissions')
     .update({
       status: 'rejected',
       rejection_reason: rejectionReason,
       reviewed_at: new Date().toISOString(),
-      reviewed_by: adminId,
+      reviewed_by: user.id,
     })
-    .eq('id', submissionId);
+    .eq('id', submissionId)
+    .eq('status', 'pending')
+    .select('status')
+    .single();
 
   if (updateError) {
     throw new ModerationError(`Failed to reject: ${updateError.message}`);
+  }
+
+  if (!updated) {
+    throw new ModerationError('Submission already reviewed or not found');
   }
 
   // Invalidate cache

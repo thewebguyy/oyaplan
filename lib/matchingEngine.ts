@@ -150,18 +150,22 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
   const sortedPlans = scoredSpots.sort((a, b) => b.score - a.score);
 
   // 2. Logging (Fire and Forget)
-  try {
-    supabase.from('plan_requests').insert({
-      start_area: startArea,
-      squad_size: squadSize,
-      budget: budget,
-      vibe: vibe,
-      results_count: sortedPlans.length,
-      top_spot_id: sortedPlans[0]?.spot.id || null
-    }).then(); // Fire and forget
-  } catch {
-    // Silent swallow
-  }
+  // Kick off after response sends via process.nextTick to avoid blocking
+  process.nextTick(async () => {
+    try {
+      await supabase.from('plan_requests').insert({
+        start_area: startArea,
+        squad_size: squadSize,
+        budget: budget,
+        vibe: vibe,
+        results_count: sortedPlans.length,
+        top_spot_id: sortedPlans[0]?.spot.id || null
+      });
+    } catch (err: unknown) {
+      // Don't block response, but log errors for monitoring
+      console.error('Failed to log plan request:', err);
+    }
+  });
 
   // Return top 1-3
   return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits }) => ({
