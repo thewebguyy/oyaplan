@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { MapPin, Utensils, Car, ThumbsUp, ThumbsDown, Activity, Sparkles, ChevronDown, ChevronUp, CheckCircle2, AlertCircle, HelpCircle } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
+import type { PriceConfidence } from "@/lib/types/priceSubmission";
 import { submitPriceFlag } from "@/lib/actions/submitPriceFlag";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
 import { useMobile } from "./hooks/useMobile";
 
 interface PlanCardProps {
-  plan: Plan;
+  plan: Plan & { pricing?: PriceConfidence };
   index: number;
   input: ForgeInput;
   isTopPick?: boolean;
@@ -72,6 +73,41 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
           <MapPin className="w-[14px] h-[14px] shrink-0" />
           <span className="truncate">{plan.spot.address}</span>
         </div>
+
+        {plan.pricing && (
+          <div className={`flex items-center gap-2 mt-4 type-caption ${isTopPick ? "text-white/80" : "text-text-muted"}`}>
+            {plan.pricing.confidenceTier === 'verified' && (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <span>Verified pricing ({plan.pricing.submissions} submissions)</span>
+              </>
+            )}
+            {plan.pricing.confidenceTier === 'community_verified' && (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-brand-green" />
+                <span>Community verified ({plan.pricing.submissions} submissions)</span>
+              </>
+            )}
+            {plan.pricing.confidenceTier === 'updated' && (
+              <>
+                <Sparkles className="w-4 h-4 text-brand-yellow" />
+                <span>Recently updated ({plan.pricing.submissions} submissions)</span>
+              </>
+            )}
+            {plan.pricing.confidenceTier === 'estimated' && (
+              <>
+                <AlertCircle className="w-4 h-4 text-yellow-600" />
+                <span>Estimated price</span>
+              </>
+            )}
+            {plan.pricing.confidenceTier === 'unknown' && (
+              <>
+                <HelpCircle className="w-4 h-4 text-gray-400" />
+                <span>Price unverified</span>
+              </>
+            )}
+          </div>
+        )}
       </div>
       
       {/* Bottom Zone: Action */}

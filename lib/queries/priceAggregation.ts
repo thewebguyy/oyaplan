@@ -38,68 +38,68 @@ import type {
  * @returns PriceConfidence or fallback to legacy price_per_person
  */
 export async function getSpotPrice(spotId: string): Promise<PriceConfidence> {
-  // Query PostgreSQL for aggregates
-  const { data: rows, error } = await supabase
+  // Fetch all approved submissions from the last 90 days
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split('T')[0];
+
+  const { data: submissions, error } = await supabase
     .from('price_submissions')
-    .select(
-      `
-      COUNT(*) as submission_count,
-      PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_per_person) as median_price,
-      PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY total_per_person) as p25_price,
-      PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY total_per_person) as p75_price,
-      STDDEV_POP(total_per_person) as price_stddev,
-      MAX(date_of_spend) as latest_spend_date,
-      COUNT(CASE WHEN source = 'operator' THEN 1 END) > 0 as has_operator_confirmation
-      `,
-      { count: 'exact' }
-    )
+    .select('total_per_person, date_of_spend, source, created_at')
     .eq('spot_id', spotId)
     .eq('status', 'approved')
-    .gt('date_of_spend', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split('T')[0]);
+    .gte('date_of_spend', ninetyDaysAgo);
 
   // Error handling
-  if (error || !rows || rows.length === 0) {
+  if (error || !submissions || submissions.length === 0) {
     return fallbackPrice(spotId);
   }
 
-  const result = rows[0] as PriceAggregateQuery;
+  // Calculate aggregates in JavaScript
+  const prices = submissions.map(s => s.total_per_person).sort((a, b) => a - b);
+  const median = prices[Math.floor(prices.length / 2)];
+  const p25 = prices[Math.floor(prices.length * 0.25)];
+  const p75 = prices[Math.floor(prices.length * 0.75)];
 
-  // No submissions, fallback
-  if (result.submission_count === 0) {
-    return fallbackPrice(spotId);
-  }
+  // Calculate standard deviation
+  const mean = prices.reduce((a, b) => a + b, 0) / prices.length;
+  const variance = prices.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / prices.length;
+  const stddev = Math.sqrt(variance);
 
-  // Calculate days since latest submission
-  const latestDate = new Date(result.latest_spend_date);
+  // Latest submission
+  const latestDate = new Date(
+    Math.max(...submissions.map(s => new Date(s.date_of_spend).getTime()))
+  );
   const daysSinceLatest = Math.floor(
     (Date.now() - latestDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
+  // Operator confirmation
+  const hasOperator = submissions.some(s => s.source === 'operator');
+
   // Calculate confidence
   const confidence = calculateConfidence({
-    submissionCount: result.submission_count,
+    submissionCount: prices.length,
     daysSinceLatest,
-    median: result.median_price,
-    stddev: result.price_stddev,
-    hasOperator: result.has_operator_confirmation,
+    median,
+    stddev,
+    hasOperator,
   });
 
   // Assemble result
   return {
-    amount: result.median_price,
+    amount: median,
     range: {
-      low: result.p25_price,
-      high: result.p75_price,
-      spread: result.p75_price - result.p25_price,
+      low: p25,
+      high: p75,
+      spread: p75 - p25,
     },
     confidence,
     confidenceTier: confidenceTierFromScore(confidence),
-    submissions: result.submission_count,
-    lastUpdate: result.latest_spend_date,
+    submissions: prices.length,
+    lastUpdate: latestDate.toISOString().split('T')[0],
     daysAgo: daysSinceLatest,
-    hasOperatorConfirmation: result.has_operator_confirmation,
+    hasOperatorConfirmation: hasOperator,
   };
 }
 
@@ -191,7 +191,7 @@ async function fallbackPrice(spotId: string): Promise<PriceConfidence> {
       confidence: 0.0,
       confidenceTier: 'unknown',
       submissions: 0,
-      lastUpdate: null,
+      lastUpdate: '',
       daysAgo: 999,
       hasOperatorConfirmation: false,
     };
@@ -204,7 +204,7 @@ async function fallbackPrice(spotId: string): Promise<PriceConfidence> {
     confidence: 0.3, // seed data, low confidence
     confidenceTier: 'estimated',
     submissions: 0,
-    lastUpdate: null,
+    lastUpdate: '',
     daysAgo: 999,
     hasOperatorConfirmation: false,
   };
@@ -307,24 +307,8 @@ export async function getPendingSubmissions(limit = 10, offset = 0) {
  * @param spotId - UUID of the spot
  */
 export async function invalidatePriceCache(spotId: string): Promise<void> {
-  // This is a placeholder. Actual implementation depends on cache backend.
-  // Options:
-  //   - Vercel KV: await kv.del(`spot:${spotId}`);
-  //   - In-memory: priceCache.delete(`spot:${spotId}`);
-  //   - Redis: await redis.del(`spot:${spotId}`);
-
-  console.log(`[Cache] Invalidated spot:${spotId}`);
-
-  // Implementation in lib/cache/priceCache.ts:
-  // export async function invalidate(key: string) {
-  //   if (typeof window === 'undefined') {
-  //     // Server-side: use Vercel KV
-  //     await kv.del(key);
-  //   } else {
-  //     // Client-side: this shouldn't happen (cache invalidation is server-only)
-  //     throw new Error('Cache invalidation only on server');
-  //   }
-  // }
+  const { invalidate, cacheKey } = await import('@/lib/cache/priceCache');
+  await invalidate(cacheKey(spotId));
 }
 
 /**

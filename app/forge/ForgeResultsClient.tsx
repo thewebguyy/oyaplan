@@ -5,6 +5,7 @@ import { Spot, Plan, ForgeInput } from "@/lib/types";
 import { forgePlans } from "@/lib/matchingEngine";
 import { supabase } from "@/lib/supabase";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
+import { enrichPlansWithPricing } from "@/lib/queries/enrichPlanWithPricing";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
@@ -65,9 +66,12 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
       // 2. Generate plans (deterministic)
       const generatedPlans = forgePlans(input, allSpots);
-      setPlans(generatedPlans);
 
-      if (generatedPlans.length === 0) {
+      // 3. Enrich plans with current pricing confidence data
+      const enrichedPlans = await enrichPlansWithPricing(generatedPlans);
+      setPlans(enrichedPlans);
+
+      if (enrichedPlans.length === 0) {
         // We want to know if the vibe is valid but the budget is too low
         const vibeSpots = allSpots.filter(s => s.vibe_tags.includes(input.vibe));
         const prices = vibeSpots.map(s => s.price_per_person * input.squadSize * (s.has_food !== false ? 1.1 : 1.0));
@@ -97,7 +101,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         }
       }
 
-      // 3. Simulated loading time
+      // 4. Simulated loading time
       const timer = setTimeout(() => {
         setIsForging(false);
       }, 2500);
