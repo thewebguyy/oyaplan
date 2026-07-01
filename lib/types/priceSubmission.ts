@@ -69,34 +69,6 @@ export type CreatePriceSubmissionInput = {
   sessionId?: string;
 };
 
-/**
- * ApprovePriceSubmissionInput - DTO for admin decision
- *
- * What the admin panel sends to approve/reject a submission.
- */
-export type ApprovePriceSubmissionInput = {
-  submissionId: string;
-  status: 'approved' | 'rejected';
-  rejectionReason?: string;
-  adminId: string;
-};
-
-/**
- * PriceSubmissionStatus - Query result for moderation workflow
- *
- * Subset of PriceSubmission used in admin UI (pending queue)
- */
-export type PriceSubmissionStatus = Pick<
-  PriceSubmission,
-  | 'id'
-  | 'spot_id'
-  | 'total_per_person'
-  | 'date_of_spend'
-  | 'created_at'
-  | 'status'
-  | 'source'
-  | 'squad_size'
->;
 
 /**
  * PriceConfidence - Computed aggregate for a spot
@@ -151,16 +123,13 @@ export type PriceAggregateQuery = {
 };
 
 /**
- * ValidationError - Input validation for price submission
+ * PriceSubmissionValidationError - Input validation failed
  *
  * Raised when user input violates business rules (before DB insert).
  */
 export class PriceSubmissionValidationError extends Error {
-  constructor(
-    public field: string,
-    public message: string
-  ) {
-    super(`Validation error: ${message}`);
+  constructor(message: string) {
+    super(message);
     this.name = 'PriceSubmissionValidationError';
   }
 }
@@ -179,18 +148,13 @@ export class ImmutabilityViolation extends Error {
 }
 
 /**
- * Duplicate submission error - User submitted for same venue too recently
+ * DuplicateSubmissionError - User submitted for same venue too recently
  *
  * Business rule: Max once per 7 days per venue.
  */
 export class DuplicateSubmissionError extends Error {
-  constructor(
-    public spotId: string,
-    public daysSinceLastSubmission: number
-  ) {
-    super(
-      `You already reported a price for this venue ${daysSinceLastSubmission} days ago. Try again in ${7 - daysSinceLastSubmission} days.`
-    );
+  constructor(message: string) {
+    super(message);
     this.name = 'DuplicateSubmissionError';
   }
 }
