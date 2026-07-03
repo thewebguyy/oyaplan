@@ -28,7 +28,15 @@ BEGIN
         created_at,
         updated_at,
         is_super_admin,
-        is_anonymous
+        is_anonymous,
+        confirmation_token,
+        recovery_token,
+        email_change_token_new,
+        email_change,
+        phone_change,
+        phone_change_token,
+        email_change_token_current,
+        reauthentication_token
     ) VALUES (
         '00000000-0000-0000-0000-000000000000',
         v_user_id,
@@ -42,11 +50,23 @@ BEGIN
         NOW(),
         NOW(),
         FALSE,
-        FALSE
+        FALSE,
+        '', -- confirmation_token
+        '', -- recovery_token
+        '', -- email_change_token_new
+        '', -- email_change
+        '', -- phone_change
+        '', -- phone_change_token
+        '', -- email_change_token_current
+        ''  -- reauthentication_token
     )
     ON CONFLICT (id) DO UPDATE
     SET encrypted_password = v_encrypted_password,
         email_confirmed_at = COALESCE(auth.users.email_confirmed_at, NOW()),
+        confirmation_token = '',
+        recovery_token = '',
+        email_change_token_new = '',
+        email_change = '',
         updated_at = NOW();
 
     -- Link email identity provider details in auth.identities
