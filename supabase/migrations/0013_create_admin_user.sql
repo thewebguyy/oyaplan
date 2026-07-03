@@ -26,7 +26,9 @@ BEGIN
         raw_app_meta_data,
         raw_user_meta_data,
         created_at,
-        updated_at
+        updated_at,
+        is_super_admin,
+        is_anonymous
     ) VALUES (
         '00000000-0000-0000-0000-000000000000',
         v_user_id,
@@ -38,7 +40,9 @@ BEGIN
         '{"provider": "email", "providers": ["email"]}'::jsonb,
         '{}'::jsonb,
         NOW(),
-        NOW()
+        NOW(),
+        FALSE,
+        FALSE
     )
     ON CONFLICT (id) DO UPDATE
     SET encrypted_password = v_encrypted_password,
@@ -51,19 +55,40 @@ BEGIN
         user_id,
         identity_data,
         provider,
-        last_sign_in_at,
+        provider_id,
         created_at,
         updated_at
     ) VALUES (
-        v_user_id::text,
         v_user_id,
-        jsonb_build_object('sub', v_user_id::text, 'email', 'admin@oyaplan.app'),
+        v_user_id,
+        jsonb_build_object('sub', v_user_id::text, 'email', 'admin@oyaplan.app', 'email_verified', true),
         'email',
-        NULL,
+        v_user_id::text,
         NOW(),
         NOW()
     )
-    ON CONFLICT (provider, id) DO NOTHING;
+    ON CONFLICT (provider, provider_id) DO NOTHING;
 
     RAISE NOTICE 'Admin user admin@oyaplan.app successfully seeded.';
 END $$;
+
+-- Allow authenticated users (admin role) to read internal monitoring tables
+DROP POLICY IF EXISTS "Allow authenticated reads on plan_requests" ON public.plan_requests;
+CREATE POLICY "Allow authenticated reads on plan_requests" 
+ON public.plan_requests FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated reads on tester_observations" ON public.tester_observations;
+CREATE POLICY "Allow authenticated reads on tester_observations" 
+ON public.tester_observations FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated reads on spot_suggestions" ON public.spot_suggestions;
+CREATE POLICY "Allow authenticated reads on spot_suggestions" 
+ON public.spot_suggestions FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated reads on operator_inquiries" ON public.operator_inquiries;
+CREATE POLICY "Allow authenticated reads on operator_inquiries" 
+ON public.operator_inquiries FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow authenticated reads on price_flags" ON public.price_flags;
+CREATE POLICY "Allow authenticated reads on price_flags" 
+ON public.price_flags FOR SELECT TO authenticated USING (true);
