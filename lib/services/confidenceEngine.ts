@@ -65,7 +65,7 @@ export function calculateConfidence(
     expectedCategories = ['activity_fee', 'soft_drink'];
   }
 
-  const presentCount = expectedCategories.filter(cat => categoriesPresent.has(cat as any)).length;
+  const presentCount = expectedCategories.filter(cat => categoriesPresent.has(cat as MenuItem['category'])).length;
   const completenessScore = (presentCount / expectedCategories.length) * 100;
   
   if (completenessScore === 100) {

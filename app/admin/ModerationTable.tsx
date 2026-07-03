@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { moderateEvidenceAction } from "@/lib/actions/moderateEvidence";
 import { Loader2, Check, X, FileText } from "lucide-react";
 
-interface PendingEvidenceItem {
+export interface PendingEvidenceItem {
   id: string;
   source_type: string;
   recorded_price: number;

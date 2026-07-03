@@ -10,10 +10,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   ShieldCheck, 
-  HelpCircle, 
-  AlertCircle, 
-  ThumbsUp,
-  ThumbsDown,
   Info
 } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";

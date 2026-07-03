@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { calculateTypicalOutingCost } = require('../lib/services/pricingEngine');
 const { calculateConfidence } = require('../lib/services/confidenceEngine');
 

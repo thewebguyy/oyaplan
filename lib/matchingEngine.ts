@@ -231,7 +231,7 @@ function timeAgo(dateString?: string): string {
     if (days < 30) return `${days} days ago`;
     const months = Math.floor(days / 30);
     return `${months} months ago`;
-  } catch (e) {
+  } catch {
     return "recently";
   }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processRawEvidence } from '@/lib/services/normalizationLayer';
+import { processRawEvidence, RawEvidenceInput } from '@/lib/services/normalizationLayer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
     const result = await processRawEvidence({
       venue_id,
       menu_item_name,
-      category: category as any,
+      category: category as RawEvidenceInput['category'],
       price,
-      source_type: source_type as any,
+      source_type: source_type as RawEvidenceInput['source_type'],
       submitted_by,
       evidence_url
     });

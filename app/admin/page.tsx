@@ -6,7 +6,7 @@ import { getTesterObservations, getSpotSuggestions, getOperatorInquiries } from 
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
 import PageError from "@/components/PageError";
-import ModerationTable from "./ModerationTable";
+import ModerationTable, { PendingEvidenceItem } from "./ModerationTable";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +33,7 @@ export default async function AdminDashboard() {
   let suggestions: Array<{ id: string; created_at: string; reviewed: boolean; spot_name: string; area_name: string; rough_price_per_person: number | null; suggester_whatsapp: string | null }> = [];
   let inquiries: Array<{ id: string; created_at: string; converted: boolean; contacted: boolean; business_name: string; owner_name: string; whatsapp_number: string; area_slug: string; listing_tier: string; monthly_budget_ngn: number | null }> = [];
   let staleSpots: Array<{ id: string; name: string; price_updated_at: string; verified_by: string | null; active: boolean }> = [];
-  let pendingEvidence: any[] = [];
+  let pendingEvidence: PendingEvidenceItem[] = [];
 
   try {
     const [
@@ -68,7 +68,27 @@ export default async function AdminDashboard() {
         .select("id, source_type, recorded_price, evidence_url, created_at, submitted_by, venues(name), menu_items(name)")
         .eq("verification_status", "pending")
         .order("created_at", { ascending: false });
-      pendingEvidence = pendingEvidenceData || [];
+
+      pendingEvidence = (pendingEvidenceData || []).map(item => {
+        const venueObj = Array.isArray(item.venues) 
+          ? (item.venues[0] as { name: string } | undefined)
+          : (item.venues as { name: string } | null);
+          
+        const menuItemObj = Array.isArray(item.menu_items)
+          ? (item.menu_items[0] as { name: string } | undefined)
+          : (item.menu_items as { name: string } | null);
+
+        return {
+          id: item.id,
+          source_type: item.source_type,
+          recorded_price: item.recorded_price,
+          evidence_url: item.evidence_url,
+          created_at: item.created_at,
+          submitted_by: item.submitted_by,
+          venues: venueObj || null,
+          menu_items: menuItemObj || null
+        };
+      });
     } else {
       adminFetchError = true;
     }
@@ -209,7 +229,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Ingestion queue moderation */}
-        <ModerationTable pendingEvidence={(pendingEvidence as any) || []} />
+        <ModerationTable pendingEvidence={pendingEvidence} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Vibe Breakdown */}

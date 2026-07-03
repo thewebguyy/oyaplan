@@ -38,7 +38,7 @@ export async function processRawEvidence(input: RawEvidenceInput): Promise<{
     const normalizedPrice = Math.round(input.price / 100) * 100;
 
     // Check if the menu item exists
-    let { data: menuItem, error: findErr } = await supabase
+    const { data: foundMenuItem, error: findErr } = await supabase
       .from('menu_items')
       .select('*')
       .eq('venue_id', input.venue_id)
@@ -48,6 +48,8 @@ export async function processRawEvidence(input: RawEvidenceInput): Promise<{
     if (findErr) {
       return { success: false, error: `Database fetch error: ${findErr.message}` };
     }
+
+    let menuItem = foundMenuItem;
 
     const previousPrice = menuItem ? menuItem.price : null;
 
