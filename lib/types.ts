@@ -1,3 +1,5 @@
+import type { TimelineEvent } from './services/trustEngine';
+
 export type Area = {
   id: string;
   name: string;
@@ -32,6 +34,8 @@ export type Spot = {
   zone?: string;
   computed_confidence_score?: number;
   confidence_reasons?: string[];
+  methodology?: string[];
+  timeline?: TimelineEvent[];
 };
      
 export type ForgeInput = {
@@ -53,6 +57,10 @@ export interface PlanExplanation {
   source_label?: string;       // Human-readable pricing source (e.g. "Owner submitted", "Community receipts")
   confidence_score?: number;   // Numeric score 0-100 for rendering the badge
   status?: string;             // Operational status string (fresh | stale | needs_review | verified | community_verified)
+  
+  // Phase 3B additions
+  methodology?: string[];
+  timeline?: TimelineEvent[];
 }
 
 export type Plan = {

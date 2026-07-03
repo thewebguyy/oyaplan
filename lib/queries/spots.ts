@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { Spot } from '../types';
+import { getVenueMethodology, getVenueHistory } from '../services/trustEngine';
 
 export async function getForgeSpots(
   allowedCategories?: string[]
@@ -16,8 +17,21 @@ export async function getForgeSpots(
 
     const { data, error } = await query;
     if (error) return { data: null, error: error.message };
-    return { data: data as Spot[], error: null };
-  } catch {
+    if (!data) return { data: null, error: null };
+
+    // Phase 3B: Hydrate methodology and timeline server-side
+    const enhancedSpots = await Promise.all(
+      (data as Spot[]).map(async (spot) => {
+        const [methodology, timeline] = await Promise.all([
+          getVenueMethodology(spot.id),
+          getVenueHistory(spot.id)
+        ]);
+        return { ...spot, methodology, timeline };
+      })
+    );
+
+    return { data: enhancedSpots, error: null };
+  } catch (err: any) {
     return { data: null, error: 'Unexpected error fetching spots' };
   }
 }

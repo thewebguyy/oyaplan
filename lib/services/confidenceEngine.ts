@@ -1,5 +1,15 @@
 import { PriceEvidence, MenuItem } from '../types';
 
+/**
+ * Reusable and configurable confidence decay function.
+ * @param daysSinceUpdate The number of days since the last verified pricing update.
+ * @param decayRate The rate of decay (default 0.015).
+ * @returns A freshness score between 0 and 100.
+ */
+export function computeConfidenceDecay(daysSinceUpdate: number, decayRate: number = 0.015): number {
+  return Math.exp(-decayRate * daysSinceUpdate) * 100;
+}
+
 export function calculateConfidence(
   evidence: PriceEvidence[],
   menuItems: MenuItem[],
@@ -18,7 +28,7 @@ export function calculateConfidence(
   const daysSinceUpdate = Math.max(0, (Date.now() - maxTimestamp) / (1000 * 60 * 60 * 24));
   
   // Exponential decay: e^(-0.015 * t)
-  const freshnessScore = Math.exp(-0.015 * daysSinceUpdate) * 100;
+  const freshnessScore = computeConfidenceDecay(daysSinceUpdate);
   if (daysSinceUpdate <= 7) {
     reasons.push('✓ Prices verified within the last 7 days');
   } else if (daysSinceUpdate <= 30) {

@@ -241,6 +241,42 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
                       <span>Pricing source: {plan.explanation.source_label}</span>
                     </div>
                   )}
+
+                  {/* Phase 3B: Trust Methodology */}
+                  {plan.explanation?.methodology && plan.explanation.methodology.length > 0 && (
+                    <div className="pt-2 mt-2 border-t border-border-default/50">
+                      <div className="font-bold text-[10px] uppercase text-text-muted mb-1.5 tracking-wider">Methodology</div>
+                      <ul className="space-y-1">
+                        {plan.explanation.methodology.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-1.5">
+                            <span className="text-text-muted text-[10px] mt-0.5">•</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Phase 3B: Venue History Timeline */}
+                  {plan.explanation?.timeline && plan.explanation.timeline.length > 0 && (
+                    <div className="pt-2 mt-2 border-t border-border-default/50">
+                      <div className="font-bold text-[10px] uppercase text-text-muted mb-1.5 tracking-wider">Trust Timeline</div>
+                      <div className="space-y-2 relative before:absolute before:inset-0 before:ml-[5px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border-default before:to-transparent ml-2">
+                        {plan.explanation.timeline.map((event, idx) => (
+                          <div key={idx} className="relative flex items-start gap-3">
+                            <div className="absolute left-0 w-2 h-2 rounded-full bg-surface-grey border-2 border-border-default -translate-x-[5px] mt-1 z-10" />
+                            <div className="pl-4">
+                              <div className="text-[10px] text-text-primary">{event.reason || 'Data update'}</div>
+                              <div className="text-[9px] text-text-muted">
+                                {new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="pt-2 border-t border-border-default/50 text-[10px] text-gray-400">
                     Calculated using active menu entries &amp; transport rates. Bypasses static prompts.
                   </div>
