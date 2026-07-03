@@ -536,17 +536,19 @@ describe('forgePlans — category group filter', () => {
 // ─── Cost calculation ─────────────────────────────────────────────────────────
 
 describe('forgePlans — cost calculation', () => {
-  it('applies 1.1× buffer for food spots (has_food !== false)', () => {
+  it('applies no 1.1× buffer for food spots — derived_typical_cost already includes VAT (Phase 3A)', () => {
     const foodSpot = makeSpot({
       id: 'b2c3d4e5-0000-0000-0000-000000000080',
       price_per_person: 5000,
       has_food: true,
       transport_matrix: { ikeja: 0 }, // isolate food cost
     });
-    // activityCost = round(5000 × 2 × 1.1 / 100) × 100 = round(11000 / 100) × 100 = 11000
+    // Phase 3A: activityCost = price_per_person × squadSize (no buffer)
+    // price_per_person = derived_typical_cost (already embeds VAT via pricingEngine)
+    // activityCost = round(5000 × 2 / 100) × 100 = 10000
     const results = forgePlans({ ...BASE_INPUT, squadSize: 2, budget: 50000, vibe: 'Chill' }, [foodSpot]);
     expect(results).toHaveLength(1);
-    expect(results[0].foodCost).toBe(11000);
+    expect(results[0].foodCost).toBe(10000);
   });
 
   it('applies no buffer for non-food spots (has_food === false)', () => {
@@ -563,7 +565,7 @@ describe('forgePlans — cost calculation', () => {
     expect(results[0].foodCost).toBe(10000);
   });
 
-  it('treats has_food undefined as true (applies 1.1× buffer)', () => {
+  it('has_food value has no effect on cost — buffer removed in Phase 3A', () => {
     const undefinedFood = makeSpot({
       id: 'd4e5f6a7-0000-0000-0000-000000000082',
       price_per_person: 5000,
@@ -573,11 +575,12 @@ describe('forgePlans — cost calculation', () => {
     });
     const results = forgePlans({ ...BASE_INPUT, squadSize: 2, budget: 50000 }, [undefinedFood]);
     expect(results).toHaveLength(1);
-    expect(results[0].foodCost).toBe(11000); // buffer applied
+    // Phase 3A: no buffer regardless of has_food
+    expect(results[0].foodCost).toBe(10000);
   });
 
   it('rounds activity cost to nearest ₦100', () => {
-    // 3333 × 2 × 1.1 = 7332.6 → round to nearest 100 → 7300
+    // Phase 3A: 3333 × 2 = 6666 → round to nearest 100 → 6700
     const spot = makeSpot({
       id: 'e5f6a7b8-0000-0000-0000-000000000083',
       price_per_person: 3333,
@@ -588,7 +591,7 @@ describe('forgePlans — cost calculation', () => {
     const results = forgePlans({ ...BASE_INPUT, squadSize: 2, budget: 50000 }, [spot]);
     expect(results).toHaveLength(1);
     expect(results[0].foodCost % 100).toBe(0);
-    expect(results[0].foodCost).toBe(7300);
+    expect(results[0].foodCost).toBe(6700);
   });
 
   it('uses transport_matrix override when available for start area', () => {
@@ -985,5 +988,173 @@ describe('forgePlans — output shape', () => {
       expect(Number.isInteger(plan.foodCost)).toBe(true);
       expect(Number.isInteger(plan.totalCost)).toBe(true);
     }
+  });
+});
+
+// ─── Phase 3A: Buffer removal + trust ranking ─────────────────────────────────
+
+describe('Phase 3A — cost calculation buffer removal', () => {
+  /**
+   * Phase 3A removed the has_food 1.1 multiplier from activityCost.
+   * The spots VIEW maps derived_typical_cost → price_per_person, which already
+   * includes VAT via pricingEngine.ts. Applying a 1.1 buffer on top was double-tax.
+   *
+   * Assertion: foodCost === price_per_person × squadSize (no buffer).
+   */
+  it('should compute foodCost as price_per_person × squadSize without buffer', () => {
+    const spot = makeSpot({
+      id: 'c3d4e5f6-0000-0000-0000-000000000003',
+      price_per_person: 10000,
+      has_food: true,
+      transport_matrix: { ikeja: 2000 },
+      vibe_tags: ['Chill'],
+    });
+    const results = forgePlans(
+      { startArea: 'ikeja', squadSize: 3, budget: 100000, vibe: 'Chill' },
+      [spot]
+    );
+    expect(results).toHaveLength(1);
+    // foodCost must be exactly 10000 × 3 = 30000 (no 1.1 buffer)
+    expect(results[0].foodCost).toBe(30000);
+  });
+
+  it('should compute identical foodCost whether has_food is true or false', () => {
+    const spotWithFood = makeSpot({
+      id: 'd4e5f6a7-0000-0000-0000-000000000001',
+      price_per_person: 8000,
+      has_food: true,
+      transport_matrix: { ikeja: 1000 },
+      vibe_tags: ['Chill'],
+    });
+    const spotNoFood = makeSpot({
+      id: 'd4e5f6a7-0000-0000-0000-000000000002',
+      price_per_person: 8000,
+      has_food: false,
+      transport_matrix: { ikeja: 1000 },
+      vibe_tags: ['Chill'],
+    });
+    const input = { startArea: 'ikeja', squadSize: 2, budget: 50000, vibe: 'Chill' };
+    const withFood = forgePlans(input, [spotWithFood]);
+    const noFood = forgePlans(input, [spotNoFood]);
+    expect(withFood[0]?.foodCost).toBe(noFood[0]?.foodCost);
+  });
+});
+
+describe('Phase 3A — trust-based ranking', () => {
+  /**
+   * The matching engine applies a statusBoost derived from operational_status
+   * (mapped via spots VIEW → verified_by column).
+   *
+   * fresh (+25) > community_verified (+20) > verified (0) > stale (-20) > needs_review (-40)
+   *
+   * When cost, vibe, and featured are equal, the trust signal breaks the tie.
+   */
+
+  const TRUST_INPUT: ForgeInput = {
+    startArea: 'yaba',
+    squadSize: 2,
+    budget: 50000,
+    vibe: 'Chill',
+  };
+
+  const FRESH_SPOT = makeSpot({
+    id: 'e5f6a7b8-0000-0000-0000-000000000001',
+    name: 'Fresh Verified',
+    price_per_person: 10000,
+    transport_matrix: { yaba: 2000 },
+    vibe_tags: ['Chill'],
+    verified_by: 'fresh',
+    computed_confidence_score: 95,
+  });
+
+  const STALE_SPOT = makeSpot({
+    id: 'f6a7b8c9-0000-0000-0000-000000000001',
+    name: 'Stale Data',
+    price_per_person: 10000,
+    transport_matrix: { yaba: 2000 },
+    vibe_tags: ['Chill'],
+    verified_by: 'stale',
+    computed_confidence_score: 30,
+  });
+
+  const NEEDS_REVIEW_SPOT = makeSpot({
+    id: 'a7b8c9d0-0000-0000-0000-000000000001',
+    name: 'Needs Review',
+    price_per_person: 10000,
+    transport_matrix: { yaba: 2000 },
+    vibe_tags: ['Chill'],
+    verified_by: 'needs_review',
+    computed_confidence_score: 15,
+  });
+
+  it('should rank fresh spot above stale spot when cost and vibe are equal', () => {
+    const results = forgePlans(TRUST_INPUT, [STALE_SPOT, FRESH_SPOT]);
+    expect(results).toHaveLength(2);
+    expect(results[0].spot.name).toBe('Fresh Verified');
+  });
+
+  it('should rank stale spot above needs_review spot', () => {
+    const results = forgePlans(TRUST_INPUT, [NEEDS_REVIEW_SPOT, STALE_SPOT]);
+    expect(results).toHaveLength(2);
+    expect(results[0].spot.name).toBe('Stale Data');
+  });
+
+  it('should rank fresh spot above needs_review spot', () => {
+    const results = forgePlans(TRUST_INPUT, [NEEDS_REVIEW_SPOT, FRESH_SPOT]);
+    expect(results).toHaveLength(2);
+    expect(results[0].spot.name).toBe('Fresh Verified');
+  });
+});
+
+describe('Phase 3A — explanation fields', () => {
+  it('should include explanation with all required fields', () => {
+    const spot = makeSpot({
+      id: 'b8c9d0e1-0000-0000-0000-000000000001',
+      price_per_person: 12000,
+      transport_matrix: { ikeja: 3000 },
+      vibe_tags: ['Chill'],
+    });
+    const results = forgePlans(
+      { startArea: 'ikeja', squadSize: 2, budget: 60000, vibe: 'Chill' },
+      [spot]
+    );
+    expect(results).toHaveLength(1);
+    const exp = results[0].explanation;
+    expect(exp).toBeDefined();
+    expect(typeof exp?.budget_fit).toBe('string');
+    expect(typeof exp?.freshness).toBe('string');
+    expect(typeof exp?.confidence).toBe('string');
+    expect(typeof exp?.tax_transparency).toBe('string');
+  });
+
+  it('should include source_label in explanation', () => {
+    const spot = makeSpot({
+      id: 'c9d0e1f2-0000-0000-0000-000000000001',
+      price_per_person: 8000,
+      transport_matrix: { yaba: 2000 },
+      vibe_tags: ['Chill'],
+      price_source: 'manual',
+    });
+    const results = forgePlans(
+      { startArea: 'yaba', squadSize: 2, budget: 40000, vibe: 'Chill' },
+      [spot]
+    );
+    expect(results[0].explanation?.source_label).toBe('Verified by admin');
+  });
+
+  it('should include confidence_score as a number in explanation', () => {
+    const spot = makeSpot({
+      id: 'd0e1f2a3-0000-0000-0000-000000000001',
+      price_per_person: 8000,
+      transport_matrix: { yaba: 2000 },
+      vibe_tags: ['Chill'],
+      computed_confidence_score: 77,
+    });
+    const results = forgePlans(
+      { startArea: 'yaba', squadSize: 2, budget: 40000, vibe: 'Chill' },
+      [spot]
+    );
+    expect(results[0].explanation?.confidence_score).toBe(77);
+    expect(results[0].explanation?.confidence).toBe('77% data confidence');
   });
 });

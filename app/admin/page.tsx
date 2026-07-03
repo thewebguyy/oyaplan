@@ -2,7 +2,14 @@ import { createServerClient } from "@/lib/supabase-server";
 import { captureServerException } from "@/lib/sentry";
 import { getAllPlanRequests, getPlanCount, getPlanCountSince } from "@/lib/queries/plans";
 import { getStaleSpotsForAdmin } from "@/lib/queries/spots";
-import { getTesterObservations, getSpotSuggestions, getOperatorInquiries } from "@/lib/queries/admin";
+import {
+  getTesterObservations,
+  getSpotSuggestions,
+  getOperatorInquiries,
+  getVenueTrustStats,
+  getActualSpendSummary,
+  getDataHealthKPIs,
+} from "@/lib/queries/admin";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
 import PageError from "@/components/PageError";
@@ -24,6 +31,9 @@ export default async function AdminDashboard() {
   const sixtyDaysAgo = new Date();
   sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
   // Fetch all dashboard data — allRequests is critical for aggregations; others degrade to empty
   let adminFetchError = false;
   let totalPlans = 0;
@@ -34,6 +44,9 @@ export default async function AdminDashboard() {
   let inquiries: Array<{ id: string; created_at: string; converted: boolean; contacted: boolean; business_name: string; owner_name: string; whatsapp_number: string; area_slug: string; listing_tier: string; monthly_budget_ngn: number | null }> = [];
   let staleSpots: Array<{ id: string; name: string; price_updated_at: string; verified_by: string | null; active: boolean }> = [];
   let pendingEvidence: PendingEvidenceItem[] = [];
+  let venueTrustStats: Array<{ id: string; name: string; computed_confidence_score: number; operational_status: string; last_price_updated_at: string | null; last_price_source: string | null; derived_typical_cost: number }> = [];
+  let actualSpendSummary: { count: number; over_estimate_count: number; under_estimate_count: number; median_variance_pct: number } = { count: 0, over_estimate_count: 0, under_estimate_count: 0, median_variance_pct: 0 };
+  let dataHealth: { confidence_histogram: { high: number; medium: number; low: number }; freshness_distribution: Record<string, number>; moderation_backlog: number; receipts_this_week: number; avg_confidence: number; error_p50: number; error_p90: number; total_venues: number; total_evidence: number } | null = null;
 
   try {
     const [
@@ -44,6 +57,9 @@ export default async function AdminDashboard() {
       suggestionsResult,
       inquiriesResult,
       staleSpotsResult,
+      venueTrustStatsResult,
+      actualSpendResult,
+      dataHealthResult,
     ] = await Promise.all([
       getPlanCount(),
       getPlanCountSince(sevenDaysAgo.toISOString()),
@@ -52,6 +68,9 @@ export default async function AdminDashboard() {
       getSpotSuggestions(),
       getOperatorInquiries(),
       getStaleSpotsForAdmin(sixtyDaysAgo.toISOString()),
+      getVenueTrustStats(),
+      getActualSpendSummary(thirtyDaysAgo.toISOString()),
+      getDataHealthKPIs(),
     ]);
 
     if (!allRequestsResult.error) {
@@ -62,6 +81,9 @@ export default async function AdminDashboard() {
       suggestions = (suggestionsResult.data || []) as typeof suggestions;
       inquiries = (inquiriesResult.data || []) as typeof inquiries;
       staleSpots = (staleSpotsResult.data || []) as typeof staleSpots;
+      venueTrustStats = (venueTrustStatsResult.data || []) as typeof venueTrustStats;
+      if (actualSpendResult.data) actualSpendSummary = actualSpendResult.data;
+      if (dataHealthResult.data) dataHealth = dataHealthResult.data;
 
       const { data: pendingEvidenceData } = await serverClient
         .from("price_evidence")
@@ -227,6 +249,112 @@ export default async function AdminDashboard() {
             </table>
           </div>
         </div>
+
+        {/* COO Data Health Dashboard */}
+        {dataHealth && (
+          <div className="space-y-6 mb-8">
+            <h2 className="text-xl font-black text-gray-900">Data Health & Intelligence</h2>
+            
+            {/* Top KPIs */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
+                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Receipts This Week</p>
+                <p className="text-2xl font-black text-[#008751]">{dataHealth.receipts_this_week}</p>
+              </div>
+              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
+                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Pending Moderation</p>
+                <div className="flex items-baseline gap-2">
+                  <p className={`text-2xl font-black ${dataHealth.moderation_backlog > 0 ? 'text-amber-600' : 'text-[#008751]'}`}>
+                    {dataHealth.moderation_backlog}
+                  </p>
+                  {dataHealth.moderation_backlog > 0 && <span className="text-xs text-amber-600 font-bold">Needs review</span>}
+                </div>
+              </div>
+              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
+                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Avg Confidence</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-2xl font-black text-gray-900">{dataHealth.avg_confidence}%</p>
+                  <span className="text-xs text-gray-400">across {dataHealth.total_venues} venues</span>
+                </div>
+              </div>
+              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
+                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Estimate Variance (30d)</p>
+                <div className="flex items-baseline gap-3">
+                  <div>
+                    <span className="text-xs font-bold text-gray-400 block">P50 (Median)</span>
+                    <span className="text-lg font-black text-[#008751]">{dataHealth.error_p50 > 0 ? '+' : ''}{dataHealth.error_p50}%</span>
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-gray-400 block">P90 (Worst 10%)</span>
+                    <span className="text-lg font-black text-amber-600">{dataHealth.error_p90 > 0 ? '+' : ''}{dataHealth.error_p90}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Distribution Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Confidence Histogram */}
+              <div className="p-6 bg-white border border-gray-200 rounded-2xl space-y-4">
+                <p className="text-xs font-black uppercase tracking-widest text-gray-400">Confidence Distribution</p>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs font-bold mb-1">
+                      <span className="text-[#008751]">High (80-100%)</span>
+                      <span>{dataHealth.confidence_histogram.high} venues</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#008751]" style={{ width: `${(dataHealth.confidence_histogram.high / Math.max(1, dataHealth.total_venues)) * 100}%` }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs font-bold mb-1">
+                      <span className="text-amber-500">Medium (40-79%)</span>
+                      <span>{dataHealth.confidence_histogram.medium} venues</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-amber-400" style={{ width: `${(dataHealth.confidence_histogram.medium / Math.max(1, dataHealth.total_venues)) * 100}%` }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs font-bold mb-1">
+                      <span className="text-red-500">Low (0-39%)</span>
+                      <span>{dataHealth.confidence_histogram.low} venues</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-red-500" style={{ width: `${(dataHealth.confidence_histogram.low / Math.max(1, dataHealth.total_venues)) * 100}%` }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Freshness Distribution */}
+              <div className="p-6 bg-white border border-gray-200 rounded-2xl space-y-4">
+                <p className="text-xs font-black uppercase tracking-widest text-gray-400">Status Distribution</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Fresh / Active</span>
+                    <p className="text-xl font-black text-[#008751]">
+                      {(dataHealth.freshness_distribution['fresh'] || 0) + (dataHealth.freshness_distribution['verified'] || 0) + (dataHealth.freshness_distribution['community_verified'] || 0)}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Stale (&gt;90d)</span>
+                    <p className="text-xl font-black text-amber-600">
+                      {dataHealth.freshness_distribution['stale'] || 0}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-red-500">Needs Review</span>
+                    <p className="text-xl font-black text-red-600">
+                      {dataHealth.freshness_distribution['needs_review'] || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Ingestion queue moderation */}
         <ModerationTable pendingEvidence={pendingEvidence} />

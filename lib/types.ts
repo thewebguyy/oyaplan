@@ -49,6 +49,10 @@ export interface PlanExplanation {
   freshness: string;
   confidence: string;
   tax_transparency: string;
+  // Phase 3A additions — populated by matching engine, consumed by PlanCard explainability accordion
+  source_label?: string;       // Human-readable pricing source (e.g. "Owner submitted", "Community receipts")
+  confidence_score?: number;   // Numeric score 0-100 for rendering the badge
+  status?: string;             // Operational status string (fresh | stale | needs_review | verified | community_verified)
 }
 
 export type Plan = {
@@ -176,3 +180,22 @@ export interface TransportRouteOverride {
   created_at?: string;
 }
 
+// Actual Spend Foundation (Phase 3A — backend model ready, UI wired later)
+export interface ActualSpendReport {
+  id: string;
+  shared_plan_id: string | null;
+  spot_id: string | null;
+  estimated_total: number;
+  actual_total: number;
+  notes: string | null;
+  submitted_at: string;
+  created_at: string;
+}
+
+// Admin analytics type — variance summary for actual spend monitoring
+export interface ActualSpendSummary {
+  count: number;
+  median_variance_pct: number; // (actual - estimated) / estimated * 100
+  over_estimate_count: number; // actual > estimated
+  under_estimate_count: number; // actual < estimated
+}

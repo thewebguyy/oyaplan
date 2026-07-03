@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MapPin, Utensils, Car, Info, ArrowRight } from "lucide-react";
 import PageError from "@/components/PageError";
+import ActualSpendCapture from "@/components/ActualSpendCapture";
 
 export const dynamic = "force-dynamic";
 
@@ -165,6 +166,14 @@ export default async function PlanPage({ params }: PlanPageProps) {
               </Button>
             </Link>
           </div>
+
+          {/* Actual Spend Capture — feeds pricing flywheel */}
+          <ActualSpendCapture
+            sharedPlanId={plan.id}
+            spotId={plan.spot?.id ?? null}
+            estimatedTotal={plan.total_cost}
+            spotName={plan.spot?.name ?? "this spot"}
+          />
         </div>
         
         <div className="text-center space-y-2">

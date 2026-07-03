@@ -225,10 +225,24 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#008751] font-bold">✓</span>
-                    <span>{plan.explanation?.tax_transparency || `Taxes and fees accounted for`}</span>
+                    <span>{plan.explanation?.tax_transparency || `Taxes and fees included`}</span>
                   </div>
+                  {/* Phase 3A: Transport assumption */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#008751] font-bold">✓</span>
+                    <span>
+                      Transport: ₦{plan.transportCost.toLocaleString()} round trip from your area
+                    </span>
+                  </div>
+                  {/* Phase 3A: Data source label */}
+                  {plan.explanation?.source_label && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#008751] font-bold">✓</span>
+                      <span>Pricing source: {plan.explanation.source_label}</span>
+                    </div>
+                  )}
                   <div className="pt-2 border-t border-border-default/50 text-[10px] text-gray-400">
-                    Calculated using active menu entries & transport rates. Bypasses static prompts.
+                    Calculated using active menu entries &amp; transport rates. Bypasses static prompts.
                   </div>
                 </div>
               )}

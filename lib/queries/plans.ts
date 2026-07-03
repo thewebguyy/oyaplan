@@ -68,3 +68,53 @@ export async function getAllPlanRequests(): Promise<{
     return { data: null, error: 'Unexpected error fetching plan requests' };
   }
 }
+
+/**
+ * getSharedPlanWithSpot — Fetches a single shared plan with its associated spot.
+ * Extracted from app/plan/[id]/page.tsx to follow the lib/queries/ pattern.
+ * Returns null data (not error) when the plan is not found (PGRST116).
+ */
+export async function getSharedPlanWithSpot(id: string): Promise<{
+  data: Record<string, unknown> | null;
+  notFound: boolean;
+  error: string | null;
+}> {
+  try {
+    const { data, error } = await supabase
+      .from('shared_plans')
+      .select('*, spot:spots(*)')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') return { data: null, notFound: true, error: null };
+      return { data: null, notFound: false, error: error.message };
+    }
+    if (!data) return { data: null, notFound: true, error: null };
+    return { data: data as Record<string, unknown>, notFound: false, error: null };
+  } catch {
+    return { data: null, notFound: false, error: 'Unexpected error fetching plan' };
+  }
+}
+
+/**
+ * getActualSpendForPlan — Fetches existing spend reports for a plan.
+ * Foundation for showing users their own submitted spend data.
+ */
+export async function getActualSpendForPlan(sharedPlanId: string): Promise<{
+  data: Array<{ actual_total: number; estimated_total: number; submitted_at: string }> | null;
+  error: string | null;
+}> {
+  try {
+    const { data, error } = await supabase
+      .from('actual_spend_reports')
+      .select('actual_total, estimated_total, submitted_at')
+      .eq('shared_plan_id', sharedPlanId)
+      .order('submitted_at', { ascending: false })
+      .limit(5);
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch {
+    return { data: null, error: 'Unexpected error fetching actual spend' };
+  }
+}
