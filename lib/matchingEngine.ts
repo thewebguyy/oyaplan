@@ -130,11 +130,32 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       const featuredBoost = spot.is_featured ? 30 : 0;
       const idWeight = spot.id.split('-')[0].split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
 
-      // Pinned Spot Boost: Ensure it lands on top if it survives filters
+      // Trust Signals Ranking Boosts (Deterministic)
+      const confidenceScore = Number(spot.computed_confidence_score || 50.00);
+      const confidenceBoost = (confidenceScore / 100) * 20; // up to +20 points
+
+      let statusBoost = 0;
+      const status = spot.verified_by || 'verified';
+      if (status === 'fresh') statusBoost = 25;
+      else if (status === 'community_verified') statusBoost = 20;
+      else if (status === 'owner_verified') statusBoost = 30;
+      else if (status === 'stale') statusBoost = -20;
+      else if (status === 'needs_review') statusBoost = -40;
+      else if (status === 'incomplete') statusBoost = -30;
+
+      // Pinned Spot Boost
       const pinnedBoost = spot.id === pinnedSpotId ? 1000 : 0;
 
-      const totalScore = costScore + vibeScore + featuredBoost + (idWeight / 1) + pinnedBoost;
+      const totalScore = costScore + vibeScore + featuredBoost + (idWeight / 1) + pinnedBoost + confidenceBoost + statusBoost;
       const whyItFits = generateWhyItFits(spot, vibe, totalCost, budget);
+
+      // Explainability details mapping
+      const explanation = {
+        budget_fit: `Fits ₦${budget.toLocaleString()} squad budget`,
+        freshness: `Prices verified ${spot.price_updated_at ? timeAgo(spot.price_updated_at) : 'recently'}`,
+        confidence: `${Math.round(confidenceScore)}% data confidence`,
+        tax_transparency: `Includes ${spot.category === 'restaurant' || spot.category === 'bar' ? '7.5% VAT' : 'local entry fees'}`
+      };
 
       return {
         spot,
@@ -142,6 +163,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         transportCost,
         totalCost,
         whyItFits,
+        explanation,
         score: totalScore
       };
     });
@@ -164,12 +186,13 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
   }
 
   // Return top 1-3
-  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits }) => ({
+  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits, explanation }) => ({
     spot,
     foodCost,
     transportCost,
     totalCost,
-    whyItFits
+    whyItFits,
+    explanation
   }));
 }
 
@@ -193,4 +216,24 @@ function generateWhyItFits(spot: Spot, vibe: string, total: number, budget: numb
   
   return `Your squad saves ₦${diff.toLocaleString()} under budget — enough for ${suggestion}.`;
 }
+
+function timeAgo(dateString?: string): string {
+  if (!dateString) return "recently";
+  try {
+    const seconds = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
+    if (seconds < 60) return "just now";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days === 1) return "yesterday";
+    if (days < 30) return `${days} days ago`;
+    const months = Math.floor(days / 30);
+    return `${months} months ago`;
+  } catch (e) {
+    return "recently";
+  }
+}
+
 

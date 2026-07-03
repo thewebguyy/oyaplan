@@ -6,6 +6,7 @@ import { getTesterObservations, getSpotSuggestions, getOperatorInquiries } from 
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
 import PageError from "@/components/PageError";
+import ModerationTable from "./ModerationTable";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function AdminDashboard() {
   let suggestions: Array<{ id: string; created_at: string; reviewed: boolean; spot_name: string; area_name: string; rough_price_per_person: number | null; suggester_whatsapp: string | null }> = [];
   let inquiries: Array<{ id: string; created_at: string; converted: boolean; contacted: boolean; business_name: string; owner_name: string; whatsapp_number: string; area_slug: string; listing_tier: string; monthly_budget_ngn: number | null }> = [];
   let staleSpots: Array<{ id: string; name: string; price_updated_at: string; verified_by: string | null; active: boolean }> = [];
+  let pendingEvidence: any[] = [];
 
   try {
     const [
@@ -60,6 +62,13 @@ export default async function AdminDashboard() {
       suggestions = (suggestionsResult.data || []) as typeof suggestions;
       inquiries = (inquiriesResult.data || []) as typeof inquiries;
       staleSpots = (staleSpotsResult.data || []) as typeof staleSpots;
+
+      const { data: pendingEvidenceData } = await serverClient
+        .from("price_evidence")
+        .select("id, source_type, recorded_price, evidence_url, created_at, submitted_by, venues(name), menu_items(name)")
+        .eq("verification_status", "pending")
+        .order("created_at", { ascending: false });
+      pendingEvidence = pendingEvidenceData || [];
     } else {
       adminFetchError = true;
     }
@@ -198,6 +207,9 @@ export default async function AdminDashboard() {
             </table>
           </div>
         </div>
+
+        {/* Ingestion queue moderation */}
+        <ModerationTable pendingEvidence={(pendingEvidence as any) || []} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Vibe Breakdown */}

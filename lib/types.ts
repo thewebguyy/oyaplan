@@ -30,6 +30,8 @@ export type Spot = {
   trending_score?: number;
   verified_by?: string;
   zone?: string;
+  computed_confidence_score?: number;
+  confidence_reasons?: string[];
 };
      
 export type ForgeInput = {
@@ -42,10 +44,135 @@ export type ForgeInput = {
   daypart?: 'Morning' | 'Afternoon' | 'Evening' | 'Night' | 'Any time';
 };
 
+export interface PlanExplanation {
+  budget_fit: string;
+  freshness: string;
+  confidence: string;
+  tax_transparency: string;
+}
+
 export type Plan = {
   spot: Spot;
   foodCost: number;
   transportCost: number;
   totalCost: number;
   whyItFits: string;
+  explanation?: PlanExplanation;
 };
+
+// Phase 2 Normalized Architecture Types
+export interface Country {
+  id: string;
+  name: string;
+  iso_code: string;
+  currency_code: string;
+  currency_symbol: string;
+  created_at?: string;
+}
+
+export interface City {
+  id: string;
+  country_id: string;
+  name: string;
+  slug: string;
+  created_at?: string;
+}
+
+export interface District {
+  id: string;
+  city_id: string;
+  name: string;
+  slug: string;
+  latitude: number | null;
+  longitude: number | null;
+  created_at?: string;
+}
+
+export interface Venue {
+  id: string;
+  district_id: string;
+  name: string;
+  address: string;
+  vibe_tags: string[];
+  category: 'restaurant' | 'bar' | 'activity' | 'nature' | 'entertainment' | 'beach' | 'cafe' | 'experience';
+  subcategory: string | null;
+  typical_duration_hours: number;
+  instagram_handle: string | null;
+  is_featured: boolean;
+  active: boolean;
+  
+  // Tax details
+  vat_pct: number;
+  service_charge_pct: number;
+  minimum_spend: number;
+  
+  // Operational Status
+  operational_status: 'fresh' | 'stale' | 'needs_review' | 'verified' | 'community_verified';
+  
+  // Materialized Derived Statistics
+  derived_typical_cost: number;
+  derived_price_tier: number;
+  computed_confidence_score: number;
+  confidence_reasons: string[];
+  
+  created_at?: string;
+}
+
+export interface MenuItem {
+  id: string;
+  venue_id: string;
+  name: string;
+  category: 'starter' | 'main' | 'dessert' | 'cocktail' | 'wine' | 'beer' | 'spirits' | 'soft_drink' | 'activity_fee' | 'other';
+  price: number;
+  is_available: boolean;
+  last_updated_at?: string;
+  created_at?: string;
+}
+
+export interface PriceEvidence {
+  id: string;
+  menu_item_id: string | null;
+  venue_id: string;
+  source_type: 'receipt_upload' | 'owner_submission' | 'social_media' | 'official_website' | 'manual_verification' | 'web_scraping' | 'historical_estimate';
+  submitted_by: string;
+  recorded_price: number;
+  evidence_url?: string | null;
+  verification_status: 'pending' | 'approved' | 'rejected';
+  confidence_weight: number;
+  created_at: string;
+}
+
+export interface PriceAuditLog {
+  id: string;
+  menu_item_id: string;
+  changed_by: string;
+  action_type: 'create' | 'update' | 'delete';
+  previous_price: number | null;
+  new_price: number | null;
+  evidence_id: string | null;
+  reason: string | null;
+  created_at: string;
+}
+
+export interface CityTransportRate {
+  id: string;
+  city_id: string;
+  provider_name: string;
+  mode_name: string;
+  slug: string;
+  base_fare: number;
+  per_km_rate: number;
+  per_minute_rate: number;
+  created_at?: string;
+}
+
+export interface TransportRouteOverride {
+  id: string;
+  origin_district_id: string;
+  destination_district_id: string;
+  mode_slug: string;
+  fixed_cost_low: number;
+  fixed_cost_high: number;
+  created_at?: string;
+}
+
