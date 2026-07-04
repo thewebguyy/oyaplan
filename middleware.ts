@@ -84,9 +84,39 @@ export async function middleware(request: NextRequest) {
   });
 
   // Refresh the session — do not remove this call.
-  // It ensures the user session is kept alive and the cookie is rotated
-  // before the Server Component renders.
   await supabase.auth.getUser();
+
+  // Phase 9: Growth Platform Deep Link Interception
+  // Intercept /r/:code or /invite/:code, rewrite to home, and set cookie if needed
+  const { pathname } = request.nextUrl;
+  if (pathname.startsWith('/r/') || pathname.startsWith('/invite/')) {
+    const code = pathname.split('/')[2];
+    
+    // Ensure an anonymous session cookie exists
+    let sessionId = request.cookies.get('oya_session_id')?.value;
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      supabaseResponse.cookies.set('oya_session_id', sessionId, { path: '/', maxAge: 60 * 60 * 24 * 30 });
+    }
+
+    // Rewrite to home page silently, passing the ref code via query param for the client to parse
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = '/';
+    rewriteUrl.searchParams.set('ref', code);
+    
+    // Maintain any existing UTMs
+    request.nextUrl.searchParams.forEach((value, key) => {
+      rewriteUrl.searchParams.set(key, value);
+    });
+
+    const finalResponse = NextResponse.rewrite(rewriteUrl);
+    // Copy cookies from supabaseResponse to finalResponse
+    supabaseResponse.cookies.getAll().forEach(cookie => {
+      finalResponse.cookies.set(cookie.name, cookie.value, { ...cookie });
+    });
+    
+    return finalResponse;
+  }
 
   return supabaseResponse;
 }

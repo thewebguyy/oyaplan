@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "ABCDE12345.com.oyaplan.ios",
+        "paths": ["/r/*", "/invite/*"]
+      }
+    ]
+  }
+}
