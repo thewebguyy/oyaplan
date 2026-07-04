@@ -7,7 +7,7 @@ import { aggregateVenuePricing } from "@/lib/services/normalizationLayer";
 
 export async function moderateEvidenceAction(
   evidenceId: string,
-  action: "approve" | "reject"
+  action: "approve" | "reject_duplicate" | "reject_malicious" | "reject_poor_quality" | "reject"
 ): Promise<{ success: boolean; error?: string }> {
   const serverClient = await createServerClient();
   const { data: { user } } = await serverClient.auth.getUser();
@@ -63,6 +63,54 @@ export async function moderateEvidenceAction(
         evidence_id: evidence.id,
         reason: "Admin approved pending evidence submission"
       });
+    }
+
+    // Phase 5: Reward Scout XP proportional to quality upon moderation resolution
+    if (evidence.scout_id) {
+      let xpAward = 0;
+
+      // 1. Calculate XP based on action quality
+      if (action === "approve") xpAward = 20; // Base price update
+      else if (action === "reject_duplicate") xpAward = 5;
+      else if (action === "reject_malicious") xpAward = -50;
+      else xpAward = 0; // standard reject
+
+      // 2. Check if this evidence fulfills a Scout Mission (Phase 5 priority engine)
+      const { data: mission } = await supabase
+        .from("scout_missions")
+        .select("id, base_reward_xp")
+        .eq("evidence_id", evidence.id)
+        .single();
+
+      if (mission) {
+        if (action === "approve") {
+          xpAward = mission.base_reward_xp; // Override with mission difficulty reward
+          // Mark mission complete
+          await supabase.from("scout_missions").update({ status: "completed" }).eq("id", mission.id);
+        } else {
+          // Re-open mission if rejected
+          await supabase.from("scout_missions").update({ status: "open", evidence_id: null, claimed_by: null }).eq("id", mission.id);
+        }
+      }
+
+      // 3. Apply XP to Scout Profile if non-zero
+      if (xpAward !== 0) {
+        const { data: profile } = await supabase
+          .from("scout_profiles")
+          .select("total_score")
+          .eq("user_id", evidence.scout_id)
+          .single();
+
+        if (profile) {
+          const newScore = Math.max(0, profile.total_score + xpAward);
+          await supabase
+            .from("scout_profiles")
+            .update({ 
+              total_score: newScore
+            })
+            .eq("user_id", evidence.scout_id);
+        }
+      }
     }
 
     // 4. Recalculate stats for the venue (database triggers will run too, redundant is safe)

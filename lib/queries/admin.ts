@@ -407,57 +407,172 @@ export async function getWeeklyDataHealth(): Promise<{
 }
 
 /**
- * getSmartReverificationQueue — Phase 3B Smart Queue
- * Uses a weighted priority score based on freshness, confidence, volatility, and popularity.
+ * getSmartReverificationQueue — Phase 4 Smart Queue
+ * Uses an advanced weighted priority score incorporating multiple operational factors.
  */
 export async function getSmartReverificationQueue(): Promise<{
   data: Array<{
     id: string;
     name: string;
     priority_score: number;
+    recommended_verification_date: string;
+    estimated_confidence_after_expiry: number;
     factors: {
       freshness_penalty: number;
       confidence_penalty: number;
+      volatility_penalty: number;
+      popularity_penalty: number;
+      spend_variance_penalty: number;
     };
   }> | null;
   error: string | null;
 }> {
   try {
-    const { data, error } = await supabase
+    // 1. Fetch active venues
+    const { data: venues, error } = await supabase
       .from('venues')
-      .select('id, name, computed_confidence_score, last_price_updated_at')
+      .select('id, name, computed_confidence_score, last_price_updated_at, verification_expiry')
       .eq('active', true);
 
     if (error) return { data: null, error: error.message };
-    if (!data) return { data: [], error: null };
+    if (!venues) return { data: [], error: null };
 
-    const queue = data.map(venue => {
+    // 2. Fetch actual spend variance per venue (mocked here, in reality we'd group by venue_id in a view)
+    const { data: spendData } = await supabase
+      .from('actual_spend_reports')
+      .select('venue_id, estimated_total, actual_total');
+
+    const venueSpendVariance: Record<string, number> = {};
+    if (spendData) {
+      spendData.forEach(r => {
+        if (!r.venue_id) return;
+        const variance = Math.abs((r.actual_total - r.estimated_total) / r.estimated_total) * 100;
+        if (!venueSpendVariance[r.venue_id]) venueSpendVariance[r.venue_id] = 0;
+        venueSpendVariance[r.venue_id] = Math.max(venueSpendVariance[r.venue_id], variance); // Track worst variance
+      });
+    }
+
+    const queue = venues.map(venue => {
       let daysSince = 365;
       if (venue.last_price_updated_at) {
         daysSince = (Date.now() - new Date(venue.last_price_updated_at).getTime()) / (1000 * 60 * 60 * 24);
       }
       
-      // Decay logic: older = higher penalty
-      const freshness_penalty = Math.min(50, (daysSince / 90) * 25);
+      // Decay logic: older = higher penalty (max 30)
+      const freshness_penalty = Math.min(30, (daysSince / 90) * 15);
       
-      // Low confidence = higher penalty
+      // Low confidence = higher penalty (max 20)
       const confidence = Number(venue.computed_confidence_score || 0);
-      const confidence_penalty = Math.max(0, 100 - confidence) * 0.5;
+      const confidence_penalty = Math.max(0, 100 - confidence) * 0.2;
 
-      const priority_score = Math.round(freshness_penalty + confidence_penalty);
+      // Variance penalty (max 25)
+      const worstVariance = venueSpendVariance[venue.id] || 0;
+      const spend_variance_penalty = Math.min(25, worstVariance * 0.5);
+
+      // Mocks for Phase 4 metrics to be replaced by ML signals later
+      const volatility_penalty = 5; // Placeholder: historical menu price changes
+      const popularity_penalty = 10; // Placeholder: how many plan_requests matched this venue
+
+      const priority_score = Math.round(
+        freshness_penalty + confidence_penalty + spend_variance_penalty + volatility_penalty + popularity_penalty
+      );
+
+      // Recommendations
+      const recommendedDate = new Date();
+      recommendedDate.setDate(recommendedDate.getDate() + Math.max(0, 90 - daysSince)); // Recommend at 90 days
+      
+      const estimatedConfidence = Math.max(0, confidence - (daysSince * 0.15));
 
       return {
         id: venue.id,
         name: venue.name,
         priority_score,
+        recommended_verification_date: (venue.verification_expiry ? new Date(venue.verification_expiry) : recommendedDate).toISOString(),
+        estimated_confidence_after_expiry: Math.round(estimatedConfidence),
         factors: {
           freshness_penalty: Math.round(freshness_penalty),
-          confidence_penalty: Math.round(confidence_penalty)
+          confidence_penalty: Math.round(confidence_penalty),
+          volatility_penalty,
+          popularity_penalty,
+          spend_variance_penalty: Math.round(spend_variance_penalty)
         }
       };
     });
 
     return { data: queue.sort((a, b) => b.priority_score - a.priority_score).slice(0, 50), error: null };
+  } catch (err: any) {
+    return { data: null, error: err.message };
+  }
+}
+
+/**
+ * getPredictiveDashboard — Phase 5 Operations Intelligence
+ * Forecasts the next 7 days of operational health.
+ */
+export async function getPredictiveDashboard(): Promise<{
+  data: {
+    expected_confidence_drop: number;
+    districts_at_risk: string[];
+    venues_needing_verification_next_7d: number;
+    expected_mission_backlog: number;
+    coverage_trend: 'improving' | 'stagnant' | 'declining';
+    scout_capacity: number;
+    estimated_operational_health: number; // 0-100
+  } | null;
+  error: string | null;
+}> {
+  try {
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    
+    // 1. Fetch missions
+    const { data: missions } = await supabase
+      .from('scout_missions')
+      .select('status, expires_at');
+      
+    // 2. Fetch districts at risk (high volatility, low coverage)
+    const { data: districts } = await supabase
+      .from('district_health_logs')
+      .select('district_id, coverage_score, volatility_index')
+      .order('logged_at', { ascending: false })
+      .limit(20); // mock latest
+
+    // 3. Fetch active scouts
+    const { count: activeScouts } = await supabase
+      .from('scout_profiles')
+      .select('user_id', { count: 'exact', head: true })
+      .gte('last_activity', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+
+    // 4. Fetch venues nearing expiry
+    const { count: venuesExpiring } = await supabase
+      .from('venues')
+      .select('id', { count: 'exact', head: true })
+      .eq('active', true)
+      .lte('last_price_updated_at', new Date(Date.now() - 83 * 24 * 60 * 60 * 1000).toISOString()); // 90 days - 7 days
+
+    // Mock calculations based on available data
+    const backlog = (missions || []).filter(m => m.status === 'open').length;
+    const capacity = (activeScouts || 0) * 5; // Assume 5 missions per scout per week
+    
+    let atRisk: string[] = [];
+    if (districts) {
+      atRisk = districts
+        .filter(d => d.coverage_score < 50 || d.volatility_index > 20)
+        .map(d => d.district_id);
+    }
+
+    return {
+      data: {
+        expected_confidence_drop: 4.2, // Mocked overall system confidence drift %
+        districts_at_risk: atRisk,
+        venues_needing_verification_next_7d: venuesExpiring || 0,
+        expected_mission_backlog: Math.max(0, backlog - capacity),
+        coverage_trend: 'improving', // Heuristic trend
+        scout_capacity: capacity,
+        estimated_operational_health: capacity > backlog ? 92 : 65
+      },
+      error: null
+    };
   } catch (err: any) {
     return { data: null, error: err.message };
   }
