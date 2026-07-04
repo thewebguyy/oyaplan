@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processRawEvidence, RawEvidenceInput } from '@/lib/services/normalizationLayer';
+import { SessionResolver } from '@/lib/services/identity/sessionResolver';
+import { RoleService } from '@/lib/services/identity/roleService';
 
 export async function POST(request: NextRequest) {
   try {
+    const identity = await SessionResolver.resolveIdentity();
+    
+    if (!RoleService.can(identity, 'submit_price_evidence')) {
+      return NextResponse.json({ success: false, error: 'Unauthorized. Scout role required.' }, { status: 403 });
+    }
+
     const body = await request.json();
 
     // Validate parameter presence and types (TypeScript strict validation)
@@ -11,7 +19,8 @@ export async function POST(request: NextRequest) {
     const category = typeof body.category === 'string' ? body.category.trim() : '';
     const price = typeof body.price === 'number' ? body.price : 0;
     const source_type = typeof body.source_type === 'string' ? body.source_type.trim() : '';
-    const submitted_by = typeof body.submitted_by === 'string' ? body.submitted_by.trim() : 'anonymous';
+    // Overwrite submitted_by with the authenticated user ID if available, else anonymous session
+    const submitted_by = identity.type === 'authenticated' ? identity.profile.id : identity.sessionId;
     const evidence_url = typeof body.evidence_url === 'string' ? body.evidence_url.trim() : undefined;
 
     if (!venue_id) {
