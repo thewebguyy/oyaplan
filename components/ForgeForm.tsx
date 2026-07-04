@@ -146,9 +146,15 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     });
     
     AnalyticsService.track('forge_started', {
-      area: formData.startArea,
-      budget: Number(formData.budget),
-      squad_size: Number(formData.squadSize)
+      session_id: 'browser',
+      properties: {
+        category: 'Activation',
+        source: 'form',
+        area: formData.startArea,
+        budget: Number(formData.budget),
+        squad_size: Number(formData.squadSize),
+        version: '1.0'
+      }
     });
 
     router.push(`/forge?${params.toString()}`);

@@ -35,13 +35,14 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {savedPlans.map((saveItem) => {
-              const plan = saveItem.shared_plans;
+            {savedPlans.map((saveItem, index) => {
+              const planArray = saveItem.shared_plans;
+              const plan = (Array.isArray(planArray) ? planArray[0] : planArray) as any;
               if (!plan) return null;
               
               return (
                 <Link 
-                  key={plan.id} 
+                  key={plan.id || index} 
                   href={`/plan/${plan.id}`}
                   className="bg-white border border-border-default rounded-[16px] p-5 hover:border-brand-green hover:shadow-[0px_8px_24px_rgba(0,135,81,0.08)] transition-all flex flex-col justify-between group tap-feedback"
                 >
@@ -56,11 +57,11 @@ export default async function DashboardPage() {
                     </div>
                     <div>
                       <h3 className="type-subheading text-text-primary line-clamp-1 group-hover:text-brand-green transition-colors">
-                        {plan.spot?.name}
+                        {Array.isArray(plan.spot) ? plan.spot[0]?.name : plan.spot?.name}
                       </h3>
                       <div className="flex items-center gap-1.5 mt-2 type-caption text-text-muted">
                         <MapPin className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">{plan.spot?.address}</span>
+                        <span className="truncate">{Array.isArray(plan.spot) ? plan.spot[0]?.address : plan.spot?.address}</span>
                       </div>
                     </div>
                   </div>

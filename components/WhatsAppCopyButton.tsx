@@ -36,9 +36,13 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
         }
         
         AnalyticsService.track('plan_shared', {
-          shared_plan_id: result.id,
-          spot_id: plan.spot.id,
-          total_cost: plan.totalCost
+          session_id: 'browser',
+          properties: {
+            category: 'Sharing',
+            plan_id: result.id,
+            share_method: 'whatsapp',
+            version: '1.0'
+          }
         });
 
         setShareUrl(url);

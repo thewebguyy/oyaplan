@@ -23,16 +23,20 @@ export const EventSchemas = {
   // Activation
   'forge_started': z.object({
     category: z.literal('Activation'),
-    source: z.string(), // e.g. 'landing_page', 'dashboard'
+    source: z.string().optional(),
+    area: z.string().optional(),
+    budget: z.number().optional(),
+    squad_size: z.number().optional(),
     version: z.literal('1.0')
   }),
   'forge_completed': z.object({
     category: z.literal('Activation'),
-    budget: z.number(),
-    squad_size: z.number(),
-    vibe: z.string(),
-    start_area: z.string(),
-    results_count: z.number(),
+    budget: z.number().optional(),
+    squad_size: z.number().optional(),
+    vibe: z.string().optional(),
+    start_area: z.string().optional(),
+    plans_generated: z.number().optional(),
+    results_count: z.number().optional(),
     top_spot_id: z.string().optional(),
     duration_ms: z.number().optional(), // Answers: How long does it take?
     version: z.literal('1.0')
@@ -54,13 +58,22 @@ export const EventSchemas = {
   
   // Added in Phase 12
   'auth_initiated': z.object({
+    category: z.literal('Activation'),
     source: z.string(), // e.g. "save_plan", "trust_engine"
-    path: z.string()
+    path: z.string(),
+    version: z.literal('1.0')
   }),
   'plan_saved': z.object({
+    category: z.literal('Engagement'),
     shared_plan_id: z.string(),
-    spot_id: z.string(),
-    total_cost: z.number()
+    spot_id: z.string().optional(),
+    total_cost: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+  'page_viewed': z.object({
+    category: z.literal('Engagement'),
+    path: z.string(),
+    version: z.literal('1.0')
   }),
 
   // Trust

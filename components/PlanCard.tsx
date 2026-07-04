@@ -14,27 +14,30 @@ import {
   Bookmark,
   Loader2
 } from "lucide-react";
+import { Plan, ForgeInput } from "@/lib/types";
 import { submitPriceFlag } from "@/lib/actions/submitPriceFlag";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
 import { useMobile } from "./hooks/useMobile";
 import { useAuth } from "./providers/AuthProvider";
 import { savePlan } from "@/lib/actions/savePlan";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { Button } from "./ui/button";
 
 interface PlanCardProps {
   plan: Plan;
-  index: number;
   input: ForgeInput;
+  planId?: string;
   isTopPick?: boolean;
   originalBudget?: number;
 }
 
-export default function PlanCard({ plan, input, isTopPick, originalBudget }: PlanCardProps) {
+export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick = false, originalBudget }: PlanCardProps) {
   const [feedbackGiven, setFeedbackGiven] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [explainExpanded, setExplainExpanded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [planId, setPlanId] = useState<string | undefined>(initialPlanId);
   const isMobile = useMobile();
   const { session, openModal } = useAuth();
 
@@ -81,24 +84,44 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
     }
   };
 
-  const handleSavePlan = async () => {
-    if (!session) {
-      openModal("Sign in to save plans", `/plan/${plan.id}`);
-      return;
-    }
+  const handleSavePlan = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isSaving || isSaved) return;
     
     setIsSaving(true);
     try {
-      const res = await savePlan(plan.id);
+      let currentPlanId = planId;
+      
+      // If we don't have an ID yet, create the shareable plan first
+      if (!currentPlanId) {
+        const { createShareablePlan } = await import('@/lib/actions/sharePlan');
+        const shareRes = await createShareablePlan(plan, input);
+        if (shareRes.success && shareRes.id) {
+          currentPlanId = shareRes.id;
+          setPlanId(currentPlanId);
+        } else {
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      const res = await savePlan(currentPlanId);
       if (res.success) {
         setIsSaved(true);
         AnalyticsService.track('plan_saved', {
-          shared_plan_id: plan.id,
-          spot_id: plan.spot.id,
-          total_cost: plan.totalCost
+          session_id: 'browser',
+          properties: {
+            category: 'Engagement',
+            shared_plan_id: currentPlanId,
+            spot_id: plan.spot.id,
+            total_cost: plan.totalCost,
+            version: '1.0'
+          }
         });
       } else if (res.error === 'unauthorized') {
-        openModal("Sign in to save plans", `/plan/${plan.id}`);
+        openModal("Sign in to save plans", `/plan/${currentPlanId || 'new'}`);
       }
     } catch (e) {
       console.error(e);
@@ -195,7 +218,7 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
           <Button 
             onClick={handleSavePlan}
             disabled={isSaving || isSaved}
-            variant={isTopPick ? "filled" : "outline"}
+            variant={isTopPick ? "default" : "outline"}
             className={`h-[56px] w-[56px] rounded-[16px] flex-shrink-0 flex items-center justify-center transition-colors ${
               isTopPick 
                 ? (isSaved ? 'bg-white text-brand-green' : 'bg-white/10 text-white hover:bg-white/20 border-none') 

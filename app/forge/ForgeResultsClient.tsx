@@ -95,9 +95,14 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       const timer = setTimeout(() => {
         setIsForging(false);
         AnalyticsService.track('forge_completed', {
-          plans_generated: generatedPlans.length,
-          vibe: input.vibe,
-          budget: input.budget
+          session_id: 'browser',
+          properties: {
+            category: 'Activation',
+            plans_generated: generatedPlans.length,
+            vibe: input.vibe,
+            budget: input.budget,
+            version: '1.0'
+          }
         });
       }, 2500);
 
@@ -155,9 +160,8 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           {/* Plan 1: Full Width */}
           <div className="w-full animate-slide-up animation-delay-0">
             <PlanCard 
-              key={plans[0].spot.id} 
+              key={`top-${plans[0].spot.id}`} 
               plan={plans[0]} 
-              index={0} 
               isTopPick={true} 
               input={forgeInput!} 
               originalBudget={forgeInput?.budget}
@@ -170,8 +174,8 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
               {plans.slice(1, 3).map((plan, index) => (
                 <div key={plan.spot.id} className={`animate-slide-up ${index === 0 ? 'animation-delay-80' : 'animation-delay-160'}`}>
                   <PlanCard 
+                    key={`other-${plan.spot.id}`}
                     plan={plan} 
-                    index={index + 1} 
                     isTopPick={false} 
                     input={forgeInput!} 
                     originalBudget={forgeInput?.budget}

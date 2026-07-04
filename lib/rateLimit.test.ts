@@ -34,7 +34,7 @@ describe('checkRateLimit', () => {
     vi.clearAllMocks();
     process.env.KV_REST_API_URL = 'https://mock-kv.example.com';
     process.env.KV_REST_API_TOKEN = 'mock-token';
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', writable: true });
   });
 
   it('should allow up to 10 requests and block the 11th', async () => {
@@ -63,7 +63,7 @@ describe('checkRateLimit', () => {
   });
 
   it('should fail-closed when KV env vars are absent in production', async () => {
-    process.env.NODE_ENV = 'production';
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true });
     delete process.env.KV_REST_API_URL;
     delete process.env.KV_REST_API_TOKEN;
 
@@ -79,7 +79,7 @@ describe('checkRateLimit', () => {
   });
 
   it('should fail-closed when Ratelimit throws in production', async () => {
-    process.env.NODE_ENV = 'production';
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true });
     const result = await checkRateLimit('error-trigger');
     expect(result.limited).toBe(true);
     expect(result.remaining).toBe(0);

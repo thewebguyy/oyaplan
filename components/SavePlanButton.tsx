@@ -24,9 +24,12 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
       if (res.success) {
         setIsSaved(true);
         AnalyticsService.track('plan_saved', {
-          shared_plan_id: planId,
-          spot_id: "unknown", // Optional for button component since we only have planId
-          total_cost: 0
+          session_id: 'browser',
+          properties: {
+            category: 'Engagement',
+            shared_plan_id: planId,
+            version: '1.0'
+          }
         });
       } else if (res.error === 'unauthorized') {
         openModal("Sign in to save plans", `/plan/${planId}`);

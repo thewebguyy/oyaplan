@@ -9,7 +9,14 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (pathname) {
-      AnalyticsService.track('page_viewed', { path: pathname });
+      AnalyticsService.track('page_viewed', { 
+        session_id: 'browser',
+        properties: {
+          category: 'Engagement',
+          path: pathname,
+          version: '1.0'
+        }
+      });
     }
   }, [pathname]);
 
