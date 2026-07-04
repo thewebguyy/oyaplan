@@ -52,6 +52,17 @@ export const EventSchemas = {
     version: z.literal('1.0')
   }),
   
+  // Added in Phase 12
+  'auth_initiated': z.object({
+    source: z.string(), // e.g. "save_plan", "trust_engine"
+    path: z.string()
+  }),
+  'plan_saved': z.object({
+    shared_plan_id: z.string(),
+    spot_id: z.string(),
+    total_cost: z.number()
+  }),
+
   // Trust
   'confidence_badge_clicked': z.object({
     category: z.literal('Trust'),

@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, User, LogOut, Loader2, Bookmark } from "lucide-react";
+import { useAuth } from "./providers/AuthProvider";
 
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { session, isLoading, openModal, signOut } = useAuth();
 
   // Hide on feedback and list-your-spot pages (if standalone)
   if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
@@ -72,8 +74,42 @@ export default function NavBar() {
           })}
         </div>
 
+          {isLoading ? (
+            <div className="w-8 h-8 rounded-full bg-surface-grey animate-pulse"></div>
+          ) : session ? (
+            <div className="relative group">
+              <button className="w-8 h-8 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center tap-feedback">
+                <User className="w-4 h-4" />
+              </button>
+              
+              {/* Dropdown menu */}
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
+                <Link href="/dashboard" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
+                  <Bookmark className="w-4 h-4 text-text-muted" />
+                  Saved Plans
+                </Link>
+                <div className="h-[1px] bg-border-default my-2"></div>
+                <button 
+                  onClick={() => signOut()}
+                  className="w-full text-left px-4 py-2 type-body text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign out
+                </button>
+              </div>
+            </div>
+          ) : (
+            <Button 
+              onClick={() => openModal()}
+              variant="outline" 
+              className="h-8 rounded-full type-label px-4 border-border-default hover:bg-surface-grey"
+            >
+              Sign In
+            </Button>
+          )}
+
         {/* Mobile CTA */}
-        <div className="md:hidden">
+        <div className="md:hidden ml-4">
           {pathname !== "/explore" ? (
             <Link href="/explore">
               <Button className="bg-brand-yellow text-text-primary font-[900] rounded-full type-label h-8 px-4 tap-feedback border-none hover:bg-brand-yellow/90">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Utensils, Car, Info, ArrowRight } from "lucide-react";
 import PageError from "@/components/PageError";
 import ActualSpendCapture from "@/components/ActualSpendCapture";
+import SavePlanButton from "@/components/SavePlanButton";
 
 export const dynamic = "force-dynamic";
 
@@ -158,13 +159,14 @@ export default async function PlanPage({ params }: PlanPageProps) {
           </div>
 
           {/* CTA Section */}
-          <div className="p-6 bg-surface-grey border-t border-border-default">
-            <Link href="/">
+          <div className="p-6 bg-surface-grey border-t border-border-default flex gap-3">
+            <Link href="/" className="flex-1">
               <Button className="w-full bg-brand-green hover:bg-brand-green-70 h-[56px] rounded-[12px] type-subheading text-white flex items-center justify-center gap-2 tap-feedback shadow-none border-none">
                 Plan your own outing
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
+            <SavePlanButton planId={plan.id} />
           </div>
 
           {/* Actual Spend Capture — feeds pricing flywheel */}

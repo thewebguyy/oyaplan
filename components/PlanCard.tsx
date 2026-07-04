@@ -10,12 +10,16 @@ import {
   ChevronDown, 
   ChevronUp, 
   ShieldCheck, 
-  Info
+  Info,
+  Bookmark,
+  Loader2
 } from "lucide-react";
-import { Plan, ForgeInput } from "@/lib/types";
 import { submitPriceFlag } from "@/lib/actions/submitPriceFlag";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
 import { useMobile } from "./hooks/useMobile";
+import { useAuth } from "./providers/AuthProvider";
+import { savePlan } from "@/lib/actions/savePlan";
+import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
 interface PlanCardProps {
   plan: Plan;
@@ -29,14 +33,26 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
   const [feedbackGiven, setFeedbackGiven] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [explainExpanded, setExplainExpanded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const isMobile = useMobile();
+  const { session, openModal } = useAuth();
 
   const handleTrustFeedback = async (type: 'low' | 'right' | 'high') => {
+    if (!session) {
+      openModal("Sign in to earn Scout reputation", window.location.pathname);
+      return;
+    }
+    
     setFeedbackGiven(true);
     try {
       // 1. Submit price flag via Server Action (legacy compatibility)
       if (type === 'low') {
-        await submitPriceFlag(plan.spot.id, 'up');
+        const res = await submitPriceFlag(plan.spot.id, 'up');
+        if (!res.success && res.error === 'unauthorized') {
+          openModal("You need Scout reputation to do this", window.location.pathname);
+          return;
+        }
       } else if (type === 'high') {
         await submitPriceFlag(plan.spot.id, 'down');
       }
@@ -62,6 +78,32 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
       });
     } catch (e) {
       console.error("Feedback error:", e);
+    }
+  };
+
+  const handleSavePlan = async () => {
+    if (!session) {
+      openModal("Sign in to save plans", `/plan/${plan.id}`);
+      return;
+    }
+    
+    setIsSaving(true);
+    try {
+      const res = await savePlan(plan.id);
+      if (res.success) {
+        setIsSaved(true);
+        AnalyticsService.track('plan_saved', {
+          shared_plan_id: plan.id,
+          spot_id: plan.spot.id,
+          total_cost: plan.totalCost
+        });
+      } else if (res.error === 'unauthorized') {
+        openModal("Sign in to save plans", `/plan/${plan.id}`);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -146,8 +188,28 @@ export default function PlanCard({ plan, input, isTopPick, originalBudget }: Pla
       {/* Bottom Zone: Action */}
       <div className="p-8 space-y-6">
         {/* Primary Action */}
-        <div className="w-full">
-          <WhatsAppCopyButton plan={plan} input={input} variant={isTopPick ? "filled" : "outlined"} />
+        <div className="w-full flex gap-3">
+          <div className="flex-1">
+            <WhatsAppCopyButton plan={plan} input={input} variant={isTopPick ? "filled" : "outlined"} />
+          </div>
+          <Button 
+            onClick={handleSavePlan}
+            disabled={isSaving || isSaved}
+            variant={isTopPick ? "filled" : "outline"}
+            className={`h-[56px] w-[56px] rounded-[16px] flex-shrink-0 flex items-center justify-center transition-colors ${
+              isTopPick 
+                ? (isSaved ? 'bg-white text-brand-green' : 'bg-white/10 text-white hover:bg-white/20 border-none') 
+                : (isSaved ? 'bg-brand-green/10 border-transparent text-brand-green' : 'border-border-default hover:bg-surface-grey text-text-primary')
+            }`}
+          >
+            {isSaving ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : isSaved ? (
+              <Bookmark className="w-5 h-5 fill-current" />
+            ) : (
+              <Bookmark className="w-5 h-5" />
+            )}
+          </Button>
         </div>
 
         {isMobile && !isExpanded && (

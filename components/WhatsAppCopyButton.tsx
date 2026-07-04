@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, Link as LinkIcon, Loader2, Check } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
 import { createShareablePlan } from "@/lib/actions/sharePlan";
+import { getReferralCode } from "@/lib/actions/getReferralCode";
+import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
 interface WhatsAppCopyButtonProps {
   plan: Plan;
@@ -23,9 +25,22 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
     if (shareUrl) return shareUrl;
     setSharing(true);
     try {
-      const uuid = await createShareablePlan(plan, input);
-      if (uuid) {
-        const url = `https://oyaplan.com/plan/${uuid}`;
+      const result = await createShareablePlan(plan, input);
+      if (result.success && result.id) {
+        let url = `https://oyaplan.com/plan/${result.id}`;
+        
+        // Append referral code if authenticated
+        const refCode = await getReferralCode();
+        if (refCode) {
+          url += `?ref=${refCode}`;
+        }
+        
+        AnalyticsService.track('plan_shared', {
+          shared_plan_id: result.id,
+          spot_id: plan.spot.id,
+          total_cost: plan.totalCost
+        });
+
         setShareUrl(url);
         return url;
       }

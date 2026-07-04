@@ -13,6 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Area } from "@/lib/types";
 import Link from "next/link";
+import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
 import { ChevronDown, MapPin, Wallet, Users, Music, Utensils, Clock, Sparkles } from "lucide-react";
 
@@ -144,6 +145,12 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
       else if (value && key !== "categoryGroup" && key !== "daypart") params.append(key, value);
     });
     
+    AnalyticsService.track('forge_started', {
+      area: formData.startArea,
+      budget: Number(formData.budget),
+      squad_size: Number(formData.squadSize)
+    });
+
     router.push(`/forge?${params.toString()}`);
   };
 

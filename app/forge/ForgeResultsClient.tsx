@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Spot, Plan, ForgeInput } from "@/lib/types";
 import { forgePlans } from "@/lib/services/matching/forgeMatcher";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
+import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
@@ -93,6 +94,11 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       // 3. Simulated loading time
       const timer = setTimeout(() => {
         setIsForging(false);
+        AnalyticsService.track('forge_completed', {
+          plans_generated: generatedPlans.length,
+          vibe: input.vibe,
+          budget: input.budget
+        });
       }, 2500);
 
       return () => clearTimeout(timer);

@@ -14,6 +14,9 @@ export async function getForgeSpots(
     if (allowedCategories) {
       query = query.in('category', allowedCategories);
     }
+    // Phase 3B: Deterministic ordering and memory boundary
+    // 300 limit is intentionally below the memory/latency cliff identified in the scaling roadmap
+    query = query.order('id', { ascending: true }).limit(300);
 
     const { data, error } = await query;
     if (error) return { data: null, error: error.message };

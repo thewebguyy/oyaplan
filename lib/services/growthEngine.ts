@@ -99,6 +99,34 @@ export class GrowthEngine {
   }
 
   /**
+   * Generates or retrieves a user's referral code.
+   */
+  static async getUserReferralCode(userId: string): Promise<string | null> {
+    // 1. Try to fetch existing
+    const { data } = await supabase
+      .from('referral_codes')
+      .select('code')
+      .eq('user_id', userId)
+      .single();
+
+    if (data?.code) return data.code;
+
+    // 2. Generate new if missing
+    const code = Array.from({ length: 6 }, () => 
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
+    ).join('');
+
+    const { error, data: newCode } = await supabase
+      .from('referral_codes')
+      .insert({ user_id: userId, code })
+      .select('code')
+      .single();
+      
+    if (error || !newCode) return null;
+    return newCode.code;
+  }
+
+  /**
    * Automatically triggered by existing Webhooks/Server Actions.
    * Advances the referral ledger linearly.
    */
