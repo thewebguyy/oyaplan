@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Spot, Plan, ForgeInput } from "@/lib/types";
-import { forgePlans } from "@/lib/matchingEngine";
+import { forgePlans } from "@/lib/services/matching/forgeMatcher";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";

@@ -24,8 +24,8 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { forgePlans, calculateZoneFare } from './matchingEngine';
-import type { Spot, ForgeInput } from './types';
+import { forgePlans, calculateZoneFare } from './forgeMatcher';
+import type { Spot, ForgeInput } from '../../types';
 
 // ─── Supabase mock ────────────────────────────────────────────────────────────
 // The analytics insert is fire-and-forget and must not affect test output.

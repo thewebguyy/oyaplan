@@ -1,4 +1,4 @@
-import { getAllowedCategories } from "@/lib/matchingEngine";
+import { getAllowedCategories } from "@/lib/services/matching/forgeMatcher";
 import { captureServerException } from "@/lib/sentry";
 import { getForgeSpots } from "@/lib/queries/spots";
 import ForgeResultsClient from "./ForgeResultsClient";

@@ -1,6 +1,6 @@
 import { calculateTypicalOutingCost } from '../lib/services/pricingEngine';
 import { calculateConfidence } from '../lib/services/confidenceEngine';
-import { forgePlans } from '../lib/matchingEngine';
+import { forgePlans } from '../lib/services/matching/forgeMatcher';
 import { MenuItem, PriceEvidence, Spot, ForgeInput } from '../lib/types';
 
 function assert(condition: boolean, message: string) {

@@ -179,3 +179,39 @@ export function predictNextReverificationDate(
   nextDate.setDate(nextDate.getDate() + finalDays);
   return nextDate;
 }
+
+export interface EvidencePayload {
+  venue_id: string;
+  source: 'extraction' | 'external_dataset' | 'manual' | 'receipt_upload';
+  evidence_url?: string;
+  price_data?: { price: number; type: 'average_spend' | 'entrance_fee' | 'general_menu'; item_name?: string };
+  import_batch_id?: string;
+}
+
+export class EvidenceFactory {
+  /**
+   * Routes incoming evidence to the correct downstream tables.
+   */
+  static async addEvidence(payload: EvidencePayload): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (payload.price_data) {
+        // Route to price_evidence
+        const { error } = await supabase.from('price_evidence').insert({
+          venue_id: payload.venue_id,
+          source_type: payload.source === 'external_dataset' ? 'extraction' : payload.source,
+          evidence_url: payload.evidence_url,
+          price_naira: payload.price_data.price,
+          item_type: payload.price_data.type,
+          verification_status: 'approved',
+          import_batch_id: payload.import_batch_id
+        });
+        if (error) throw error;
+      }
+
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  }
+}
+

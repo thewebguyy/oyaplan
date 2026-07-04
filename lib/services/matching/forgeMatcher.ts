@@ -1,5 +1,5 @@
-import { Spot, ForgeInput, Plan } from './types';
-import { supabase } from './supabase';
+import { Spot, ForgeInput, Plan } from '../../types';
+import { supabase } from '../../supabase';
 
 const ZONES: Record<string, string> = {
   ikeja: "mainland",
