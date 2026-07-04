@@ -18,6 +18,7 @@ export type Spot = {
   price_source?: string;
   transport_matrix: Record<string, number>;
   is_featured: boolean;
+  image_url?: string;
   active: boolean;
   category?: 'restaurant' | 'bar' | 'activity' | 'nature' | 'entertainment' | 'beach' | 'cafe' | 'experience';
   has_food?: boolean;

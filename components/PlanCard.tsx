@@ -21,6 +21,7 @@ import { useMobile } from "./hooks/useMobile";
 import { useAuth } from "./providers/AuthProvider";
 import { savePlan } from "@/lib/actions/savePlan";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 
 interface PlanCardProps {
@@ -110,6 +111,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
       const res = await savePlan(currentPlanId);
       if (res.success) {
         setIsSaved(true);
+        toast.success("Plan saved to your dashboard!");
         AnalyticsService.track('plan_saved', {
           session_id: 'browser',
           properties: {
@@ -177,32 +179,49 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
         : "border-border-default shadow-[0px_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.10)]"
     }`}>
       {/* Top Zone: Identity with Premium Trust Header */}
-      <div className={`p-8 ${isTopPick ? "bg-brand-green text-white" : "bg-surface-grey text-text-primary border-b border-border-default"}`}>
-        <div className="flex justify-between items-start mb-6">
+      <div 
+        className={`p-8 relative overflow-hidden ${isTopPick ? "bg-brand-green text-white" : "bg-surface-grey text-text-primary border-b border-border-default"}`}
+        style={plan.spot.image_url ? {
+          backgroundImage: `url(${plan.spot.image_url})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        } : undefined}
+      >
+        {/* Dark overlay for text legibility when image is present */}
+        {plan.spot.image_url && (
+          <div className="absolute inset-0 bg-black/60 z-0" />
+        )}
+        
+        <div className="relative z-10 flex justify-between items-start mb-6">
           <div className="flex flex-col gap-2">
             <span className={`px-2 py-1 border rounded-[6px] text-[10px] font-black uppercase tracking-wider w-fit ${isTopPick ? "bg-white/20 border-white/30 text-white" : statusClass}`}>
               {statusText}
             </span>
-            <div className={`flex items-center gap-1 text-[11px] font-bold ${isTopPick ? "text-white/80" : "text-text-secondary"}`}>
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{Math.round(confidenceScore)}% Confidence</span>
+            <div className={`flex flex-col gap-0.5`}>
+              <div className={`flex items-center gap-1 text-[11px] font-bold ${isTopPick || plan.spot.image_url ? "text-white/80" : "text-text-secondary"}`}>
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>{Math.round(confidenceScore)}% Confidence</span>
+              </div>
+              <span className={`text-[9px] ${isTopPick || plan.spot.image_url ? "text-white/60" : "text-text-muted"}`}>
+                Verified from: community receipts, scout submissions
+              </span>
             </div>
           </div>
-          <div className="text-right flex flex-col">
-            <p className={`${isTopPick ? "text-[52px]" : "type-heading text-brand-green"} font-[900] leading-none`}>
+          <div className="text-right flex flex-col relative z-10">
+            <p className={`${isTopPick || plan.spot.image_url ? "text-[52px] text-white" : "type-heading text-brand-green"} font-[900] leading-none`}>
               ₦{plan.totalCost.toLocaleString()}
             </p>
-            <p className={`type-caption mt-1 ${isTopPick ? "text-white/60" : "text-text-muted"}`}>
+            <p className={`type-caption mt-1 ${isTopPick || plan.spot.image_url ? "text-white/60" : "text-text-muted"}`}>
               for {input.squadSize} {Number(input.squadSize) === 1 ? 'person' : 'people'}
             </p>
           </div>
         </div>
         
-        <h3 className={`${isTopPick ? "text-[22px] font-[800] text-white" : "type-heading text-text-primary"}`}>
+        <h3 className={`relative z-10 ${isTopPick || plan.spot.image_url ? "text-[22px] font-[800] text-white" : "type-heading text-text-primary"}`}>
           {plan.spot.name}
         </h3>
         
-        <div className={`flex items-center gap-1.5 mt-2 type-caption ${isTopPick ? "text-white/80" : "text-text-muted"}`}>
+        <div className={`relative z-10 flex items-center gap-1.5 mt-2 type-caption ${isTopPick || plan.spot.image_url ? "text-white/80" : "text-text-muted"}`}>
           <MapPin className="w-[14px] h-[14px] shrink-0" />
           <span className="truncate">{plan.spot.address}</span>
         </div>

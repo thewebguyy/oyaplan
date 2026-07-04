@@ -23,11 +23,11 @@ interface ForgeFormProps {
 
 const SQUAD_OPTIONS = [1, 2, 3, 4, 5, 6, 8, 10, 12];
 const BUDGET_OPTIONS = [
-  { value: "15000", label: "₦15,000 — Lowkey" },
-  { value: "30000", label: "₦30,000 — Standard" },
-  { value: "50000", label: "₦50,000 — Chop Life" },
-  { value: "100000", label: "₦100,000 — Big Boy Energy" },
-  { value: "250000", label: "₦250,000 — Baller" },
+  { value: "15000", label: "₦15,000 — Quick bites/drinks" },
+  { value: "25000", label: "₦25,000 — Dinner for two" },
+  { value: "50000", label: "₦50,000 — Four friends chilling" },
+  { value: "100000", label: "₦100,000 — Premium night out" },
+  { value: "250000", label: "₦250,000 — Group flex" },
 ];
 const VIBE_OPTIONS = [
   { value: "Chill",  label: "😎 Chill Hangout" },

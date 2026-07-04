@@ -60,12 +60,23 @@ export default async function LandingPage() {
       <div className="relative pt-20 pb-32 px-4 overflow-visible">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h1 className="type-display text-white">
-            Stop the group chat wahala. <br />
-            <span className="text-brand-yellow">Get one complete plan in 3s.</span>
+            Know exactly where to go—<br />
+            <span className="text-brand-yellow">and what it'll really cost.</span>
           </h1>
           <p className="type-body text-white/80 max-w-2xl mx-auto">
-            Input 4 simple fields. Get the exact food cost, transport estimate, and &ldquo;why it fits&rdquo; note. Copy to WhatsApp and go.
+            Plan your next outing with real prices, transport costs, and trusted recommendations.
           </p>
+
+          <div className="flex items-center justify-center gap-3 type-caption text-white/80 mt-6">
+            <div className="flex -space-x-2">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="w-8 h-8 rounded-full border-2 border-brand-green bg-surface-grey flex items-center justify-center overflow-hidden">
+                  <span className="text-xs">👤</span>
+                </div>
+              ))}
+            </div>
+            <span>Over <strong className="text-white">10,000+</strong> verified prices in Lagos</span>
+          </div>
 
           {/* Form Card Container */}
           <div className="mt-12 px-4 w-full relative z-10">

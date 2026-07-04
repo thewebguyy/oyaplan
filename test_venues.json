@@ -1,0 +1,36 @@
+[
+  {
+    "Venue Name": "Choco's Bistro ",
+    "Category": "Restaurant ",
+    "Area": "Ikeja GRA",
+    "District": "Ikeja",
+    "Full Address": "53B, Oduduwa way, Ikeja gra",
+    "Island or Mainland": "Mainland ",
+    "Budget / Price": 20000,
+    "Price Range": "",
+    "Currency": "NGN",
+    "Price Type": "per person ",
+    "Source Tweet URL": "https://x.com/lagosonabudget/status/2073073164704182495 ",
+    "Tweet Date": "2026-07-03",
+    "Confidence": "High",
+    "Times Mentioned": 1,
+    "vibe_tags": ["Chill", "Foodie"]
+  },
+  {
+    "Venue Name": "Unmapped Spot",
+    "Category": "Restaurant",
+    "Area": "Unknown City",
+    "District": "Unknown",
+    "Full Address": "123 Nowhere",
+    "Island or Mainland": "Mainland",
+    "Budget / Price": 10000,
+    "Price Range": "",
+    "Currency": "NGN",
+    "Price Type": "per person",
+    "Source Tweet URL": "https://x.com/abc",
+    "Tweet Date": "2026-07-03",
+    "Confidence": "High",
+    "Times Mentioned": 1,
+    "vibe_tags": ["Chill"]
+  }
+]

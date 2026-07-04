@@ -204,9 +204,9 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             </div>
           </div>
           <div className="space-y-2">
-            <h2 className="type-heading text-text-primary">No perfect match found.</h2>
+            <h2 className="type-heading text-text-primary">Budget too low for this vibe.</h2>
             <p className="type-body text-text-muted max-w-md mx-auto">
-              Lagos is tough! Try increasing your budget or choosing a different starting area.
+              Your budget of ₦{(forgeInput?.budget || 0).toLocaleString()} is a bit tight for a <span className="lowercase">{forgeInput?.vibe}</span> vibe in {targetAreaName || "this area"}. Increase your budget to see spots.
             </p>
           </div>
           

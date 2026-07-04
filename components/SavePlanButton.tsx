@@ -5,6 +5,7 @@ import { useAuth } from "./providers/AuthProvider";
 import { savePlan } from "@/lib/actions/savePlan";
 import { Button } from "./ui/button";
 import { Bookmark, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
 export default function SavePlanButton({ planId, variant = "outline" }: { planId: string, variant?: "outline" | "ghost" | "default" | "filled" }) {
@@ -23,6 +24,7 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
       const res = await savePlan(planId);
       if (res.success) {
         setIsSaved(true);
+        toast.success("Plan saved to your dashboard!");
         AnalyticsService.track('plan_saved', {
           session_id: 'browser',
           properties: {

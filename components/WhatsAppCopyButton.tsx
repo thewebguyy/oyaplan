@@ -6,6 +6,7 @@ import { Plan, ForgeInput } from "@/lib/types";
 import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { getReferralCode } from "@/lib/actions/getReferralCode";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { toast } from 'sonner';
 
 interface WhatsAppCopyButtonProps {
   plan: Plan;
@@ -96,6 +97,8 @@ View full plan: ${url || "https://oyaplan.com"}`;
     } else {
       navigator.clipboard.writeText(text);
       setCopied(true);
+      toast.success('Link copied to clipboard!');
+      
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -105,6 +108,7 @@ View full plan: ${url || "https://oyaplan.com"}`;
     if (url) {
       navigator.clipboard.writeText(url);
       setLinkCopied(true);
+      toast.success('Link copied to clipboard!');
       setTimeout(() => setLinkCopied(false), 2000);
     }
   };

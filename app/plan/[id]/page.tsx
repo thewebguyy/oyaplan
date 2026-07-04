@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PlanPageProps): Promise<Metad
       openGraph: {
         title: `Squad plan at ${spotName} — OyaPlan`,
         description: `Total cost: ₦${totalCost} for ${squadSize} people. See the full breakdown.`,
-        images: [`/plan/${id}/og`],
+        images: [`${process.env.NEXT_PUBLIC_APP_URL || 'https://oyaplan.vercel.app'}/api/og/plan?id=${id}`],
         type: "website",
       },
     };

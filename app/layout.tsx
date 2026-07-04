@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
+import { Toaster } from "@/components/ui/sonner";
 import AuthModal from "@/components/AuthModal";
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -58,6 +59,7 @@ export default function RootLayout({
               {children}
             </div>
             <AuthModal />
+            <Toaster richColors position="bottom-right" />
           </AuthProvider>
         </AnalyticsProvider>
       </body>
