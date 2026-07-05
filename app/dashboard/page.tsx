@@ -52,7 +52,7 @@ export default async function DashboardPage() {
                         {plan.vibe}
                       </span>
                       <span className="type-label text-brand-green font-[900]">
-                        ₦{plan.total_cost.toLocaleString()}
+                        ₦{plan.total_cost.toLocaleString('en-NG')}
                       </span>
                     </div>
                     <div>

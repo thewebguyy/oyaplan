@@ -124,7 +124,7 @@ export default async function LandingPage() {
                   <div key={i} className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 flex items-center gap-2 shrink-0">
                     <span className="type-label text-white/90 lowercase first-letter:uppercase">{plan.spots.name}</span>
                     <span className="text-white/20">&bull;</span>
-                    <span className="type-label text-brand-yellow">₦{plan.total_cost.toLocaleString()}</span>
+                    <span className="type-label text-brand-yellow">₦{plan.total_cost.toLocaleString('en-NG')}</span>
                   </div>
                 ))}
               </div>

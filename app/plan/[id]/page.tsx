@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PlanPageProps): Promise<Metad
     }
 
     const spotName = plan.spot?.name || "Unknown Spot";
-    const totalCost = plan.total_cost.toLocaleString();
+    const totalCost = plan.total_cost.toLocaleString('en-NG');
     const squadSize = plan.squad_size;
 
     return {
@@ -114,7 +114,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
             {/* Total Cost Display */}
             <div className="text-center pb-4 border-b border-border-default">
               <span className="type-label text-text-muted uppercase tracking-wider">Landed Cost</span>
-              <div className="text-5xl font-[900] text-brand-green mt-1">₦{plan.total_cost.toLocaleString()}</div>
+              <div className="text-5xl font-[900] text-brand-green mt-1">₦{plan.total_cost.toLocaleString('en-NG')}</div>
             </div>
 
             {/* Cost Grid */}
@@ -124,14 +124,14 @@ export default async function PlanPage({ params }: PlanPageProps) {
                   {hasFood ? <Utensils className="w-3 h-3" /> : <Utensils className="w-3 h-3" />}
                   {hasFood ? "Food/Drink" : "Activity"}
                 </div>
-                <div className="type-subheading text-text-primary">₦{plan.food_cost.toLocaleString()}</div>
+                <div className="type-subheading text-text-primary">₦{plan.food_cost.toLocaleString('en-NG')}</div>
               </div>
               <div className="p-4 bg-surface-grey border border-border-default rounded-[12px] space-y-1">
                 <div className="flex items-center gap-2 text-text-muted type-label">
                   <Car className="w-3 h-3" />
                   Transport
                 </div>
-                <div className="type-subheading text-text-primary">₦{plan.transport_cost.toLocaleString()}</div>
+                <div className="type-subheading text-text-primary">₦{plan.transport_cost.toLocaleString('en-NG')}</div>
               </div>
             </div>
 

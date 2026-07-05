@@ -71,7 +71,7 @@ export default async function ExploreIndex({
       {params.budget && params.vibe && (
         <div className="bg-brand-green text-white py-3 px-4">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <p className="type-label">Showing spots for your ₦{parseInt(params.budget).toLocaleString()} {params.vibe} outing</p>
+            <p className="type-label">Showing spots for your ₦{parseInt(params.budget).toLocaleString('en-NG')} {params.vibe} outing</p>
             <Link href="/explore" className="type-label text-white/80 hover:text-white underline">Clear</Link>
           </div>
         </div>
