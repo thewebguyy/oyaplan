@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { IdentityMergeService } from '@/lib/services/identity/identityMergeService';
+import { captureServerException } from '@/lib/sentry';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -33,7 +34,12 @@ export async function GET(request: Request) {
 
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
     
-    if (!error && data.user) {
+    if (error) {
+      console.error('[AUTH CALLBACK ERROR]', error);
+      captureServerException(error);
+    }
+    
+    if (!error && data?.user) {
       // 1. Identity Merger: Transfer anonymous session data to the newly authenticated user.
       const sessionId = cookieStore.get('oya_session_id')?.value;
       if (sessionId) {
