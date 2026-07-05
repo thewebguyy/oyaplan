@@ -75,15 +75,19 @@ export default function NavBar() {
         </div>
 
           {isLoading ? (
-            <div className="w-8 h-8 rounded-full bg-surface-grey animate-pulse"></div>
+            <div className="w-10 h-10 rounded-full bg-surface-grey animate-pulse"></div>
           ) : session ? (
             <div className="relative group">
-              <button className="w-8 h-8 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center tap-feedback">
-                <User className="w-4 h-4" />
+              <button 
+                type="button"
+                aria-label="User profile dropdown"
+                className="w-10 h-10 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center tap-feedback"
+              >
+                <User className="w-5 h-5" />
               </button>
               
               {/* Dropdown menu */}
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 py-2">
                 <Link href="/dashboard" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
                   <Bookmark className="w-4 h-4 text-text-muted" />
                   Saved Plans
@@ -102,7 +106,7 @@ export default function NavBar() {
             <Button 
               onClick={() => openModal()}
               variant="outline" 
-              className="h-8 rounded-full type-label px-4 border-border-default hover:bg-surface-grey"
+              className="h-10 rounded-full type-label px-5 border-border-default hover:bg-surface-grey"
             >
               Sign In
             </Button>
@@ -112,13 +116,13 @@ export default function NavBar() {
         <div className="md:hidden ml-4">
           {pathname !== "/explore" ? (
             <Link href="/explore">
-              <Button className="bg-brand-yellow text-text-primary font-[900] rounded-full type-label h-8 px-4 tap-feedback border-none hover:bg-brand-yellow/90">
+              <Button className="bg-brand-yellow text-text-primary font-[900] rounded-full type-label h-10 px-5 tap-feedback border-none hover:bg-brand-yellow/90">
                 Explore
               </Button>
             </Link>
           ) : (
             <Link href="/">
-              <Button className="bg-brand-green text-white font-[900] rounded-full type-label h-8 px-4 tap-feedback border-none hover:bg-brand-green-70">
+              <Button className="bg-brand-green text-white font-[900] rounded-full type-label h-10 px-5 tap-feedback border-none hover:bg-brand-green-70">
                 Plan Now
               </Button>
             </Link>

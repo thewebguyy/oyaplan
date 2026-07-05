@@ -61,7 +61,7 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h1 className="type-display text-white">
             Know exactly where to go—<br />
-            <span className="text-brand-yellow">and what it'll really cost.</span>
+            <span className="text-white underline decoration-brand-yellow decoration-4 underline-offset-8">and what it'll really cost.</span>
           </h1>
           <p className="type-body text-white/80 max-w-2xl mx-auto">
             Plan your next outing with real prices, transport costs, and trusted recommendations.
@@ -97,12 +97,12 @@ export default async function LandingPage() {
               <span className="text-xl">🔥</span>
               <h2 className="type-subheading text-text-primary">Trending in Lagos this week</h2>
             </div>
-            <div className="flex overflow-x-auto gap-4 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex overflow-x-auto gap-4 pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory">
               {trendingSpots.map((spot) => (
                 <Link
                   key={spot.id}
                   href={`/explore/${spot.zone}?pinnedSpotId=${spot.id}`}
-                  className="min-w-[200px] p-5 border border-border-default rounded-[16px] bg-surface-grey hover:border-brand-green hover:shadow-[0px_4px_12px_rgba(0,135,81,0.08)] transition-all tap-feedback shrink-0 flex flex-col justify-between"
+                  className="min-w-[200px] p-5 border border-border-default rounded-[16px] bg-surface-grey hover:border-brand-green hover:shadow-[0px_4px_12px_rgba(0,135,81,0.08)] transition-all tap-feedback shrink-0 flex flex-col justify-between snap-start"
                 >
                   <h3 className="type-label text-text-primary mb-1 truncate">{spot.name}</h3>
                   <p className="type-caption text-text-muted capitalize">{spot.zone}</p>
@@ -114,14 +114,15 @@ export default async function LandingPage() {
       )}
 
       {/* Social Proof Section */}
-      <div className="bg-[#004d2e] text-white py-24 px-4 overflow-hidden">
-        <div className="max-w-4xl mx-auto text-center space-y-12">
+      <div className="relative bg-brand-green text-white py-24 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-black/25 z-0" />
+        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-12">
           {recentPlans.length > 0 && (
             <div className="space-y-6">
               <h2 className="type-label text-white/60">Recently planned outings</h2>
-              <div className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 overflow-x-auto pb-4 md:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 overflow-x-auto pb-4 md:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory">
                 {recentPlans.map((plan, i) => (
-                  <div key={i} className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 flex items-center gap-2 shrink-0">
+                  <div key={i} className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 flex items-center gap-2 shrink-0 snap-start">
                     <span className="type-label text-white/90 lowercase first-letter:uppercase">{plan.spots.name}</span>
                     <span className="text-white/20">&bull;</span>
                     <span className="type-label text-brand-yellow">₦{plan.total_cost.toLocaleString('en-NG')}</span>

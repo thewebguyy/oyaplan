@@ -299,7 +299,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="flex items-center gap-2 type-caption text-text-muted hover:text-text-secondary transition-colors"
+            className="flex items-center gap-2 type-caption text-text-muted hover:text-text-secondary transition-colors py-3"
           >
             <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${showAdvanced ? "rotate-180" : ""}`} />
             ⚙ Refine further
