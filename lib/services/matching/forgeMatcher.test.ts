@@ -253,8 +253,10 @@ describe('forgePlans — vibe filter', () => {
       id: 'f6a7b8c9-0000-0000-0000-000000000010',
       vibe_tags: ['Party'],
     });
-    const results = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [wrongVibeSpot]);
-    expect(results).toHaveLength(0);
+    const results = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [SPOT_A, wrongVibeSpot]);
+    expect(results).toHaveLength(1);
+    expect(results[0].spot.id).toBe(SPOT_A.id);
+    expect(results[0].explanation?.reason).toBeUndefined();
   });
 
   it('matches vibe exactly — partial string match does not count', () => {
@@ -262,8 +264,10 @@ describe('forgePlans — vibe filter', () => {
       id: 'a7b8c9d0-0000-0000-0000-000000000011',
       vibe_tags: ['ChillOut'],
     });
-    const results = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [spot]);
-    expect(results).toHaveLength(0);
+    const results = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [SPOT_A, spot]);
+    expect(results).toHaveLength(1);
+    expect(results[0].spot.id).toBe(SPOT_A.id);
+    expect(results[0].explanation?.reason).toBeUndefined();
   });
 
   it('includes spot when it has multiple vibe tags and one matches', () => {
@@ -864,13 +868,15 @@ describe('forgePlans — result count', () => {
     expect(results).toHaveLength(0);
   });
 
-  it('returns empty array when all spots fail vibe filter', () => {
+  it('returns fallback plans with semantic_classification_missing when all spots fail vibe filter', () => {
     const wrongVibeSpot = makeSpot({
       id: 'd2e3f4a5-0000-0000-0000-0000000000c0',
       vibe_tags: ['Party'],
     });
     const results = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [wrongVibeSpot]);
-    expect(results).toHaveLength(0);
+    expect(results).toHaveLength(1);
+    expect(results[0].spot.id).toBe(wrongVibeSpot.id);
+    expect(results[0].explanation?.reason).toBe('semantic_classification_missing');
   });
 
   it('returns empty array when all spots exceed budget', () => {

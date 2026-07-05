@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock @upstash/ratelimit
 vi.mock('@upstash/ratelimit', () => {
@@ -30,11 +30,17 @@ vi.mock('./sentry', () => ({
 }));
 
 describe('checkRateLimit', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.KV_REST_API_URL = 'https://mock-kv.example.com';
     process.env.KV_REST_API_TOKEN = 'mock-token';
-    Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', writable: true });
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'test';
+  });
+
+  afterEach(() => {
+    (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
   });
 
   it('should allow up to 10 requests and block the 11th', async () => {
@@ -63,7 +69,7 @@ describe('checkRateLimit', () => {
   });
 
   it('should fail-closed when KV env vars are absent in production', async () => {
-    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true });
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
     delete process.env.KV_REST_API_URL;
     delete process.env.KV_REST_API_TOKEN;
 
@@ -79,7 +85,7 @@ describe('checkRateLimit', () => {
   });
 
   it('should fail-closed when Ratelimit throws in production', async () => {
-    Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true });
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
     const result = await checkRateLimit('error-trigger');
     expect(result.limited).toBe(true);
     expect(result.remaining).toBe(0);
