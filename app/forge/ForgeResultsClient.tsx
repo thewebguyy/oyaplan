@@ -159,13 +159,13 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         <div className="space-y-12">
           {/* Fallback Banner */}
           {plans[0].explanation?.reason === "semantic_classification_missing" && (
-            <div className="bg-[#FFF8E6] border border-[#FDE68A] text-[#92400E] p-5 rounded-2xl mb-8 flex items-start gap-4">
+            <div className="bg-brand-yellow-15 border border-brand-yellow text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
               <div className="mt-0.5">
-                <AlertCircle className="w-5 h-5" />
+                <AlertCircle className="w-5 h-5 text-brand-green" />
               </div>
               <div className="space-y-1">
                 <h3 className="type-label">We haven&apos;t classified enough <span className="lowercase">{forgeInput?.vibe}</span> venues yet.</h3>
-                <p className="type-caption text-[#92400E]/80">Here are the best places within your budget while we continue verifying venue personalities.</p>
+                <p className="type-caption text-text-secondary">Here are the best places within your budget while we continue verifying venue personalities.</p>
               </div>
             </div>
           )}

@@ -154,22 +154,22 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
   const confidenceScore = plan.spot.computed_confidence_score || 80;
 
   let statusText = 'Verified';
-  let statusClass = 'bg-green-50 text-[#008751] border-green-200';
+  let statusClass = 'bg-brand-green-15 text-brand-green border-brand-green-15';
   if (status === 'fresh') {
     statusText = 'Fresh Prices';
-    statusClass = 'bg-emerald-500 text-white border-emerald-600';
+    statusClass = 'bg-brand-green text-white border-brand-green';
   } else if (status === 'stale') {
     statusText = 'Stale Pricing';
-    statusClass = 'bg-amber-50 text-amber-700 border-amber-200';
+    statusClass = 'bg-brand-yellow-15 text-text-primary border-brand-yellow-40';
   } else if (status === 'needs_review' || status === 'incomplete') {
     statusText = 'Needs Review';
-    statusClass = 'bg-red-50 text-red-700 border-red-200';
+    statusClass = 'bg-error/10 text-error border-error/30';
   } else if (status === 'community_verified') {
     statusText = 'Community Verified';
-    statusClass = 'bg-blue-50 text-blue-700 border-blue-200';
+    statusClass = 'bg-brand-green-5 text-brand-green border-brand-green-15';
   } else if (status === 'owner_verified') {
     statusText = 'Owner Verified';
-    statusClass = 'bg-purple-50 text-purple-700 border-purple-200';
+    statusClass = 'bg-brand-green-15 text-brand-green border-brand-green-40';
   }
 
   return (
