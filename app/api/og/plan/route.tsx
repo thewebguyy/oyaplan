@@ -23,7 +23,13 @@ export async function GET(req: NextRequest) {
             <p style={{ color: '#E4F4EC', fontSize: 30 }}>Know exactly where to go—and what it'll really cost.</p>
           </div>
         ),
-        { width: 1200, height: 630 }
+        { 
+          width: 1200, 
+          height: 630,
+          headers: {
+            'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800'
+          }
+        }
       );
     }
 
@@ -107,6 +113,9 @@ export async function GET(req: NextRequest) {
       {
         width: 1200,
         height: 630,
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800'
+        }
       }
     );
   } catch (e: any) {
@@ -116,7 +125,13 @@ export async function GET(req: NextRequest) {
           <h1 style={{ color: 'white', fontSize: 60, fontWeight: 900 }}>OyaPlan</h1>
         </div>
       ),
-      { width: 1200, height: 630 }
+      { 
+        width: 1200, 
+        height: 630,
+        headers: {
+          'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800'
+        }
+      }
     );
   }
 }

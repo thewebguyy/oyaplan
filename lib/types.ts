@@ -62,6 +62,7 @@ export interface PlanExplanation {
   // Phase 3B additions
   methodology?: string[];
   timeline?: TimelineEvent[];
+  reason?: string;
 }
 
 export type Plan = {

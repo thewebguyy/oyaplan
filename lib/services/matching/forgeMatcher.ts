@@ -127,8 +127,8 @@ export function getAllowedCategories(categoryGroup: string | undefined): string[
 export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
   const { startArea, squadSize, budget, vibe, pinnedSpotId, categoryGroup, daypart } = input;
 
-  // 1. Filter and Score
-  const scoredSpots = allSpots
+  // 1. Filter
+  const baseFilteredSpots = allSpots
     .filter((spot) => {
       // Daypart Filter
       if (daypart && daypart !== "Any time") {
@@ -155,9 +155,22 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
 
       // Must match vibe tag OR be the pinned spot
       if (spot.id === pinnedSpotId) return true;
-      if (!spot.vibe_tags.includes(vibe)) return false;
+      // Vibe filter moved to candidate selection below
       return true;
-    })
+    });
+
+  let isFallback = false;
+  let candidates = baseFilteredSpots.filter(spot => 
+    spot.id === pinnedSpotId || spot.vibe_tags.includes(vibe)
+  );
+
+  // If no exact matches exist, fallback to all baseFilteredSpots
+  if (candidates.length === 0) {
+    isFallback = true;
+    candidates = baseFilteredSpots;
+  }
+
+  const scoredSpots = candidates
     .map((spot) => {
       // COST CALCULATION
       // price_per_person = derived_typical_cost (via spots VIEW).
@@ -237,8 +250,9 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         freshness: spot.price_updated_at
           ? `Prices updated ${timeAgo(spot.price_updated_at)}`
           : 'Estimated from historical data',
-        confidence: `${Math.round(confidenceScore)}% data confidence`,
+        confidence: isFallback ? "low" : `${Math.round(confidenceScore)}% data confidence`,
         tax_transparency: buildTaxLabel(spot),
+        reason: isFallback ? "semantic_classification_missing" : undefined,
       };
 
       // Attach source label to explanation so PlanCard can render it

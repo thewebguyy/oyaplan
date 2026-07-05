@@ -132,7 +132,7 @@ async function main() {
       area_id: areaId,
       vibe_tags: venue['vibe_tags'],
       price_per_person: price,
-      transport_matrix: null,
+      transport_matrix: venue['transport_matrix'] || {},
       active: false,
       price_updated_at: new Date().toISOString(),
       price_source: 'crowd',
@@ -145,9 +145,7 @@ async function main() {
       source: 'grok_scrape_2026_07_verified',
       raw_payload: venue,
       venue_name: venueName,
-      area: venue['Area'],
-      source_tweet_url: venue['Source Tweet URL'],
-      tweet_date: venue['Tweet Date']
+      area: venue['Area']
     };
 
     if (isDryRun) {

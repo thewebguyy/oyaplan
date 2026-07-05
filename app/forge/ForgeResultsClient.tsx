@@ -8,7 +8,7 @@ import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LoadingState from "@/components/LoadingState";
 import PlanCard from "@/components/PlanCard";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ArrowLeft, Loader2 } from "lucide-react";
+import { RefreshCw, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import {
@@ -157,6 +157,19 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
       {plans.length > 0 ? (
         <div className="space-y-12">
+          {/* Fallback Banner */}
+          {plans[0].explanation?.reason === "semantic_classification_missing" && (
+            <div className="bg-[#FFF8E6] border border-[#FDE68A] text-[#92400E] p-5 rounded-2xl mb-8 flex items-start gap-4">
+              <div className="mt-0.5">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="type-label">We haven&apos;t classified enough <span className="lowercase">{forgeInput?.vibe}</span> venues yet.</h3>
+                <p className="type-caption text-[#92400E]/80">Here are the best places within your budget while we continue verifying venue personalities.</p>
+              </div>
+            </div>
+          )}
+
           {/* Plan 1: Full Width */}
           <div className="w-full animate-slide-up animation-delay-0">
             <PlanCard 
