@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { ChevronLeft, User, LogOut, Loader2, Bookmark } from "lucide-react";
+import { ChevronLeft, User, LogOut, Bookmark } from "lucide-react";
 import { useAuth } from "./providers/AuthProvider";
 
 export default function NavBar() {
@@ -78,22 +78,24 @@ export default function NavBar() {
             <div className="w-10 h-10 rounded-full bg-surface-grey animate-pulse"></div>
           ) : session ? (
             <div className="relative group">
-              <button 
+              <button
                 type="button"
                 aria-label="User profile dropdown"
+                aria-haspopup="menu"
                 className="w-10 h-10 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center tap-feedback"
               >
                 <User className="w-5 h-5" />
               </button>
-              
+
               {/* Dropdown menu */}
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 py-2">
-                <Link href="/dashboard" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
+              <div role="menu" className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 py-2">
+                <Link href="/dashboard" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
                   <Bookmark className="w-4 h-4 text-text-muted" />
                   Saved Plans
                 </Link>
                 <div className="h-[1px] bg-border-default my-2"></div>
-                <button 
+                <button
+                  role="menuitem"
                   onClick={() => signOut()}
                   className="w-full text-left px-4 py-2 type-body text-red-600 hover:bg-red-50 flex items-center gap-2"
                 >
