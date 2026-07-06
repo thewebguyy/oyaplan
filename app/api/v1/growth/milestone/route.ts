@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { GrowthEngine } from '@/lib/services/growthEngine';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 
 /**
  * Phase 9: Growth Platform
