@@ -380,7 +380,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           </Button>
 
           <p className="text-center type-caption text-text-muted">
-            Usually ready in under 3 seconds ⚡
+            Usually ready in seconds ⚡
           </p>
         </div>
       </form>
