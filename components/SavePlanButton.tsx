@@ -35,19 +35,23 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
         });
       } else if (res.error === 'unauthorized') {
         openModal("Sign in to save plans", `/plan/${planId}`);
+      } else {
+        toast.error("Couldn't save this plan. Please try again.");
       }
     } catch (e) {
       console.error(e);
+      toast.error("Couldn't save this plan. Please try again.");
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <Button 
+    <Button
       onClick={handleSavePlan}
       disabled={isSaving || isSaved}
       variant={variant === "filled" ? "default" : variant}
+      aria-label={isSaved ? "Plan saved" : isSaving ? "Saving plan" : "Save plan"}
       className={`h-[56px] w-[56px] rounded-[12px] flex-shrink-0 flex items-center justify-center transition-colors ${
         isSaved ? 'bg-brand-green/10 border-transparent text-brand-green' : 'border-border-default hover:bg-surface-grey text-text-primary'
       }`}

@@ -84,6 +84,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
       });
     } catch (e) {
       console.error("Feedback error:", e);
+      toast.error("Couldn't submit your feedback. Please try again.");
     }
   };
 
@@ -105,6 +106,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
           currentPlanId = shareRes.id;
           setPlanId(currentPlanId);
         } else {
+          toast.error("Couldn't save this plan. Please try again.");
           setIsSaving(false);
           return;
         }
@@ -126,9 +128,12 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
         });
       } else if (res.error === 'unauthorized') {
         openModal("Sign in to save plans", `/plan/${currentPlanId || 'new'}`);
+      } else {
+        toast.error("Couldn't save this plan. Please try again.");
       }
     } catch (e) {
       console.error(e);
+      toast.error("Couldn't save this plan. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -236,10 +241,11 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
           <div className="flex-1">
             <WhatsAppCopyButton plan={plan} input={input} variant={isTopPick ? "filled" : "outlined"} />
           </div>
-          <Button 
+          <Button
             onClick={handleSavePlan}
             disabled={isSaving || isSaved}
             variant={isTopPick ? "default" : "outline"}
+            aria-label={isSaved ? "Plan saved" : isSaving ? "Saving plan" : "Save plan"}
             className={`h-[56px] w-[56px] rounded-[16px] flex-shrink-0 flex items-center justify-center transition-colors ${
               isTopPick 
                 ? (isSaved ? 'bg-white text-brand-green' : 'bg-white/10 text-white hover:bg-white/20 border-none') 
