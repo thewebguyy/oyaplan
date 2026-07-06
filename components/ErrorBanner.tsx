@@ -28,10 +28,10 @@ export default function ErrorBanner() {
   };
 
   return (
-    <div className="bg-[#FEF2F2] border-b border-red-100 px-4 py-3 flex items-center justify-between animate-in slide-in-from-top duration-300">
+    <div className="bg-red-50 border-b border-red-100 px-4 py-3 flex items-center justify-between animate-in slide-in-from-top duration-300">
       <div className="flex items-center gap-2">
         <span className="text-[14px]">⚠️</span>
-        <p className="type-caption text-[#991B1B] font-[600]">
+        <p className="type-caption text-red-800 font-[600]">
           {message}
         </p>
       </div>
@@ -40,7 +40,7 @@ export default function ErrorBanner() {
         aria-label="Dismiss"
         className="p-1 hover:bg-red-100 rounded-md transition-colors"
       >
-        <X className="w-4 h-4 text-[#991B1B]" />
+        <X className="w-4 h-4 text-red-800" />
       </button>
     </div>
   );
