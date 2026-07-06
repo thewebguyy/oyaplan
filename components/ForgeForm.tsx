@@ -186,7 +186,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
         {/* Field: Starting Area */}
         <div className="col-span-2 sm:col-span-1 space-y-1.5">
           <Label className={labelCls}>
-            <MapPin className="w-3.5 h-3.5 text-brand-green" /> Starting area
+            <MapPin className="w-3.5 h-3.5 text-brand-green" /> Starting point
           </Label>
           <Select
             value={formData.startArea}
@@ -210,6 +210,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               ))}
             </SelectContent>
           </Select>
+          <p className="type-caption text-text-muted mt-1.5 leading-snug">
+            We&apos;ll suggest spots anywhere in Lagos that fit your budget, including transport from here.
+          </p>
           {areaError && (
             <p className="type-caption text-error flex items-center gap-1 mt-1 animate-in slide-in-from-top-1">
               <span>⚠️</span> Required
