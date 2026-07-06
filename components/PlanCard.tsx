@@ -319,7 +319,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
                 {explainExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
               {explainExpanded && (
-                <div className="p-4 pt-0 border-t border-border-default/50 space-y-2 text-[11px] text-text-secondary animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="p-4 pt-0 border-t border-border-default/50 space-y-2 text-[11px] text-text-secondary animate-in fade-in slide-in-from-top-1 duration-300">
                   <div className="flex items-center gap-2">
                     <span className="text-[#008751] font-bold">✓</span>
                     <span>{plan.explanation?.budget_fit || `Fits squad budget`}</span>

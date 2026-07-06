@@ -89,6 +89,14 @@ export default async function ExploreIndex({
       </div>
 
       <div className="max-w-4xl mx-auto px-4 mt-12">
+        {zones.length === 0 && (
+          <div className="text-center py-20 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
+            <p className="type-body text-text-muted">No active zones found yet.</p>
+            <Link href="/suggest-a-spot" className="type-label text-brand-green hover:underline inline-block">
+              Know a hidden gem here? Suggest it &rarr;
+            </Link>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {zones.map((zone) => {
             const zoneParams = new URLSearchParams();
