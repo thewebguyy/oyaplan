@@ -54,7 +54,9 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
       if (type === 'low') {
         const res = await submitPriceFlag(plan.spot.id, 'up');
         if (!res.success && res.error === 'unauthorized') {
-          openModal("You need Scout reputation to do this", window.location.pathname);
+          // Scout role has no grant path yet — re-prompting sign-in here would loop
+          // an already-authenticated user forever. Surface it as a coming-soon state instead.
+          toast.info("Scout reputation program coming soon — this feature isn't open yet.");
           return;
         }
       } else if (type === 'high') {

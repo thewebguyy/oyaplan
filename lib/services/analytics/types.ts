@@ -127,6 +127,13 @@ export const EventSchemas = {
     milestone: z.string(),
     fraud_score: z.string(),
     version: z.literal('1.0')
+  }),
+
+  // Identity
+  'identity_merge_skipped_no_session': z.object({
+    category: z.literal('Operations'),
+    reason: z.string(),
+    version: z.literal('1.0')
   })
 } as const;
 

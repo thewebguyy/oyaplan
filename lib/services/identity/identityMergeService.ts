@@ -1,5 +1,6 @@
 import { supabase } from '../../supabase';
 import { AnalyticsService } from '../analytics/analyticsService';
+import { captureServerException } from '../../sentry';
 
 export class IdentityMergeService {
   /**
@@ -30,8 +31,8 @@ export class IdentityMergeService {
       
     } catch (error) {
       console.error('Identity Merge Failed:', error);
-      // We do not throw here to prevent blocking the login callback,
-      // but in production this should alert Sentry/Datadog.
+      // We do not throw here to prevent blocking the login callback.
+      captureServerException(error);
     }
   }
 
