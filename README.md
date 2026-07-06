@@ -1,5 +1,5 @@
 # OyaPlan 🇳🇬
-**Stop the group chat wahala. Get one complete Lagos plan in 60 seconds.**
+**Find where to go. Know what it'll cost. In seconds.**
 
 OyaPlan is a mobile-first web application that eliminates chaotic group-chat planning by generating decisive, cost-transparent outing plans for Lagos squads.
 

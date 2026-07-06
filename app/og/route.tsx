@@ -40,7 +40,7 @@ export async function GET() {
             marginBottom: '24px',
           }}
         >
-          Stop the group chat wahala.
+          Find where to go. Know what it&apos;ll cost.
         </div>
         
         <div
@@ -51,7 +51,7 @@ export async function GET() {
             fontWeight: 700,
           }}
         >
-          Get your Lagos squad plan in 3s.
+          In seconds.
         </div>
 
         {/* Footer Tagline */}

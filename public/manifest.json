@@ -1,7 +1,7 @@
 {
   "name": "OyaPlan",
   "short_name": "OyaPlan",
-  "description": "Stop the group chat wahala. Get one complete Lagos plan in seconds.",
+  "description": "Find where to go. Know what it'll cost. In seconds.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#008751",

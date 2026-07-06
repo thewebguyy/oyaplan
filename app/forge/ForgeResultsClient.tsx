@@ -288,7 +288,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       {plans.length > 0 && (
         <div className="text-center pt-12 space-y-4 pb-32 md:pb-12">
           <p className="type-body text-text-muted">
-            &quot;Stop the wahala. Just pick one and send it.&quot;
+            &quot;Pick one and send it to the group.&quot;
           </p>
           <div className="flex items-center justify-center gap-4 type-label text-text-muted opacity-50 uppercase tracking-[0.1em]">
             <span>Deterministic Engine v1.0</span>
