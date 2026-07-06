@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     await GrowthEngine.advanceMilestone(referee_id, milestone);
 
     return NextResponse.json({ status: 'success' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Milestone Advancement Error:', error);
     return NextResponse.json({ status: 'error', message: 'Progression failed' }, { status: 500 });
   }

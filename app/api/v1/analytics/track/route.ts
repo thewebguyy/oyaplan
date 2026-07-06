@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     ).catch(console.error);
 
     return NextResponse.json({ status: 'queued' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Analytics Ingestion Error:', error);
     // Never crash the client on analytics failures
     return NextResponse.json({ status: 'error', message: 'Ingestion failed silently' }, { status: 200 });
