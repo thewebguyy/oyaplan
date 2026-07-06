@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { IdentityMergeService } from '@/lib/services/identity/identityMergeService';
+import { AnalyticsService } from '@/lib/services/analytics/analyticsService';
 import { captureServerException } from '@/lib/sentry';
 
 export async function GET(request: Request) {
@@ -24,7 +25,7 @@ export async function GET(request: Request) {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
-          } catch (error) {
+          } catch {
             // The `setAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing user sessions.
           }
@@ -44,6 +45,22 @@ export async function GET(request: Request) {
       const sessionId = cookieStore.get('oya_session_id')?.value;
       if (sessionId) {
         await IdentityMergeService.mergeIdentity(data.user.id, sessionId);
+      } else {
+        // Happens when the magic link opens in a different cookie jar than the tab
+        // that started the flow (e.g. an in-app browser) — pre-signin activity and
+        // attribution for this user cannot be merged. Track it so we can measure
+        // how often it happens instead of losing it silently.
+        console.warn('[AUTH CALLBACK] No oya_session_id cookie present — identity merge skipped', {
+          userId: data.user.id,
+        });
+        await AnalyticsService.track('identity_merge_skipped_no_session', {
+          session_id: data.user.id,
+          properties: {
+            category: 'Operations',
+            reason: 'oya_session_id_cookie_missing_at_callback',
+            version: '1.0',
+          },
+        }, data.user.id);
       }
 
       // 2. Link Pending Saved Plan (if passed via query param)

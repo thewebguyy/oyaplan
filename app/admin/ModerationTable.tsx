@@ -52,6 +52,7 @@ export default function ModerationTable({ pendingEvidence }: ModerationTableProp
       )}
 
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -138,6 +139,7 @@ export default function ModerationTable({ pendingEvidence }: ModerationTableProp
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

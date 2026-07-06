@@ -17,7 +17,6 @@ import {
 import { Plan, ForgeInput } from "@/lib/types";
 import { submitPriceFlag } from "@/lib/actions/submitPriceFlag";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
-import { useMobile } from "./hooks/useMobile";
 import { useAuth } from "./providers/AuthProvider";
 import { savePlan } from "@/lib/actions/savePlan";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
@@ -39,7 +38,6 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [planId, setPlanId] = useState<string | undefined>(initialPlanId);
-  const isMobile = useMobile();
   const { session, openModal } = useAuth();
 
   const handleTrustFeedback = async (type: 'low' | 'right' | 'high') => {
@@ -54,7 +52,9 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
       if (type === 'low') {
         const res = await submitPriceFlag(plan.spot.id, 'up');
         if (!res.success && res.error === 'unauthorized') {
-          openModal("You need Scout reputation to do this", window.location.pathname);
+          // Scout role has no grant path yet — re-prompting sign-in here would loop
+          // an already-authenticated user forever. Surface it as a coming-soon state instead.
+          toast.info("Scout reputation program coming soon — this feature isn't open yet.");
           return;
         }
       } else if (type === 'high') {
@@ -82,6 +82,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
       });
     } catch (e) {
       console.error("Feedback error:", e);
+      toast.error("Couldn't submit your feedback. Please try again.");
     }
   };
 
@@ -103,6 +104,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
           currentPlanId = shareRes.id;
           setPlanId(currentPlanId);
         } else {
+          toast.error("Couldn't save this plan. Please try again.");
           setIsSaving(false);
           return;
         }
@@ -124,9 +126,12 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
         });
       } else if (res.error === 'unauthorized') {
         openModal("Sign in to save plans", `/plan/${currentPlanId || 'new'}`);
+      } else {
+        toast.error("Couldn't save this plan. Please try again.");
       }
     } catch (e) {
       console.error(e);
+      toast.error("Couldn't save this plan. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -234,10 +239,11 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
           <div className="flex-1">
             <WhatsAppCopyButton plan={plan} input={input} variant={isTopPick ? "filled" : "outlined"} />
           </div>
-          <Button 
+          <Button
             onClick={handleSavePlan}
             disabled={isSaving || isSaved}
             variant={isTopPick ? "default" : "outline"}
+            aria-label={isSaved ? "Plan saved" : isSaving ? "Saving plan" : "Save plan"}
             className={`h-[56px] w-[56px] rounded-[16px] flex-shrink-0 flex items-center justify-center transition-colors ${
               isTopPick 
                 ? (isSaved ? 'bg-white text-brand-green' : 'bg-white/10 text-white hover:bg-white/20 border-none') 
@@ -254,20 +260,19 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
           </Button>
         </div>
 
-        {isMobile && !isExpanded && (
-          <button 
+        {!isExpanded && (
+          <button
             type="button"
             onClick={() => setIsExpanded(true)}
-            className="w-full flex items-center justify-center gap-2 type-label text-brand-green py-5 mt-2 tap-feedback border border-brand-green-15 rounded-[12px]"
+            className="w-full md:hidden flex items-center justify-center gap-2 type-label text-brand-green py-5 mt-2 tap-feedback border border-brand-green-15 rounded-[12px]"
           >
             See full breakdown <ChevronDown className="w-4 h-4" />
           </button>
         )}
 
-        {(!isMobile || isExpanded) && (
-          <>
+        <>
             {/* Cost Grid */}
-            <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className={`${isExpanded ? "grid" : "hidden md:grid"} grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300`}>
               <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
                 <div className="flex items-center gap-2 text-text-muted type-label mb-1">
                   {hasFood ? <Utensils className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
@@ -285,7 +290,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
             </div>
 
             {/* Note & Indicators */}
-            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className={`${isExpanded ? "block" : "hidden md:block"} space-y-4 animate-in fade-in slide-in-from-top-2 duration-300`}>
               <p className="type-body text-text-secondary leading-relaxed">
                 {plan.whyItFits}
               </p>
@@ -301,7 +306,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
             </div>
 
             {/* Explainability Panel */}
-            <div className="border border-border-default rounded-[16px] overflow-hidden bg-surface-grey/30">
+            <div className={`${isExpanded ? "block" : "hidden md:block"} border border-border-default rounded-[16px] overflow-hidden bg-surface-grey/30`}>
               <button
                 type="button"
                 onClick={() => setExplainExpanded(!explainExpanded)}
@@ -314,7 +319,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
                 {explainExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
               {explainExpanded && (
-                <div className="p-4 pt-0 border-t border-border-default/50 space-y-2 text-[11px] text-text-secondary animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="p-4 pt-0 border-t border-border-default/50 space-y-2 text-[11px] text-text-secondary animate-in fade-in slide-in-from-top-1 duration-300">
                   <div className="flex items-center gap-2">
                     <span className="text-[#008751] font-bold">✓</span>
                     <span>{plan.explanation?.budget_fit || `Fits squad budget`}</span>
@@ -389,7 +394,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
             </div>
 
             {/* Footer: User Feedback Loop */}
-            <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className={`pt-6 border-t border-border-default ${isExpanded ? "flex" : "hidden md:flex"} flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-300`}>
               <div className="type-caption text-text-muted">
                 {plan.spot.price_updated_at ? (
                   <span>Verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
@@ -429,17 +434,16 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
               </div>
             </div>
 
-            {isMobile && isExpanded && (
-              <button 
+            {isExpanded && (
+              <button
                 type="button"
                 onClick={() => setIsExpanded(false)}
-                className="w-full flex items-center justify-center gap-2 type-label text-text-muted py-5 mt-4 border-t border-border-default tap-feedback"
+                className="w-full md:hidden flex items-center justify-center gap-2 type-label text-text-muted py-5 mt-4 border-t border-border-default tap-feedback"
               >
                 Hide breakdown <ChevronUp className="w-4 h-4" />
               </button>
             )}
           </>
-        )}
       </div>
     </div>
   );

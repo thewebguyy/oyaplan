@@ -290,11 +290,6 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           <p className="type-body text-text-muted">
             &quot;Pick one and send it to the group.&quot;
           </p>
-          <div className="flex items-center justify-center gap-4 type-label text-text-muted opacity-50 uppercase tracking-[0.1em]">
-            <span>Deterministic Engine v1.0</span>
-            <span className="text-border-default">•</span>
-            <span>Lagos Data</span>
-          </div>
         </div>
       )}
 

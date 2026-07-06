@@ -127,6 +127,11 @@
     animation: shimmer 1.5s infinite;
   }
 
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
   @keyframes progress-loading {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
@@ -151,10 +156,6 @@
 
   .focus-ring {
     @apply focus:ring-2 focus:ring-brand-green-15 focus:border-brand-green outline-none;
-  }
-  
-  .tap-feedback {
-    @apply active:scale-[0.98] transition-all duration-100;
   }
 
   .card-lift {

@@ -3,7 +3,7 @@ import { supabase } from '../../supabase';
 
 export interface AnalyticsProvider {
   track<T extends EventName>(payload: AnalyticsPayload<T>, userId?: string): Promise<void>;
-  identify(userId: string, traits: Record<string, any>): Promise<void>;
+  identify(userId: string, traits: Record<string, unknown>): Promise<void>;
   alias(userId: string, previousId: string): Promise<void>;
 }
 
@@ -15,10 +15,9 @@ export class SupabaseProvider implements AnalyticsProvider {
   async track<T extends EventName>(payload: AnalyticsPayload<T>, userId?: string): Promise<void> {
     const { session_id, event_name, properties, feature_flags, experiments, client_context } = payload;
     
-    // @ts-ignore - The dynamic category is extracted from the Zod payload
     const category = properties.category;
     
-    await supabase.from('raw_product_events').insert({
+    const { error } = await supabase.from('raw_product_events').insert({
       session_id,
       user_id: userId || null,
       category,
@@ -29,19 +28,23 @@ export class SupabaseProvider implements AnalyticsProvider {
       experiments: experiments || {},
       client_context: client_context || {}
     });
+    if (error) throw error;
   }
 
-  async identify(userId: string, traits: Record<string, any>): Promise<void> {
+  async identify(userId: string, traits: Record<string, unknown>): Promise<void> {
     // Upsert user traits into a lightweight user_traits table if needed,
-    // or rely on auth.users and user_preferences.
+    // or rely on auth.users and user_preferences. Not yet implemented.
+    void userId;
+    void traits;
   }
 
   async alias(userId: string, previousId: string): Promise<void> {
     // Update all historical anonymous events to link to the new authenticated user
-    await supabase
+    const { error } = await supabase
       .from('raw_product_events')
       .update({ user_id: userId })
       .eq('session_id', previousId)
       .is('user_id', null);
+    if (error) throw error;
   }
 }

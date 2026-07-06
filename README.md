@@ -4,7 +4,7 @@
 OyaPlan is a mobile-first web application that eliminates chaotic group-chat planning by generating decisive, cost-transparent outing plans for Lagos squads.
 
 ## Tech Stack
-- **Framework:** Next.js 15 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Styling:** Tailwind CSS + shadcn/ui
 - **Database:** Supabase (Postgres)
 - **Deployment:** Vercel
@@ -51,6 +51,10 @@ The engine uses a deterministic algorithm to rank Lagos spots based on:
 - Vibe matching.
 - Budget constraints (Transport <= 35% of total budget).
 - Group size food cost calculation (+10% buffer).
+
+## Documentation
+
+See [`docs/README.md`](docs/README.md) for the full documentation map (product strategy, architecture decisions, and the source-of-truth hierarchy between them) and [`CLAUDE.md`](CLAUDE.md) for the engineering charter.
 
 ---
 Built by OyaPlan Team.

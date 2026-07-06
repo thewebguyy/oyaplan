@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { GrowthEngine } from '@/lib/services/growthEngine';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 
 /**
  * Phase 9: Growth Platform
@@ -26,7 +24,7 @@ export async function POST(req: Request) {
     await GrowthEngine.advanceMilestone(referee_id, milestone);
 
     return NextResponse.json({ status: 'success' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Milestone Advancement Error:', error);
     return NextResponse.json({ status: 'error', message: 'Progression failed' }, { status: 500 });
   }

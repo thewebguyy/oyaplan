@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GrowthEngine, AttributionPayload } from '@/lib/services/growthEngine';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase-server';
 
 /**
  * Phase 9: Growth Platform
@@ -20,17 +19,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing session_id or landing_path' }, { status: 400 });
     }
 
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) { return cookieStore.get(name)?.value; }
-        }
-      }
-    );
-    
+    const supabase = await createServerClient();
     const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;
 
@@ -54,7 +43,7 @@ export async function POST(req: Request) {
     GrowthEngine.claimAttribution(payload, userId).catch(console.error);
 
     return NextResponse.json({ status: 'queued' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Attribution Ingestion Error:', error);
     return NextResponse.json({ status: 'error', message: 'Ingestion failed silently' }, { status: 200 });
   }

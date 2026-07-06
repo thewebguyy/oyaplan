@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { AnalyticsService } from '@/lib/services/analytics/analyticsService';
 import { FeatureFlagEngine } from '@/lib/services/analytics/experiments';
 import { EventName } from '@/lib/services/analytics/types';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase-server';
 
 /**
  * Phase 8: Product Validation Layer
@@ -19,17 +18,7 @@ export async function POST(req: Request) {
     }
 
     // Attempt to resolve authenticated user from secure HTTP-only session
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) { return cookieStore.get(name)?.value; }
-        }
-      }
-    );
-    
+    const supabase = await createServerClient();
     const { data: { session } } = await supabase.auth.getSession();
     const userId = session?.user?.id;
 
@@ -51,7 +40,7 @@ export async function POST(req: Request) {
     ).catch(console.error);
 
     return NextResponse.json({ status: 'queued' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Analytics Ingestion Error:', error);
     // Never crash the client on analytics failures
     return NextResponse.json({ status: 'error', message: 'Ingestion failed silently' }, { status: 200 });

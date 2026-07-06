@@ -122,8 +122,11 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
             })}
             
             {areas.length === 0 && (
-              <div className="col-span-full py-12 text-center text-text-muted type-body">
-                No active areas found in this zone.
+              <div className="col-span-full text-center py-20 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
+                <p className="type-body text-text-muted">No active areas found in this zone yet.</p>
+                <Link href="/suggest-a-spot" className="type-label text-brand-green hover:underline inline-block">
+                  Know a hidden gem here? Suggest it &rarr;
+                </Link>
               </div>
             )}
           </div>

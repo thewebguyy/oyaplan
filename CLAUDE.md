@@ -14,7 +14,7 @@ OyaPlan generates complete, cost-transparent outing plans for Lagos squads. User
 
 **Stack:** Next.js 16 (App Router) · TypeScript 5 strict · Tailwind CSS v4 · Supabase PostgreSQL · shadcn/ui · Vercel
 
-**Current state:** Pre-revenue beta. The codebase is working but has known gaps: no test suite, no CI/CD, inline Supabase queries in page files, no rate limiting, admin auth via query param. These are documented technical debt — prioritized but not yet fixed.
+**Current state:** Pre-revenue beta. Admin auth via query param, missing CI/CD, zero test suite, and unhandled Supabase errors have all since been resolved (see Known Technical Debt below) — the remaining known gap from that original list is inline Supabase queries in page files. Remaining technical debt is prioritized in that same table.
 
 ---
 
@@ -79,7 +79,7 @@ User submits ForgeForm (Client Component)
   → GET /forge?startArea=...&budget=...&vibe=...&squadSize=...
     → app/forge/page.tsx (Server Component)
       → lib/queries/spots.ts: fetch filtered active spots from Supabase
-        → lib/matchingEngine.ts: pure function, returns top 1–3 PlanResult[]
+        → lib/services/matching/forgeMatcher.ts: pure function, returns top 1–3 PlanResult[]
           → ForgeResultsClient.tsx: renders results (Client Component)
             → User clicks share
               → lib/actions/sharePlan.ts (Server Action)
@@ -89,7 +89,7 @@ User submits ForgeForm (Client Component)
 
 ### Matching engine — how it works
 
-The engine (`lib/matchingEngine.ts`) is a pure deterministic function: same `ForgeInput` always produces the same `PlanResult[]`.
+The engine (`lib/services/matching/forgeMatcher.ts`) is a pure deterministic function: same `ForgeInput` always produces the same `PlanResult[]`.
 
 **Step 1: Filter**
 - Daypart filter: exclude categories incompatible with the time of day (e.g., bars excluded from morning; nature excluded from night)
@@ -120,7 +120,7 @@ Same zone → ₦5,000 round trip | Central ↔ Mainland → ₦7,000 | Central 
 
 | Concern | Location |
 |---|---|
-| Business logic | `lib/matchingEngine.ts` and dedicated `lib/` functions |
+| Business logic | `lib/services/matching/forgeMatcher.ts` and dedicated `lib/` functions |
 | Database queries | `lib/queries/` — one file per domain (spots, plans, analytics) |
 | Server mutations | `lib/actions/` — Server Actions only |
 | All TypeScript types | `lib/types.ts` — single source of truth |
@@ -152,7 +152,8 @@ app/                        # Routing layer only
   list-your-spot/page.tsx   # Operator inquiry form (B2B)
   suggest-a-spot/page.tsx   # Community spot submission
   feedback/page.tsx         # Tester feedback
-  admin/page.tsx            # Analytics dashboard (key-gated — known weakness, see Security)
+  admin/page.tsx            # Analytics dashboard (Supabase Auth session-gated, see docs/decisions/0001)
+  admin/login/page.tsx      # Admin sign-in (email/password via Supabase Auth)
 components/
   ForgeForm.tsx             # Main planning form (Client — 7 inputs, localStorage caching)
   PlanCard.tsx              # Result card
@@ -163,18 +164,23 @@ components/
   hooks/useMobile.ts        # Responsive breakpoint hook
   ui/                       # shadcn/ui base components (do not modify)
 lib/
-  matchingEngine.ts         # Core algorithm — pure function, must be fully tested
-  queries/                  # All Supabase queries (one file per domain) [to be created]
+  services/matching/forgeMatcher.ts  # Core algorithm — pure function, must be fully tested
+  queries/                  # All Supabase queries (one file per domain)
   actions/
     sharePlan.ts            # Server Action: write shared_plans row, return UUID
   types.ts                  # All types and interfaces
   utils.ts                  # clsx + tailwind-merge only
   supabase.ts               # Supabase client singleton
+  rateLimit.ts              # Upstash-backed rate limiter, used by middleware.ts
+middleware.ts                # Rate limiting + Supabase session refresh on every request
 supabase/
   migrations/               # Sequential SQL, append-only, never edit committed files
   seed.sql                  # Initial spot data
 docs/
-  decisions/                # Architecture Decision Records [to be created]
+  product/                  # Approved product strategy (canonical source)
+  decisions/                # Architecture Decision Records
+  architecture/             # Standing reference docs (e.g. identity lifecycle)
+  archive/                  # Superseded/historical docs — not authoritative
 ```
 
 ---
@@ -338,7 +344,7 @@ A table without RLS is accessible to anyone who knows the anon key. The policy i
 `.env` is gitignored. `.env.example` has placeholders only. If a secret is accidentally committed, rotate it immediately — the git history is not safe to leave a real secret in.
 
 **6. Rate limiting on all anonymous write endpoints.**
-`plan_requests`, `shared_plans`, `spot_suggestions`, `operator_inquiries`, `price_flags`, `tester_observations` all accept anonymous inserts. Without rate limiting any of these can be flooded. Rate limiting must be implemented at the Vercel Edge middleware layer before any of these are considered production-hardened.
+`plan_requests`, `shared_plans`, `spot_suggestions`, `operator_inquiries`, `price_flags`, `tester_observations` all accept anonymous inserts. Without rate limiting any of these can be flooded. Implemented in `middleware.ts` via `lib/rateLimit.ts` (Upstash sliding window, fails closed in production if KV credentials are missing) — covers all Server Action POSTs and the Forge GET route. Any new anonymous-write surface must be covered by the same middleware check, not a bespoke one.
 
 **7. Server Actions validate inputs at runtime.**
 TypeScript types are erased at runtime. Every Server Action checks field presence, type, length, and range before writing to the database.
@@ -401,10 +407,10 @@ Do not define typography inline — use these classes.
 
 ## Testing
 
-Test runner: Vitest. Tests live adjacent to the file they test (`lib/matchingEngine.test.ts`).
+Test runner: Vitest, gated in CI (`.github/workflows/ci.yml`). Tests live adjacent to the file they test (`lib/services/matching/forgeMatcher.test.ts`).
 
 **What must be tested:**
-- Every exported function in `lib/matchingEngine.ts` — this is the entire product
+- Every exported function in `lib/services/matching/forgeMatcher.ts` — this is the entire product
 - Every data-transforming function in `lib/queries/`
 - Every Server Action (happy path + primary error path)
 
@@ -422,7 +428,7 @@ describe('filterSpots', () => {
 })
 ```
 
-**Any change to `matchingEngine.ts` requires a corresponding test.** A PR that modifies scoring logic without adding a test is incomplete.
+**Any change to `forgeMatcher.ts` requires a corresponding test.** A PR that modifies scoring logic without adding a test is incomplete.
 
 ---
 
@@ -473,8 +479,12 @@ When refusing, explain the specific constraint, quote the relevant rule, and off
 NEXT_PUBLIC_SUPABASE_URL=       # Supabase project URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=  # Supabase anon key
 
-# Admin (server-only — never expose to client)
-ADMIN_KEY=                      # Temporary query-param admin gate. Known weakness. Replace with session auth.
+# Rate limiting (server-only — never expose to client)
+KV_REST_API_URL=                # Vercel KV / Upstash Redis REST URL. Fails closed in production if missing.
+KV_REST_API_TOKEN=              # Vercel KV / Upstash Redis REST token.
+
+# Admin auth is Supabase Auth (email/password via /admin/login) — no ADMIN_KEY env var is used
+# for authentication. See docs/decisions/0001-standardize-on-supabase-auth.md.
 ```
 
 Every new environment variable must be added to `.env.example` with a comment explaining its purpose, where to obtain it, and whether it is safe to expose to the client (`NEXT_PUBLIC_` prefix = public).
@@ -499,7 +509,7 @@ A feature is done when:
 - [ ] Any new PII field is documented in the migration comment
 
 **Testing**
-- [ ] Any change to `matchingEngine.ts` has a corresponding test
+- [ ] Any change to `forgeMatcher.ts` has a corresponding test
 - [ ] Any new Server Action has a test for the happy path and primary error path
 
 **Security**
@@ -521,8 +531,8 @@ These are documented gaps, not oversights. Do not add to this list without a pla
 |---|---|---|
 | Admin auth via query param | Critical | **RESOLVED** — Supabase Auth (P0-1, Sprint 1) |
 | No error handling on Supabase calls in pages | Critical | **RESOLVED** — PageError + error-flag pattern (P0-2, Sprint 1) |
-| No rate limiting on anonymous writes | Critical | Add Edge middleware (Month 1) |
-| Zero automated tests | High | Install Vitest, write matchingEngine tests (P1-4, Sprint 1) |
+| No rate limiting on anonymous writes | Critical | **RESOLVED** — Upstash-backed middleware, fails closed in prod (`lib/rateLimit.ts`, `middleware.ts`) |
+| Zero automated tests | High | **RESOLVED** — Vitest suite covering matching, confidence, pricing, rate limit, sharePlan, submitSpotSuggestion, spot queries; gated in CI |
 | No CI/CD pipeline | High | **RESOLVED** — GitHub Actions: typecheck + build + test + lint (P0-3, Sprint 1) |
 | Pre-existing ESLint errors (39 errors, 12 warnings) | Medium | CI lint gate blocks new violations; cleanup by file below |
 | Inline Supabase queries in page files | High | Extract to lib/queries/ (Month 1) |
@@ -542,7 +552,7 @@ New code is protected: CI blocks lint errors in any file touched by a PR. The 39
 | `components/ForgeForm.tsx` | `react-hooks/exhaustive-deps`, `no-unused-vars` | Medium — form logic, manual test required |
 | `components/PlanCard.tsx` | `no-explicit-any` | Low — display only |
 | `components/WhatsAppCopyButton.tsx` | `no-explicit-any` | High risk — do not touch without real device test |
-| `lib/matchingEngine.ts` | `no-explicit-any` | Medium — covered by P1-4 tests before touching |
+| `lib/services/matching/forgeMatcher.ts` | `no-explicit-any` | Medium — covered by P1-4 tests before touching |
 | `app/feedback/page.tsx` | `no-explicit-any` | Low — form page |
 | `app/suggest-a-spot/page.tsx` | `no-explicit-any` | Low — form page |
 | `app/list-your-spot/page.tsx` | `no-explicit-any` | Low — form page |

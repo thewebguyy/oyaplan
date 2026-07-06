@@ -22,7 +22,11 @@ export default function LoadingState() {
   }, [messages.length]);
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-6 py-20 max-w-[320px] mx-auto text-center animate-in fade-in duration-500">
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center justify-center space-y-6 py-20 max-w-[320px] mx-auto text-center animate-in fade-in duration-500"
+    >
       {/* Wordmark */}
       <div className="type-heading flex items-center">
         <span>Oya</span>

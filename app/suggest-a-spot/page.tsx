@@ -166,12 +166,6 @@ export default function SuggestSpotPage() {
           </form>
           <div className="h-24 md:hidden" aria-hidden="true" />
         </div>
-
-        <div className="mt-12 text-center opacity-50">
-          <p className="text-[11px] font-[700] uppercase tracking-widest text-text-muted">
-            OyaPlan Community Pipeline v1.0
-          </p>
-        </div>
       </div>
     </main>
   );
