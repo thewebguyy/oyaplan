@@ -17,7 +17,6 @@ import {
 import { Plan, ForgeInput } from "@/lib/types";
 import { submitPriceFlag } from "@/lib/actions/submitPriceFlag";
 import WhatsAppCopyButton from "./WhatsAppCopyButton";
-import { useMobile } from "./hooks/useMobile";
 import { useAuth } from "./providers/AuthProvider";
 import { savePlan } from "@/lib/actions/savePlan";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
@@ -39,7 +38,6 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [planId, setPlanId] = useState<string | undefined>(initialPlanId);
-  const isMobile = useMobile();
   const { session, openModal } = useAuth();
 
   const handleTrustFeedback = async (type: 'low' | 'right' | 'high') => {
@@ -262,20 +260,19 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
           </Button>
         </div>
 
-        {isMobile && !isExpanded && (
-          <button 
+        {!isExpanded && (
+          <button
             type="button"
             onClick={() => setIsExpanded(true)}
-            className="w-full flex items-center justify-center gap-2 type-label text-brand-green py-5 mt-2 tap-feedback border border-brand-green-15 rounded-[12px]"
+            className="w-full md:hidden flex items-center justify-center gap-2 type-label text-brand-green py-5 mt-2 tap-feedback border border-brand-green-15 rounded-[12px]"
           >
             See full breakdown <ChevronDown className="w-4 h-4" />
           </button>
         )}
 
-        {(!isMobile || isExpanded) && (
-          <>
+        <>
             {/* Cost Grid */}
-            <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className={`${isExpanded ? "grid" : "hidden md:grid"} grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300`}>
               <div className="p-4 bg-surface-grey border border-border-default rounded-[12px]">
                 <div className="flex items-center gap-2 text-text-muted type-label mb-1">
                   {hasFood ? <Utensils className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
@@ -293,7 +290,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
             </div>
 
             {/* Note & Indicators */}
-            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className={`${isExpanded ? "block" : "hidden md:block"} space-y-4 animate-in fade-in slide-in-from-top-2 duration-300`}>
               <p className="type-body text-text-secondary leading-relaxed">
                 {plan.whyItFits}
               </p>
@@ -309,7 +306,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
             </div>
 
             {/* Explainability Panel */}
-            <div className="border border-border-default rounded-[16px] overflow-hidden bg-surface-grey/30">
+            <div className={`${isExpanded ? "block" : "hidden md:block"} border border-border-default rounded-[16px] overflow-hidden bg-surface-grey/30`}>
               <button
                 type="button"
                 onClick={() => setExplainExpanded(!explainExpanded)}
@@ -397,7 +394,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
             </div>
 
             {/* Footer: User Feedback Loop */}
-            <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className={`pt-6 border-t border-border-default ${isExpanded ? "flex" : "hidden md:flex"} flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-300`}>
               <div className="type-caption text-text-muted">
                 {plan.spot.price_updated_at ? (
                   <span>Verified {new Date(plan.spot.price_updated_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
@@ -437,17 +434,16 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
               </div>
             </div>
 
-            {isMobile && isExpanded && (
-              <button 
+            {isExpanded && (
+              <button
                 type="button"
                 onClick={() => setIsExpanded(false)}
-                className="w-full flex items-center justify-center gap-2 type-label text-text-muted py-5 mt-4 border-t border-border-default tap-feedback"
+                className="w-full md:hidden flex items-center justify-center gap-2 type-label text-text-muted py-5 mt-4 border-t border-border-default tap-feedback"
               >
                 Hide breakdown <ChevronUp className="w-4 h-4" />
               </button>
             )}
           </>
-        )}
       </div>
     </div>
   );
