@@ -60,13 +60,13 @@ export default async function LandingPage() {
       <div className="relative pt-20 pb-32 px-4 overflow-visible">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h1 className="type-display text-white">
-            Know exactly where to go—<br />
+            Know exactly where to go,<br />
             <span className="text-white underline decoration-brand-yellow decoration-4 underline-offset-8">and what it'll really cost.</span>
           </h1>
           <p className="type-body text-white/80 max-w-2xl mx-auto">
             Plan your next outing with real prices, transport costs, and trusted recommendations.
           </p>
-
+ 
           <div className="flex items-center justify-center gap-3 type-caption text-white/80 mt-6">
             <div className="flex -space-x-2">
               {[...Array(3)].map((_, i) => (
@@ -75,7 +75,7 @@ export default async function LandingPage() {
                 </div>
               ))}
             </div>
-            <span>Over <strong className="text-white">10,000+</strong> verified prices in Lagos</span>
+            <span>Every price checked before it&apos;s shown</span>
           </div>
 
           {/* Form Card Container */}
