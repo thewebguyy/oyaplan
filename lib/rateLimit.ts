@@ -20,16 +20,6 @@ export async function checkRateLimit(ip: string): Promise<RateLimitResult> {
   const kvUrl = process.env.KV_REST_API_URL;
   const kvToken = process.env.KV_REST_API_TOKEN;
 
-  console.error('[RATE_LIMIT_DEBUG]', JSON.stringify({
-    hasKvUrl: !!kvUrl,
-    kvUrlLength: kvUrl?.length ?? 0,
-    kvUrlStartsWithHttps: kvUrl?.startsWith('https://') ?? false,
-    hasKvToken: !!kvToken,
-    kvTokenLength: kvToken?.length ?? 0,
-    nodeEnv: process.env.NODE_ENV,
-    vercelEnv: process.env.VERCEL_ENV,
-  }));
-
   // Fail-open ONLY in non-production or if completely misconfigured in non-prod.
   // In production, we fail-closed if Upstash credentials are missing or errors occur.
   const isProduction = process.env.NODE_ENV === 'production';
