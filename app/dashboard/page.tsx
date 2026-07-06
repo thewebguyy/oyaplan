@@ -5,6 +5,18 @@ import { Button } from '@/components/ui/button';
 
 export const dynamic = 'force-dynamic';
 
+interface SavedPlanSpot {
+  name: string;
+  address: string;
+}
+
+interface SavedPlanEntry {
+  id: string;
+  total_cost: number;
+  vibe: string;
+  spot: SavedPlanSpot | SavedPlanSpot[] | null;
+}
+
 export default async function DashboardPage() {
   const { data: savedPlans, success } = await SavedPlanService.getSavedPlans();
 
@@ -18,7 +30,22 @@ export default async function DashboardPage() {
       <div className="space-y-4">
         <h2 className="type-subheading text-text-primary">Saved Plans</h2>
         
-        {!success || !savedPlans || savedPlans.length === 0 ? (
+        {!success ? (
+          <div className="bg-white border border-border-default rounded-[20px] p-12 text-center space-y-4">
+            <div className="w-16 h-16 bg-red-50 text-error rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <h3 className="type-heading text-text-primary">Couldn&apos;t load your saved plans</h3>
+            <p className="type-body text-text-muted max-w-sm mx-auto">
+              Something went wrong on our end. Please try again in a moment.
+            </p>
+            <Link href="/dashboard" className="inline-block mt-4">
+              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-12 px-8 shadow-none border-none">
+                Try again
+              </Button>
+            </Link>
+          </div>
+        ) : !savedPlans || savedPlans.length === 0 ? (
           <div className="bg-white border border-border-default rounded-[20px] p-12 text-center space-y-4">
             <div className="w-16 h-16 bg-brand-green/5 text-brand-green rounded-full flex items-center justify-center mx-auto mb-6">
               <Calendar className="w-8 h-8" />
@@ -37,7 +64,7 @@ export default async function DashboardPage() {
           <div className="grid gap-4 md:grid-cols-2">
             {savedPlans.map((saveItem, index) => {
               const planArray = saveItem.shared_plans;
-              const plan = (Array.isArray(planArray) ? planArray[0] : planArray) as any;
+              const plan = (Array.isArray(planArray) ? planArray[0] : planArray) as SavedPlanEntry | null | undefined;
               if (!plan) return null;
               
               return (
