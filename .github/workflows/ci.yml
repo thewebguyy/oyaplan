@@ -61,7 +61,7 @@ jobs:
       - name: Lint changed TypeScript files
         run: |
           BASE="${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || 'HEAD~1' }}"
-          CHANGED=$(git diff --name-only "$BASE" HEAD -- '*.ts' '*.tsx' | grep -v '^$' || true)
+          CHANGED=$(git diff --name-only --diff-filter=d "$BASE" HEAD -- '*.ts' '*.tsx' | grep -v '^$' || true)
           if [ -z "$CHANGED" ]; then
             echo "No TypeScript files changed."
             exit 0
