@@ -68,11 +68,11 @@ describe('createShareablePlan action', () => {
 
   it('should reject if cost is a negative number', async () => {
     const invalidPlan = { ...validPlan, totalCost: -100 };
-    
+
     const result = await createShareablePlan(invalidPlan as Plan, validInput);
-    
+
     expect(result).toEqual({ success: false, error: 'Invalid plan data' });
-    expect(supabase.from).not.toHaveBeenCalled(); // Wait, the zod schema used z.number().int(). I didn't add .positive() or .nonnegative() to totalCost, only to squadSize and budget. Let me check my sharePlan.ts: foodCost: z.number().int(). I'll update sharePlan.ts Zod schema to be more strict or just test budget.
+    expect(supabase.from).not.toHaveBeenCalled();
   });
 
   it('should reject if budget is a negative number', async () => {
