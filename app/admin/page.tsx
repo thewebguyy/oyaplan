@@ -6,8 +6,6 @@ import {
   getTesterObservations,
   getSpotSuggestions,
   getOperatorInquiries,
-  getVenueTrustStats,
-  getActualSpendSummary,
   getDataHealthKPIs,
 } from "@/lib/queries/admin";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
@@ -31,9 +29,6 @@ export default async function AdminDashboard() {
   const sixtyDaysAgo = new Date();
   sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
   // Fetch all dashboard data — allRequests is critical for aggregations; others degrade to empty
   let adminFetchError = false;
   let totalPlans = 0;
@@ -44,8 +39,6 @@ export default async function AdminDashboard() {
   let inquiries: Array<{ id: string; created_at: string; converted: boolean; contacted: boolean; business_name: string; owner_name: string; whatsapp_number: string; area_slug: string; listing_tier: string; monthly_budget_ngn: number | null }> = [];
   let staleSpots: Array<{ id: string; name: string; price_updated_at: string; verified_by: string | null; active: boolean }> = [];
   let pendingEvidence: PendingEvidenceItem[] = [];
-  let venueTrustStats: Array<{ id: string; name: string; computed_confidence_score: number; operational_status: string; last_price_updated_at: string | null; last_price_source: string | null; derived_typical_cost: number }> = [];
-  let actualSpendSummary: { count: number; over_estimate_count: number; under_estimate_count: number; median_variance_pct: number } = { count: 0, over_estimate_count: 0, under_estimate_count: 0, median_variance_pct: 0 };
   let dataHealth: { confidence_histogram: { high: number; medium: number; low: number }; freshness_distribution: Record<string, number>; moderation_backlog: number; receipts_this_week: number; avg_confidence: number; error_p50: number; error_p90: number; total_venues: number; total_evidence: number } | null = null;
 
   try {
@@ -57,8 +50,6 @@ export default async function AdminDashboard() {
       suggestionsResult,
       inquiriesResult,
       staleSpotsResult,
-      venueTrustStatsResult,
-      actualSpendResult,
       dataHealthResult,
     ] = await Promise.all([
       getPlanCount(),
@@ -68,8 +59,6 @@ export default async function AdminDashboard() {
       getSpotSuggestions(),
       getOperatorInquiries(),
       getStaleSpotsForAdmin(sixtyDaysAgo.toISOString()),
-      getVenueTrustStats(),
-      getActualSpendSummary(thirtyDaysAgo.toISOString()),
       getDataHealthKPIs(),
     ]);
 
@@ -81,8 +70,6 @@ export default async function AdminDashboard() {
       suggestions = (suggestionsResult.data || []) as typeof suggestions;
       inquiries = (inquiriesResult.data || []) as typeof inquiries;
       staleSpots = (staleSpotsResult.data || []) as typeof staleSpots;
-      venueTrustStats = (venueTrustStatsResult.data || []) as typeof venueTrustStats;
-      if (actualSpendResult.data) actualSpendSummary = actualSpendResult.data;
       if (dataHealthResult.data) dataHealth = dataHealthResult.data;
 
       const { data: pendingEvidenceData } = await serverClient
@@ -216,6 +203,7 @@ export default async function AdminDashboard() {
             </span>
           </div>
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -247,6 +235,7 @@ export default async function AdminDashboard() {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
 
@@ -365,6 +354,7 @@ export default async function AdminDashboard() {
             <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
               Vibe Breakdown
             </h2>
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -385,6 +375,7 @@ export default async function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           {/* Area Demand */}
@@ -392,6 +383,7 @@ export default async function AdminDashboard() {
             <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
               Area Demand
             </h2>
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -408,6 +400,7 @@ export default async function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           {/* Budget Distribution */}
@@ -415,6 +408,7 @@ export default async function AdminDashboard() {
             <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
               Budget Distribution
             </h2>
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -431,6 +425,7 @@ export default async function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
 
@@ -439,6 +434,7 @@ export default async function AdminDashboard() {
           <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
             Recent 10 Requests
           </h2>
+          <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -463,6 +459,7 @@ export default async function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Tester Observations */}
@@ -474,6 +471,7 @@ export default async function AdminDashboard() {
             </span>
           </div>
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -498,6 +496,7 @@ export default async function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
 
@@ -505,6 +504,7 @@ export default async function AdminDashboard() {
         <div className="space-y-4">
           <h2 className="text-xl font-black text-gray-900">Spot Suggestions</h2>
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -527,6 +527,7 @@ export default async function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
 
@@ -544,6 +545,7 @@ export default async function AdminDashboard() {
             </div>
           </div>
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
@@ -582,6 +584,7 @@ export default async function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>

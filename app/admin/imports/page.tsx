@@ -1,8 +1,17 @@
 import React from 'react';
 import { ImportReportingService } from '@/lib/services/imports/importReport';
 
+interface ImportBatch {
+  id: string;
+  status: string;
+  version: string;
+  total_rows: number;
+  created_at: string;
+  external_datasets: { name: string } | null;
+}
+
 export default async function AdminImportsPage() {
-  const batches = await ImportReportingService.listRecentBatches();
+  const batches = (await ImportReportingService.listRecentBatches()) as ImportBatch[];
 
   return (
     <div className="max-w-6xl mx-auto p-8 text-white space-y-8">
@@ -12,6 +21,7 @@ export default async function AdminImportsPage() {
       </div>
 
       <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-800/50 text-gray-400 border-b border-gray-800">
             <tr>
@@ -24,7 +34,7 @@ export default async function AdminImportsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-800">
-            {batches.map((batch: any) => (
+            {batches.map((batch) => (
               <tr key={batch.id} className="hover:bg-gray-800/30 transition-colors">
                 <td className="px-6 py-4 font-medium">{batch.external_datasets?.name || 'Unknown'}</td>
                 <td className="px-6 py-4 text-gray-400">{batch.version}</td>
@@ -56,6 +66,7 @@ export default async function AdminImportsPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
