@@ -10,11 +10,11 @@ const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://oyaplan.com"),
-  title: "OyaPlan | Find where to go. Know what it'll cost. In seconds.",
+  title: "OyaPlan | Find where to go, know what it costs",
   description: "Find where to go. Know what it'll cost. In seconds. Get one complete Lagos outing plan with accurate food costs, transport estimates, and squad-ready vibes.",
   keywords: ["Lagos", "Planning", "Outing", "Squad", "Food", "Transport", "Nigeria"],
   openGraph: {
-    title: "OyaPlan | Find where to go. Know what it'll cost. In seconds.",
+    title: "OyaPlan | Find where to go, know what it costs",
     description: "One tap to copy a complete Lagos plan to WhatsApp.",
     url: "https://oyaplan.com",
     siteName: "OyaPlan",

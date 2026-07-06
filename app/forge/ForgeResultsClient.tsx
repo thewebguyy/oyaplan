@@ -91,7 +91,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         setNearbySpots(nearby);
       }
 
-      // 3. Simulated loading time
+      // 3. Simulated loading time (short transition for visual smoothness)
       const timer = setTimeout(() => {
         setIsForging(false);
         AnalyticsService.track('forge_completed', {
@@ -104,7 +104,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             version: '1.0'
           }
         });
-      }, 2500);
+      }, 300);
 
       return () => clearTimeout(timer);
     };
