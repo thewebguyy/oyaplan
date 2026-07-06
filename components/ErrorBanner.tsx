@@ -8,6 +8,8 @@ const KNOWN_ERRORS: Record<string, string> = {
     "We had trouble loading spots. Please try again — it usually resolves in seconds.",
   rate_limited:
     "You're planning fast! Please wait a moment and try again.",
+  unauthorized_dashboard:
+    "Sign in to see your saved plans.",
 };
 
 export default function ErrorBanner() {
@@ -35,6 +37,7 @@ export default function ErrorBanner() {
       </div>
       <button
         onClick={dismiss}
+        aria-label="Dismiss"
         className="p-1 hover:bg-red-100 rounded-md transition-colors"
       >
         <X className="w-4 h-4 text-[#991B1B]" />
