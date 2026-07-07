@@ -75,6 +75,11 @@ export const EventSchemas = {
     path: z.string(),
     version: z.literal('1.0')
   }),
+  'plan_viewed': z.object({
+    category: z.literal('Engagement'),
+    plan_id: z.string(),
+    version: z.literal('1.0')
+  }),
 
   // Trust
   'confidence_badge_clicked': z.object({

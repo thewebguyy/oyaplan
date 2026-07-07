@@ -8,6 +8,7 @@ import { MapPin, Utensils, Car, Info, ArrowRight } from "lucide-react";
 import PageError from "@/components/PageError";
 import ActualSpendCapture from "@/components/ActualSpendCapture";
 import SavePlanButton from "@/components/SavePlanButton";
+import PlanViewTracker from "@/components/PlanViewTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -178,6 +179,8 @@ export default async function PlanPage({ params }: PlanPageProps) {
           />
         </div>
         
+        <PlanViewTracker planId={plan.id} />
+
         <div className="text-center space-y-2">
           <p className="type-caption text-text-muted">
             Generated with OyaPlan &middot; Lagos Outing Planner
