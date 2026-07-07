@@ -9,7 +9,7 @@ import { Area } from "@/lib/types";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
   // Areas are critical — the form cannot render without them.
