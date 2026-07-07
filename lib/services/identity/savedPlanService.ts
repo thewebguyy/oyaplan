@@ -1,4 +1,4 @@
-import { supabase } from '../../supabase';
+import { createServerClient } from '../../supabase-server';
 import { SessionResolver } from './sessionResolver';
 import { RoleService } from './roleService';
 import { captureServerException } from '../../sentry';
@@ -21,6 +21,7 @@ export class SavedPlanService {
         return { success: false, error: 'unauthorized' };
       }
 
+      const supabase = await createServerClient();
       const { error } = await supabase
         .from('user_saved_plans')
         .upsert({
@@ -50,6 +51,7 @@ export class SavedPlanService {
         return { success: false, data: null, error: 'unauthorized' };
       }
 
+      const supabase = await createServerClient();
       const { data, error } = await supabase
         .from('user_saved_plans')
         .select(`
