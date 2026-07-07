@@ -34,23 +34,29 @@ export async function getForgeSpots(
     );
 
     return { data: enhancedSpots, error: null };
-  } catch (err: any) {
+  } catch {
     return { data: null, error: 'Unexpected error fetching spots' };
   }
 }
 
 export async function getTrendingSpots(
   limit: number
-): Promise<{ data: Array<{ id: string; name: string; zone: string }> | null; error: string | null }> {
+): Promise<{
+  data: Array<{ id: string; name: string; zone: string; category: string | null; price_per_person: number; image_url: string | null }> | null;
+  error: string | null;
+}> {
   try {
     const { data, error } = await supabase
       .from('spots')
-      .select('id, name, zone, trending_score')
+      .select('id, name, zone, category, price_per_person, image_url, trending_score')
       .gt('trending_score', 0)
       .order('trending_score', { ascending: false })
       .limit(limit);
     if (error) return { data: null, error: error.message };
-    return { data: data as Array<{ id: string; name: string; zone: string }>, error: null };
+    return {
+      data: data as Array<{ id: string; name: string; zone: string; category: string | null; price_per_person: number; image_url: string | null }>,
+      error: null,
+    };
   } catch {
     return { data: null, error: 'Unexpected error fetching trending spots' };
   }

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
+import { formatNaira } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -84,7 +85,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
         {budget && vibe && (
           <div className="bg-brand-green text-white py-3 px-4">
             <div className="max-w-4xl mx-auto flex items-center justify-between">
-              <p className="type-label">Showing spots for your ₦{budget.toLocaleString('en-NG')} {vibe} outing</p>
+              <p className="type-label">Showing spots for your ₦{formatNaira(budget)} {vibe} outing</p>
               <Link href={`/explore/${slug}`} className="type-label text-white/80 hover:text-white underline">Clear</Link>
             </div>
           </div>
@@ -178,7 +179,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
       {budget && vibe && (
         <div className="bg-brand-green text-white py-3 px-4">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <p className="type-label">Showing spots in <span className="lowercase first-letter:uppercase">{area.name}</span> for your ₦{budget.toLocaleString('en-NG')} outing</p>
+            <p className="type-label">Showing spots in <span className="lowercase first-letter:uppercase">{area.name}</span> for your ₦{formatNaira(budget)} outing</p>
             <Link href={`/explore/${slug}`} className="type-label text-white/80 hover:text-white underline">Clear</Link>
           </div>
         </div>
@@ -235,7 +236,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
                     </div>
                     
                     <p className="type-label sm:type-subheading text-brand-green">
-                      Avg ₦{spot.price_per_person.toLocaleString('en-NG')} <span className="type-caption text-text-muted">/ person</span>
+                      Avg ₦{formatNaira(spot.price_per_person)} <span className="type-caption text-text-muted">/ person</span>
                     </p>
                   </div>
                   

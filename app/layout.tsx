@@ -50,8 +50,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.className} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${outfit.className} antialiased`} suppressHydrationWarning>
         <AnalyticsProvider>
           <AuthProvider>
             <NavBar />

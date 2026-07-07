@@ -5,6 +5,7 @@ import PageError from "@/components/PageError";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
+import { formatNaira } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +72,7 @@ export default async function ExploreIndex({
       {params.budget && params.vibe && (
         <div className="bg-brand-green text-white py-3 px-4">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <p className="type-label">Showing spots for your ₦{parseInt(params.budget).toLocaleString('en-NG')} {params.vibe} outing</p>
+            <p className="type-label">Showing spots for your ₦{formatNaira(parseInt(params.budget))} {params.vibe} outing</p>
             <Link href="/explore" className="type-label text-white/80 hover:text-white underline">Clear</Link>
           </div>
         </div>
@@ -125,7 +126,7 @@ export default async function ExploreIndex({
 
         <div className="mt-16 border-t border-border-default pt-8">
           <details className="group">
-            <summary className="list-none cursor-pointer flex items-center gap-2 type-label text-text-primary hover:text-brand-green transition-colors tap-feedback outline-none select-none">
+            <summary className="list-none cursor-pointer inline-flex items-center gap-2 type-subheading text-text-primary hover:text-brand-green hover:border-brand-green transition-colors tap-feedback outline-none select-none border border-border-default rounded-full px-5 py-3">
               Browse by specific area <span className="text-text-muted group-open:rotate-90 transition-transform duration-300">→</span>
             </summary>
 

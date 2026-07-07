@@ -6,10 +6,11 @@ import { getActiveAreas } from "@/lib/queries/areas";
 import { getPlanCount, getRecentSharedPlans } from "@/lib/queries/plans";
 import { getTrendingSpots } from "@/lib/queries/spots";
 import { Area } from "@/lib/types";
+import { formatNaira } from "@/lib/format";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
   // Areas are critical — the form cannot render without them.
@@ -17,7 +18,7 @@ export default async function LandingPage() {
   let areas: Area[] = [];
   let planCount = 0;
   let recentPlans: Array<{ total_cost: number; spots: { name: string; areas: { name: string } } }> = [];
-  let trendingSpots: Array<{ id: string; name: string; zone: string }> = [];
+  let trendingSpots: Array<{ id: string; name: string; zone: string; category: string | null; price_per_person: number; image_url: string | null }> = [];
 
   let landingFetchError = false;
   try {
@@ -61,7 +62,7 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h1 className="type-display text-white">
             Know exactly where to go,<br />
-            <span className="text-white underline decoration-brand-yellow decoration-4 underline-offset-8">and what it'll really cost.</span>
+            <span className="text-white underline decoration-brand-yellow decoration-4 underline-offset-8">and what it&apos;ll really cost.</span>
           </h1>
           <p className="type-body text-white/80 max-w-2xl mx-auto">
             Plan your next outing with real prices, transport costs, and trusted recommendations.
@@ -102,10 +103,32 @@ export default async function LandingPage() {
                 <Link
                   key={spot.id}
                   href={`/explore/${spot.zone}?pinnedSpotId=${spot.id}`}
-                  className="min-w-[200px] p-5 border border-border-default rounded-[16px] bg-surface-grey hover:border-brand-green hover:shadow-[0px_4px_12px_rgba(0,135,81,0.08)] transition-all tap-feedback shrink-0 flex flex-col justify-between snap-start"
+                  className="min-w-[220px] border border-border-default rounded-[16px] bg-surface-grey hover:border-brand-green hover:shadow-[0px_4px_12px_rgba(0,135,81,0.08)] transition-all tap-feedback shrink-0 flex flex-col overflow-hidden snap-start"
                 >
-                  <h3 className="type-label text-text-primary mb-1 truncate">{spot.name}</h3>
-                  <p className="type-caption text-text-muted capitalize">{spot.zone}</p>
+                  <div className="h-28 bg-border-default/40 overflow-hidden">
+                    {spot.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={spot.image_url} alt={spot.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl">📍</div>
+                    )}
+                  </div>
+                  <div className="p-4 flex flex-col justify-between flex-1">
+                    <div>
+                      <h3 className="type-label text-text-primary mb-1 truncate">{spot.name}</h3>
+                      <p className="type-caption text-text-muted capitalize">{spot.zone}</p>
+                    </div>
+                    <div className="flex items-center gap-2 mt-3">
+                      {spot.category && (
+                        <span className="bg-white text-text-muted px-2 py-0.5 rounded-[4px] text-[10px] font-[700] uppercase tracking-tighter border border-border-default">
+                          {spot.category}
+                        </span>
+                      )}
+                      <span className="type-caption text-brand-green font-[700]">
+                        ₦{formatNaira(spot.price_per_person)}/person
+                      </span>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -125,7 +148,7 @@ export default async function LandingPage() {
                   <div key={i} className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 flex items-center gap-2 shrink-0 snap-start">
                     <span className="type-label text-white/90 lowercase first-letter:uppercase">{plan.spots.name}</span>
                     <span className="text-white/20">&bull;</span>
-                    <span className="type-label text-brand-yellow">₦{plan.total_cost.toLocaleString('en-NG')}</span>
+                    <span className="type-label text-brand-yellow">₦{formatNaira(plan.total_cost)}</span>
                   </div>
                 ))}
               </div>
@@ -136,7 +159,7 @@ export default async function LandingPage() {
             <p className="type-display text-white md:text-[48px] leading-tight">
               {planCount > 0 ? (
                 <>
-                  Join <span className="text-brand-yellow">{planCount.toLocaleString('en-NG')}</span> Lagos squads who have already planned their outing.
+                  Join <span className="text-brand-yellow">{formatNaira(planCount)}</span> Lagos squads who have already planned their outing.
                 </>
               ) : (
                 "Be the first Lagos squad to plan your outing today."
