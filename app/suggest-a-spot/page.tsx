@@ -16,9 +16,20 @@ export default function SuggestSpotPage() {
     vibe: "Chill",
     comment: ""
   });
+  const [fieldErrors, setFieldErrors] = useState<{ spotName?: string; location?: string }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const errors: { spotName?: string; location?: string } = {};
+    if (!formData.spotName.trim()) errors.spotName = "Required";
+    if (!formData.location.trim()) errors.location = "Required";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+
     setLoading(true);
     setError(false);
 
@@ -85,7 +96,7 @@ export default function SuggestSpotPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} noValidate className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="type-label text-text-secondary ml-1">Spot Name</label>
@@ -94,13 +105,23 @@ export default function SuggestSpotPage() {
                     required
                     type="text"
                     placeholder="e.g. Moist Beach Club"
-                    className="h-14 w-full bg-surface-grey border border-border-default rounded-[16px] px-4 type-body focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green outline-none transition-all"
+                    className={`h-14 w-full bg-surface-grey border rounded-[16px] px-4 type-body focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green outline-none transition-all ${
+                      fieldErrors.spotName ? "border-error ring-2 ring-error/10" : "border-border-default"
+                    }`}
                     value={formData.spotName}
-                    onChange={(e) => setFormData({ ...formData, spotName: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, spotName: e.target.value });
+                      if (fieldErrors.spotName) setFieldErrors({ ...fieldErrors, spotName: undefined });
+                    }}
                   />
                 </div>
+                {fieldErrors.spotName && (
+                  <p className="type-caption text-error flex items-center gap-1 ml-1">
+                    <span>⚠️</span> {fieldErrors.spotName}
+                  </p>
+                )}
               </div>
-              
+
               <div className="space-y-2">
                 <label className="type-label text-text-secondary ml-1">Location / Area</label>
                 <div className="relative">
@@ -109,11 +130,21 @@ export default function SuggestSpotPage() {
                     required
                     type="text"
                     placeholder="e.g. Oniru, Victoria Island"
-                    className="h-14 w-full bg-surface-grey border border-border-default rounded-[16px] pl-10 pr-4 type-body focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green outline-none transition-all"
+                    className={`h-14 w-full bg-surface-grey border rounded-[16px] pl-10 pr-4 type-body focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green outline-none transition-all ${
+                      fieldErrors.location ? "border-error ring-2 ring-error/10" : "border-border-default"
+                    }`}
                     value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, location: e.target.value });
+                      if (fieldErrors.location) setFieldErrors({ ...fieldErrors, location: undefined });
+                    }}
                   />
                 </div>
+                {fieldErrors.location && (
+                  <p className="type-caption text-error flex items-center gap-1 ml-1">
+                    <span>⚠️</span> {fieldErrors.location}
+                  </p>
+                )}
               </div>
             </div>
 

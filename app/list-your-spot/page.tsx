@@ -75,14 +75,33 @@ export default function ListYourSpotPage() {
     howHeard: "",
     notes: ""
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const scrollToForm = (tier: string) => {
     setFormData(prev => ({ ...prev, listingTier: tier }));
     formRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const clearFieldError = (field: string) => {
+    if (fieldErrors[field]) setFieldErrors(prev => ({ ...prev, [field]: "" }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const errors: Record<string, string> = {};
+    if (!formData.businessName.trim()) errors.businessName = "Required";
+    if (!formData.ownerName.trim()) errors.ownerName = "Required";
+    if (!formData.whatsappNumber.trim()) errors.whatsappNumber = "Required";
+    if (!formData.areaSlug) errors.areaSlug = "Required";
+    if (!formData.spotCategory) errors.spotCategory = "Required";
+    if (!formData.priceRange) errors.priceRange = "Required";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+
     setLoading(true);
     setError(null);
 
@@ -234,52 +253,61 @@ export default function ListYourSpotPage() {
             <p className="type-body text-text-muted">Complete the form below and we&apos;ll get you started.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} noValidate className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="businessName" className="type-label text-text-secondary">Business Name</Label>
-                <Input 
-                  id="businessName" 
-                  required 
+                <Input
+                  id="businessName"
+                  required
                   placeholder="e.g. Yellow Chilli"
-                  className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring"
+                  className={`h-[56px] rounded-[12px] type-body bg-white focus-ring ${fieldErrors.businessName ? "border-error ring-2 ring-error/10" : "border-border-default"}`}
                   value={formData.businessName}
-                  onChange={e => setFormData({...formData, businessName: e.target.value})}
+                  onChange={e => { setFormData({...formData, businessName: e.target.value}); clearFieldError("businessName"); }}
                 />
+                {fieldErrors.businessName && (
+                  <p className="type-caption text-error flex items-center gap-1"><span>⚠️</span> {fieldErrors.businessName}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ownerName" className="type-label text-text-secondary">Owner or Manager</Label>
-                <Input 
-                  id="ownerName" 
-                  required 
+                <Input
+                  id="ownerName"
+                  required
                   placeholder="Full name"
-                  className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring"
+                  className={`h-[56px] rounded-[12px] type-body bg-white focus-ring ${fieldErrors.ownerName ? "border-error ring-2 ring-error/10" : "border-border-default"}`}
                   value={formData.ownerName}
-                  onChange={e => setFormData({...formData, ownerName: e.target.value})}
+                  onChange={e => { setFormData({...formData, ownerName: e.target.value}); clearFieldError("ownerName"); }}
                 />
+                {fieldErrors.ownerName && (
+                  <p className="type-caption text-error flex items-center gap-1"><span>⚠️</span> {fieldErrors.ownerName}</p>
+                )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="whatsapp" className="type-label text-text-secondary">WhatsApp Number</Label>
-                <Input 
-                  id="whatsapp" 
-                  required 
+                <Input
+                  id="whatsapp"
+                  required
                   placeholder="+234..."
-                  className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring"
+                  className={`h-[56px] rounded-[12px] type-body bg-white focus-ring ${fieldErrors.whatsappNumber ? "border-error ring-2 ring-error/10" : "border-border-default"}`}
                   value={formData.whatsappNumber}
-                  onChange={e => setFormData({...formData, whatsappNumber: e.target.value})}
+                  onChange={e => { setFormData({...formData, whatsappNumber: e.target.value}); clearFieldError("whatsappNumber"); }}
                 />
+                {fieldErrors.whatsappNumber && (
+                  <p className="type-caption text-error flex items-center gap-1"><span>⚠️</span> {fieldErrors.whatsappNumber}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="type-label text-text-secondary">Area</Label>
-                <Select 
+                <Select
                   required
                   value={formData.areaSlug}
-                  onValueChange={v => setFormData({...formData, areaSlug: v || ""})}
+                  onValueChange={v => { setFormData({...formData, areaSlug: v || ""}); clearFieldError("areaSlug"); }}
                 >
-                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
+                  <SelectTrigger className={`h-[56px] rounded-[12px] type-body bg-white focus-ring ${fieldErrors.areaSlug ? "border-error ring-2 ring-error/10" : "border-border-default"}`}>
                     <SelectValue placeholder="Select area" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -288,18 +316,21 @@ export default function ListYourSpotPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {fieldErrors.areaSlug && (
+                  <p className="type-caption text-error flex items-center gap-1"><span>⚠️</span> {fieldErrors.areaSlug}</p>
+                )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="type-label text-text-secondary">Spot Category</Label>
-                <Select 
+                <Select
                   required
                   value={formData.spotCategory}
-                  onValueChange={v => setFormData({...formData, spotCategory: v || ""})}
+                  onValueChange={v => { setFormData({...formData, spotCategory: v || ""}); clearFieldError("spotCategory"); }}
                 >
-                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
+                  <SelectTrigger className={`h-[56px] rounded-[12px] type-body bg-white focus-ring ${fieldErrors.spotCategory ? "border-error ring-2 ring-error/10" : "border-border-default"}`}>
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -308,15 +339,18 @@ export default function ListYourSpotPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {fieldErrors.spotCategory && (
+                  <p className="type-caption text-error flex items-center gap-1"><span>⚠️</span> {fieldErrors.spotCategory}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="type-label text-text-secondary">Typical Price per Person</Label>
-                <Select 
+                <Select
                   required
                   value={formData.priceRange}
-                  onValueChange={v => setFormData({...formData, priceRange: v || ""})}
+                  onValueChange={v => { setFormData({...formData, priceRange: v || ""}); clearFieldError("priceRange"); }}
                 >
-                  <SelectTrigger className="h-[56px] rounded-[12px] type-body bg-white border-border-default focus-ring">
+                  <SelectTrigger className={`h-[56px] rounded-[12px] type-body bg-white focus-ring ${fieldErrors.priceRange ? "border-error ring-2 ring-error/10" : "border-border-default"}`}>
                     <SelectValue placeholder="Spend range" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
@@ -325,6 +359,9 @@ export default function ListYourSpotPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {fieldErrors.priceRange && (
+                  <p className="type-caption text-error flex items-center gap-1"><span>⚠️</span> {fieldErrors.priceRange}</p>
+                )}
               </div>
             </div>
 
