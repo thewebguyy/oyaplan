@@ -2,6 +2,7 @@ import { SavedPlanService } from '@/lib/services/identity/savedPlanService';
 import Link from 'next/link';
 import { ArrowRight, MapPin, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { formatNaira } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,7 +80,7 @@ export default async function DashboardPage() {
                         {plan.vibe}
                       </span>
                       <span className="type-label text-brand-green font-[900]">
-                        ₦{plan.total_cost.toLocaleString('en-NG')}
+                        ₦{formatNaira(plan.total_cost)}
                       </span>
                     </div>
                     <div>

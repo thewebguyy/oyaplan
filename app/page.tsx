@@ -6,6 +6,7 @@ import { getActiveAreas } from "@/lib/queries/areas";
 import { getPlanCount, getRecentSharedPlans } from "@/lib/queries/plans";
 import { getTrendingSpots } from "@/lib/queries/spots";
 import { Area } from "@/lib/types";
+import { formatNaira } from "@/lib/format";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -124,7 +125,7 @@ export default async function LandingPage() {
                         </span>
                       )}
                       <span className="type-caption text-brand-green font-[700]">
-                        ₦{spot.price_per_person.toLocaleString('en-NG')}/person
+                        ₦{formatNaira(spot.price_per_person)}/person
                       </span>
                     </div>
                   </div>
@@ -147,7 +148,7 @@ export default async function LandingPage() {
                   <div key={i} className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 flex items-center gap-2 shrink-0 snap-start">
                     <span className="type-label text-white/90 lowercase first-letter:uppercase">{plan.spots.name}</span>
                     <span className="text-white/20">&bull;</span>
-                    <span className="type-label text-brand-yellow">₦{plan.total_cost.toLocaleString('en-NG')}</span>
+                    <span className="type-label text-brand-yellow">₦{formatNaira(plan.total_cost)}</span>
                   </div>
                 ))}
               </div>
@@ -158,7 +159,7 @@ export default async function LandingPage() {
             <p className="type-display text-white md:text-[48px] leading-tight">
               {planCount > 0 ? (
                 <>
-                  Join <span className="text-brand-yellow">{planCount.toLocaleString('en-NG')}</span> Lagos squads who have already planned their outing.
+                  Join <span className="text-brand-yellow">{formatNaira(planCount)}</span> Lagos squads who have already planned their outing.
                 </>
               ) : (
                 "Be the first Lagos squad to plan your outing today."
