@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabaseBrowser } from '@/lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Initial fetch
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabaseBrowser.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setIsLoading(false);
     });
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setIsLoading(false);
       
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     setIsLoading(true);
-    await supabase.auth.signOut();
+    await supabaseBrowser.auth.signOut();
     setSession(null);
     setIsLoading(false);
   };

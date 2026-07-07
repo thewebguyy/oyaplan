@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabaseBrowser } from '@/lib/supabase';
 
 export default function AuthModal() {
   const { isModalOpen, closeModal, modalReason, returnToPath } = useAuth();
@@ -27,7 +27,7 @@ export default function AuthModal() {
       redirectUrl.searchParams.set('next', returnToPath);
     }
 
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabaseBrowser.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: redirectUrl.toString(),
@@ -48,7 +48,7 @@ export default function AuthModal() {
       redirectUrl.searchParams.set('next', returnToPath);
     }
 
-    await supabase.auth.signInWithOAuth({
+    await supabaseBrowser.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: redirectUrl.toString(),
