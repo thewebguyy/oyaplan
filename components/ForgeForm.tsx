@@ -5,18 +5,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Area } from "@/lib/types";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { Button } from "@/components/ui/button";
+import { Heart, Coffee, Utensils, Music, Zap, Sun } from "lucide-react";
 
 interface ForgeFormProps {
   areas: Area[];
 }
 
 const VIBE_OPTIONS = [
-  { value: "Dinner", label: "Date Night", icon: "❤️" },
-  { value: "Chill",  label: "Chill Hangout", icon: "😎" },
-  { value: "Foodie", label: "Serious Chop", icon: "🍽️" },
-  { value: "Party",  label: "Turn Up", icon: "🎉" },
-  { value: "Quick",  label: "Quick Link", icon: "⚡" },
-  { value: "Brunch", label: "Brunch Vibes", icon: "☀️" },
+  { value: "Dinner", label: "Date Night", icon: Heart },
+  { value: "Chill",  label: "Chill Hangout", icon: Coffee },
+  { value: "Foodie", label: "Serious Chop", icon: Utensils },
+  { value: "Party",  label: "Turn Up", icon: Music },
+  { value: "Quick",  label: "Quick Link", icon: Zap },
+  { value: "Brunch", label: "Brunch Vibes", icon: Sun },
 ];
 
 const SQUAD_OPTIONS = [
@@ -166,13 +167,13 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={o.value}
                   onClick={() => handleSelect('vibe', o.value)}
-                  className={`flex flex-col items-start p-5 rounded-[20px] transition-all duration-200 tap-feedback text-left border-2 ${
+                  className={`flex flex-col items-start p-5 rounded-[8px] transition-all duration-200 tap-feedback text-left border-2 ${
                     isSelected 
-                      ? "bg-brand-green/10 border-brand-green text-brand-green shadow-sm" 
-                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:shadow-md"
+                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white shadow-sm" 
+                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
                   }`}
                 >
-                  <span className="text-3xl mb-3">{o.icon}</span>
+                  <o.icon className="w-6 h-6 mb-3" />
                   <span className="type-body font-bold tracking-tight">{o.label}</span>
                 </button>
               );
@@ -189,10 +190,10 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={o.value}
                   onClick={() => handleSelect('squadSize', o.value)}
-                  className={`w-full text-left px-6 py-5 rounded-[20px] transition-all duration-200 tap-feedback border-2 ${
+                  className={`w-full text-left px-6 py-5 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                     isSelected
-                      ? "bg-brand-green/10 border-brand-green text-brand-green"
-                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
+                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
                   }`}
                 >
                   <span className="type-venue-name">{o.label}</span>
@@ -211,10 +212,10 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={o.value}
                   onClick={() => handleSelect('budget', o.value)}
-                  className={`w-full text-left px-6 py-5 rounded-[20px] transition-all duration-200 tap-feedback border-2 ${
+                  className={`w-full text-left px-6 py-5 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                     isSelected
-                      ? "bg-brand-green/10 border-brand-green text-brand-green"
-                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
+                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
                   }`}
                 >
                   <span className="type-venue-name">{o.label}</span>
@@ -229,10 +230,10 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => handleSelect('startArea', 'Anywhere')}
-              className={`w-full text-left px-6 py-4 rounded-[16px] transition-all duration-200 tap-feedback border-2 ${
+              className={`w-full text-left px-6 py-4 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                 formData.startArea === 'Anywhere'
-                  ? "bg-brand-green/10 border-brand-green text-brand-green"
-                  : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+                  ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
+                  : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
               }`}
             >
               <span className="type-body font-semibold">Anywhere</span>
@@ -243,10 +244,10 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={a.slug}
                   onClick={() => handleSelect('startArea', a.slug)}
-                  className={`w-full text-left px-6 py-4 rounded-[16px] transition-all duration-200 tap-feedback border-2 ${
+                  className={`w-full text-left px-6 py-4 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                     isSelected
-                      ? "bg-brand-green/10 border-brand-green text-brand-green"
-                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
+                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
                   }`}
                 >
                   <span className="type-body font-semibold">{a.name}</span>
@@ -262,7 +263,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             <Button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full h-[64px] rounded-[20px] bg-brand-green hover:bg-brand-green-70 text-white type-venue-name overflow-hidden tap-feedback shadow-[0px_8px_24px_rgba(0,135,81,0.25)]"
+              className="w-full h-[64px] rounded-[8px] bg-[#0A0A0A] hover:bg-black/80 text-white type-venue-name overflow-hidden tap-feedback"
             >
               {loading ? "Finding your plan..." : "See My Plan"}
             </Button>
