@@ -207,6 +207,14 @@
       font-size: 20px;
     }
   }
+
+  .type-venue-hero {
+    font-family: var(--font-body);
+    font-weight: 900; /* black */
+    font-size: 3rem;  /* 48px, equivalent to text-5xl */
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
   
   .type-ui-label {
     font-family: var(--font-body);
