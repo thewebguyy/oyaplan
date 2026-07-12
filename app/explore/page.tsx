@@ -112,7 +112,7 @@ export default async function ExploreIndex({
       {targetBudget && (
         <div className="max-w-4xl mx-auto px-4 mt-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-end justify-between mb-8">
-            <h2 className="type-heading text-text-primary">Ready-to-go plans for ₦{targetBudget.toLocaleString('en-NG')}</h2>
+            <h2 className="type-heading text-text-primary">Recommended plans for ₦{targetBudget.toLocaleString('en-NG')}</h2>
           </div>
 
           <div className="space-y-4">
@@ -131,14 +131,18 @@ export default async function ExploreIndex({
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="space-y-3 flex-1">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <h3 className="type-venue-name text-text-primary">{spot.name}</h3>
-                          <div className="type-ui-label bg-surface-grey text-text-muted px-2 py-0.5 rounded-[4px] border border-border-default">
-                            {spot.category || 'Spot'}
+                        <div className="flex flex-col gap-1">
+                          <h3 className="type-venue-name text-text-primary">
+                            {targetVibe ? `${targetVibe} Plan` : 'Recommended Plan'}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <span className="type-ui-label text-text-muted">{spot.name}</span>
+                            <span className="text-text-muted text-[10px]">•</span>
+                            <span className="type-ui-label text-text-muted">{spot.category || 'Spot'}</span>
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-4 type-caption text-text-muted flex-wrap">
+                        <div className="flex items-center gap-4 type-caption text-text-muted flex-wrap mt-2">
                           <div className="flex items-center gap-1.5">
                             <MapPin className="w-3.5 h-3.5" />
                             <span className="truncate max-w-[200px]">{spot.address}</span>
@@ -158,7 +162,7 @@ export default async function ExploreIndex({
                       
                       <Link href={`/?${prefillParams.toString()}`} className="w-full sm:w-auto">
                         <Button className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-[44px] px-6 rounded-[10px] tap-feedback w-full shadow-none border-none">
-                          Build a plan around {spot.name}
+                          See this plan
                         </Button>
                       </Link>
                     </div>

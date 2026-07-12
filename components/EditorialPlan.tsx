@@ -98,9 +98,16 @@ export default function EditorialPlan({ plan, input, planId: initialPlanId, isTo
   const diff = originalBudget ? originalBudget - plan.totalCost : 0;
   
   // Format the assurance string (for C3 "Why we'd recommend this" section)
-  let budgetAssurance = "Fits your budget comfortably.";
-  if (diff < 0) budgetAssurance = "Slightly above your original budget.";
-  else if (diff < 2000) budgetAssurance = "Fits your budget exactly.";
+  let budgetAssurance = "Typically fits within your budget.";
+  if (originalBudget) {
+    if (diff < 0) {
+      budgetAssurance = `Slightly above your original budget (by ~₦${Math.abs(diff).toLocaleString()}).`;
+    } else if (diff < 2000) {
+      budgetAssurance = "Fits your budget exactly.";
+    } else {
+      budgetAssurance = "Typically fits within your budget.";
+    }
+  }
 
   return (
     <div className={`w-full bg-white transition-all duration-300 overflow-hidden ${
@@ -112,104 +119,80 @@ export default function EditorialPlan({ plan, input, planId: initialPlanId, isTo
       {/* Editorial Header */}
       <div className={`px-6 sm:px-10 pt-10 pb-8 ${isTopPick ? 'bg-surface-grey/50' : 'bg-white'}`}>
         <EditorialBlock>
-          <p className="type-tagline text-text-muted">
+          <h2 className="type-display-product text-text-primary uppercase tracking-tight">
             {getHeadline()}
-          </p>
-          
-          <h2 className="type-display-product text-text-primary">
-            Around ₦{plan.totalCost.toLocaleString()}
           </h2>
+          <p className="type-tagline text-text-muted">
+            at {plan.spot.name}
+          </p>
         </EditorialBlock>
       </div>
 
       <div className="w-full h-px bg-border-default/50" />
 
-      {/* Plan Ingredients */}
-      <div className="px-6 sm:px-10 py-8 space-y-8">
-        
-        {/* Ingredient: Venue */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-          <div className="space-y-1">
-            <p className="type-caption text-text-muted uppercase tracking-wider font-[700]">
-              {plan.spot.category || 'Location'}
-            </p>
-            <p className="text-[20px] sm:text-[24px] font-[600] text-text-primary">
-              {plan.spot.name}
-            </p>
-            {plan.spot.image_url && (
-              <div className="w-full sm:w-[120px] h-[80px] mt-3 rounded-[12px] overflow-hidden relative border border-border-default/50">
-                <Image 
-                  src={plan.spot.image_url} 
-                  alt={plan.spot.name} 
-                  fill 
-                  className="object-cover"
-                />
-              </div>
-            )}
+      {/* Budget Breakdown (Trust Sprint 2) */}
+      <div className="px-6 sm:px-10 py-8 bg-white space-y-6">
+        <div>
+          <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-1">Estimated Total</p>
+          <p className="text-[32px] font-[600] font-display text-text-primary leading-none">₦{plan.totalCost.toLocaleString()}</p>
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <div className="flex justify-between type-body text-text-secondary">
+            <span>Food</span>
+            <span className="type-price">₦{plan.foodCost.toLocaleString()}</span>
           </div>
-          
-          <div className="text-left sm:text-right">
-            <p className="type-body text-text-secondary">
-              ₦{plan.foodCost.toLocaleString()} est.
-            </p>
+          <div className="flex justify-between type-body text-text-secondary">
+            <span>Transport estimate</span>
+            <span className="type-price">₦{plan.transportCost.toLocaleString()}</span>
           </div>
         </div>
 
-        <div className="w-full h-px bg-border-default/30" />
-
-        {/* Ingredient: Transport */}
-        <div className="flex items-center justify-between group">
-          <div className="space-y-1">
-            <p className="type-caption text-text-muted uppercase tracking-wider font-[700]">
-              Transport
-            </p>
-            <p className="text-[20px] sm:text-[24px] font-[600] text-text-primary">
-              Ride-hailing
-            </p>
+        {originalBudget && originalBudget > 0 && diff > 0 && (
+          <div className="pt-5 border-t border-border-default/50">
+            <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-1">Remaining Budget</p>
+            <p className="text-[20px] font-[600] text-brand-green">About ₦{diff.toLocaleString()}</p>
           </div>
-          <div className="text-right">
-            <p className="type-body text-text-secondary">
-              ₦{plan.transportCost.toLocaleString()} est.
-            </p>
-          </div>
-        </div>
-
-        <div className="w-full h-px bg-border-default/30" />
-
-        {/* Ingredient: Duration */}
-        <div className="flex items-center justify-between group">
-          <div className="space-y-1">
-            <p className="type-caption text-text-muted uppercase tracking-wider font-[700]">
-              Duration
-            </p>
-            <p className="text-[20px] sm:text-[24px] font-[600] text-text-primary">
-              2–3 hours
-            </p>
-          </div>
-        </div>
-
+        )}
       </div>
-
+      
       <div className="w-full h-px bg-border-default/50" />
 
-      {/* Why we'd recommend this (C3) */}
+      {/* Why we'd recommend this (Trust Sprint 1) */}
       <div className="px-6 sm:px-10 py-8 bg-surface-grey/20">
-        <h3 className="type-label text-text-primary mb-4">Why we&apos;d recommend this</h3>
-        <ul className="space-y-3 type-body text-text-secondary">
-          <li className="flex items-start gap-2">
+        <div className="mb-6">
+          <h3 className="type-ui-label text-text-primary mb-2">Your plan</h3>
+          <p className="type-body text-text-secondary">
+            {[
+              input.vibe ? <span className="capitalize" key="vibe">{input.vibe}</span> : null,
+              input.squadSize ? `${input.squadSize} people` : null,
+              originalBudget && originalBudget > 0 ? `Around ₦${originalBudget.toLocaleString()}` : null,
+              input.startArea && input.startArea !== "Anywhere" ? input.startArea : null
+            ].filter(Boolean).map((item, i, arr) => (
+              <span key={i}>
+                {item}
+                {i < arr.length - 1 && <span className="mx-2 text-text-muted">•</span>}
+              </span>
+            ))}
+          </p>
+        </div>
+        
+        <h3 className="type-ui-label text-text-primary mb-4">Why we'd recommend this</h3>
+        <ul className="space-y-4 type-body text-text-secondary">
+          <li className="flex items-start gap-3">
             <span className="text-brand-green mt-0.5">•</span>
-            {budgetAssurance}
+            <span>{budgetAssurance}</span>
           </li>
-          {input.vibe && input.squadSize && (
-            <li className="flex items-start gap-2">
+          {input.vibe && (
+            <li className="flex items-start gap-3">
               <span className="text-brand-green mt-0.5">•</span>
-              Great for a {input.vibe.toLowerCase()} outing for {input.squadSize}.
+              <span>It's a strong choice for a {input.vibe.toLowerCase()} outing.</span>
             </li>
           )}
           {plan.whyItFits && plan.whyItFits.length > 5 && (
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-3">
               <span className="text-brand-green mt-0.5">•</span>
-              {plan.whyItFits}
+              <span>{plan.whyItFits}</span>
             </li>
           )}
         </ul>
@@ -220,11 +203,11 @@ export default function EditorialPlan({ plan, input, planId: initialPlanId, isTo
       {/* Trust Context */}
       <div className="px-6 sm:px-10 py-6 bg-surface-grey/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <p className="type-caption text-text-secondary">
-            {plan.spot.price_updated_at ? 'Recently verified' : 'Estimated from recent venue pricing'}
+          <p className="type-caption font-[600] text-text-primary">
+            {plan.spot.price_updated_at ? 'Prices verified this week.' : 'Based on recent venue pricing.'}
           </p>
-          <p className="text-[11px] text-text-muted">
-            Includes all taxes and fees.
+          <p className="type-caption text-text-muted">
+            Estimate includes: Food • Drinks • Ride-hailing
           </p>
         </div>
 
