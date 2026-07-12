@@ -64,6 +64,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       } catch { /* ignore localStorage errors */ }
 
       // 2. Generate plans (deterministic)
+      const startTime = Date.now();
       const generatedPlans = forgePlans(input, allSpots);
       setPlans(generatedPlans);
 
@@ -91,7 +92,8 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         setNearbySpots(nearby);
       }
 
-      // 3. Simulated loading time (short transition for visual smoothness)
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 1200 - elapsed);
       const timer = setTimeout(() => {
         setIsForging(false);
         AnalyticsService.track('forge_completed', {
@@ -104,7 +106,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             version: '1.0'
           }
         });
-      }, 300);
+      }, remaining);
 
       return () => clearTimeout(timer);
     };
@@ -126,7 +128,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
     : (forgeInput?.budget || 0) * 1.2;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12 pb-20">
+    <div className="max-w-4xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500 motion-reduce:duration-0">
       {/* Results Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-2">
