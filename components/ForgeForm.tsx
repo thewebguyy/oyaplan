@@ -50,16 +50,37 @@ const STEPS: Step[] = [
   { id: 'area', title: "Anywhere in mind?", reassurance: "Almost there." }
 ];
 
+const VIBE_URL_MAP: Record<string, string> = {
+  "date-night": "Dinner",
+  "chill": "Chill",
+  "foodie": "Foodie",
+  "party": "Party",
+  "quick-link": "Quick",
+  "brunch": "Brunch"
+};
+
+const VIBE_TO_URL_MAP: Record<string, string> = {
+  "Dinner": "date-night",
+  "Chill": "chill",
+  "Foodie": "foodie",
+  "Party": "party",
+  "Quick": "quick-link",
+  "Brunch": "brunch"
+};
+
 export default function ForgeForm({ areas }: ForgeFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   
+  const rawVibe = searchParams.get("vibe") || "";
+  const initialVibe = VIBE_URL_MAP[rawVibe] || rawVibe;
+
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [formData, setFormData] = useState({
-    vibe: searchParams.get("vibe") || "",
-    squadSize: searchParams.get("squadSize") || "",
+    vibe: initialVibe,
+    squadSize: searchParams.get("squad") || "",
     budget: searchParams.get("budget") || "",
-    startArea: searchParams.get("startArea") || "",
+    startArea: searchParams.get("area") || "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -75,14 +96,20 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   };
 
   const handleSubmit = () => {
+    if (!formData.vibe || !formData.squadSize || !formData.budget) {
+      return;
+    }
     setLoading(true);
     
     const params = new URLSearchParams();
-    if (formData.vibe) params.append("vibe", formData.vibe);
-    if (formData.squadSize) params.append("squadSize", formData.squadSize);
+    if (formData.vibe) {
+      const urlVibe = VIBE_TO_URL_MAP[formData.vibe] || formData.vibe;
+      params.append("vibe", urlVibe);
+    }
+    if (formData.squadSize) params.append("squad", formData.squadSize);
     if (formData.budget) params.append("budget", formData.budget);
     if (formData.startArea && formData.startArea !== "Anywhere") {
-      params.append("startArea", formData.startArea);
+      params.append("area", formData.startArea);
     }
     
     AnalyticsService.track('forge_started', {
@@ -263,7 +290,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             <Button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full h-[64px] rounded-[8px] bg-[#0A0A0A] hover:bg-black/80 text-white type-venue-name overflow-hidden tap-feedback"
+              className="w-full h-[64px] rounded-[8px] bg-[#0A0A0A] hover:bg-black/80 text-white type-venue-name overflow-hidden tap-feedback btn-intent-snaps"
             >
               {loading ? "Finding your plan..." : "See My Plan"}
             </Button>

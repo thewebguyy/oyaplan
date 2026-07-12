@@ -16,6 +16,88 @@ export async function GET(req: NextRequest) {
     const planId = searchParams.get('id');
 
     if (!planId) {
+      const vibe = searchParams.get('vibe');
+      const squad = searchParams.get('squad');
+      const budget = searchParams.get('budget');
+      const area = searchParams.get('area');
+
+      if (vibe && squad && budget) {
+        const budgetNum = parseInt(budget);
+        const squadNum = parseInt(squad);
+        const formattedArea = area 
+          ? area.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') 
+          : 'Lagos';
+        const formattedVibe = vibe.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+        return new ImageResponse(
+          (
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              width: '100%', 
+              height: '100%', 
+              backgroundColor: '#008751', 
+              padding: 80,
+              fontFamily: 'sans-serif'
+            }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ 
+                    color: '#008751', 
+                    backgroundColor: 'white',
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    fontSize: 24,
+                    fontWeight: 900,
+                    textTransform: 'uppercase',
+                    letterSpacing: 2
+                  }}>
+                    {formattedVibe} Vibe
+                  </span>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                  <span style={{ color: 'white', fontSize: 80, fontWeight: 900, lineHeight: 1 }}>
+                    ₦{budgetNum.toLocaleString()}
+                  </span>
+                  <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 32, marginTop: 10 }}>
+                    Budget for {squadNum} {squadNum === 1 ? 'person' : 'people'}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flex: 1 }} />
+
+              {/* Footer / Main Content */}
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                <h1 style={{ 
+                  color: 'white', 
+                  fontSize: 70, 
+                  fontWeight: 900, 
+                  lineHeight: 1.1,
+                  marginBottom: 20
+                }}>
+                  Squad Outing in {formattedArea}
+                </h1>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ color: '#FCD116', fontSize: 32, fontWeight: 700 }}>
+                    OyaPlan — Verified Menus & Cost Estimation
+                  </span>
+                </div>
+              </div>
+            </div>
+          ),
+          { 
+            width: 1200, 
+            height: 630,
+            headers: {
+              'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800'
+            }
+          }
+        );
+      }
+
       return new ImageResponse(
         (
           <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', backgroundColor: '#008751', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>

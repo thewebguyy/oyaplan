@@ -146,7 +146,7 @@
 
   /* Typography System (Phase C) */
   .type-display-marketing {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 900;
     font-size: 56px;
     line-height: 1.05;
@@ -154,7 +154,7 @@
   }
   
   .type-display-product {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 800;
     font-size: 32px;
     line-height: 1.1;
@@ -167,7 +167,7 @@
   }
   
   .type-heading {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 700;
     font-size: 24px;
     line-height: 1.15;
@@ -179,7 +179,7 @@
   }
   
   .type-tagline {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 600;
     font-style: normal;
     font-size: 18px;
@@ -191,14 +191,14 @@
   }
   
   .type-body {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 400;
     font-size: 16px;
     line-height: 1.6;
   }
   
   .type-venue-name {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 600;
     font-size: 18px;
   }
@@ -209,7 +209,7 @@
   }
 
   .type-venue-hero {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 900; /* black */
     font-size: 3rem;  /* 48px, equivalent to text-5xl */
     line-height: 0.95;
@@ -217,7 +217,7 @@
   }
   
   .type-ui-label {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 500;
     font-size: 13px;
     letter-spacing: 0.02em;
@@ -225,10 +225,16 @@
   }
   
   .type-price {
-    font-family: var(--font-body);
+    font-family: var(--font-body), sans-serif;
     font-weight: 600;
     font-size: 18px;
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Reset hero background to prevent any inherited or default radial gradients */
+  .hero-bg-reset {
+    background-image: none !important;
+    background-color: #FFFFFF !important;
   }
 }
 
@@ -283,3 +289,123 @@
     transform: translateY(-6px);
   }
 }
+
+/* ==========================================
+   Motion & Cultural Identity Layer (Phase E5)
+   ========================================== */
+
+/* Task 2: Global Text Selection */
+::selection {
+  background-color: #F6C642 !important;
+  color: #000000 !important;
+}
+
+/* Task 2: Instant Intent Snapping Primary CTAs */
+.btn-intent-snaps {
+  transition: none !important;
+}
+.btn-intent-snaps:hover {
+  background-color: #F6C642 !important;
+  color: #000000 !important;
+  border-color: #F6C642 !important;
+  transition: none !important;
+}
+
+/* Task 1: Headline Keyframes & Animations */
+@keyframes slideUpIn {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes slideUpOut {
+  from { transform: translateY(0); }
+  to { transform: translateY(-100%); }
+}
+.animate-slide-up-in {
+  animation: slideUpIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-slide-up-out {
+  animation: slideUpOut 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-cursor-blink {
+  animation: cursorBlink 0.8s infinite steps(1);
+}
+
+/* Task 4: Animated Venue Card Dossier Drop */
+.dossier-grid {
+  /* Scope hover changes within grid container */
+}
+
+.dossier-card {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease-out;
+}
+
+.dossier-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Sibling Grayscale on Row Hover */
+.dossier-grid:hover .dossier-card {
+  filter: grayscale(100%);
+  opacity: 0.65;
+  transition: filter 0.4s ease, opacity 0.4s ease;
+}
+
+.dossier-grid:hover .dossier-card:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* Instant 4px Border Clamp */
+.dossier-card {
+  position: relative;
+}
+.dossier-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 4px solid transparent;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 20;
+  transition: none !important;
+}
+.dossier-card:hover::after {
+  border-color: #000000 !important;
+}
+
+/* Image Scale 105% */
+.dossier-photo-container {
+  overflow: hidden;
+  position: relative;
+}
+.dossier-photo {
+  transition: transform 0.4s ease !important;
+}
+.dossier-card:hover .dossier-photo {
+  transform: scale(1.05) !important;
+}
+
+/* Prefers Reduced Motion Media Query */
+@media (prefers-reduced-motion: reduce) {
+  .dossier-card {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    transition: none !important;
+    filter: none !important;
+  }
+  .dossier-photo {
+    transform: none !important;
+    transition: none !important;
+  }
+  .dossier-grid:hover .dossier-card {
+    filter: none !important;
+    opacity: 1 !important;
+  }
+}

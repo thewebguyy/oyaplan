@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Spot, ForgeInput, PlanEvaluation } from "@/lib/types";
-import { forgePlans, applyPlanAdjustment } from "@/lib/services/matching/forgeMatcher";
-import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
-import LoadingState from "@/components/LoadingState";
-import dynamic from "next/dynamic";
-const EditorialPlan = dynamic(() => import("@/components/EditorialPlan"));
+import EditorialPlan from "@/components/EditorialPlan";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
+import { RefreshCw, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -22,152 +20,94 @@ import {
 } from "@/components/ui/select";
 
 interface ForgeResultsClientProps {
+  evaluations: PlanEvaluation[];
+  vibeMetrics: { min: number; median: number; max: number } | null;
+  nearbySpots: Spot[];
+  targetAreaName: string;
+  forgeInput: ForgeInput;
   allSpots: Spot[];
-  params: {
-    startArea?: string;
-    squadSize?: string;
-    budget?: string;
-    vibe?: string;
-    pinnedSpotId?: string;
-    categoryGroup?: string;
-    daypart?: string;
-  };
 }
 
-export default function ForgeResultsClient({ allSpots, params }: ForgeResultsClientProps) {
-  const [isForging, setIsForging] = useState(true);
-  const [isAdjusting, setIsAdjusting] = useState(false);
-  const [evaluations, setEvaluations] = useState<PlanEvaluation[]>([]);
-  const [nearbySpots, setNearbySpots] = useState<Spot[]>([]);
-  const [targetAreaName, setTargetAreaName] = useState("");
-  const [forgeInput, setForgeInput] = useState<ForgeInput | null>(null);
-  const [vibeMetrics, setVibeMetrics] = useState<{ min: number; median: number; max: number } | null>(null);
+export default function ForgeResultsClient({
+  evaluations,
+  vibeMetrics,
+  nearbySpots,
+  targetAreaName,
+  forgeInput,
+  allSpots
+}: ForgeResultsClientProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  const handleAdjustBudget = async (delta: number) => {
-    if (!forgeInput) return;
-    setIsAdjusting(true);
-    
-    // Artificial delay to show 'Adjusting your plan...' if computation is instant
-    const startTime = Date.now();
-    
+  // Save to localStorage post-hydration
+  useEffect(() => {
+    try {
+      localStorage.setItem("oyaplan_last_inputs", JSON.stringify({
+        ...forgeInput,
+        timestamp: Date.now()
+      }));
+    } catch { /* ignore localStorage errors */ }
+  }, [forgeInput]);
+
+  // Analytics tracking on mount/change
+  useEffect(() => {
+    AnalyticsService.track('forge_completed', {
+      session_id: 'browser',
+      properties: {
+        category: 'Activation',
+        plans_generated: evaluations.length,
+        vibe: forgeInput.vibe,
+        budget: forgeInput.budget,
+        version: '1.0'
+      }
+    });
+  }, [evaluations.length, forgeInput.vibe, forgeInput.budget]);
+
+  const handleAdjustBudget = (delta: number) => {
     const newBudget = forgeInput.budget + delta;
-    const adjustedInput = applyPlanAdjustment(forgeInput, { budget: newBudget });
     
-    setForgeInput(adjustedInput);
-    
-    const generatedPlans = forgePlans(adjustedInput, allSpots);
-    
-    // Evaluate plans (D2 Evaluator Pattern)
-    const newEvaluations = generatedPlans.map(plan => evaluatePlan({
-      currentPlan: plan,
-      previousPlan: evaluations.find(e => e.plan.spot.id === plan.spot.id)?.plan, // Compare against itself if it existed
-      candidatePlans: generatedPlans,
-      input: adjustedInput
-    }));
-    
-    setEvaluations(newEvaluations);
-    
-    const elapsed = Date.now() - startTime;
-    if (elapsed < 300) {
-      await new Promise(resolve => setTimeout(resolve, 300 - elapsed));
+    // Map vibe tag back to URL tag
+    const VIBE_TO_URL_MAP: Record<string, string> = {
+      "Dinner": "date-night",
+      "Chill": "chill",
+      "Foodie": "foodie",
+      "Party": "party",
+      "Quick": "quick-link",
+      "Brunch": "brunch"
+    };
+    const urlVibe = VIBE_TO_URL_MAP[forgeInput.vibe] || forgeInput.vibe;
+
+    const params = new URLSearchParams();
+    params.set("vibe", urlVibe);
+    params.set("squad", forgeInput.squadSize.toString());
+    params.set("budget", newBudget.toString());
+    if (forgeInput.startArea && forgeInput.startArea !== "anywhere") {
+      params.set("area", forgeInput.startArea);
     }
-    
-    setIsAdjusting(false);
+    if (forgeInput.pinnedSpotId) {
+      params.set("pinned", forgeInput.pinnedSpotId);
+    }
+
+    startTransition(() => {
+      router.push(`/forge?${params.toString()}`, { scroll: false });
+    });
   };
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      // 1. Prepare input with safe fallbacks
-      const input: ForgeInput = {
-        startArea: params.startArea || "ikeja",
-        squadSize: parseInt(params.squadSize || "2"),
-        budget: parseInt(params.budget || "50000"),
-        vibe: params.vibe || "Chill",
-        pinnedSpotId: params.pinnedSpotId,
-        categoryGroup: params.categoryGroup,
-        daypart: params.daypart as ForgeInput['daypart'],
-      };
-
-      setForgeInput(input);
-
-      // Save to localStorage
-      try {
-        localStorage.setItem("oyaplan_last_inputs", JSON.stringify({
-          ...input,
-          timestamp: Date.now()
-        }));
-      } catch { /* ignore localStorage errors */ }
-
-      // 2. Generate plans (deterministic)
-      const startTime = Date.now();
-      const generatedPlans = forgePlans(input, allSpots);
-      
-      const newEvaluations = generatedPlans.map(plan => evaluatePlan({
-        currentPlan: plan,
-        candidatePlans: generatedPlans,
-        input: input
-      }));
-      
-      setEvaluations(newEvaluations);
-
-      if (newEvaluations.length === 0) {
-        // We want to know if the vibe is valid but the budget is too low
-        const vibeSpots = allSpots.filter(s => s.vibe_tags.includes(input.vibe));
-        const prices = vibeSpots.map(s => s.price_per_person * input.squadSize * (s.has_food !== false ? 1.1 : 1.0));
-        
-        if (prices.length > 0) {
-          const sortedPrices = [...prices].sort((a, b) => a - b);
-          setVibeMetrics({
-            min: sortedPrices[0],
-            max: sortedPrices[sortedPrices.length - 1],
-            median: sortedPrices[Math.floor(sortedPrices.length / 2)],
-          });
-        }
-
-        const areaSpots = allSpots.filter(s => s.areas?.slug === input.startArea);
-        const areaName = areaSpots[0]?.areas?.name;
-        if (areaName) setTargetAreaName(areaName);
-        const nearby = areaSpots
-          .filter(s => s.active)
-          .sort((a, b) => a.price_per_person - b.price_per_person)
-          .slice(0, 3);
-        setNearbySpots(nearby);
-      }
-
-      const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 1200 - elapsed);
-      const timer = setTimeout(() => {
-        setIsForging(false);
-        AnalyticsService.track('forge_completed', {
-          session_id: 'browser',
-          properties: {
-            category: 'Activation',
-            plans_generated: newEvaluations.length,
-            vibe: input.vibe,
-            budget: input.budget,
-            version: '1.0'
-          }
-        });
-      }, remaining);
-
-      return () => clearTimeout(timer);
-    };
-
-    fetchPlans();
-  }, [allSpots, params]);
-
-  if (isForging) {
-    return (
-      <div className="pt-20">
-        <LoadingState />
-      </div>
-    );
-  }
-
-  const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput?.startArea)?.areas?.name || forgeInput?.startArea;
-  const recoveryBudget = (vibeMetrics && forgeInput && forgeInput.budget < vibeMetrics.median)
+  const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput.startArea)?.areas?.name || forgeInput.startArea;
+  
+  const recoveryBudget = (vibeMetrics && forgeInput.budget < vibeMetrics.median)
     ? vibeMetrics.median 
-    : (forgeInput?.budget || 0) * 1.2;
+    : forgeInput.budget * 1.2;
+
+  // URL vibe mapper for redirecting back
+  const VIBE_TO_URL_MAP: Record<string, string> = {
+    "Dinner": "date-night",
+    "Chill": "chill",
+    "Foodie": "foodie",
+    "Party": "party",
+    "Quick": "quick-link",
+    "Brunch": "brunch"
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500 motion-reduce:duration-0">
@@ -178,7 +118,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             <h1 className="type-heading text-text-primary">Our recommendations.</h1>
           </div>
           <p className="type-body text-text-secondary">
-            Based on <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span> & <span className="text-text-primary font-[600]">₦{forgeInput?.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput?.squadSize} people</span>.
+            Based on <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span> & <span className="text-text-primary font-[600]">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput.squadSize} people</span>.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -190,7 +130,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           </Link>
           <Button 
             className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-[44px] px-6 rounded-[10px] tap-feedback flex items-center gap-2 border-none shadow-none"
-            onClick={() => window.location.reload()}
+            onClick={() => router.refresh()}
           >
             <RefreshCw className="w-4 h-4" />
             Get Another Plan
@@ -207,7 +147,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
                 <AlertCircle className="w-5 h-5 text-brand-green" />
               </div>
               <div className="space-y-1">
-                <h3 className="type-label">We haven&apos;t classified enough <span className="lowercase">{forgeInput?.vibe}</span> venues yet.</h3>
+                <h3 className="type-label">We haven&apos;t classified enough <span className="lowercase">{forgeInput.vibe}</span> venues yet.</h3>
                 <p className="type-caption text-text-secondary">Here are the best places within your budget while we continue verifying venue personalities.</p>
               </div>
             </div>
@@ -219,10 +159,10 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
               key={`top-${evaluations[0].plan.spot.id}`} 
               evaluation={evaluations[0]} 
               isTopPick={true} 
-              input={forgeInput!} 
-              originalBudget={forgeInput?.budget}
+              input={forgeInput} 
+              originalBudget={forgeInput.budget}
               onAdjustBudget={handleAdjustBudget}
-              isAdjusting={isAdjusting}
+              isAdjusting={isPending}
             />
           </div>
           
@@ -235,10 +175,10 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
                     key={`other-${evaluation.plan.spot.id}`}
                     evaluation={evaluation} 
                     isTopPick={false} 
-                    input={forgeInput!} 
-                    originalBudget={forgeInput?.budget}
+                    input={forgeInput} 
+                    originalBudget={forgeInput.budget}
                     onAdjustBudget={handleAdjustBudget}
-                    isAdjusting={isAdjusting}
+                    isAdjusting={isPending}
                   />
                 </div>
               ))}
@@ -266,7 +206,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           <div className="space-y-2">
             <h2 className="type-heading text-text-primary">Budget too low for this vibe.</h2>
             <p className="type-body text-text-muted max-w-md mx-auto">
-              Your budget of ₦{(forgeInput?.budget || 0).toLocaleString()} is a bit tight for a <span className="lowercase">{forgeInput?.vibe}</span> vibe in {targetAreaName || "this area"}. Increase your budget to see spots.
+              Your budget of ₦{forgeInput.budget.toLocaleString()} is a bit tight for a <span className="lowercase">{forgeInput.vibe}</span> vibe in {targetAreaName || "this area"}. Increase your budget to see spots.
             </p>
           </div>
           
@@ -274,7 +214,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             {vibeMetrics && (
               <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                 <p className="type-caption text-text-muted">
-                  Your budget may be tight for <span className="lowercase">{forgeInput?.vibe}</span> outings. Here is what <span className="lowercase">{forgeInput?.vibe}</span> usually costs in Lagos:
+                  Your budget may be tight for <span className="lowercase">{forgeInput.vibe}</span> outings. Here is what <span className="lowercase">{forgeInput.vibe}</span> usually costs in Lagos:
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <div className="px-3 py-1.5 bg-surface-grey border border-border-default rounded-full type-caption text-text-muted">
@@ -290,7 +230,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
               </div>
             )}
 
-            <Link href={`/?startArea=${forgeInput?.startArea}&budget=${Math.round(recoveryBudget)}&vibe=${forgeInput?.vibe}&squadSize=${forgeInput?.squadSize}`}>
+            <Link href={`/?area=${forgeInput.startArea}&budget=${Math.round(recoveryBudget)}&vibe=${VIBE_TO_URL_MAP[forgeInput.vibe] || forgeInput.vibe}&squad=${forgeInput.squadSize}`}>
               <Button className="bg-brand-green text-white type-label h-12 px-10 rounded-[12px] tap-feedback shadow-none">
                 Try ₦{Math.round(recoveryBudget).toLocaleString()} budget
               </Button>
@@ -314,10 +254,10 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
                       </div>
                       <p className="type-caption text-text-muted">from ₦{spot.price_per_person.toLocaleString()} per person</p>
                     </div>
-                    <Link href={`/explore/${params.startArea || "ikeja"}?pinned=${spot.id}`} className="w-full sm:w-auto">
+                    <Link href={`/explore/${forgeInput.startArea || "ikeja"}?pinned=${spot.id}`} className="w-full sm:w-auto">
                       <Button variant="outline" className="w-full sm:w-auto type-label h-10 px-6 border-border-default text-text-primary hover:bg-white rounded-[8px]">
                          Explore spot
-                      </Button>
+                       </Button>
                     </Link>
                   </div>
                 ))}
@@ -326,7 +266,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           )}
 
           <div className="mt-12 pt-8 border-t border-border-default text-center">
-            <SpotSuggestionForm currentArea={forgeInput?.startArea || "Unknown"} />
+            <SpotSuggestionForm currentArea={forgeInput.startArea || "Unknown"} />
           </div>
         </div>
       )}
@@ -352,7 +292,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             </Link>
             <Button 
               className="flex-1 bg-brand-green text-white type-label h-12 rounded-[12px] border-none tap-feedback shadow-lg shadow-brand-green/10"
-              onClick={() => window.location.reload()}
+              onClick={() => router.refresh()}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               New Plan
@@ -366,9 +306,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
 function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
   const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     price: "30000",
@@ -386,7 +324,7 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
       roughPricePerPerson: parseInt(formData.price),
       suggesterWhatsapp: formData.whatsapp || null,
     }).catch(() => {
-      // Silently fail for suggestions, or we could add a toast later
+      // Silently fail for suggestions
     });
   };
 

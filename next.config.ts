@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  devIndicators: {
+    position: 'bottom-right',
+  },
 };
 
 // withSentryConfig wraps the build pipeline for source map upload.

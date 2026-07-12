@@ -25,6 +25,23 @@ function isRateLimitedRoute(request: NextRequest): boolean {
   return false;
 }
 
+function isBotRequest(userAgent: string | null): boolean {
+  if (!userAgent) return false;
+  const botKeywords = [
+    'whatsapp',
+    'twitterbot',
+    'facebookexternalhit',
+    'slackbot',
+    'telegrambot',
+    'discordbot',
+    'skypeuripreview',
+    'googlebot',
+    'bingbot',
+  ];
+  const uaLower = userAgent.toLowerCase();
+  return botKeywords.some(keyword => uaLower.includes(keyword));
+}
+
 function getClientIp(request: NextRequest): string {
   return (
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
@@ -37,25 +54,28 @@ export async function middleware(request: NextRequest) {
   // Rate limit check — runs before Supabase auth to avoid wasted round-trips on blocked requests.
   // Early 429 returns do not touch supabaseResponse, so cookie rotation is unaffected.
   if (isRateLimitedRoute(request)) {
-    const ip = getClientIp(request);
-    const { limited } = await checkRateLimit(ip);
+    const userAgent = request.headers.get('user-agent');
+    if (!isBotRequest(userAgent)) {
+      const ip = getClientIp(request);
+      const { limited } = await checkRateLimit(ip);
 
-    if (limited) {
-      const isServerAction = request.headers.has(NEXT_ACTION_HEADER);
+      if (limited) {
+        const isServerAction = request.headers.has(NEXT_ACTION_HEADER);
 
-      if (isServerAction) {
-        // Server Actions expect JSON — return a structured error the client can read
-        return NextResponse.json(
-          { error: 'rate_limited' },
-          { status: 429, headers: { 'Retry-After': '60' } }
+        if (isServerAction) {
+          // Server Actions expect JSON — return a structured error the client can read
+          return NextResponse.json(
+            { error: 'rate_limited' },
+            { status: 429, headers: { 'Retry-After': '60' } }
+          );
+        }
+
+        // Forge GET — redirect to home with error flag for ErrorBanner
+        return NextResponse.redirect(
+          new URL('/?error=rate_limited', request.url),
+          { status: 302 }
         );
       }
-
-      // Forge GET — redirect to home with error flag for ErrorBanner
-      return NextResponse.redirect(
-        new URL('/?error=rate_limited', request.url),
-        { status: 302 }
-      );
     }
   }
 

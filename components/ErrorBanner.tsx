@@ -12,6 +12,8 @@ const KNOWN_ERRORS: Record<string, string> = {
     "Sign in to see your Saved Plans.",
   no_match:
     "We couldn't find a plan fitting those exact preferences. Try broadening your budget or area.",
+  invalid_params:
+    "That plan link looks broken or expired. Try starting a new plan below.",
 };
 
 export default function ErrorBanner() {

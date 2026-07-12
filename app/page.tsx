@@ -10,6 +10,7 @@ import { TrustBadge } from "@/components/ui/trust-badge";
 import { BudgetFitBadge } from "@/components/ui/budget-fit-badge";
 import { TrustUnknown } from "@/components/ui/trust-unknown";
 import { Check, Clock } from "lucide-react";
+import RotatingHeadline from "@/components/RotatingHeadline";
 
 export const revalidate = 300;
 
@@ -47,19 +48,16 @@ export default async function LandingPage() {
       </Suspense>
 
       {/* Hero Section: The Ledger */}
-      <div className="relative pt-16 pb-24 px-4 bg-white">
+      <div className="relative pt-16 pb-24 px-4 bg-white hero-bg-reset" style={{ backgroundImage: "none" }}>
         <div className="max-w-[1400px] mx-auto">
           {/* Headline */}
           <div className="text-center max-w-5xl mx-auto space-y-6 mb-12">
-            <h1 className="font-sans font-black text-5xl md:text-7xl lg:text-[5.5rem] tracking-[-0.04em] uppercase leading-[0.9] text-text-primary">
-              MATCH REAL BUDGETS TO REAL PRICES.<br/>
-              <span className="text-brand-green">NO GUESSING GAMES.</span>
-            </h1>
+            <RotatingHeadline />
             <p className="type-body text-text-secondary max-w-2xl mx-auto text-lg md:text-xl">
               Deterministic outing planning for Lagos. We verify the menus, transport costs, and operational hours so your squad never gets stranded.
             </p>
             <div className="pt-4">
-              <a href="#forge-planner" className="inline-block bg-[#0A0A0A] text-white font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-[8px] hover:bg-black/80 transition-colors tap-feedback">
+              <a href="#forge-planner" className="inline-block bg-[#0A0A0A] text-white font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-[8px] hover:bg-black/80 transition-colors tap-feedback btn-intent-snaps">
                 Plan an outing
               </a>
             </div>
@@ -171,8 +169,8 @@ export default async function LandingPage() {
             <h2 className="font-sans font-black text-4xl tracking-tight text-text-primary uppercase">Start Planning</h2>
             <p className="type-body text-text-secondary">Enter your constraints and get a deterministic, verified recommendation.</p>
           </div>
-          <div className="bg-white rounded-[16px] shadow-sm border border-border-default overflow-hidden p-2">
-            <Suspense fallback={<div className="h-96 shimmer-bg opacity-10 rounded-[12px]" />}>
+          <div className="bg-white rounded-[8px] shadow-sm border border-border-default overflow-hidden p-2">
+            <Suspense fallback={<div className="h-96 shimmer-bg opacity-10 rounded-[8px]" />}>
               <ForgeForm areas={areas} />
             </Suspense>
           </div>
