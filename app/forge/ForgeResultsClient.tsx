@@ -129,13 +129,12 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
     <div className="max-w-4xl mx-auto space-y-12 pb-20">
       {/* Results Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
-        <div className="space-y-1">
+        <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-1.5 h-1.5 bg-brand-yellow rotate-45 shrink-0" />
-            <h1 className="type-heading text-text-primary">We found the best link for you.</h1>
+            <h1 className="text-[32px] sm:text-[40px] font-[900] tracking-tight leading-none text-text-primary">Here&apos;s what we&apos;d do.</h1>
           </div>
-          <p className="type-caption text-text-muted">
-            Based on <span className="text-text-secondary font-[700] lowercase">{startAreaLabel}</span> & <span className="text-text-secondary font-[700]">₦{forgeInput?.budget.toLocaleString()}</span> for <span className="text-text-secondary font-[700]">{forgeInput?.squadSize} people</span>.
+          <p className="type-body text-text-secondary">
+            Based on <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span> & <span className="text-text-primary font-[600]">₦{forgeInput?.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput?.squadSize} people</span>.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -286,9 +285,9 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
       {/* Redesigned Footer */}
       {plans.length > 0 && (
-        <div className="text-center pt-12 space-y-4 pb-32 md:pb-12">
+        <div className="text-center pt-16 space-y-4 pb-32 md:pb-12">
           <p className="type-body text-text-muted">
-            &quot;Pick one and send it to the group.&quot;
+            You can comfortably do any of these tonight.
           </p>
         </div>
       )}
