@@ -256,14 +256,11 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       };
 
       // Attach source label to explanation so PlanCard can render it
-      // Phase 3B: Consume pre-hydrated methodology and timeline from the spot
       const fullExplanation = {
         ...explanation,
         source_label: sourceLabel,
         confidence_score: Math.round(confidenceScore),
         status,
-        methodology: spot.methodology || [],
-        timeline: spot.timeline || []
       };
 
       return {

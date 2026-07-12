@@ -1,6 +1,10 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
+// NOTE: Privileged admin query functions accept an authenticated `db` client.
+// Functions that query public/anon-readable tables still use the module-level supabase client.
 
-export async function getTesterObservations(): Promise<{
+
+export async function getTesterObservations(db: SupabaseClient): Promise<{
   data: Array<{
     id: string;
     resolved: boolean;
@@ -14,7 +18,7 @@ export async function getTesterObservations(): Promise<{
   error: string | null;
 }> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('tester_observations')
       .select('*')
       .order('created_at', { ascending: false });
@@ -25,7 +29,7 @@ export async function getTesterObservations(): Promise<{
   }
 }
 
-export async function getSpotSuggestions(): Promise<{
+export async function getSpotSuggestions(db: SupabaseClient): Promise<{
   data: Array<{
     id: string;
     created_at: string;
@@ -38,7 +42,7 @@ export async function getSpotSuggestions(): Promise<{
   error: string | null;
 }> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('spot_suggestions')
       .select('*')
       .order('created_at', { ascending: false });
@@ -49,7 +53,7 @@ export async function getSpotSuggestions(): Promise<{
   }
 }
 
-export async function getOperatorInquiries(): Promise<{
+export async function getOperatorInquiries(db: SupabaseClient): Promise<{
   data: Array<{
     id: string;
     created_at: string;
@@ -65,7 +69,7 @@ export async function getOperatorInquiries(): Promise<{
   error: string | null;
 }> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('operator_inquiries')
       .select('*')
       .order('created_at', { ascending: false });
@@ -205,7 +209,7 @@ export async function getActualSpendSummary(sinceIso: string): Promise<{
  * - error_distribution: P50 and P90 variance from actual_spend_reports (last 30 days)
  *   P50 = median error, P90 = 90th percentile error (how bad are the worst 10%?)
  */
-export async function getDataHealthKPIs(): Promise<{
+export async function getDataHealthKPIs(db: SupabaseClient): Promise<{
   data: {
     confidence_histogram: { high: number; medium: number; low: number };
     freshness_distribution: Record<string, number>;
@@ -227,23 +231,23 @@ export async function getDataHealthKPIs(): Promise<{
 
     const [venuesResult, pendingResult, receiptsResult, spendResult] = await Promise.all([
       // All active venues with confidence + status
-      supabase
+      db
         .from('venues')
         .select('computed_confidence_score, operational_status')
         .eq('active', true),
       // Moderation backlog
-      supabase
+      db
         .from('price_evidence')
         .select('id', { count: 'exact', head: true })
         .eq('verification_status', 'pending'),
       // Receipts this week
-      supabase
+      db
         .from('price_evidence')
         .select('id', { count: 'exact', head: true })
         .eq('source_type', 'receipt_upload')
         .gte('created_at', sevenDaysAgo.toISOString()),
       // Error distribution from actual spend
-      supabase
+      db
         .from('actual_spend_reports')
         .select('estimated_total, actual_total')
         .gte('created_at', thirtyDaysAgo.toISOString()),

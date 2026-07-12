@@ -68,8 +68,19 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
     setIsPressed(true);
     setTimeout(() => setIsPressed(false), 80);
 
+    const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // iOS Safari blocks window.open() called after an await.
+    // Open a blank window synchronously while inside the click handler,
+    // then redirect it once the URL is ready.
+    let iosWindow: Window | null = null;
+    if (isMobile && isIOS) {
+      iosWindow = window.open('', '_blank');
+    }
+
     const url = await ensureShareUrl();
     if (!url) {
+      if (iosWindow) iosWindow.close();
       toast.error("Couldn't prepare your plan link. Please try again.");
       return;
     }
@@ -91,10 +102,8 @@ View full plan: ${url}`;
 
     if (isMobile) {
       const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-      // Safari requires a sync window.open to avoid popup blocker
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (isIOS) {
-        window.location.href = waUrl;
+      if (isIOS && iosWindow) {
+        iosWindow.location.href = waUrl;
       } else {
         window.open(waUrl, "_blank");
       }
@@ -102,7 +111,6 @@ View full plan: ${url}`;
       navigator.clipboard.writeText(text);
       setCopied(true);
       toast.success('Link copied to clipboard!');
-      
       setTimeout(() => setCopied(false), 2000);
     }
   };

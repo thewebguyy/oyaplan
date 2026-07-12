@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { 
   MapPin, 
   Utensils, 
@@ -68,7 +69,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
 
       const proposedPrice = Math.round((plan.spot.price_per_person * proposedMultiplier) / 100) * 100;
 
-      await fetch('/api/evidence/submit', {
+      const evidenceRes = await fetch('/api/evidence/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -80,6 +81,10 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
           submitted_by: `user_feedback_${type}`
         })
       });
+      if (!evidenceRes.ok) {
+        const detail = await evidenceRes.text().catch(() => evidenceRes.status.toString());
+        console.error('Evidence submission failed:', detail);
+      }
     } catch (e) {
       console.error("Feedback error:", e);
       toast.error("Couldn't submit your feedback. Please try again.");
@@ -186,15 +191,20 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
       {/* Top Zone: Identity with Premium Trust Header */}
       <div 
         className={`p-8 relative overflow-hidden ${isTopPick ? "bg-brand-green text-white" : "bg-surface-grey text-text-primary border-b border-border-default"}`}
-        style={plan.spot.image_url ? {
-          backgroundImage: `url(${plan.spot.image_url})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        } : undefined}
       >
-        {/* Dark overlay for text legibility when image is present */}
+        {/* Next.js Image for LCP optimisation — replaces CSS background-image */}
         {plan.spot.image_url && (
-          <div className="absolute inset-0 bg-black/60 z-0" />
+          <>
+            <Image
+              src={plan.spot.image_url}
+              alt={plan.spot.name}
+              fill
+              className="object-cover object-center"
+              sizes="(max-width: 768px) 100vw, 480px"
+              priority={isTopPick}
+            />
+            <div className="absolute inset-0 bg-black/60 z-[1]" />
+          </>
         )}
         
         <div className="relative z-10 flex justify-between items-start mb-6">
@@ -351,40 +361,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
                     </div>
                   )}
 
-                  {/* Phase 3B: Trust Methodology */}
-                  {plan.explanation?.methodology && plan.explanation.methodology.length > 0 && (
-                    <div className="pt-2 mt-2 border-t border-border-default/50">
-                      <div className="font-bold text-[10px] uppercase text-text-muted mb-1.5 tracking-wider">Methodology</div>
-                      <ul className="space-y-1">
-                        {plan.explanation.methodology.map((item, idx) => (
-                          <li key={idx} className="flex items-start gap-1.5">
-                            <span className="text-text-muted text-[10px] mt-0.5">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
 
-                  {/* Phase 3B: Venue History Timeline */}
-                  {plan.explanation?.timeline && plan.explanation.timeline.length > 0 && (
-                    <div className="pt-2 mt-2 border-t border-border-default/50">
-                      <div className="font-bold text-[10px] uppercase text-text-muted mb-1.5 tracking-wider">Trust Timeline</div>
-                      <div className="space-y-2 relative before:absolute before:inset-0 before:ml-[5px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border-default before:to-transparent ml-2">
-                        {plan.explanation.timeline.map((event, idx) => (
-                          <div key={idx} className="relative flex items-start gap-3">
-                            <div className="absolute left-0 w-2 h-2 rounded-full bg-surface-grey border-2 border-border-default -translate-x-[5px] mt-1 z-10" />
-                            <div className="pl-4">
-                              <div className="text-[10px] text-text-primary">{event.reason || 'Data update'}</div>
-                              <div className="text-[9px] text-text-muted">
-                                {new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   <div className="pt-2 border-t border-border-default/50 text-[10px] text-gray-400">
                     Calculated using active menu entries &amp; transport rates. Bypasses static prompts.

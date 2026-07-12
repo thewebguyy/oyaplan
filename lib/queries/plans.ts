@@ -1,8 +1,10 @@
 import { supabase } from '../supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-export async function getPlanCount(): Promise<{ data: number; error: string | null }> {
+export async function getPlanCount(db?: SupabaseClient): Promise<{ data: number; error: string | null }> {
+  const client = db ?? supabase;
   try {
-    const { count, error } = await supabase
+    const { count, error } = await client
       .from('plan_requests')
       .select('*', { count: 'exact', head: true });
     if (error) return { data: 0, error: error.message };
@@ -12,9 +14,10 @@ export async function getPlanCount(): Promise<{ data: number; error: string | nu
   }
 }
 
-export async function getPlanCountSince(isoDate: string): Promise<{ data: number; error: string | null }> {
+export async function getPlanCountSince(isoDate: string, db?: SupabaseClient): Promise<{ data: number; error: string | null }> {
+  const client = db ?? supabase;
   try {
-    const { count, error } = await supabase
+    const { count, error } = await client
       .from('plan_requests')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', isoDate);
@@ -53,12 +56,13 @@ export async function getRecentSharedPlans(limit: number): Promise<{
   }
 }
 
-export async function getAllPlanRequests(): Promise<{
+export async function getAllPlanRequests(db?: SupabaseClient): Promise<{
   data: Array<Record<string, string | number>> | null;
   error: string | null;
 }> {
+  const client = db ?? supabase;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('plan_requests')
       .select('*')
       .order('created_at', { ascending: false });

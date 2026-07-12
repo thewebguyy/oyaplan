@@ -52,14 +52,14 @@ export default async function AdminDashboard() {
       staleSpotsResult,
       dataHealthResult,
     ] = await Promise.all([
-      getPlanCount(),
-      getPlanCountSince(sevenDaysAgo.toISOString()),
-      getAllPlanRequests(),
-      getTesterObservations(),
-      getSpotSuggestions(),
-      getOperatorInquiries(),
+      getPlanCount(serverClient),
+      getPlanCountSince(sevenDaysAgo.toISOString(), serverClient),
+      getAllPlanRequests(serverClient),
+      getTesterObservations(serverClient),
+      getSpotSuggestions(serverClient),
+      getOperatorInquiries(serverClient),
       getStaleSpotsForAdmin(sixtyDaysAgo.toISOString()),
-      getDataHealthKPIs(),
+      getDataHealthKPIs(serverClient),
     ]);
 
     if (!allRequestsResult.error) {

@@ -6,7 +6,7 @@ import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AuthModal from "@/components/AuthModal";
 
-const outfit = Outfit({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://oyaplan.com"),
@@ -50,8 +50,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.className} antialiased`}>
+    <html lang="en" className={outfit.variable}>
+      <body className="font-sans antialiased">
         <AnalyticsProvider>
           <AuthProvider>
             <NavBar />

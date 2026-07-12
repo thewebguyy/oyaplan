@@ -1,6 +1,5 @@
 import { supabase } from '../supabase';
 import { Spot } from '../types';
-import { getVenueMethodology, getVenueHistory } from '../services/trustEngine';
 
 export async function getForgeSpots(
   allowedCategories?: string[]
@@ -14,30 +13,20 @@ export async function getForgeSpots(
     if (allowedCategories) {
       query = query.in('category', allowedCategories);
     }
-    // Phase 3B: Deterministic ordering and memory boundary
-    // 300 limit is intentionally below the memory/latency cliff identified in the scaling roadmap
+    // Deterministic ordering and memory boundary:
+    // 300 limit is intentionally below the memory/latency cliff.
     query = query.order('id', { ascending: true }).limit(300);
 
     const { data, error } = await query;
     if (error) return { data: null, error: error.message };
     if (!data) return { data: null, error: null };
 
-    // Phase 3B: Hydrate methodology and timeline server-side
-    const enhancedSpots = await Promise.all(
-      (data as Spot[]).map(async (spot) => {
-        const [methodology, timeline] = await Promise.all([
-          getVenueMethodology(spot.id),
-          getVenueHistory(spot.id)
-        ]);
-        return { ...spot, methodology, timeline };
-      })
-    );
-
-    return { data: enhancedSpots, error: null };
-  } catch (err: any) {
+    return { data: data as Spot[], error: null };
+  } catch (err: unknown) {
     return { data: null, error: 'Unexpected error fetching spots' };
   }
 }
+
 
 export async function getTrendingSpots(
   limit: number

@@ -143,14 +143,10 @@ export async function processRawEvidence(input: RawEvidenceInput): Promise<{
         reason: `Processed auto-approved ${input.source_type} price validation`
       });
 
-      // 4. Aggregation: Recalculate and update materialized derived statistics
-      const aggSuccess = await aggregateVenuePricing(input.venue_id);
-      if (!aggSuccess) {
-        return { success: false, error: 'Evidence recorded but aggregation failed.' };
-      }
+      // NOTE: Venue materialized stats (derived_typical_cost, confidence score, operational_status)
+      // are now updated exclusively by the DB trigger `trig_sync_menu_items` to avoid double-write
+      // race conditions under concurrent load. Do NOT call aggregateVenuePricing() here.
     }
-
-
 
     return { success: true, evidenceId: evidence.id };
   } catch (err) {
