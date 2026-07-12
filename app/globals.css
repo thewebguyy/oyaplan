@@ -412,4 +412,36 @@
     filter: none !important;
     opacity: 1 !important;
   }
-}
+}
+
+/* ==========================================
+   Lagos Blueprint Map Styling (Phase E6)
+   ========================================== */
+
+.map-group polygon {
+  transition: fill 0.15s ease !important;
+}
+
+.map-group:hover polygon {
+  fill: #1A1A1A !important;
+}
+
+.map-text {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease !important;
+  transform-origin: center;
+  transform: scale(0.85);
+  font-family: var(--font-body), sans-serif;
+  font-weight: 900;
+  fill: #FFFFFF;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  text-transform: uppercase;
+}
+
+.map-group:hover .map-text {
+  opacity: 1;
+  transform: scale(1.15) !important;
+}
+
