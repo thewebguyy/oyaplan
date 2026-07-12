@@ -2,154 +2,93 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { Area } from "@/lib/types";
-import Link from "next/link";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
-
-import { ChevronDown, MapPin, Wallet, Users, Music, Utensils, Clock, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ForgeFormProps {
   areas: Area[];
 }
 
-const SQUAD_OPTIONS = [1, 2, 3, 4, 5, 6, 8, 10, 12];
-const BUDGET_OPTIONS = [
-  { value: "15000", label: "₦15,000 — Quick bites/drinks" },
-  { value: "25000", label: "₦25,000 — Dinner for two" },
-  { value: "50000", label: "₦50,000 — Four friends chilling" },
-  { value: "100000", label: "₦100,000 — Premium night out" },
-  { value: "250000", label: "₦250,000 — Group flex" },
-];
 const VIBE_OPTIONS = [
-  { value: "Chill",  label: "😎 Chill Hangout" },
-  { value: "Foodie", label: "🍽️ Serious Chop" },
-  { value: "Party",  label: "🎉 Turn Up" },
-  { value: "Quick",  label: "⚡ Quick Link" },
-  { value: "Dinner", label: "🌙 Date Night" },
-  { value: "Brunch", label: "☀️ Brunch Vibes" },
+  { value: "Dinner", label: "Date Night", icon: "❤️" },
+  { value: "Chill",  label: "Chill Hangout", icon: "😎" },
+  { value: "Foodie", label: "Serious Chop", icon: "🍽️" },
+  { value: "Party",  label: "Turn Up", icon: "🎉" },
+  { value: "Quick",  label: "Quick Link", icon: "⚡" },
+  { value: "Brunch", label: "Brunch Vibes", icon: "☀️" },
 ];
 
-const CATEGORY_OPTIONS = [
-  { value: "Anywhere", label: "🌍 Anywhere" },
-  { value: "Eat and drink", label: "🍽️ Eat & drink" },
-  { value: "Activity and fun", label: "🎮 Activity & fun" },
-  { value: "Nature and outdoors", label: "🌳 Nature" },
+const SQUAD_OPTIONS = [
+  { value: "1", label: "Just Me" },
+  { value: "2", label: "2 people" },
+  { value: "4", label: "3-4 people" },
+  { value: "6", label: "5+ people" },
 ];
 
-const DAYPART_OPTIONS = [
-  { value: "Any time", label: "⏰ Any time" },
-  { value: "Morning", label: "☀️ Morning" },
-  { value: "Afternoon", label: "🌤️ Afternoon" },
-  { value: "Evening", label: "🌆 Evening" },
-  { value: "Night", label: "🌙 Night" },
+const BUDGET_OPTIONS = [
+  { value: "15000", label: "₦15k" },
+  { value: "25000", label: "₦25k" },
+  { value: "50000", label: "₦50k" },
+  { value: "100000", label: "₦100k" },
+  { value: "250000", label: "₦250k+" },
 ];
 
-function squadLabel(n: number) {
-  return n === 1 ? "1 person" : `${n} people`;
+type StepId = 'vibe' | 'squad' | 'budget' | 'area';
+
+interface Step {
+  id: StepId;
+  title: string;
+  reassurance?: string;
 }
+
+const STEPS: Step[] = [
+  { id: 'vibe', title: "What's the plan today?" },
+  { id: 'squad', title: "Nice. How many people?", reassurance: "Great choice." },
+  { id: 'budget', title: "What's comfortable to spend?", reassurance: "Perfect. We'll find something that fits." },
+  { id: 'area', title: "Anywhere in mind?", reassurance: "Almost there." }
+];
 
 export default function ForgeForm({ areas }: ForgeFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(false);
-  const [areaError, setAreaError] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [lastInputs, setLastInputs] = useState<any>(null);
+  
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [formData, setFormData] = useState({
-    startArea: "",
-    squadSize: "2",
-    budget: "50000",
-    vibe: "Chill",
-    categoryGroup: "Anywhere",
-    daypart: "Any time",
-    pinnedSpotId: ""
+    vibe: searchParams.get("vibe") || "",
+    squadSize: searchParams.get("squadSize") || "",
+    budget: searchParams.get("budget") || "",
+    startArea: searchParams.get("startArea") || "",
   });
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("oyaplan_last_inputs");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-        if (parsed.timestamp && Date.now() - parsed.timestamp < thirtyDays) {
-          setLastInputs(parsed);
-        }
-      }
-    } catch (e) {}
-  }, []);
-
-  useEffect(() => {
-    const startArea = searchParams.get("startArea");
-    const pinnedSpotId = searchParams.get("pinnedSpotId");
-    const categoryGroup = searchParams.get("categoryGroup");
-    const budget = searchParams.get("budget");
-    const vibe = searchParams.get("vibe");
-    const daypart = searchParams.get("daypart");
+  const handleSelect = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     
-    if (startArea || pinnedSpotId || categoryGroup || budget || vibe || daypart) {
-      if (categoryGroup && categoryGroup !== "Anywhere" || daypart && daypart !== "Any time") {
-        setShowAdvanced(true);
-      }
-      setFormData(prev => ({
-        ...prev,
-        startArea: startArea || prev.startArea,
-        pinnedSpotId: pinnedSpotId || prev.pinnedSpotId,
-        categoryGroup: categoryGroup || prev.categoryGroup,
-        budget: budget || prev.budget,
-        vibe: vibe || prev.vibe,
-        daypart: daypart || prev.daypart,
-      }));
-    }
-  }, [searchParams]);
-
-  const handleTryAgain = () => {
-    if (lastInputs) {
-      setFormData({
-        ...formData,
-        startArea: lastInputs.startArea || "",
-        squadSize: lastInputs.squadSize?.toString() || "2",
-        budget: lastInputs.budget?.toString() || "50000",
-        vibe: lastInputs.vibe || "Chill",
-        categoryGroup: lastInputs.categoryGroup || "Anywhere",
-        daypart: lastInputs.daypart || "Any time",
-        pinnedSpotId: lastInputs.pinnedSpotId || ""
-      });
-      if (lastInputs.categoryGroup !== "Anywhere" || lastInputs.daypart !== "Any time") {
-        setShowAdvanced(true);
-      }
+    // Auto-advance
+    if (currentStepIndex < STEPS.length - 1) {
+      setTimeout(() => {
+        setCurrentStepIndex(prev => prev + 1);
+      }, 300); // 300ms delay for smooth transition
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.startArea) {
-      setAreaError(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    setAreaError(false);
+  const handleSubmit = () => {
     setLoading(true);
     
     const params = new URLSearchParams();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value && value !== "Anywhere" && value !== "Any time") params.append(key, value);
-      else if (value && key !== "categoryGroup" && key !== "daypart") params.append(key, value);
-    });
+    if (formData.vibe) params.append("vibe", formData.vibe);
+    if (formData.squadSize) params.append("squadSize", formData.squadSize);
+    if (formData.budget) params.append("budget", formData.budget);
+    if (formData.startArea && formData.startArea !== "Anywhere") {
+      params.append("startArea", formData.startArea);
+    }
     
     AnalyticsService.track('forge_started', {
       session_id: 'browser',
       properties: {
         category: 'Activation',
-        source: 'form',
+        source: 'conversational_flow',
         area: formData.startArea,
         budget: Number(formData.budget),
         squad_size: Number(formData.squadSize),
@@ -160,255 +99,177 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     router.push(`/forge?${params.toString()}`);
   };
 
-  const triggerCls =
-    "h-[56px] w-full rounded-[16px] border border-border-default bg-surface-grey px-4 type-body text-text-primary hover:bg-white hover:border-brand-green-40 hover:shadow-[0px_4px_12px_rgba(0,0,0,0.04)] transition-all duration-200 focus-ring data-[state=open]:bg-white data-[state=open]:border-brand-green data-[state=open]:shadow-[0px_8px_24px_rgba(0,135,81,0.08)]";
+  const currentStep = STEPS[currentStepIndex];
 
-  const labelCls = "flex items-center gap-2 type-label text-text-secondary";
+  // Helper to render the summary ribbon
+  const renderSummaryRibbon = () => {
+    const parts = [];
+    if (formData.vibe) {
+      const v = VIBE_OPTIONS.find(o => o.value === formData.vibe)?.label;
+      if (v) parts.push({ label: v, step: 0 });
+    }
+    if (formData.squadSize) {
+      const s = SQUAD_OPTIONS.find(o => o.value === formData.squadSize)?.label;
+      if (s) parts.push({ label: s, step: 1 });
+    }
+    if (formData.budget) {
+      const b = BUDGET_OPTIONS.find(o => o.value === formData.budget)?.label;
+      if (b) parts.push({ label: b, step: 2 });
+    }
+    if (formData.startArea) {
+      const a = formData.startArea === "Anywhere" ? "Anywhere" : areas.find(a => a.slug === formData.startArea)?.name;
+      if (a) parts.push({ label: a, step: 3 });
+    }
+
+    if (parts.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap items-center gap-2 mb-8 animate-in fade-in slide-in-from-top-2">
+        {parts.map((p, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <button 
+              onClick={() => setCurrentStepIndex(p.step)}
+              className="text-[13px] font-[600] text-text-secondary hover:text-text-primary transition-colors py-1 px-3 bg-surface-grey rounded-full tap-feedback"
+            >
+              {p.label}
+            </button>
+            {i < parts.length - 1 && <span className="text-border-default">•</span>}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div className="w-full bg-white border border-border-default p-5 md:p-8 rounded-[20px] text-left">
-      {lastInputs && (
-        <div className="mb-6 p-3 bg-surface-grey border border-border-default rounded-[12px] flex items-center justify-between animate-in fade-in slide-in-from-top-1">
-          <p className="type-caption text-text-muted">
-            Last time: <span className="font-[700] text-text-secondary">{lastInputs.vibe} · {areas.find(a => a.slug === lastInputs.startArea)?.name || lastInputs.startArea} · ₦{parseInt(lastInputs.budget).toLocaleString()} · {lastInputs.squadSize} {parseInt(lastInputs.squadSize) === 1 ? 'person' : 'people'}</span>
-          </p>
-          <button 
-            type="button" 
-            onClick={handleTryAgain}
-            className="type-label text-brand-green hover:underline tap-feedback"
-          >
-            Try again →
-          </button>
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:gap-4">
+    <div className="w-full max-w-lg mx-auto py-4 px-4 sm:px-0 min-h-[400px]">
+      
+      {renderSummaryRibbon()}
 
-        {/* Field: Starting Area */}
-        <div className="col-span-2 sm:col-span-1 space-y-1.5">
-          <Label className={labelCls}>
-            <MapPin className="w-3.5 h-3.5 text-brand-green" /> Starting point
-          </Label>
-          <Select
-            value={formData.startArea}
-            onValueChange={(v: string | null) => {
-              setFormData({ ...formData, startArea: v ?? "" });
-              setAreaError(false);
-            }}
-          >
-            <SelectTrigger
-              className={`${triggerCls} ${
-                areaError ? "border-error ring-2 ring-error/10" : ""
-              }`}
-            >
-              <SelectValue placeholder="Pick area…" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              {areas.map((area) => (
-                <SelectItem key={area.id} value={area.slug} className="type-body py-3">
-                  {area.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="type-caption text-text-muted mt-1.5 leading-snug">
-            We&apos;ll suggest spots anywhere in Lagos that fit your budget, including transport from here.
-          </p>
-          {areaError && (
-            <p className="type-caption text-error flex items-center gap-1 mt-1 animate-in slide-in-from-top-1">
-              <span>⚠️</span> Required
+      <div key={currentStep.id} className="animate-in fade-in slide-in-from-right-4 duration-300">
+        <div className="space-y-2 mb-8">
+          {currentStep.reassurance && (
+            <p className="type-body text-text-muted animate-in fade-in slide-in-from-bottom-1 delay-150 fill-mode-both">
+              {currentStep.reassurance}
             </p>
           )}
+          <h1 className="text-[32px] sm:text-[40px] font-[900] tracking-tight leading-none text-text-primary">
+            {currentStep.title}
+          </h1>
         </div>
 
-        {/* Field: Budget */}
-        <div className="col-span-2 sm:col-span-1 space-y-1.5">
-          <Label className={labelCls}>
-            <Wallet className="w-3.5 h-3.5 text-brand-green" /> Total budget
-          </Label>
-          <Select
-            value={formData.budget}
-            onValueChange={(v: string | null) =>
-              setFormData({ ...formData, budget: v ?? "50000" })
-            }
-          >
-            <SelectTrigger className={triggerCls}>
-              <SelectValue>
-                {BUDGET_OPTIONS.find((o) => o.value === formData.budget)?.label ?? "Select budget"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              {BUDGET_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value} className="type-body py-3">
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Step 0: Vibe (Large Cards) */}
+        {currentStep.id === 'vibe' && (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {VIBE_OPTIONS.map((o) => {
+              const isSelected = formData.vibe === o.value;
+              return (
+                <button
+                  key={o.value}
+                  onClick={() => handleSelect('vibe', o.value)}
+                  className={`flex flex-col items-start p-5 rounded-[20px] transition-all duration-200 tap-feedback text-left border-2 ${
+                    isSelected 
+                      ? "bg-brand-green/10 border-brand-green text-brand-green shadow-sm" 
+                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:shadow-md"
+                  }`}
+                >
+                  <span className="text-[28px] mb-3">{o.icon}</span>
+                  <span className="text-[16px] font-[700] tracking-tight">{o.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Row: Squad Size + Vibe */}
-        <div className="col-span-1 space-y-1.5">
-            <Label className={labelCls}>
-              <Users className="w-3.5 h-3.5 text-brand-green" /> Squad size
-            </Label>
-            <Select
-              value={formData.squadSize}
-              onValueChange={(v: string | null) =>
-                setFormData({ ...formData, squadSize: v ?? "2" })
-              }
+        {/* Step 1: Squad (Large Pills) */}
+        {currentStep.id === 'squad' && (
+          <div className="flex flex-col gap-3">
+            {SQUAD_OPTIONS.map((o) => {
+              const isSelected = formData.squadSize === o.value;
+              return (
+                <button
+                  key={o.value}
+                  onClick={() => handleSelect('squadSize', o.value)}
+                  className={`w-full text-left px-6 py-5 rounded-[20px] transition-all duration-200 tap-feedback border-2 ${
+                    isSelected
+                      ? "bg-brand-green/10 border-brand-green text-brand-green"
+                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+                  }`}
+                >
+                  <span className="text-[18px] font-[600]">{o.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Step 2: Budget (Large Pills) */}
+        {currentStep.id === 'budget' && (
+          <div className="flex flex-col gap-3">
+            {BUDGET_OPTIONS.map((o) => {
+              const isSelected = formData.budget === o.value;
+              return (
+                <button
+                  key={o.value}
+                  onClick={() => handleSelect('budget', o.value)}
+                  className={`w-full text-left px-6 py-5 rounded-[20px] transition-all duration-200 tap-feedback border-2 ${
+                    isSelected
+                      ? "bg-brand-green/10 border-brand-green text-brand-green"
+                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+                  }`}
+                >
+                  <span className="text-[20px] font-[700]">{o.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Step 3: Area (Vertical list of pills for mobile ease, mimicking horizontal on desktop if we wanted, but vertical is safer for one-handed reach) */}
+        {currentStep.id === 'area' && (
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => handleSelect('startArea', 'Anywhere')}
+              className={`w-full text-left px-6 py-4 rounded-[16px] transition-all duration-200 tap-feedback border-2 ${
+                formData.startArea === 'Anywhere'
+                  ? "bg-brand-green/10 border-brand-green text-brand-green"
+                  : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+              }`}
             >
-              <SelectTrigger className={triggerCls}>
-                <SelectValue>
-                  {squadLabel(Number(formData.squadSize))}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                {SQUAD_OPTIONS.map((s) => (
-                  <SelectItem key={s} value={s.toString()} className="type-body py-3">
-                    {squadLabel(s)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <span className="text-[16px] font-[600]">Anywhere</span>
+            </button>
+            {areas.map((a) => {
+              const isSelected = formData.startArea === a.slug;
+              return (
+                <button
+                  key={a.slug}
+                  onClick={() => handleSelect('startArea', a.slug)}
+                  className={`w-full text-left px-6 py-4 rounded-[16px] transition-all duration-200 tap-feedback border-2 ${
+                    isSelected
+                      ? "bg-brand-green/10 border-brand-green text-brand-green"
+                      : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
+                  }`}
+                >
+                  <span className="text-[16px] font-[600]">{a.name}</span>
+                </button>
+              );
+            })}
           </div>
+        )}
 
-          <div className="col-span-1 space-y-1.5">
-            <Label className={labelCls}>
-              <Music className="w-3.5 h-3.5 text-brand-green" /> The vibe
-            </Label>
-            <Select
-              value={formData.vibe}
-              onValueChange={(v: string | null) =>
-                setFormData({ ...formData, vibe: v ?? "Chill" })
-              }
+        {/* Final CTA - Only show when we're on the last step and have a value */}
+        {currentStep.id === 'area' && formData.startArea !== "" && (
+          <div className="mt-8 animate-in fade-in slide-in-from-bottom-4">
+            <Button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="w-full h-[64px] rounded-[20px] bg-brand-green hover:bg-brand-green-70 text-white text-[18px] font-[700] overflow-hidden tap-feedback shadow-[0px_8px_24px_rgba(0,135,81,0.25)]"
             >
-              <SelectTrigger className={triggerCls}>
-                <SelectValue>
-                  {VIBE_OPTIONS.find((o) => o.value === formData.vibe)?.label ?? "Pick vibe"}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                {VIBE_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value} className="type-body py-3">
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              {loading ? "Finding your plan..." : "See My Plan"}
+            </Button>
           </div>
-
-        {/* Advanced Toggle */}
-        <div className="col-span-2 pt-1">
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="flex items-center gap-2 type-caption text-text-muted hover:text-text-secondary transition-colors py-3"
-          >
-            <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${showAdvanced ? "rotate-180" : ""}`} />
-            ⚙ Refine further
-          </button>
-        </div>
-
-        {/* Optional Row: Category + Daypart */}
-        <div 
-          className={`col-span-2 overflow-hidden transition-all duration-300 ease-in-out ${showAdvanced ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"} grid`}
-          style={{ transitionDuration: 'var(--motion-considered)' }}
-        >
-          <div className="overflow-hidden min-h-0">
-            <div className="grid grid-cols-2 gap-4 pt-4">
-            <div className="space-y-2">
-              <Label className={labelCls}>
-                <Utensils className="w-3.5 h-3.5 text-brand-green" /> Category
-              </Label>
-              <Select
-                value={formData.categoryGroup}
-                onValueChange={(v: string | null) =>
-                  setFormData({ ...formData, categoryGroup: v ?? "Anywhere" })
-                }
-              >
-                <SelectTrigger className={triggerCls}>
-                  <SelectValue>
-                    {CATEGORY_OPTIONS.find((o) => o.value === formData.categoryGroup)?.label ?? "Anywhere"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  {CATEGORY_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value} className="type-body py-3">
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label className={labelCls}>
-                <Clock className="w-3.5 h-3.5 text-brand-green" /> Time
-              </Label>
-              <Select
-                value={formData.daypart}
-                onValueChange={(v: string | null) =>
-                  setFormData({ ...formData, daypart: v ?? "Any time" })
-                }
-              >
-                <SelectTrigger className={triggerCls}>
-                  <SelectValue>
-                    {DAYPART_OPTIONS.find((o) => o.value === formData.daypart)?.label ?? "Any time"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  {DAYPART_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value} className="type-body py-3">
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
-        {/* Submit */}
-        <div className="col-span-2 space-y-4 pt-2">
-          <Button
-            type="submit"
-            className="relative w-full h-[56px] rounded-[12px] bg-brand-green hover:bg-brand-green-70 text-white type-subheading overflow-hidden tap-feedback"
-            disabled={loading}
-          >
-            {loading && <div className="absolute inset-0 shimmer-bg" />}
-            <span className="relative z-10">
-              {loading ? "Finding your squad's plan…" : "🚀 Get My Plan"}
-            </span>
-          </Button>
-
-          <p className="text-center type-caption text-text-muted">
-            Usually ready in seconds ⚡
-          </p>
-        </div>
-      </form>
-      
-      <div className="mt-8 pt-6 border-t border-border-default text-center">
-        <ExploreLink formData={formData} />
-      </div>
     </div>
   );
 }
-
-function ExploreLink({ formData }: { formData: any }) {
-  const params = new URLSearchParams();
-  if (formData.budget) params.append("budget", formData.budget);
-  if (formData.vibe) params.append("vibe", formData.vibe);
-  
-  const href = params.toString() ? `/explore?${params.toString()}` : "/explore";
-
-  return (
-    <Link 
-      href={href} 
-      className="type-caption text-text-muted hover:text-text-secondary hover:underline transition-all"
-    >
-      Not sure where to go? Browse by area →
-    </Link>
-  );
-}
-
