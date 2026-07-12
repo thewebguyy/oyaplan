@@ -23,8 +23,8 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="type-display text-text-primary">Dashboard</h1>
-        <p className="type-body text-text-muted mt-2">Manage your saved plans and preferences.</p>
+        <h1 className="type-display text-text-primary">Saved Plans</h1>
+        <p className="type-body text-text-muted mt-2">Your upcoming outings.</p>
       </div>
 
       <div className="space-y-4">
@@ -52,11 +52,11 @@ export default async function DashboardPage() {
             </div>
             <h3 className="type-heading text-text-primary">No saved plans yet</h3>
             <p className="type-body text-text-muted max-w-sm mx-auto">
-              When you forge a plan you like, save it to keep it handy for later.
+              Your next great outing starts here.
             </p>
             <Link href="/" className="inline-block mt-4">
               <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-12 px-8 shadow-none border-none">
-                Forge a Plan
+                Start Planning
               </Button>
             </Link>
           </div>

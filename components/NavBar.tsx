@@ -15,9 +15,8 @@ export default function NavBar() {
   if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
 
   const links = [
-    { name: "Plan", href: "/" },
+    { name: "Start Planning", href: "/" },
     { name: "Explore", href: "/explore" },
-    { name: "List Your Spot", href: "/list-your-spot", desktopOnly: true },
   ];
 
   return (
@@ -49,7 +48,7 @@ export default function NavBar() {
       {/* Right: Links (Desktop) / CTA (Mobile) */}
       <div className="flex items-center gap-4 md:gap-6">
         <div className="hidden md:flex items-center gap-6">
-          {links.map((link, idx) => {
+          {links.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
             return (
               <div key={link.href} className="flex items-center">
@@ -66,9 +65,6 @@ export default function NavBar() {
                     isActive ? "opacity-100" : "opacity-0"
                   }`} style={{ transitionTimingFunction: 'var(--motion-considered)' }} />
                 </Link>
-                {idx === 1 && !link.desktopOnly && (
-                  <div className="ml-6 h-4 w-[1px] bg-border-default" />
-                )}
               </div>
             );
           })}
@@ -116,16 +112,10 @@ export default function NavBar() {
 
         {/* Mobile CTA */}
         <div className="md:hidden ml-4">
-          {pathname !== "/explore" ? (
-            <Link href="/explore">
-              <Button className="bg-brand-yellow text-text-primary font-[900] rounded-full type-label h-10 px-5 tap-feedback border-none hover:bg-brand-yellow/90">
-                Explore
-              </Button>
-            </Link>
-          ) : (
+          {pathname !== "/" && (
             <Link href="/">
               <Button className="bg-brand-green text-white font-[900] rounded-full type-label h-10 px-5 tap-feedback border-none hover:bg-brand-green-70">
-                Plan Now
+                Start Planning
               </Button>
             </Link>
           )}

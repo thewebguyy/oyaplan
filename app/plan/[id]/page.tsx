@@ -9,6 +9,8 @@ import PageError from "@/components/PageError";
 import ActualSpendCapture from "@/components/ActualSpendCapture";
 import SavePlanButton from "@/components/SavePlanButton";
 import PlanViewTracker from "@/components/PlanViewTracker";
+import EditorialPlan from "@/components/EditorialPlan";
+import { Plan, ForgeInput } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -101,92 +103,40 @@ export default async function PlanPage({ params }: PlanPageProps) {
         </div>
       </div>
 
-      {/* Floating Breakdown Card */}
-      <div className="max-w-md mx-auto w-full -mt-12 px-4 space-y-6 pb-20 relative z-10">
-        {/* Expiry Banner */}
-        <div className="bg-brand-yellow text-text-primary py-3 px-6 rounded-t-[20px] text-center border-b border-black/5 shadow-sm">
-          <p className="type-label uppercase tracking-widest text-[10px] md:text-[11px]">
-            Generated on {new Date(plan.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-          </p>
-        </div>
+      {/* Unified Editorial Plan */}
+      <div className="max-w-2xl mx-auto w-full -mt-12 px-4 space-y-6 pb-20 relative z-10">
+        <EditorialPlan 
+          plan={{
+            spot: plan.spot,
+            foodCost: plan.food_cost,
+            transportCost: plan.transport_cost,
+            totalCost: plan.total_cost,
+            whyItFits: plan.why_it_fits
+          }} 
+          input={{
+            startArea: plan.start_area || "",
+            squadSize: plan.squad_size,
+            budget: plan.budget || plan.total_cost,
+            vibe: plan.vibe || "Chill"
+          }} 
+          planId={plan.id}
+          isTopPick={true}
+          originalBudget={plan.budget || plan.total_cost}
+        />
 
-        <div className="bg-white rounded-b-[20px] shadow-[0px_24px_48px_rgba(0,0,0,0.15)] border border-border-default overflow-hidden">
-          <div className="p-8 space-y-8">
-            {/* Total Cost Display */}
-            <div className="text-center pb-4 border-b border-border-default">
-              <span className="type-label text-text-muted uppercase tracking-wider">Landed Cost</span>
-              <div className="text-5xl font-[900] text-brand-green mt-1">₦{plan.total_cost.toLocaleString('en-NG')}</div>
-            </div>
-
-            {/* Cost Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-surface-grey border border-border-default rounded-[12px] space-y-1">
-                <div className="flex items-center gap-2 text-text-muted type-label">
-                  {hasFood ? <Utensils className="w-3 h-3" /> : <Utensils className="w-3 h-3" />}
-                  {hasFood ? "Food/Drink" : "Activity"}
-                </div>
-                <div className="type-subheading text-text-primary">₦{plan.food_cost.toLocaleString('en-NG')}</div>
-              </div>
-              <div className="p-4 bg-surface-grey border border-border-default rounded-[12px] space-y-1">
-                <div className="flex items-center gap-2 text-text-muted type-label">
-                  <Car className="w-3 h-3" />
-                  Transport
-                </div>
-                <div className="type-subheading text-text-primary">₦{plan.transport_cost.toLocaleString('en-NG')}</div>
-              </div>
-            </div>
-
-            {/* Why it fits */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-text-muted type-label">
-                <Info className="w-3 h-3" />
-                Why it fits
-              </div>
-              <p className="type-body text-text-secondary leading-relaxed">
-                {plan.why_it_fits}
-              </p>
-            </div>
-
-            {/* Location */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-text-muted type-label">
-                <MapPin className="w-3 h-3" />
-                Address
-              </div>
-              <p className="type-subheading text-text-primary">
-                {plan.spot?.address}
-              </p>
-            </div>
-          </div>
-
-          {/* CTA Section */}
-          <div className="p-6 bg-surface-grey border-t border-border-default flex gap-3">
-            <Link href="/" className="flex-1">
-              <Button className="w-full bg-brand-green hover:bg-brand-green-70 h-[56px] rounded-[12px] type-subheading text-white flex items-center justify-center gap-2 tap-feedback shadow-none border-none">
-                Plan your own outing
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
-            <SavePlanButton planId={plan.id} />
-          </div>
-
-          {/* Actual Spend Capture — feeds pricing flywheel */}
-          <ActualSpendCapture
-            sharedPlanId={plan.id}
-            spotId={plan.spot?.id ?? null}
-            estimatedTotal={plan.total_cost}
-            spotName={plan.spot?.name ?? "this spot"}
-          />
-        </div>
+        {/* Actual Spend Capture — feeds pricing flywheel */}
+        <ActualSpendCapture
+          sharedPlanId={plan.id}
+          spotId={plan.spot?.id ?? null}
+          estimatedTotal={plan.total_cost}
+          spotName={plan.spot?.name ?? "this spot"}
+        />
         
         <PlanViewTracker planId={plan.id} />
 
-        <div className="text-center space-y-2">
-          <p className="type-caption text-text-muted">
-            Generated with OyaPlan &middot; Lagos Outing Planner
-          </p>
-          <Link href="/" className="type-label text-brand-green hover:underline inline-block">
-            oyaplan.com
+        <div className="text-center pt-8">
+          <Link href="/" className="type-label text-text-muted hover:text-text-primary transition-colors inline-flex items-center gap-2 tap-feedback">
+            Plan your own outing <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

@@ -13,7 +13,7 @@ import { Button } from "./ui/button";
 import { Bookmark, Loader2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-interface PlanCardProps {
+interface EditorialPlanProps {
   plan: Plan;
   input: ForgeInput;
   planId?: string;
@@ -21,7 +21,7 @@ interface PlanCardProps {
   originalBudget?: number;
 }
 
-export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick = false, originalBudget }: PlanCardProps) {
+export default function EditorialPlan({ plan, input, planId: initialPlanId, isTopPick = false, originalBudget }: EditorialPlanProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [planId, setPlanId] = useState<string | undefined>(initialPlanId);
@@ -96,10 +96,10 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
 
   const diff = originalBudget ? originalBudget - plan.totalCost : 0;
   
-  // Format the assurance string
-  let assuranceStr = "Comfortably within your budget.";
-  if (diff < 0) assuranceStr = "Slightly above your original budget.";
-  else if (diff < 2000) assuranceStr = "Right on budget.";
+  // Format the assurance string (for C3 "Why we'd recommend this" section)
+  let budgetAssurance = "Fits your budget comfortably.";
+  if (diff < 0) budgetAssurance = "Slightly above your original budget.";
+  else if (diff < 2000) budgetAssurance = "Fits your budget exactly.";
 
   return (
     <div className={`w-full bg-white transition-all duration-300 overflow-hidden ${
@@ -117,10 +117,6 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
         <h2 className="text-[40px] sm:text-[56px] font-[900] tracking-tight leading-none text-text-primary mb-3">
           Around ₦{plan.totalCost.toLocaleString()}
         </h2>
-        
-        <p className="type-body text-text-secondary">
-          {assuranceStr}
-        </p>
       </div>
 
       <div className="w-full h-px bg-border-default/50" />
@@ -138,7 +134,7 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
               {plan.spot.name}
             </p>
             {plan.spot.image_url && (
-              <div className="w-full sm:w-[120px] h-[80px] mt-3 rounded-[12px] overflow-hidden relative border border-border-default">
+              <div className="w-full sm:w-[120px] h-[80px] mt-3 rounded-[12px] overflow-hidden relative border border-border-default/50">
                 <Image 
                   src={plan.spot.image_url} 
                   alt={plan.spot.name} 
@@ -193,11 +189,36 @@ export default function PlanCard({ plan, input, planId: initialPlanId, isTopPick
 
       <div className="w-full h-px bg-border-default/50" />
 
+      {/* Why we'd recommend this (C3) */}
+      <div className="px-6 sm:px-10 py-8 bg-surface-grey/20">
+        <h3 className="type-label text-text-primary mb-4">Why we&apos;d recommend this</h3>
+        <ul className="space-y-3 type-body text-text-secondary">
+          <li className="flex items-start gap-2">
+            <span className="text-brand-green mt-0.5">•</span>
+            {budgetAssurance}
+          </li>
+          {input.vibe && input.squadSize && (
+            <li className="flex items-start gap-2">
+              <span className="text-brand-green mt-0.5">•</span>
+              Great for a {input.vibe.toLowerCase()} outing for {input.squadSize}.
+            </li>
+          )}
+          {plan.whyItFits && plan.whyItFits.length > 5 && (
+            <li className="flex items-start gap-2">
+              <span className="text-brand-green mt-0.5">•</span>
+              {plan.whyItFits}
+            </li>
+          )}
+        </ul>
+      </div>
+
+      <div className="w-full h-px bg-border-default/50" />
+
       {/* Trust Context */}
       <div className="px-6 sm:px-10 py-6 bg-surface-grey/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <p className="type-caption text-text-secondary">
-            {plan.spot.price_updated_at ? 'Updated this week' : 'Estimated from recent venue pricing'}
+            {plan.spot.price_updated_at ? 'Recently verified' : 'Estimated from recent venue pricing'}
           </p>
           <p className="text-[11px] text-text-muted">
             Includes all taxes and fees.

@@ -52,13 +52,13 @@ export async function getZoneNameBySlug(
 }
 
 export async function getActiveSpotsByZone(): Promise<{
-  data: Array<{ zone: string; active: boolean; area_id: string }> | null;
+  data: Array<{ id: string; name: string; zone: string; active: boolean; area_id: string; category: string; address: string; price_per_person: number }> | null;
   error: string | null;
 }> {
   try {
     const { data, error } = await supabase
       .from('spots')
-      .select('zone, active, area_id')
+      .select('id, name, zone, active, area_id, category, address, price_per_person')
       .eq('active', true);
     if (error) return { data: null, error: error.message };
     return { data, error: null };

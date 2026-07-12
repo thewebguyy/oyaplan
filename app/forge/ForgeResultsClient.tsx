@@ -6,7 +6,7 @@ import { forgePlans } from "@/lib/services/matching/forgeMatcher";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LoadingState from "@/components/LoadingState";
-import PlanCard from "@/components/PlanCard";
+import EditorialPlan from "@/components/EditorialPlan";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -129,7 +129,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500 motion-reduce:duration-0">
-      {/* Results Header */}
+      {/* Recommendations Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
           {/* Plan 1: Full Width */}
           <div className="w-full animate-slide-up animation-delay-0">
-            <PlanCard 
+            <EditorialPlan 
               key={`top-${plans[0].spot.id}`} 
               plan={plans[0]} 
               isTopPick={true} 
@@ -187,7 +187,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {plans.slice(1, 3).map((plan, index) => (
                 <div key={plan.spot.id} className={`animate-slide-up ${index === 0 ? 'animation-delay-80' : 'animation-delay-160'}`}>
-                  <PlanCard 
+                  <EditorialPlan 
                     key={`other-${plan.spot.id}`}
                     plan={plan} 
                     isTopPick={false} 
