@@ -7,7 +7,8 @@ import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LoadingState from "@/components/LoadingState";
-import EditorialPlan from "@/components/EditorialPlan";
+import dynamic from "next/dynamic";
+const EditorialPlan = dynamic(() => import("@/components/EditorialPlan"));
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -376,22 +377,17 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(false);
+    setSuccess(true); // Optimistically show success state
 
-    const result = await submitSpotSuggestion({
+    // Fire and forget
+    submitSpotSuggestion({
       spotName: formData.name,
       areaName: currentArea,
       roughPricePerPerson: parseInt(formData.price),
       suggesterWhatsapp: formData.whatsapp || null,
+    }).catch(() => {
+      // Silently fail for suggestions, or we could add a toast later
     });
-
-    setLoading(false);
-    if (result.success) {
-      setSuccess(true);
-    } else {
-      setError(true);
-    }
   };
 
   if (success) {
@@ -450,18 +446,11 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
           We&apos;ll notify you when it&apos;s added.
         </p>
         <div className="flex items-center gap-3">
-          {error && <span className="type-caption text-error">Something went wrong</span>}
           <Button 
             type="submit" 
-            disabled={loading}
             className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-10 px-6 rounded-[8px] tap-feedback shadow-none border-none flex items-center gap-2"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-3 h-3 animate-spin" />
-                Sending...
-              </>
-            ) : "Suggest spot"}
+            Suggest spot
           </Button>
         </div>
       </div>
