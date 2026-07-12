@@ -11,6 +11,7 @@ import { BudgetFitBadge } from "@/components/ui/budget-fit-badge";
 import { TrustUnknown } from "@/components/ui/trust-unknown";
 import { Check, Clock } from "lucide-react";
 import RotatingHeadline from "@/components/RotatingHeadline";
+import DossierDropWrapper from "@/components/DossierDropWrapper";
 
 export const revalidate = 300;
 
@@ -48,7 +49,7 @@ export default async function LandingPage() {
       </Suspense>
 
       {/* Hero Section: The Ledger */}
-      <div className="relative pt-16 pb-24 px-4 bg-white hero-bg-reset" style={{ backgroundImage: "none" }}>
+      <div className="relative pt-16 pb-24 px-4 bg-white bg-civic-hex">
         <div className="max-w-[1400px] mx-auto">
           {/* Headline */}
           <div className="text-center max-w-5xl mx-auto space-y-6 mb-12">
@@ -61,6 +62,31 @@ export default async function LandingPage() {
                 Plan an outing
               </a>
             </div>
+          </div>
+
+          {/* Lagos Landmark Motifs (Task 3) */}
+          <div className="absolute bottom-6 left-8 hidden lg:block text-border-strong opacity-35 pointer-events-none select-none">
+            <svg viewBox="0 0 100 150" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-20 h-32">
+              <path d="M50 10 L25 140 M50 10 L75 140" />
+              <path d="M38 60 L62 60 M33 90 L67 90 M28 120 L72 120" strokeWidth="2" />
+              <path d="M50 30 L5 140 M50 30 L95 140" strokeWidth="1.5" />
+              <path d="M50 50 L10 140 M50 50 L90 140" strokeWidth="1.5" />
+              <path d="M50 70 L15 140 M50 70 L85 140" strokeWidth="1.5" />
+            </svg>
+            <span className="type-caption block text-center mt-2 tracking-widest text-[9px] uppercase font-bold text-text-secondary">Lekki-Ikoyi Bridge</span>
+          </div>
+
+          <div className="absolute bottom-8 right-8 hidden lg:block text-border-strong opacity-35 pointer-events-none select-none">
+            <svg viewBox="0 0 150 100" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-28 h-20">
+              <path d="M10 50 C 40 10, 110 10, 140 50 C 120 70, 30 70, 10 50 Z" />
+              <path d="M30 65 L30 85 L120 85 L120 65" />
+              <path d="M40 35 L45 68" strokeWidth="1.5" />
+              <path d="M60 22 L62 69" strokeWidth="1.5" />
+              <path d="M75 18 L75 70" strokeWidth="1.5" />
+              <path d="M90 22 L88 69" strokeWidth="1.5" />
+              <path d="M110 35 L105 68" strokeWidth="1.5" />
+            </svg>
+            <span className="type-caption block text-center mt-2 tracking-widest text-[9px] uppercase font-bold text-text-secondary">National Theatre</span>
           </div>
 
           {/* Trust Legend - Explicitly teaching the iconography before the cards */}
@@ -84,12 +110,12 @@ export default async function LandingPage() {
           </div>
 
           {/* 3-Column Venue Card Collage */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <DossierDropWrapper className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto dossier-grid">
             {/* Card 1: Budget Fit Green + Fully Verified */}
-            <div className="bg-white rounded-[16px] shadow-sm border border-border-default flex flex-col overflow-hidden">
+            <div className="bg-white rounded-[16px] shadow-sm border border-border-default flex flex-col overflow-hidden dossier-card">
               <div className="p-2 pb-0 relative">
-                <div className="relative w-full aspect-[4/3] rounded-[12px] bg-surface-grey border border-border-default flex items-center justify-center overflow-hidden">
-                  <span className="text-text-muted type-caption uppercase tracking-wider">Image Pending</span>
+                <div className="relative w-full aspect-[4/3] rounded-[12px] bg-surface-grey border border-border-default flex items-center justify-center overflow-hidden dossier-photo-container">
+                  <span className="text-text-muted type-caption uppercase tracking-wider dossier-photo">Image Pending</span>
                   <div className="absolute top-3 inset-x-3 flex flex-wrap justify-between items-start gap-2">
                     <div className="bg-[#E05C3A] text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm">
                       Restaurant
@@ -112,10 +138,10 @@ export default async function LandingPage() {
             </div>
 
             {/* Card 2: Estimated + Unknown State explicitly shown */}
-            <div className="bg-white rounded-[16px] shadow-sm border border-border-default flex flex-col overflow-hidden">
+            <div className="bg-white rounded-[16px] shadow-sm border border-border-default flex flex-col overflow-hidden dossier-card">
               <div className="p-2 pb-0 relative">
-                <div className="relative w-full aspect-[4/3] rounded-[12px] bg-surface-grey border border-border-default flex items-center justify-center overflow-hidden">
-                  <span className="text-text-muted type-caption uppercase tracking-wider">Image Pending</span>
+                <div className="relative w-full aspect-[4/3] rounded-[12px] bg-surface-grey border border-border-default flex items-center justify-center overflow-hidden dossier-photo-container">
+                  <span className="text-text-muted type-caption uppercase tracking-wider dossier-photo">Image Pending</span>
                   <div className="absolute top-3 inset-x-3 flex flex-wrap justify-between items-start gap-2">
                     <div className="bg-text-primary text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm">
                       Nightclub
@@ -134,10 +160,10 @@ export default async function LandingPage() {
             </div>
 
             {/* Card 3: Pending Verification + Slight Stretch */}
-            <div className="bg-white rounded-[16px] shadow-sm border border-border-default flex flex-col overflow-hidden hidden md:flex">
+            <div className="bg-white rounded-[16px] shadow-sm border border-border-default flex flex-col overflow-hidden hidden md:flex dossier-card">
               <div className="p-2 pb-0 relative">
-                <div className="relative w-full aspect-[4/3] rounded-[12px] bg-surface-grey border border-border-default flex items-center justify-center overflow-hidden">
-                  <span className="text-text-muted type-caption uppercase tracking-wider">Image Pending</span>
+                <div className="relative w-full aspect-[4/3] rounded-[12px] bg-surface-grey border border-border-default flex items-center justify-center overflow-hidden dossier-photo-container">
+                  <span className="text-text-muted type-caption uppercase tracking-wider dossier-photo">Image Pending</span>
                   <div className="absolute top-3 inset-x-3 flex flex-wrap justify-between items-start gap-2">
                     <div className="bg-[#4A90E2] text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm">
                       Event Hall
@@ -158,7 +184,7 @@ export default async function LandingPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </DossierDropWrapper>
         </div>
       </div>
 

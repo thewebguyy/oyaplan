@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import DossierDropWrapper from "@/components/DossierDropWrapper";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -139,7 +140,7 @@ export default function ForgeResultsClient({
       </div>
 
       {evaluations.length > 0 ? (
-        <div className="space-y-12">
+        <DossierDropWrapper className="space-y-12 dossier-grid">
           {/* Fallback Banner */}
           {evaluations[0].plan.explanation?.reason === "semantic_classification_missing" && (
             <div className="bg-brand-yellow-15 border border-brand-yellow text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
@@ -154,7 +155,7 @@ export default function ForgeResultsClient({
           )}
 
           {/* Plan 1: Full Width */}
-          <div className="w-full animate-slide-up animation-delay-0">
+          <div className="w-full dossier-card">
             <EditorialPlan 
               key={`top-${evaluations[0].plan.spot.id}`} 
               evaluation={evaluations[0]} 
@@ -170,7 +171,7 @@ export default function ForgeResultsClient({
           {evaluations.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {evaluations.slice(1, 3).map((evaluation, index) => (
-                <div key={evaluation.plan.spot.id} className={`animate-slide-up ${index === 0 ? 'animation-delay-80' : 'animation-delay-160'}`}>
+                <div key={evaluation.plan.spot.id} className="dossier-card">
                   <EditorialPlan 
                     key={`other-${evaluation.plan.spot.id}`}
                     evaluation={evaluation} 
@@ -184,7 +185,7 @@ export default function ForgeResultsClient({
               ))}
             </div>
           )}
-        </div>
+        </DossierDropWrapper>
       ) : (
         /* Redesigned Empty State */
         <div className="text-center py-24 px-6 bg-white rounded-[24px] border border-border-default space-y-8">
