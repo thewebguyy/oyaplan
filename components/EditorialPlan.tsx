@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Bookmark, Loader2, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { EditorialBlock } from "./ui/EditorialBlock";
 
 interface EditorialPlanProps {
   plan: Plan;
@@ -110,13 +111,15 @@ export default function EditorialPlan({ plan, input, planId: initialPlanId, isTo
       
       {/* Editorial Header */}
       <div className={`px-6 sm:px-10 pt-10 pb-8 ${isTopPick ? 'bg-surface-grey/50' : 'bg-white'}`}>
-        <p className="text-[11px] sm:text-[13px] font-[800] tracking-[0.15em] uppercase text-text-muted mb-4">
-          {getHeadline()}
-        </p>
-        
-        <h2 className="text-[40px] sm:text-[56px] font-[900] tracking-tight leading-none text-text-primary mb-3">
-          Around ₦{plan.totalCost.toLocaleString()}
-        </h2>
+        <EditorialBlock>
+          <p className="type-tagline text-text-muted">
+            {getHeadline()}
+          </p>
+          
+          <h2 className="type-display-product text-text-primary">
+            Around ₦{plan.totalCost.toLocaleString()}
+          </h2>
+        </EditorialBlock>
       </div>
 
       <div className="w-full h-px bg-border-default/50" />

@@ -132,8 +132,8 @@ export default async function ExploreIndex({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="space-y-3 flex-1">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <h3 className="type-subheading text-text-primary">{spot.name}</h3>
-                          <div className="bg-surface-grey text-text-muted px-2 py-0.5 rounded-[4px] text-[10px] font-[700] uppercase tracking-tighter border border-border-default">
+                          <h3 className="type-venue-name text-text-primary">{spot.name}</h3>
+                          <div className="type-ui-label bg-surface-grey text-text-muted px-2 py-0.5 rounded-[4px] border border-border-default">
                             {spot.category || 'Spot'}
                           </div>
                         </div>
@@ -147,7 +147,7 @@ export default async function ExploreIndex({
                           {/* Trust Context Badges */}
                           <div className="flex items-center gap-1.5 text-brand-green">
                             <ShieldCheck className="w-3.5 h-3.5" />
-                            <span>Typical total spend: ₦{((spot.price_per_person || 0) * 2 * 1.1).toLocaleString('en-NG')}</span>
+                            <span>Typical total spend: <span className="type-price">₦{((spot.price_per_person || 0) * 2 * 1.1).toLocaleString('en-NG')}</span></span>
                           </div>
                           <div className="flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5" />

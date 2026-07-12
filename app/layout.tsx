@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AuthModal from "@/components/AuthModal";
 
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://oyaplan.com"),
@@ -50,8 +51,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={outfit.variable}>
-      <body className="font-sans antialiased">
+    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+      <body className="font-body antialiased">
         <AnalyticsProvider>
           <AuthProvider>
             <NavBar />
