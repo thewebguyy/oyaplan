@@ -1,5 +1,6 @@
-import { Spot, ForgeInput, Plan } from '../../types';
+import { Spot, ForgeInput, Plan, PlanAdjustment } from '../../types';
 import { supabase } from '../../supabase';
+import { generateTrustSignals } from './trustEvaluator';
 
 const ZONES: Record<string, string> = {
   ikeja: "mainland",
@@ -263,6 +264,8 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         status,
       };
 
+      const trustSignals = generateTrustSignals(spot, totalCost, budget);
+
       return {
         spot,
         foodCost: activityCost,
@@ -270,7 +273,8 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         totalCost,
         whyItFits,
         explanation: fullExplanation,
-        score: totalScore
+        score: totalScore,
+        trustSignals
       };
     });
 
@@ -292,14 +296,28 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
   }
 
   // Return top 1–3 results
-  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits, explanation }) => ({
+  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits, explanation, trustSignals }) => ({
     spot,
     foodCost,
     transportCost,
     totalCost,
     whyItFits,
-    explanation
+    explanation,
+    trustSignals
   }));
+}
+
+/**
+ * applyPlanAdjustment
+ * 
+ * Takes an original forge input and an adjustment patch, returning the new deterministic input.
+ * (This generic architecture supports D1 Budget simulator and future D4 Remix constraints).
+ */
+export function applyPlanAdjustment(input: ForgeInput, adjustment: PlanAdjustment): ForgeInput {
+  return {
+    ...input,
+    ...adjustment
+  };
 }
 
 function generateWhyItFits(spot: Spot, vibe: string, total: number, budget: number): string {

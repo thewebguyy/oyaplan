@@ -60,6 +60,19 @@ export interface PlanExplanation {
   reason?: string;
 }
 
+export type TrustSignals = {
+  budgetFit: "Within budget" | "Slight stretch" | "Over budget";
+  priceFreshness: "Verified this week" | "Estimated" | "Verified recently";
+  operationalConfidence: "Open today" | "Hours may vary" | "Hours recently confirmed";
+};
+
+export type PlanAdjustment = {
+  budget?: number;
+  squadSize?: number;
+  startArea?: string;
+  vibe?: string;
+};
+
 export type Plan = {
   spot: Spot;
   foodCost: number;
@@ -67,6 +80,9 @@ export type Plan = {
   totalCost: number;
   whyItFits: string;
   explanation?: PlanExplanation;
+  trustSignals?: TrustSignals;
+  id?: string;
+  saved_at?: string;
 };
 
 // Phase 2 Normalized Architecture Types
