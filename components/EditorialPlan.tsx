@@ -139,12 +139,12 @@ export default function EditorialPlan({ plan, input, planId: initialPlanId, isTo
 
         <div className="space-y-3 pt-2">
           <div className="flex justify-between type-body text-text-secondary">
-            <span>Food</span>
-            <span className="type-price">₦{plan.foodCost.toLocaleString()}</span>
+            <span>Food estimate</span>
+            <span className="type-price">≈ ₦{plan.foodCost.toLocaleString()}</span>
           </div>
           <div className="flex justify-between type-body text-text-secondary">
             <span>Transport estimate</span>
-            <span className="type-price">₦{plan.transportCost.toLocaleString()}</span>
+            <span className="type-price">≈ ₦{plan.transportCost.toLocaleString()}</span>
           </div>
         </div>
 
@@ -177,7 +177,7 @@ export default function EditorialPlan({ plan, input, planId: initialPlanId, isTo
           </p>
         </div>
         
-        <h3 className="type-ui-label text-text-primary mb-4">Why we'd recommend this</h3>
+        <h3 className="type-ui-label text-text-primary mb-4">Why we'd recommend {plan.spot.name}</h3>
         <ul className="space-y-4 type-body text-text-secondary">
           <li className="flex items-start gap-3">
             <span className="text-brand-green mt-0.5">•</span>
@@ -203,6 +203,7 @@ export default function EditorialPlan({ plan, input, planId: initialPlanId, isTo
       {/* Trust Context */}
       <div className="px-6 sm:px-10 py-6 bg-surface-grey/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
+          <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-1">Price Confidence</p>
           <p className="type-caption font-[600] text-text-primary">
             {plan.spot.price_updated_at ? 'Prices verified this week.' : 'Based on recent venue pricing.'}
           </p>
