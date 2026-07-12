@@ -60,10 +60,17 @@ export interface PlanExplanation {
   reason?: string;
 }
 
-export type TrustSignals = {
-  budgetFit: "Within budget" | "Slight stretch" | "Over budget";
-  priceFreshness: "Verified this week" | "Estimated" | "Verified recently";
-  operationalConfidence: "Open today" | "Hours may vary" | "Hours recently confirmed";
+export type TrustSignal = string;
+
+export type ChangeEvaluation = {
+  gained: string[];
+  lost: string[];
+  unchanged: string[];
+};
+
+export type ExclusionEvaluation = {
+  spotName: string;
+  reason: string;
 };
 
 export type PlanAdjustment = {
@@ -80,10 +87,16 @@ export type Plan = {
   totalCost: number;
   whyItFits: string;
   explanation?: PlanExplanation;
-  trustSignals?: TrustSignals;
   id?: string;
   saved_at?: string;
 };
+
+export interface PlanEvaluation {
+  plan: Plan;
+  trustSignals: TrustSignal[];
+  changes?: ChangeEvaluation;
+  exclusions?: ExclusionEvaluation[];
+}
 
 // Phase 2 Normalized Architecture Types
 export interface Country {

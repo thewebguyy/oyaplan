@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Geist, Fraunces } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AuthModal from "@/components/AuthModal";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+const geist = Geist({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
@@ -51,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="en" className={`${geist.variable} ${fraunces.variable}`}>
       <body className="font-body antialiased">
         <AnalyticsProvider>
           <AuthProvider>

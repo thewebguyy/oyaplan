@@ -106,13 +106,16 @@ export default async function PlanPage({ params }: PlanPageProps) {
       {/* Unified Editorial Plan */}
       <div className="max-w-2xl mx-auto w-full -mt-12 px-4 space-y-6 pb-20 relative z-10">
         <EditorialPlan 
-          plan={{
-            spot: plan.spot,
-            foodCost: plan.food_cost,
-            transportCost: plan.transport_cost,
-            totalCost: plan.total_cost,
-            whyItFits: plan.why_it_fits
-          }} 
+          evaluation={{
+            plan: {
+              spot: plan.spot as any,
+              foodCost: plan.food_cost,
+              transportCost: plan.transport_cost,
+              totalCost: plan.total_cost,
+              whyItFits: plan.why_it_fits
+            },
+            trustSignals: []
+          }}
           input={{
             startArea: plan.start_area || "",
             squadSize: plan.squad_size,

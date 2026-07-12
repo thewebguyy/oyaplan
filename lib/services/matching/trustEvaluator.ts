@@ -1,4 +1,4 @@
-import { Spot, TrustSignals } from "../../../types";
+import { Spot, TrustSignal } from "../../types";
 
 /**
  * Trust Evaluator (Phase D1)
@@ -6,21 +6,21 @@ import { Spot, TrustSignals } from "../../../types";
  * Generates deterministic trust signals for a given plan based purely on structured data.
  * No AI hallucination, no arbitrary percentages.
  */
-export function generateTrustSignals(spot: Spot, totalCost: number, budget: number): TrustSignals {
-  return {
-    budgetFit: evaluateBudgetFit(totalCost, budget),
-    priceFreshness: evaluatePriceFreshness(spot.price_updated_at, spot.price_source),
-    operationalConfidence: evaluateOperationalConfidence(spot.verified_by, spot.active)
-  };
+export function generateTrustSignals(spot: Spot, totalCost: number, budget: number): TrustSignal[] {
+  return [
+    evaluateBudgetFit(totalCost, budget),
+    evaluatePriceFreshness(spot.price_updated_at, spot.price_source),
+    evaluateOperationalConfidence(spot.verified_by, spot.active)
+  ];
 }
 
-function evaluateBudgetFit(totalCost: number, budget: number): TrustSignals["budgetFit"] {
+function evaluateBudgetFit(totalCost: number, budget: number): TrustSignal {
   if (totalCost <= budget) return "Within budget";
   if (totalCost <= budget * 1.15) return "Slight stretch";
   return "Over budget";
 }
 
-function evaluatePriceFreshness(updatedAt?: string, source?: string): TrustSignals["priceFreshness"] {
+function evaluatePriceFreshness(updatedAt?: string, source?: string): TrustSignal {
   if (!updatedAt) return "Estimated";
   
   const updatedDate = new Date(updatedAt);
@@ -32,7 +32,7 @@ function evaluatePriceFreshness(updatedAt?: string, source?: string): TrustSigna
   return "Estimated";
 }
 
-function evaluateOperationalConfidence(verifiedBy?: string, active?: boolean): TrustSignals["operationalConfidence"] {
+function evaluateOperationalConfidence(verifiedBy?: string, active?: boolean): TrustSignal {
   if (verifiedBy === "fresh" || verifiedBy === "owner_verified") {
     return "Hours recently confirmed";
   }

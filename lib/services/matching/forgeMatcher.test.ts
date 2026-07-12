@@ -940,12 +940,12 @@ describe('forgePlans — output shape', () => {
   it('every plan has spot, foodCost, transportCost, totalCost, whyItFits', () => {
     const results = forgePlans({ ...BASE_INPUT, budget: 50000 }, [SPOT_A]);
     expect(results).toHaveLength(1);
-    const plan = results[0];
-    expect(plan).toHaveProperty('spot');
-    expect(plan).toHaveProperty('foodCost');
-    expect(plan).toHaveProperty('transportCost');
-    expect(plan).toHaveProperty('totalCost');
-    expect(plan).toHaveProperty('whyItFits');
+    const evaluation = results[0];
+    expect(evaluation).toHaveProperty('spot');
+    expect(evaluation).toHaveProperty('foodCost');
+    expect(evaluation).toHaveProperty('transportCost');
+    expect(evaluation).toHaveProperty('totalCost');
+    expect(evaluation).toHaveProperty('whyItFits');
   });
 
   it('whyItFits is a non-empty string', () => {
@@ -1042,7 +1042,7 @@ describe('Phase 3A — cost calculation buffer removal', () => {
     const input = { startArea: 'ikeja', squadSize: 2, budget: 50000, vibe: 'Chill' };
     const withFood = forgePlans(input, [spotWithFood]);
     const noFood = forgePlans(input, [spotNoFood]);
-    expect(withFood[0]?.foodCost).toBe(noFood[0]?.foodCost);
+    expect(noFood[0].foodCost).toBe(withFood[0].foodCost);
   });
 });
 

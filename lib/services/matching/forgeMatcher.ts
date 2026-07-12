@@ -1,6 +1,5 @@
 import { Spot, ForgeInput, Plan, PlanAdjustment } from '../../types';
 import { supabase } from '../../supabase';
-import { generateTrustSignals } from './trustEvaluator';
 
 const ZONES: Record<string, string> = {
   ikeja: "mainland",
@@ -264,8 +263,6 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         status,
       };
 
-      const trustSignals = generateTrustSignals(spot, totalCost, budget);
-
       return {
         spot,
         foodCost: activityCost,
@@ -273,8 +270,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         totalCost,
         whyItFits,
         explanation: fullExplanation,
-        score: totalScore,
-        trustSignals
+        score: totalScore
       };
     });
 
@@ -296,14 +292,13 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
   }
 
   // Return top 1–3 results
-  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits, explanation, trustSignals }) => ({
+  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits, explanation }) => ({
     spot,
     foodCost,
     transportCost,
     totalCost,
     whyItFits,
-    explanation,
-    trustSignals
+    explanation
   }));
 }
 

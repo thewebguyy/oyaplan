@@ -27,6 +27,24 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
+  /* New Tokens */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-float: var(--shadow-float);
+
+  --animate-duration-fast: var(--duration-fast);
+  --animate-duration-normal: var(--duration-normal);
+  --animate-duration-slow: var(--duration-slow);
+
+  --default-transition-timing-function: var(--ease-standard);
+  --default-transition-duration: var(--duration-normal);
 }
 
 :root {
@@ -63,13 +81,51 @@
   
   --accent: #F7F7F7;
   --accent-foreground: #0A0A0A;
+
+  /* Radius Scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius: var(--radius-md);
+
+  /* Shadow & Elevation Scale */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-float: 0 24px 48px rgba(0, 0, 0, 0.08);
   
-  --radius: 12px;
+  /* Semantic Spacing (Strict 8pt Grid) */
+  --space-05: 4px;
+  --space-1: 8px;
+  --space-1-5: 12px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-8: 64px;
 
   /* Motion Tokens */
-  --motion-instant: 100ms ease-out;
-  --motion-responsive: 200ms ease-out;
-  --motion-considered: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.34, 1.56, 0.64, 1); /* Apple-like spring */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Legacy Motion Tokens for backwards compat */
+  --motion-instant: var(--duration-fast) var(--ease-standard);
+  --motion-responsive: var(--duration-normal) var(--ease-standard);
+  --motion-considered: var(--duration-slow) var(--ease-emphasized);
+
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
 }
 
 @layer base {

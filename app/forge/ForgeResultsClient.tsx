@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Spot, Plan, ForgeInput } from "@/lib/types";
-import { forgePlans } from "@/lib/services/matching/forgeMatcher";
+import { Spot, ForgeInput, PlanEvaluation } from "@/lib/types";
+import { forgePlans, applyPlanAdjustment } from "@/lib/services/matching/forgeMatcher";
+import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LoadingState from "@/components/LoadingState";
@@ -34,11 +35,44 @@ interface ForgeResultsClientProps {
 
 export default function ForgeResultsClient({ allSpots, params }: ForgeResultsClientProps) {
   const [isForging, setIsForging] = useState(true);
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const [evaluations, setEvaluations] = useState<PlanEvaluation[]>([]);
   const [nearbySpots, setNearbySpots] = useState<Spot[]>([]);
   const [targetAreaName, setTargetAreaName] = useState("");
   const [forgeInput, setForgeInput] = useState<ForgeInput | null>(null);
   const [vibeMetrics, setVibeMetrics] = useState<{ min: number; median: number; max: number } | null>(null);
+
+  const handleAdjustBudget = async (delta: number) => {
+    if (!forgeInput) return;
+    setIsAdjusting(true);
+    
+    // Artificial delay to show 'Adjusting your plan...' if computation is instant
+    const startTime = Date.now();
+    
+    const newBudget = forgeInput.budget + delta;
+    const adjustedInput = applyPlanAdjustment(forgeInput, { budget: newBudget });
+    
+    setForgeInput(adjustedInput);
+    
+    const generatedPlans = forgePlans(adjustedInput, allSpots);
+    
+    // Evaluate plans (D2 Evaluator Pattern)
+    const newEvaluations = generatedPlans.map(plan => evaluatePlan({
+      currentPlan: plan,
+      previousPlan: evaluations.find(e => e.plan.spot.id === plan.spot.id)?.plan, // Compare against itself if it existed
+      candidatePlans: generatedPlans,
+      input: adjustedInput
+    }));
+    
+    setEvaluations(newEvaluations);
+    
+    const elapsed = Date.now() - startTime;
+    if (elapsed < 300) {
+      await new Promise(resolve => setTimeout(resolve, 300 - elapsed));
+    }
+    
+    setIsAdjusting(false);
+  };
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -66,9 +100,16 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       // 2. Generate plans (deterministic)
       const startTime = Date.now();
       const generatedPlans = forgePlans(input, allSpots);
-      setPlans(generatedPlans);
+      
+      const newEvaluations = generatedPlans.map(plan => evaluatePlan({
+        currentPlan: plan,
+        candidatePlans: generatedPlans,
+        input: input
+      }));
+      
+      setEvaluations(newEvaluations);
 
-      if (generatedPlans.length === 0) {
+      if (newEvaluations.length === 0) {
         // We want to know if the vibe is valid but the budget is too low
         const vibeSpots = allSpots.filter(s => s.vibe_tags.includes(input.vibe));
         const prices = vibeSpots.map(s => s.price_per_person * input.squadSize * (s.has_food !== false ? 1.1 : 1.0));
@@ -100,7 +141,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           session_id: 'browser',
           properties: {
             category: 'Activation',
-            plans_generated: generatedPlans.length,
+            plans_generated: newEvaluations.length,
             vibe: input.vibe,
             budget: input.budget,
             version: '1.0'
@@ -156,10 +197,10 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
         </div>
       </div>
 
-      {plans.length > 0 ? (
+      {evaluations.length > 0 ? (
         <div className="space-y-12">
           {/* Fallback Banner */}
-          {plans[0].explanation?.reason === "semantic_classification_missing" && (
+          {evaluations[0].plan.explanation?.reason === "semantic_classification_missing" && (
             <div className="bg-brand-yellow-15 border border-brand-yellow text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
               <div className="mt-0.5">
                 <AlertCircle className="w-5 h-5 text-brand-green" />
@@ -174,25 +215,29 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
           {/* Plan 1: Full Width */}
           <div className="w-full animate-slide-up animation-delay-0">
             <EditorialPlan 
-              key={`top-${plans[0].spot.id}`} 
-              plan={plans[0]} 
+              key={`top-${evaluations[0].plan.spot.id}`} 
+              evaluation={evaluations[0]} 
               isTopPick={true} 
               input={forgeInput!} 
               originalBudget={forgeInput?.budget}
+              onAdjustBudget={handleAdjustBudget}
+              isAdjusting={isAdjusting}
             />
           </div>
           
           {/* Plans 2 & 3: Grid */}
-          {plans.length > 1 && (
+          {evaluations.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {plans.slice(1, 3).map((plan, index) => (
-                <div key={plan.spot.id} className={`animate-slide-up ${index === 0 ? 'animation-delay-80' : 'animation-delay-160'}`}>
+              {evaluations.slice(1, 3).map((evaluation, index) => (
+                <div key={evaluation.plan.spot.id} className={`animate-slide-up ${index === 0 ? 'animation-delay-80' : 'animation-delay-160'}`}>
                   <EditorialPlan 
-                    key={`other-${plan.spot.id}`}
-                    plan={plan} 
+                    key={`other-${evaluation.plan.spot.id}`}
+                    evaluation={evaluation} 
                     isTopPick={false} 
                     input={forgeInput!} 
                     originalBudget={forgeInput?.budget}
+                    onAdjustBudget={handleAdjustBudget}
+                    isAdjusting={isAdjusting}
                   />
                 </div>
               ))}
@@ -286,7 +331,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       )}
 
       {/* Redesigned Footer */}
-      {plans.length > 0 && (
+      {evaluations.length > 0 && (
         <div className="text-center pt-16 space-y-4 pb-32 md:pb-12">
           <p className="type-body text-text-muted">
             You can comfortably do any of these tonight.
@@ -295,7 +340,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       )}
 
       {/* Sticky Mobile Actions */}
-      {plans.length > 0 && (
+      {evaluations.length === 0 && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-white/80 backdrop-blur-md border-t border-border-default z-40 animate-in fade-in slide-in-from-bottom-4">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex-1">
