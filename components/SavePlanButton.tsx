@@ -24,7 +24,7 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
       const res = await savePlan(planId);
       if (res.success) {
         setIsSaved(true);
-        toast.success("Plan saved to your dashboard!");
+        toast.success("Plan saved to your Saved Plans!");
         AnalyticsService.track('plan_saved', {
           session_id: 'browser',
           properties: {

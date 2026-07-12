@@ -133,7 +133,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <h1 className="text-[32px] sm:text-[40px] font-[900] tracking-tight leading-none text-text-primary">Here&apos;s what we&apos;d do.</h1>
+            <h1 className="type-heading text-text-primary">Our recommendations.</h1>
           </div>
           <p className="type-body text-text-secondary">
             Based on <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span> & <span className="text-text-primary font-[600]">₦{forgeInput?.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput?.squadSize} people</span>.
@@ -296,7 +296,7 @@ export default function ForgeResultsClient({ allSpots, params }: ForgeResultsCli
 
       {/* Sticky Mobile Actions */}
       {plans.length > 0 && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-border-default z-40 animate-in fade-in slide-in-from-bottom-4">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-white/80 backdrop-blur-md border-t border-border-default z-40 animate-in fade-in slide-in-from-bottom-4">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex-1">
               <Button variant="outline" className="w-full type-label h-12 rounded-[12px] border-border-default text-text-primary tap-feedback">

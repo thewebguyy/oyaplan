@@ -129,7 +129,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div key={i} className="flex items-center gap-2">
             <button 
               onClick={() => setCurrentStepIndex(p.step)}
-              className="text-[13px] font-[600] text-text-secondary hover:text-text-primary transition-colors py-1 px-3 bg-surface-grey rounded-full tap-feedback"
+              className="type-ui-label text-text-secondary hover:text-text-primary transition-colors py-1 px-3 bg-surface-grey rounded-full tap-feedback"
             >
               {p.label}
             </button>
@@ -152,7 +152,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               {currentStep.reassurance}
             </p>
           )}
-          <h1 className="text-[32px] sm:text-[40px] font-[900] tracking-tight leading-none text-text-primary">
+          <h1 className="type-heading text-text-primary">
             {currentStep.title}
           </h1>
         </div>
@@ -172,8 +172,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                       : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:shadow-md"
                   }`}
                 >
-                  <span className="text-[28px] mb-3">{o.icon}</span>
-                  <span className="text-[16px] font-[700] tracking-tight">{o.label}</span>
+                  <span className="text-3xl mb-3">{o.icon}</span>
+                  <span className="type-body font-bold tracking-tight">{o.label}</span>
                 </button>
               );
             })}
@@ -195,7 +195,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                       : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
                   }`}
                 >
-                  <span className="text-[18px] font-[600]">{o.label}</span>
+                  <span className="type-venue-name">{o.label}</span>
                 </button>
               );
             })}
@@ -217,7 +217,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                       : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
                   }`}
                 >
-                  <span className="text-[20px] font-[700]">{o.label}</span>
+                  <span className="type-venue-name">{o.label}</span>
                 </button>
               );
             })}
@@ -235,7 +235,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                   : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
               }`}
             >
-              <span className="text-[16px] font-[600]">Anywhere</span>
+              <span className="type-body font-semibold">Anywhere</span>
             </button>
             {areas.map((a) => {
               const isSelected = formData.startArea === a.slug;
@@ -249,7 +249,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                       : "bg-white border-border-default text-text-primary hover:border-brand-green-40 hover:bg-surface-grey"
                   }`}
                 >
-                  <span className="text-[16px] font-[600]">{a.name}</span>
+                  <span className="type-body font-semibold">{a.name}</span>
                 </button>
               );
             })}
@@ -262,7 +262,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             <Button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full h-[64px] rounded-[20px] bg-brand-green hover:bg-brand-green-70 text-white text-[18px] font-[700] overflow-hidden tap-feedback shadow-[0px_8px_24px_rgba(0,135,81,0.25)]"
+              className="w-full h-[64px] rounded-[20px] bg-brand-green hover:bg-brand-green-70 text-white type-venue-name overflow-hidden tap-feedback shadow-[0px_8px_24px_rgba(0,135,81,0.25)]"
             >
               {loading ? "Finding your plan..." : "See My Plan"}
             </Button>

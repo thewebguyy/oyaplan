@@ -141,7 +141,7 @@ export default function ListYourSpotPage() {
               Get in front of Lagos squads ready to spend
             </h1>
             <p className="type-body text-white/80 max-w-2xl">
-              OyaPlan generates outing plans for budget-conscious Lagos groups. When your spot is featured, you appear first for searches that match your area and vibe.
+              OyaPlan recommends outing plans for budget-conscious Lagos groups. When your spot is featured, you appear first for searches that fit your area and vibe.
             </p>
           </div>
 

@@ -77,7 +77,7 @@ export default function SuggestSpotPage() {
               <Sparkles className="w-3.5 h-3.5 text-brand-yellow fill-brand-yellow" />
               <span className="text-[11px] font-[700] uppercase tracking-wider text-text-secondary">Community Growth</span>
             </div>
-            <h1 className="text-[32px] md:text-[40px] font-[800] tracking-tight leading-[1.1] text-text-primary">
+            <h1 className="type-heading text-text-primary">
               Suggest a spot.
             </h1>
             <p className="type-body text-text-muted max-w-lg">

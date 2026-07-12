@@ -133,7 +133,7 @@ export default async function LandingPage() {
           )}
 
           <div className="space-y-4">
-            <p className="type-display text-white md:text-[48px] leading-tight">
+            <p className="type-display-product text-white leading-tight">
               {planCount > 0 ? (
                 <>
                   Join <span className="text-brand-yellow">{planCount.toLocaleString('en-NG')}</span> Lagos squads who have already planned their outing.

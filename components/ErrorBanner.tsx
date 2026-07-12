@@ -9,7 +9,9 @@ const KNOWN_ERRORS: Record<string, string> = {
   rate_limited:
     "You're planning fast! Please wait a moment and try again.",
   unauthorized_dashboard:
-    "Sign in to see your saved plans.",
+    "Sign in to see your Saved Plans.",
+  no_match:
+    "We couldn't find a plan fitting those exact preferences. Try broadening your budget or area.",
 };
 
 export default function ErrorBanner() {
@@ -30,7 +32,7 @@ export default function ErrorBanner() {
   return (
     <div className="bg-red-50 border-b border-red-100 px-4 py-3 flex items-center justify-between animate-in slide-in-from-top duration-300">
       <div className="flex items-center gap-2">
-        <span className="text-[14px]">⚠️</span>
+        <span className="type-caption">⚠️</span>
         <p className="type-caption text-red-800 font-[600]">
           {message}
         </p>
