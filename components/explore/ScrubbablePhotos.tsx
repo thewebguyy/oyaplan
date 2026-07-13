@@ -38,6 +38,14 @@ export default function ScrubbablePhotos({ images, venueName }: ScrubbablePhotos
     setActiveFrame(0);
   };
 
+  if (!images || images.length === 0) {
+    return (
+      <div className="relative w-full h-full overflow-hidden select-none bg-[#F5F5F5] flex items-center justify-center dossier-photo-container">
+        <span className="text-text-muted type-caption uppercase tracking-wider dossier-photo">Image Pending</span>
+      </div>
+    );
+  }
+
   return (
     <div 
       ref={containerRef}
@@ -64,28 +72,12 @@ export default function ScrubbablePhotos({ images, venueName }: ScrubbablePhotos
 
       {/* Black crushed contact sheet frame */}
       <div className="absolute inset-0 z-10 filter contrast-125 brightness-95 grayscale scale-100 dossier-photo">
-        {images && images.length > 0 ? (
-          <img 
-            src={images[activeFrame]} 
-            alt={`${venueName} frame ${activeFrame}`}
-            className="w-full h-full object-cover"
-            style={{ filter: "contrast(1.3) brightness(0.85) saturate(0.85)" }}
-          />
-        ) : (
-          <div 
-            className="w-full h-full flex flex-col items-center justify-center p-6 text-center"
-            style={{
-              background: `repeating-linear-gradient(${activeFrame * 45}deg, #1A1A1A 0px, #1A1A1A 10px, #2A2A2A 10px, #2A2A2A 20px)`
-            }}
-          >
-            <span className="type-caption text-white font-extrabold uppercase tracking-widest text-[10px] select-none block">
-              {venueName}
-            </span>
-            <span className="font-mono text-white/50 text-[8px] tracking-widest block mt-2">
-              CONTACT SHEET FRAME {activeFrame + 1}
-            </span>
-          </div>
-        )}
+        <img 
+          src={images[activeFrame]} 
+          alt={`${venueName} frame ${activeFrame}`}
+          className="w-full h-full object-cover"
+          style={{ filter: "contrast(1.3) brightness(0.85) saturate(0.85)" }}
+        />
       </div>
 
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 px-3 py-1 rounded-[4px] border border-white/10 text-[9px] font-mono text-white/90 z-40 pointer-events-none uppercase tracking-widest">
