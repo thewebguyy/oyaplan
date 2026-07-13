@@ -93,7 +93,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Static Plan Result Preview Card */}
-            <div className="w-full md:w-1/2">
+            <div className="w-full md:w-1/2 md:sticky md:top-24 md:self-start">
                <div className="bg-white rounded-[24px] p-5 shadow-float border border-transparent text-left text-text-primary">
                   <div className="flex justify-between items-start mb-3">
                     <span className="text-[10px] text-brand-green font-bold uppercase tracking-wider bg-brand-green-15 px-2 py-1 rounded-full flex items-center gap-1">
@@ -107,19 +107,22 @@ export default async function LandingPage() {
                     <h3 className="type-venue-name text-base leading-none mb-1 text-text-primary font-bold">Premium Dinner Spot</h3>
                     <p className="text-xs text-text-muted font-medium flex items-center gap-1">📍 Victoria Island, Lagos</p>
                   </div>
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-3 mb-5">
                     <div className="flex justify-between items-center text-sm">
                        <span className="text-text-secondary font-medium">🍽 Food & Drinks</span>
-                       <span className="font-semibold tabular-nums">₦30,000</span>
+                       <span className="font-bold tabular-nums text-text-primary text-base">₦30,000</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                        <span className="text-text-secondary font-medium">🚕 Transport</span>
-                       <span className="font-semibold tabular-nums">₦8,500</span>
+                       <span className="font-bold tabular-nums text-text-primary text-base">₦8,500</span>
                     </div>
                   </div>
-                  <div className="border-t border-border-default pt-3 flex justify-between items-center">
-                    <span className="text-text-primary font-black uppercase tracking-wider text-xs">Total</span>
-                    <span className="font-black tabular-nums text-text-primary text-xl">₦38,500 <span className="text-[10px] text-text-muted font-bold tracking-wider uppercase font-sans">/ person</span></span>
+                  <div className="border-t border-border-default pt-4 flex justify-between items-center">
+                    <span className="text-text-secondary font-bold uppercase tracking-wider text-xs">Total Estimate</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="font-black tabular-nums text-text-primary text-3xl tracking-tighter">₦38,500</span>
+                      <span className="text-[10px] text-text-muted font-bold tracking-wider uppercase font-sans">/ person</span>
+                    </div>
                   </div>
                </div>
             </div>
