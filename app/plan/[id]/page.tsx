@@ -15,6 +15,7 @@ import { PlanCTAs } from "@/components/dossier/PlanCTAs";
 import { AREAS } from "@/lib/config/areas";
 import { TrustStatus } from "@/components/ui/trust-badge";
 import { BudgetFitStatus } from "@/components/ui/budget-fit-badge";
+import { SharedPlanRow } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +57,7 @@ export async function generateMetadata({ params }: PlanPageProps): Promise<Metad
 export default async function PlanPage({ params }: PlanPageProps) {
   const { id } = await params;
 
-  let plan;
+  let plan: SharedPlanRow | undefined;
   let planFetchError = false;
   try {
     const { data, error } = await supabase
@@ -83,10 +84,10 @@ export default async function PlanPage({ params }: PlanPageProps) {
   }
 
   // Configuration derivation
-  const neonColor = AREAS.find(a => a.slug === plan.spot?.areas?.slug || a.slug === plan.start_area)?.neonColor || "#000000";
+  const neonColor = AREAS.find(a => a.slug === plan?.spot?.areas?.slug || a.slug === plan?.start_area)?.neonColor || "#000000";
   
   // Explanation state 
-  const explanation = plan.explanation || {};
+  const explanation = plan?.explanation || ({} as Partial<import('@/lib/types').PlanExplanation>);
   const hasCar = explanation.has_car === true;
   
   // Compute Trust
@@ -98,9 +99,9 @@ export default async function PlanPage({ params }: PlanPageProps) {
   
   // Compute Budget Fit
   let budgetFitStatus: BudgetFitStatus = "within";
-  const diff = plan.budget - plan.total_cost;
+  const diff = (plan?.budget || 0) - (plan?.total_cost || 0);
   if (diff > 2000) budgetFitStatus = "comfortable";
-  else if (diff < 0 && Math.abs(diff) <= plan.budget * 0.15) budgetFitStatus = "stretch";
+  else if (diff < 0 && Math.abs(diff) <= (plan?.budget || 0) * 0.15) budgetFitStatus = "stretch";
   else if (diff < 0) budgetFitStatus = "over";
 
   return (
@@ -122,13 +123,13 @@ export default async function PlanPage({ params }: PlanPageProps) {
         {/* Zero-Context Explainer */}
         <div className="text-center max-w-sm mx-auto mb-8">
           <p className="font-sans font-medium text-black text-sm sm:text-base leading-relaxed">
-            Someone built a plan for <strong>{plan.squad_size} people</strong> going to <strong>{plan.spot?.name}</strong>. We ran the deterministic math so nobody washes plates tonight.
+            Someone built a plan for <strong>{plan?.squad_size} people</strong> going to <strong>{plan?.spot?.name}</strong>. We ran the deterministic math so nobody washes plates tonight.
           </p>
         </div>
 
         {/* The Ledger Card */}
         <LedgerCard 
-          totalCost={plan.total_cost} 
+          totalCost={plan?.total_cost || 0} 
           neonColor={neonColor} 
           trustStatus={trustStatus}
           freshnessText={explanation.freshness}
@@ -136,35 +137,35 @@ export default async function PlanPage({ params }: PlanPageProps) {
 
         {/* The Receipt Structure & Toggle */}
         <ReceiptStructure 
-          venueName={plan.spot?.name || "Venue"}
-          venueCost={plan.food_cost}
-          transportCost={plan.transport_cost}
-          squadSize={plan.squad_size}
+          venueName={plan?.spot?.name || "Venue"}
+          venueCost={plan?.food_cost || 0}
+          transportCost={plan?.transport_cost || 0}
+          squadSize={plan?.squad_size || 1}
           budgetFitStatus={budgetFitStatus}
           hasCar={hasCar}
-          transportToggleNode={<TransportToggle planId={plan.id} hasCar={hasCar} />}
+          transportToggleNode={<TransportToggle planId={plan?.id || id} hasCar={hasCar} />}
         />
 
         {/* Action CTAs */}
         <PlanCTAs 
-          planId={plan.id}
-          venueName={plan.spot?.name || "Venue"}
-          address={plan.spot?.address || ""}
-          budget={plan.budget || plan.total_cost}
-          squadSize={plan.squad_size}
-          vibe={plan.vibe || "Chill"}
-          startArea={plan.start_area || ""}
+          planId={plan?.id || id}
+          venueName={plan?.spot?.name || "Venue"}
+          address={plan?.spot?.address || ""}
+          budget={plan?.budget || plan?.total_cost || 0}
+          squadSize={plan?.squad_size || 1}
+          vibe={plan?.vibe || "Chill"}
+          startArea={plan?.start_area || ""}
         />
 
         {/* Utility / Feedback block */}
         <div className="pt-16 pb-8 space-y-6">
           <ActualSpendCapture
-            sharedPlanId={plan.id}
-            spotId={plan.spot?.id ?? null}
-            estimatedTotal={plan.total_cost}
-            spotName={plan.spot?.name ?? "this spot"}
+            sharedPlanId={plan?.id || id}
+            spotId={plan?.spot?.id ?? null}
+            estimatedTotal={plan?.total_cost || 0}
+            spotName={plan?.spot?.name ?? "this spot"}
           />
-          <PlanViewTracker planId={plan.id} />
+          <PlanViewTracker planId={plan?.id || id} />
         </div>
         
       </div>

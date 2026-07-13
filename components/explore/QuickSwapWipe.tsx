@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 
 export default function QuickSwapWipe({
   pathname,
@@ -9,15 +9,9 @@ export default function QuickSwapWipe({
   pathname: string;
   children: ReactNode;
 }) {
-  const [key, setKey] = useState(pathname);
-
-  useEffect(() => {
-    setKey(pathname);
-  }, [pathname]);
-
   return (
     <div 
-      key={key} 
+      key={pathname} 
       className="w-full h-full animate-wipe-down"
       style={{
         // Define keyframes in globals.css, or inline them

@@ -111,7 +111,7 @@ export default async function ForgePage({
   const categoryGroup = typeof resolvedParams.categoryGroup === "string" ? resolvedParams.categoryGroup : undefined;
   const allowedCategories = getAllowedCategories(categoryGroup);
 
-  let allSpots;
+  let allSpots: Spot[] = [];
   try {
     const isFreshSubmission = parsed.data.fresh === "true";
     const spotsPromise = getForgeSpots(allowedCategories ?? undefined);

@@ -56,7 +56,7 @@ export interface PlanExplanation {
   source_label?: string;       // Human-readable pricing source (e.g. "Owner submitted", "Community receipts")
   confidence_score?: number;   // Numeric score 0-100 for rendering the badge
   status?: string;             // Operational status string (fresh | stale | needs_review | verified | community_verified)
-  
+  has_car?: boolean;
   reason?: string;
 }
 
@@ -97,6 +97,20 @@ export interface PlanEvaluation {
   changes?: ChangeEvaluation;
   exclusions?: ExclusionEvaluation[];
 }
+
+export type SharedPlanRow = {
+  id: string;
+  spot?: Spot;
+  total_cost: number;
+  food_cost: number;
+  transport_cost: number;
+  squad_size: number;
+  budget: number;
+  vibe?: string;
+  start_area?: string;
+  explanation?: PlanExplanation;
+  saved_at?: string;
+};
 
 // Phase 2 Normalized Architecture Types
 export interface Country {

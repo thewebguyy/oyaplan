@@ -14,6 +14,7 @@ import RotatingHeadline from "@/components/RotatingHeadline";
 import DossierDropWrapper from "@/components/DossierDropWrapper";
 import AnimatedIllustration from "@/components/motion/AnimatedIllustration";
 import ScrollParallax from "@/components/motion/ScrollParallax";
+import AmbientParallax from "@/components/motion/AmbientParallax";
 import MotionSection from "@/components/motion/MotionSection";
 
 export const revalidate = 300;
@@ -214,7 +215,7 @@ export default async function LandingPage() {
       {/* Budget Confidence Section (Planning Together) */}
       <div className="py-24 md:py-32 bg-surface-grey border-t border-border-default overflow-hidden relative">
         {/* Parallax Background Blob */}
-        <ScrollParallax speed={-0.2} className="absolute top-0 right-0 w-1/2 h-full bg-intent-yellow/5 blur-[120px] rounded-full pointer-events-none" />
+        <AmbientParallax speed={-0.2} className="absolute top-0 right-0 w-1/2 h-full bg-intent-yellow/5 blur-[120px] rounded-full pointer-events-none" />
         
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <MotionSection delay={0} className="order-2 lg:order-1 relative">
