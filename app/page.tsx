@@ -12,6 +12,9 @@ import { TrustUnknown } from "@/components/ui/trust-unknown";
 import { Check, Clock } from "lucide-react";
 import RotatingHeadline from "@/components/RotatingHeadline";
 import DossierDropWrapper from "@/components/DossierDropWrapper";
+import AnimatedIllustration from "@/components/motion/AnimatedIllustration";
+import ScrollParallax from "@/components/motion/ScrollParallax";
+import MotionSection from "@/components/motion/MotionSection";
 
 export const revalidate = 300;
 
@@ -51,16 +54,36 @@ export default async function LandingPage() {
       {/* Hero Section: The Ledger */}
       <div className="relative pt-16 pb-24 px-4 bg-white bg-civic-hex">
         <div className="max-w-[1400px] mx-auto">
-          {/* Headline */}
-          <div className="text-center max-w-5xl mx-auto space-y-6 mb-12">
-            <RotatingHeadline />
-            <p className="type-body text-text-secondary max-w-2xl mx-auto text-lg md:text-xl">
-              Deterministic outing planning for Lagos. We verify the menus, transport costs, and operational hours so your squad never gets stranded.
-            </p>
-            <div className="pt-4">
-              <a href="#forge-planner" className="inline-block bg-[#0A0A0A] text-white font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-[8px] hover:bg-black/80 transition-colors tap-feedback btn-intent-snaps">
-                Plan an outing
-              </a>
+          {/* Hero Section: The Ledger */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24 lg:mb-32">
+            {/* Left Col: Staggered Text */}
+            <div className="space-y-6 text-center lg:text-left pt-12 lg:pt-0">
+              <MotionSection delay={0}>
+                <RotatingHeadline />
+              </MotionSection>
+              <MotionSection delay={200}>
+                <p className="type-body text-text-secondary max-w-xl mx-auto lg:mx-0 text-lg md:text-xl">
+                  Deterministic outing planning for Lagos. We verify the menus, transport costs, and operational hours so your squad never gets stranded.
+                </p>
+              </MotionSection>
+              <MotionSection delay={400} className="pt-4">
+                <a href="#forge-planner" className="inline-block bg-[#0A0A0A] text-white font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-[8px] hover:bg-black/80 transition-colors tap-feedback btn-intent-snaps">
+                  Plan an outing
+                </a>
+              </MotionSection>
+            </div>
+            
+            {/* Right Col: Hero Illustration */}
+            <div className="relative flex justify-center lg:justify-end">
+              <MotionSection delay={600} className="relative z-10 w-full max-w-[420px]">
+                <AnimatedIllustration 
+                  src="/illustrations/img1.png" 
+                  alt="Budget Confidence" 
+                  priority={true} 
+                  float={true}
+                />
+              </MotionSection>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-brand-green/5 blur-3xl rounded-full -z-10 pointer-events-none" />
             </div>
           </div>
 
@@ -185,6 +208,77 @@ export default async function LandingPage() {
               </div>
             </div>
           </DossierDropWrapper>
+        </div>
+      </div>
+
+      {/* Budget Confidence Section (Planning Together) */}
+      <div className="py-24 md:py-32 bg-surface-grey border-t border-border-default overflow-hidden relative">
+        {/* Parallax Background Blob */}
+        <ScrollParallax speed={-0.2} className="absolute top-0 right-0 w-1/2 h-full bg-intent-yellow/5 blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <MotionSection delay={0} className="order-2 lg:order-1 relative">
+            <ScrollParallax speed={0.05}>
+              <AnimatedIllustration 
+                src="/illustrations/img3.png" 
+                alt="Planning Together" 
+                float={false}
+                className="w-full max-w-[500px] mx-auto"
+              />
+            </ScrollParallax>
+            {/* Small glow behind focal object */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-white/40 blur-2xl rounded-full -z-10 pointer-events-none" />
+          </MotionSection>
+          
+          <div className="order-1 lg:order-2 space-y-6">
+            <MotionSection delay={100}>
+              <h2 className="type-display-product text-text-primary uppercase tracking-tight">Certainty in<br/>every plan</h2>
+            </MotionSection>
+            <MotionSection delay={200}>
+              <p className="type-body text-text-secondary max-w-md">
+                No more guessing if a menu has changed or if an Uber will break the budget. We crunch real-time data so you can focus on the experience.
+              </p>
+            </MotionSection>
+            <MotionSection delay={300} className="pt-2">
+               <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                   <Check className="w-5 h-5 text-brand-green" strokeWidth={2.5} />
+                 </div>
+                 <span className="type-label text-text-primary font-bold">100% Deterministic pricing</span>
+               </div>
+            </MotionSection>
+          </div>
+        </div>
+      </div>
+
+      {/* Discovery Section (Where to Next) */}
+      <div className="py-24 bg-white overflow-hidden relative">
+        <div className="max-w-5xl mx-auto px-4 text-center space-y-16">
+          <MotionSection>
+            <h2 className="type-display-product text-text-primary uppercase tracking-tight">Where to next?</h2>
+            <p className="type-body text-text-secondary mt-4 max-w-xl mx-auto">
+              Discover verified spots across Lagos perfectly matched to your squad's vibe.
+            </p>
+          </MotionSection>
+          
+          <div className="relative">
+            {/* Deep Background Parallax Layer */}
+            <ScrollParallax speed={-0.15} className="absolute inset-0 flex justify-center items-center pointer-events-none">
+               <div className="w-full max-w-[800px] h-[300px] bg-brand-green-5 blur-[80px] rounded-full" />
+            </ScrollParallax>
+            
+            {/* Midground Illustration */}
+            <ScrollParallax speed={0.08}>
+              <MotionSection delay={200} className="relative z-10 w-full max-w-[700px] mx-auto">
+                <AnimatedIllustration 
+                  src="/illustrations/img2.png" 
+                  alt="Where to Next" 
+                  float={true}
+                  className="will-change-transform origin-bottom hover:scale-[1.01] transition-transform duration-700 ease-out" 
+                />
+              </MotionSection>
+            </ScrollParallax>
+          </div>
         </div>
       </div>
 
