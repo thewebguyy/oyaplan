@@ -14,9 +14,10 @@ export default function NavBar() {
   // Hide on feedback and list-your-spot pages (if standalone)
   if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
 
-  const links = [
-    { name: "Start Planning", href: "/" },
+  const centerLinks = [
     { name: "Explore", href: "/explore" },
+    { name: "How it Works", href: "/#how-it-works" },
+    { name: "For Venues", href: "/list-your-spot" },
   ];
 
   return (
@@ -48,7 +49,7 @@ export default function NavBar() {
       {/* Right: Links (Desktop) / CTA (Mobile) */}
       <div className="flex items-center gap-4 md:gap-6">
         <div className="hidden md:flex items-center gap-6">
-          {links.map((link) => {
+          {centerLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
             return (
               <div key={link.href} className="flex items-center">
@@ -69,6 +70,16 @@ export default function NavBar() {
             );
           })}
         </div>
+
+          <div className="hidden md:block w-px h-6 bg-border-default mx-2" />
+          <div className="hidden md:flex items-center">
+             <Link
+                href="/blog"
+                className="type-label text-text-secondary hover:text-brand-green transition-colors"
+             >
+                Blog
+             </Link>
+          </div>
 
           {isLoading ? (
             <div className="w-10 h-10 rounded-full bg-surface-grey animate-pulse"></div>

@@ -17,14 +17,16 @@ export default function RotatingHeadline() {
     }
 
     // Timeline schedule:
-    // 0: "Do you know where to go?" (hold 1.2s)
-    // 1: "Do you know how much it is going to cost?" (hold 1.2s)
-    // 2: "How much dey your hand?" (hold 2.0s)
-    // 3: "Only you or na full squad?" (resolve and lock)
     const timers = [
-      setTimeout(() => setStep(1), 1200),
-      setTimeout(() => setStep(2), 2400),
-      setTimeout(() => setStep(3), 4400),
+      setTimeout(() => setStep(1), 1500),
+      setTimeout(() => setStep(2), 3000),
+      setTimeout(() => setStep(3), 4500),
+      setTimeout(() => setStep(4), 6000),
+      setTimeout(() => setStep(5), 7500),
+      setTimeout(() => setStep(6), 9000),
+      setTimeout(() => setStep(7), 10500),
+      setTimeout(() => setStep(8), 12000),
+      setTimeout(() => setStep(9), 13500),
     ];
 
     return () => {
@@ -33,16 +35,22 @@ export default function RotatingHeadline() {
   }, []);
 
   const lines = [
-    "Where you wan go?",
-    "Do you know how much it is going to cost?",
-    "How much dey your hand?",
-    "Only you or na full squad?"
+    "Where are we going?",
+    "Wetin be the plan?",
+    "Date night?",
+    "Birthday loading?",
+    "Squad link-up?",
+    "After-work hangout?",
+    "Somewhere new?",
+    "Where you wan chop?",
+    "Weekend plans?",
+    "Let's figure it out."
   ];
 
   if (prefersReducedMotion) {
     return (
       <h1 className="font-sans font-black text-5xl md:text-7xl lg:text-[5.5rem] tracking-[-0.04em] uppercase leading-[0.9] text-text-primary text-center max-w-5xl mx-auto">
-        Only you or na full squad?
+        Let's figure it out.
       </h1>
     );
   }
@@ -51,7 +59,7 @@ export default function RotatingHeadline() {
     <h1 className="font-sans font-black text-5xl md:text-7xl lg:text-[5.5rem] tracking-[-0.04em] uppercase leading-[0.9] text-text-primary text-center max-w-5xl mx-auto relative overflow-hidden h-[2.2em] md:h-[2em] lg:h-[1.1em] flex justify-center items-center">
       {/* Invisible placeholder for height on all screens */}
       <span className="opacity-0 select-none pointer-events-none block py-2">
-        Do you know how much it is going to cost?
+        Let's figure it out.
       </span>
       
       {/* Dynamic line overlay */}
@@ -68,7 +76,7 @@ export default function RotatingHeadline() {
           return (
             <span key={idx} className={className}>
               {line}
-              {idx === 3 && step === 3 && (
+              {idx === lines.length - 1 && step === lines.length - 1 && (
                 <span className="text-black font-light animate-cursor-blink ml-1 inline-block">_</span>
               )}
             </span>
