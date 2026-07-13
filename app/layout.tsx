@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AuthModal from "@/components/AuthModal";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 // Using Inter (sans-serif) for both body and display
@@ -64,6 +65,7 @@ export default function RootLayout({
             <Toaster richColors position="bottom-right" />
           </AuthProvider>
         </AnalyticsProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
