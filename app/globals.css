@@ -415,33 +415,26 @@
 }
 
 /* ==========================================
-   Lagos Blueprint Map Styling (Phase E6)
+   Side-by-Side Panel (Phase E6 Pivot)
    ========================================== */
 
-.map-group polygon {
-  transition: fill 0.15s ease !important;
+@keyframes wipe-down {
+  0% {
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
 }
 
-.map-group:hover polygon {
-  fill: #1A1A1A !important;
+.animate-wipe-down {
+  animation: wipe-down 0.15s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
-.map-text {
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease, transform 0.15s ease !important;
-  transform-origin: center;
-  transform: scale(0.85);
-  font-family: var(--font-body), sans-serif;
-  font-weight: 900;
-  fill: #FFFFFF;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  text-transform: uppercase;
-}
-
-.map-group:hover .map-text {
-  opacity: 1;
-  transform: scale(1.15) !important;
+@media (prefers-reduced-motion: reduce) {
+  .animate-wipe-down {
+    animation: none !important;
+    clip-path: none !important;
+  }
 }
 

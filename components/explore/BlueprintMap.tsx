@@ -1,21 +1,15 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-
-interface BlueprintMapProps {
-  half: "top" | "bottom";
-}
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 const AREAS = [
-  // Top Half Areas (Mainland/Northern)
   {
     name: "Ikeja",
     slug: "ikeja",
     points: "80,60 260,60 260,180 80,180",
     textX: 170,
     textY: 120,
-    half: "top"
+    neonColor: "#6B0F1A" // Deep Oxblood/Maroon
   },
   {
     name: "Surulere",
@@ -23,7 +17,7 @@ const AREAS = [
     points: "60,200 180,200 180,310 60,310",
     textX: 120,
     textY: 255,
-    half: "top"
+    neonColor: "#5A00FF" // Ultra Violet
   },
   {
     name: "Yaba",
@@ -31,7 +25,7 @@ const AREAS = [
     points: "200,200 320,200 320,310 200,310",
     textX: 260,
     textY: 255,
-    half: "top"
+    neonColor: "#FF1493" // Vivid Pink
   },
   {
     name: "Lagos Island",
@@ -39,7 +33,7 @@ const AREAS = [
     points: "340,230 460,230 440,320 320,320",
     textX: 390,
     textY: 275,
-    half: "top"
+    neonColor: "#E0115F" // Bright Fuchsia
   },
   {
     name: "Ikoyi",
@@ -47,16 +41,15 @@ const AREAS = [
     points: "480,210 620,210 600,310 460,310",
     textX: 540,
     textY: 260,
-    half: "top"
+    neonColor: "#FF00FF" // Hot Magenta
   },
-  // Bottom Half Areas (Island/Southern)
   {
     name: "Victoria Island",
     slug: "vi",
     points: "360,330 580,330 560,440 340,440",
     textX: 460,
     textY: 385,
-    half: "bottom"
+    neonColor: "#0047FF" // Electric Cobalt
   },
   {
     name: "Lekki",
@@ -64,25 +57,20 @@ const AREAS = [
     points: "600,330 760,330 740,440 580,440",
     textX: 670,
     textY: 385,
-    half: "bottom"
+    neonColor: "#00FFFF" // Neon Cyan
   }
 ];
 
-export default function BlueprintMap({ half }: BlueprintMapProps) {
+export default function BlueprintMap() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [clickedSlug, setClickedSlug] = useState<string | null>(null);
+  
+  const activeSlug = pathname === "/explore" ? null : pathname.replace("/explore/", "");
 
   const handleAreaClick = (slug: string) => {
-    setClickedSlug(slug);
-    
-    // 100ms flash before navigating
-    setTimeout(() => {
-      setClickedSlug(null);
-      
-      const nextParams = new URLSearchParams(searchParams.toString());
-      router.push(`/explore/${slug}?${nextParams.toString()}`);
-    }, 100);
+    const nextParams = new URLSearchParams(searchParams.toString());
+    router.push(`/explore/${slug}?${nextParams.toString()}`);
   };
 
   return (
@@ -91,44 +79,67 @@ export default function BlueprintMap({ half }: BlueprintMapProps) {
         viewBox="0 0 900 500" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        className="w-full h-full border border-black/10 shadow-sm bg-[#F5F5F5]"
+        className="w-full h-full bg-[#FAFAFA]"
       >
-        {/* Halftone Dot Pattern for Water */}
-        <defs>
-          <pattern id="halftone-pattern" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
-            <circle cx="6" cy="6" r="2.5" fill="#000000" opacity="0.12" />
-          </pattern>
-        </defs>
+        {/* Render grid lines / block outlines */}
+        {AREAS.map((area) => (
+          <polygon
+            key={`poly-${area.slug}`}
+            points={area.points}
+            style={{
+              fill: "none",
+              stroke: "#000000",
+              strokeWidth: "1",
+              strokeLinejoin: "miter",
+              opacity: 0.1
+            }}
+          />
+        ))}
 
-        {/* Water background */}
-        <rect width="900" height="500" fill="url(#halftone-pattern)" />
-
-        {/* Draw all polygons. We render all of them so visual connectivity is preserved, but only enable pointers on the active half's nodes */}
+        {/* Render Map Pins */}
         {AREAS.map((area) => {
-          const isClicked = clickedSlug === area.slug;
-          const isActiveHalf = area.half === half;
+          const isActive = activeSlug === area.slug;
+          const hasActive = activeSlug !== null;
+          const isInactive = hasActive && !isActive;
+          
+          const pinColor = isInactive ? "#E5E5E5" : area.neonColor;
+          const pinScale = isActive ? "scale(1.5)" : "scale(1)";
+          const strokeWidth = isActive ? "4" : "0";
 
           return (
             <g 
               key={area.slug} 
-              className={`map-group ${isActiveHalf ? "cursor-pointer" : "pointer-events-none"}`}
-              onClick={isActiveHalf ? () => handleAreaClick(area.slug) : undefined}
+              className="cursor-pointer map-pin-group"
+              onClick={() => handleAreaClick(area.slug)}
+              data-testid={`pin-${area.slug}`}
             >
-              <polygon
-                points={area.points}
-                className="transition-all duration-150"
+              {/* Neon Pin */}
+              <circle
+                cx={area.textX}
+                cy={area.textY}
+                r="12"
                 style={{
-                  fill: isClicked ? "#F6C642" : "#FAFAFA",
+                  fill: pinColor,
                   stroke: "#000000",
-                  strokeWidth: "2",
-                  strokeLinejoin: "miter"
+                  strokeWidth: strokeWidth,
+                  transformOrigin: `${area.textX}px ${area.textY}px`,
+                  transform: pinScale,
+                  transition: "all 0.2s ease"
                 }}
               />
-              {/* Massive white typography */}
+              
+              {/* Massive label */}
               <text
                 x={area.textX}
-                y={area.textY}
-                className="map-text select-none text-2xl font-black tracking-tighter"
+                y={area.textY + 28}
+                className="select-none text-base sm:text-xl font-black tracking-tighter"
+                style={{
+                  fill: isInactive ? "#A0A0A0" : "#0A0A0A",
+                  textAnchor: "middle",
+                  dominantBaseline: "middle",
+                  textTransform: "uppercase",
+                  transition: "fill 0.2s ease"
+                }}
               >
                 {area.name}
               </text>

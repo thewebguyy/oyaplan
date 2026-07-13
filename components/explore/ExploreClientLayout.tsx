@@ -7,6 +7,7 @@ import BlueprintMap from "./BlueprintMap";
 import DanfoTicker from "./DanfoTicker";
 import SquadBuilder from "./SquadBuilder";
 import MoodFilters from "./MoodFilters";
+import QuickSwapWipe from "./QuickSwapWipe";
 
 interface ExploreClientLayoutProps {
   spots: Spot[];
@@ -20,33 +21,26 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
   const isDetailsPage = pathname.startsWith("/explore/") && pathname !== "/explore";
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-white">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#FAFAFA]">
+      
       {/* 
-        Area details results container. 
-        Rendered under/behind the map overlay so Next.js server-rendered HTML is ready in the DOM on load.
+        MAP LAYER
+        Always mounted. On desktop, when details are open, we translate the map left by 20vw 
+        so its center is at 30vw (the middle of the remaining 60vw).
+        On mobile, we translate it up by 30vh so its center is in the top 40vh.
       */}
       <div 
-        className="relative z-10 w-full min-h-screen"
-        style={{
-          visibility: isDetailsPage ? "visible" : "hidden",
-          transition: "none"
-        }}
+        className={`absolute inset-0 transition-transform duration-200 ease-out motion-reduce:transition-none ${
+          isDetailsPage 
+            ? "-translate-y-[30vh] md:translate-y-0 md:-translate-x-[20vw]" 
+            : "translate-y-0 translate-x-0"
+        }`}
       >
-        {children}
-      </div>
-
-      {/* The Printing Press Split Overlay Container */}
-      <div className="fixed inset-0 z-50 flex flex-col pointer-events-none">
-        
-        {/* Top Half Plate */}
-        <div 
-          className="relative w-full h-[50vh] bg-white border-b-2 border-black/80 transition-transform duration-220 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between overflow-hidden pointer-events-auto shadow-md"
-          style={{ transform: isDetailsPage ? "translateY(-100%)" : "translateY(0)" }}
-        >
-          {/* Ticker at the top */}
-          <DanfoTicker spots={spots} />
-
-          {/* Heading Section */}
+        {/* Ticker & Header Layer */}
+        <div className="absolute top-0 inset-x-0 z-10 flex flex-col pointer-events-none">
+          <div className="pointer-events-auto">
+            <DanfoTicker spots={spots} />
+          </div>
           <div className="text-center max-w-xl mx-auto mt-6 px-4">
             <h1 className="font-sans font-black text-3xl sm:text-5xl tracking-[-0.04em] uppercase leading-none text-text-primary">
               Where to Go?
@@ -55,35 +49,49 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
               Tap a zone below &bull; Verified Lagos pricing
             </p>
           </div>
-
-          {/* Upper Map Segment */}
-          <div className="w-full max-w-[700px] mx-auto h-[26vh] relative overflow-hidden flex items-end">
-            <div className="absolute top-[-24vh] inset-x-0 flex justify-center">
-              <BlueprintMap half="top" />
-            </div>
-          </div>
         </div>
 
-        {/* Bottom Half Plate */}
-        <div 
-          className="relative w-full h-[50vh] bg-white border-t-2 border-black/80 transition-transform duration-220 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between overflow-hidden pointer-events-auto shadow-md"
-          style={{ transform: isDetailsPage ? "translateY(100%)" : "translateY(0)" }}
-        >
-          {/* Lower Map Segment */}
-          <div className="w-full max-w-[700px] mx-auto h-[26vh] relative overflow-hidden flex items-start">
-            <div className="absolute bottom-[-24vh] inset-x-0 flex justify-center">
-              <BlueprintMap half="bottom" />
-            </div>
-          </div>
+        {/* The Map Component */}
+        <div className="w-full h-full flex items-center justify-center pt-[10vh] md:pt-[15vh] pb-[15vh]">
+          <BlueprintMap />
+        </div>
 
-          {/* Bottom Filter Controls */}
-          <div className="w-full max-w-xl mx-auto pb-6 pt-4 px-4 flex flex-col gap-5 border-t border-black/5">
+        {/* Footer Filters */}
+        <div className="absolute bottom-6 inset-x-0 z-10 pointer-events-auto">
+          <div className="w-full max-w-xl mx-auto px-4 flex flex-col gap-5">
             <SquadBuilder />
             <MoodFilters />
           </div>
         </div>
-
       </div>
+
+      {/* 
+        RESULTS PANEL LAYER
+        Desktop: Side-by-side panel (40vw wide, right aligned)
+        Mobile: Bottom sheet (60vh tall)
+      */}
+      <div 
+        className={`fixed z-50 bg-white border-black/80 transition-transform duration-200 ease-out motion-reduce:transition-none shadow-[0_0_40px_rgba(0,0,0,0.1)]
+          /* Desktop styling: right panel */
+          md:top-0 md:right-0 md:w-[40vw] md:h-screen md:border-l-2 md:bottom-auto md:rounded-t-none
+          /* Mobile styling: bottom sheet */
+          bottom-0 inset-x-0 h-[60vh] border-t-2 md:border-t-0 rounded-t-3xl
+          /* Transform states */
+          ${isDetailsPage ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}
+        `}
+      >
+        {/* Mobile Drag Handle (Visual only) */}
+        <div className="md:hidden w-12 h-1.5 bg-black/20 rounded-full mx-auto mt-3 mb-1" />
+        
+        {/* Scrollable Container with Wipe Wrapper */}
+        <div className="w-full h-full overflow-y-auto">
+          {/* Quick Swap Wipe ensures inner content performs a hard wipe on slug change without remounting the panel */}
+          <QuickSwapWipe pathname={pathname}>
+            {children}
+          </QuickSwapWipe>
+        </div>
+      </div>
+
     </div>
   );
 }
