@@ -153,38 +153,41 @@ export default function BlueprintMap() {
                 <path 
                   d="M0 0 C-6 -8 -12 -16 -12 -24 C-12 -31 -6 -36 0 -36 C6 -36 12 -31 12 -24 C12 -16 6 -8 0 0 Z" 
                   fill={pinColor}
-                  stroke="#FFFFFF"
-                  strokeWidth="2"
+                  stroke="#000000"
+                  strokeWidth="3"
                   style={{ opacity: isInactive ? 0.6 : 1, transition: "all 0.2s ease" }}
                 />
                 <circle 
                   cx="0" 
                   cy="-24" 
                   r="4" 
-                  fill="#FFFFFF" 
+                  fill="#000000" 
                   style={{ opacity: isInactive ? 0.6 : 1, transition: "all 0.2s ease" }} 
                 />
               </g>
               
-              {/* Pill Label */}
+              {/* Neo-brutalist Sticker Label */}
               <foreignObject
                 x={area.textX - 100}
                 y={area.textY - 76}
                 width="200"
-                height="40"
+                height="50"
                 className="overflow-visible"
               >
                 <div className="flex items-center justify-center w-full h-full">
                   <div 
-                    className="inline-flex items-center gap-2 bg-white border-2 border-transparent shadow-[0_4px_12px_rgba(0,0,0,0.08)] rounded-full px-3 py-1"
+                    className={`inline-flex items-center justify-center bg-white border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,1)] px-3 py-1.5 transition-all ${
+                      isActive ? "scale-110" : "scale-100"
+                    } hover:scale-105 active:scale-95`}
                     style={{
-                      transform: isActive ? "scale(1.05)" : "scale(1)",
+                      transform: `rotate(${area.name.length % 2 === 0 ? -4 : 3}deg) ${isActive ? "scale(1.1)" : "scale(1)"}`,
                       opacity: isInactive ? 0.6 : 1,
-                      transition: "all 0.2s ease"
                     }}
                   >
-                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: pinColor, transition: "background-color 0.2s ease" }} />
-                    <span className="text-xs sm:text-sm font-black tracking-tighter text-black uppercase whitespace-nowrap pt-[2px]">
+                    <span 
+                      className="text-xs sm:text-sm font-black tracking-tighter uppercase whitespace-nowrap pt-[2px]" 
+                      style={{ color: pinColor === "#E5E5E5" ? "#000" : pinColor }}
+                    >
                       {area.name}
                     </span>
                   </div>

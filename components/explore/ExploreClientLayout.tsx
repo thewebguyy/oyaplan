@@ -5,8 +5,7 @@ import { ReactNode } from "react";
 import { Spot } from "@/lib/types";
 import BlueprintMap from "./BlueprintMap";
 import DanfoTicker from "./DanfoTicker";
-import SquadBuilder from "./SquadBuilder";
-import MoodFilters from "./MoodFilters";
+import VibeIsland from "./VibeIsland";
 import QuickSwapWipe from "./QuickSwapWipe";
 
 interface ExploreClientLayoutProps {
@@ -30,39 +29,37 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
         On mobile, we translate it up by 15vh so it stays visible above the bottom sheet.
       */}
       <div 
-        className={`absolute inset-0 transition-transform duration-200 ease-out motion-reduce:transition-none ${
+        className={`absolute inset-0 transition-transform duration-200 ease-out motion-reduce:transition-none flex flex-col ${
           isDetailsPage 
             ? "-translate-y-[15vh] md:-translate-y-0 md:-translate-x-[225px]" 
             : "translate-y-0"
         }`}
       >
-        {/* Ticker & Header Layer */}
+        {/* Massive Background Texture Text */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none opacity-[0.03]">
+          <h1 className="font-sans font-black text-[120px] sm:text-[200px] md:text-[280px] leading-none text-center uppercase whitespace-nowrap -rotate-12 select-none" style={{ WebkitTextStroke: "4px black", color: "transparent" }}>
+            LAGOS RAW AND UNFILTERED
+          </h1>
+        </div>
+
+        {/* Ticker Layer */}
         <div className="absolute top-0 inset-x-0 z-10 flex flex-col pointer-events-none">
           <div className="pointer-events-auto">
             <DanfoTicker spots={spots} />
           </div>
-          <div className="text-center max-w-xl mx-auto mt-6 px-4">
-            <h1 className="font-sans font-black text-3xl sm:text-5xl tracking-[-0.04em] uppercase leading-none text-text-primary">
-              Where to Go?
-            </h1>
-            <p className="type-caption text-text-muted mt-1.5 uppercase font-bold tracking-widest text-[9px]">
-              Tap a zone below &bull; Verified Lagos pricing
-            </p>
-          </div>
         </div>
 
         {/* The Map Component */}
-        <div className="w-full h-full flex items-center justify-center pt-[10vh] md:pt-[15vh] pb-[15vh] pointer-events-none">
+        <div className="flex-1 w-full flex items-center justify-center pt-[5vh] pb-[10vh] pointer-events-none z-10">
           <div className="pointer-events-auto w-full max-w-[1000px]">
             <BlueprintMap />
           </div>
         </div>
 
-        {/* Footer Filters */}
-        <div className="absolute bottom-6 inset-x-0 z-10 pointer-events-none">
-          <div className="w-full max-w-xl mx-auto px-4 flex flex-col gap-5 pointer-events-auto">
-            <SquadBuilder />
-            <MoodFilters />
+        {/* Vibe Island (Bottom Dock) */}
+        <div className="absolute bottom-6 sm:bottom-10 inset-x-0 z-20 pointer-events-none">
+          <div className="w-full max-w-xl mx-auto px-4 pointer-events-auto">
+            <VibeIsland />
           </div>
         </div>
       </div>
