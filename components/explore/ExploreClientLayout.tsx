@@ -73,7 +73,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
       <div 
         className={`fixed z-50 bg-white border-black/80 transition-transform duration-200 ease-out motion-reduce:transition-none shadow-[0_0_40px_rgba(0,0,0,0.1)]
           /* Desktop styling: right panel */
-          md:top-0 md:right-0 md:w-[40vw] md:h-screen md:border-l-2 md:bottom-auto md:rounded-t-none
+          md:top-0 md:right-0 md:left-auto md:w-[40vw] md:h-screen md:border-l-2 md:bottom-auto md:rounded-t-none
           /* Mobile styling: bottom sheet */
           bottom-0 inset-x-0 h-[60vh] border-t-2 md:border-t-0 rounded-t-3xl
           /* Transform states */

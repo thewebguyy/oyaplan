@@ -31,7 +31,7 @@ export default function AreaLayout({ slug, areaName, description, spotsCount, ch
         </div>
 
         <div className="max-w-5xl mx-auto px-6 sm:px-12 py-16">
-          <DossierDropWrapper className="grid grid-cols-1 md:grid-cols-2 gap-12 dossier-grid">
+          <DossierDropWrapper className="grid grid-cols-1 sm:grid-cols-2 gap-12 dossier-grid">
             {children}
           </DossierDropWrapper>
         </div>
@@ -72,7 +72,7 @@ export default function AreaLayout({ slug, areaName, description, spotsCount, ch
 
         <div className="w-full">
           {/* Grid layout with internal borders */}
-          <DossierDropWrapper className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b border-black divide-x divide-y divide-black/15 dossier-grid">
+          <DossierDropWrapper className="grid grid-cols-1 sm:grid-cols-2 border-b border-black divide-y sm:divide-y-0 sm:divide-x divide-black/15 dossier-grid">
             {children}
           </DossierDropWrapper>
         </div>
@@ -91,7 +91,7 @@ export default function AreaLayout({ slug, areaName, description, spotsCount, ch
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12">
-        <DossierDropWrapper className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 dossier-grid">
+        <DossierDropWrapper className="grid grid-cols-1 sm:grid-cols-2 gap-8 dossier-grid">
           {children}
         </DossierDropWrapper>
       </div>
