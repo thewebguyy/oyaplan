@@ -64,7 +64,7 @@ export default async function LandingPage() {
               </MotionSection>
               <MotionSection delay={200}>
                 <p className="type-body text-text-secondary max-w-xl mx-auto lg:mx-0 text-lg md:text-xl">
-                  Deterministic outing planning for Lagos. We verify the menus, transport costs, and operational hours so your squad never gets stranded.
+                  Know exactly what you'll spend before you leave. We verify the menus, transport costs, and operational hours so your squad never gets stranded.
                 </p>
               </MotionSection>
               <MotionSection delay={400} className="pt-4">
@@ -237,7 +237,7 @@ export default async function LandingPage() {
             </MotionSection>
             <MotionSection delay={200}>
               <p className="type-body text-text-secondary max-w-md">
-                No more guessing if a menu has changed or if an Uber will break the budget. We crunch real-time data so you can focus on the experience.
+                Every recommendation is generated using our deterministic planning engine and verified venue data—not guesses. Focus on the experience, not the unexpected billing.
               </p>
             </MotionSection>
             <MotionSection delay={300} className="pt-2">
@@ -245,7 +245,7 @@ export default async function LandingPage() {
                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
                    <Check className="w-5 h-5 text-brand-green" strokeWidth={2.5} />
                  </div>
-                 <span className="type-label text-text-primary font-bold">100% Deterministic pricing</span>
+                 <span className="type-label text-text-primary font-bold">Deterministic Pricing Engine</span>
                </div>
             </MotionSection>
           </div>
@@ -288,7 +288,7 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-4">
             <h2 className="font-sans font-black text-4xl tracking-tight text-text-primary uppercase">Start Planning</h2>
-            <p className="type-body text-text-secondary">Enter your constraints and get a deterministic, verified recommendation.</p>
+            <p className="type-body text-text-secondary">Tell us your vibe and budget, and get a verified recommendation.</p>
           </div>
           <div className="bg-white rounded-[8px] shadow-sm border border-border-default overflow-hidden p-2">
             <Suspense fallback={<div className="h-96 shimmer-bg opacity-10 rounded-[8px]" />}>

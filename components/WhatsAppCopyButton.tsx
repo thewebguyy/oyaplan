@@ -84,21 +84,22 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
       toast.error("Couldn't prepare your plan link. Please try again.");
       return;
     }
-    const text = `*OyaPlan: The Squad Outing Plan* 🇳🇬
+    const perPersonCost = Math.round(plan.totalCost / input.squadSize);
+    
+    const text = `🥂 *The Plan: ${plan.spot.name}* 
 
-📍 *Spot:* ${plan.spot.name}
-🗺️ *Address:* ${plan.spot.address}
+*The Vibe:* ${input.vibe}
+*Estimated Spend:* ₦${perPersonCost.toLocaleString()} per person
 
-💰 *Estimated Costs:*
-- ${plan.spot.has_food !== false ? "Food/Drinks" : "Entry/Activity"}: ₦${plan.foodCost.toLocaleString()}
-- Transport: ₦${plan.transportCost.toLocaleString()}
-- *Estimated Total: ₦${plan.totalCost.toLocaleString()}*
-
-💡 *Why it fits:*
+*Why we should go:* 
 ${plan.whyItFits}
+Prices are verified, so no unexpected billing.
 
-Recommended by OyaPlan.com
-View full plan: ${url}`;
+*What's covered in the ₦${perPersonCost.toLocaleString()}:*
+Food, drinks, taxes, and round-trip transport. 
+
+Check the full breakdown and let's lock it in: 
+${url}`;
 
     if (isMobile) {
       const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;

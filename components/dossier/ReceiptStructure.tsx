@@ -1,7 +1,7 @@
 "use client";
 
 import { BudgetFitBadge, BudgetFitStatus } from "@/components/ui/budget-fit-badge";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Check } from "lucide-react";
 import { useState } from "react";
 
 interface ReceiptStructureProps {
@@ -54,10 +54,10 @@ export function ReceiptStructure({
           <span className="font-bold">₦{venueCost.toLocaleString()}</span>
         </div>
 
-        {/* Logistics Row */}
+        {/* Transport Row */}
         <div className="flex justify-between items-center p-4 border-b border-black">
           <div className="flex items-center gap-2 relative">
-            <span className="font-bold text-black uppercase tracking-tight">Logistics</span>
+            <span className="font-bold text-black uppercase tracking-tight">Round-trip Transport</span>
             
             <button 
               className="text-text-muted hover:text-black transition-colors"
@@ -82,18 +82,61 @@ export function ReceiptStructure({
           <span className="font-bold">{hasCar ? "₦0" : `₦${transportCost.toLocaleString()}`}</span>
         </div>
 
-        {/* Contingency Row */}
+        {/* Buffer Row */}
         <div className="flex justify-between items-center p-4 border-b border-black">
-          <span className="font-bold text-black uppercase tracking-tight text-text-muted">Contingency (15%)</span>
+          <span className="font-bold text-black uppercase tracking-tight text-text-muted">Buffer (Just in case)</span>
           <span className="font-bold text-text-muted">₦{Math.round(contingency).toLocaleString()}</span>
         </div>
 
-        {/* Final Tally Inverted Row */}
+        {/* Final Spend Inverted Row */}
         <div className="flex justify-between items-center p-5 bg-black text-white font-sans">
-          <span className="font-black tracking-widest text-[11px] uppercase">Final Tally (Per Person)</span>
+          <span className="font-black tracking-widest text-[11px] uppercase">Estimated Spend (Per Person)</span>
           <span className="font-black text-xl">₦{Math.round(finalTallyPerPerson).toLocaleString()}</span>
         </div>
 
+      </div>
+
+      {/* What's Included Transparency Module */}
+      <div className="mt-6 border border-border-default bg-[#F9F9F9] rounded-[12px] p-5">
+        <h4 className="type-ui-label text-text-primary text-xs uppercase font-bold tracking-widest mb-3">Included in this estimate</h4>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+            </div>
+            <span className="type-caption text-text-secondary font-medium">Food</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+            </div>
+            <span className="type-caption text-text-secondary font-medium">Drinks</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+            </div>
+            <span className="type-caption text-text-secondary font-medium">VAT & State Taxes</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+            </div>
+            <span className="type-caption text-text-secondary font-medium">Service Charge</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+            </div>
+            <span className="type-caption text-text-secondary font-medium">Estimated Round-Trip Transport</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+            </div>
+            <span className="type-caption text-text-secondary font-medium">Buffer for small extras</span>
+          </div>
+        </div>
       </div>
     </div>
   );

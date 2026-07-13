@@ -12,6 +12,8 @@ import { LedgerCard } from "@/components/dossier/LedgerCard";
 import { ReceiptStructure } from "@/components/dossier/ReceiptStructure";
 import { TransportToggle } from "@/components/dossier/TransportToggle";
 import { PlanCTAs } from "@/components/dossier/PlanCTAs";
+import { BeforeYouGo } from "@/components/dossier/BeforeYouGo";
+import { WhyWePickedThis } from "@/components/dossier/WhyWePickedThis";
 import { AREAS } from "@/lib/config/areas";
 import { TrustStatus } from "@/components/ui/trust-badge";
 import { BudgetFitStatus } from "@/components/ui/budget-fit-badge";
@@ -114,7 +116,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
           </span>
         </Link>
         <span className="type-ui-label text-black text-[10px] bg-[#F6C642] px-2 py-1 font-bold">
-          Dossier Active
+          Live Plan
         </span>
       </div>
 
@@ -123,7 +125,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
         {/* Zero-Context Explainer */}
         <div className="text-center max-w-sm mx-auto mb-8">
           <p className="font-sans font-medium text-black text-sm sm:text-base leading-relaxed">
-            Someone built a plan for <strong>{plan?.squad_size} people</strong> going to <strong>{plan?.spot?.name}</strong>. We ran the deterministic math so nobody washes plates tonight.
+            Someone built a plan for <strong>{plan?.squad_size} people</strong> going to <strong>{plan?.spot?.name}</strong>. We did the math so you can just enjoy the night. No unexpected billing.
           </p>
         </div>
 
@@ -156,6 +158,10 @@ export default async function PlanPage({ params }: PlanPageProps) {
           vibe={plan?.vibe || "Chill"}
           startArea={plan?.start_area || ""}
         />
+
+        {/* New Reassurance Modules */}
+        <WhyWePickedThis plan={plan!} />
+        <BeforeYouGo />
 
         {/* Utility / Feedback block */}
         <div className="pt-16 pb-8 space-y-6">
