@@ -437,4 +437,31 @@
     clip-path: none !important;
   }
 }
+
+/* ==========================================
+   Financial Dossier Animations (Phase E7)
+   ========================================== */
+
+@keyframes slam {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slam {
+  animation: slam 0.15s cubic-bezier(0, 0, 0, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slam {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
 
