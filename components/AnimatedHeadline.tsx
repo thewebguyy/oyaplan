@@ -22,7 +22,7 @@ export default function AnimatedHeadline() {
 
   return (
     <span className="relative inline-block w-full" style={{ perspective: "1200px" }}>
-      <span className="relative flex items-center justify-center overflow-visible h-[1.8em] w-full">
+      <span className="relative flex items-center justify-center w-full min-h-[100px] sm:min-h-[120px]">
         <AnimatePresence mode="popLayout">
           <motion.div
             key={index}
@@ -39,10 +39,10 @@ export default function AnimatedHeadline() {
               transformOrigin: "center center",
               transformStyle: "preserve-3d"
             }}
-            className="absolute flex items-center justify-center w-fit px-8 py-3 sm:py-4 bg-[#111111] text-chow-yellow-100 rounded-[12px] sm:rounded-[16px] shadow-[0_20px_40px_rgba(0,0,0,0.3)] border-b-4 border-black/50"
+            className="absolute flex items-center justify-center w-fit px-8 py-4 sm:py-5 bg-brand-green text-chow-yellow-100 rounded-[12px] sm:rounded-[16px] shadow-[0_20px_40px_rgba(0,135,81,0.3)] border-b-[6px] border-[#00663C]"
           >
             {/* The physical split-flap line */}
-            <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[3px] sm:h-[4px] bg-black z-20" />
+            <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[3px] sm:h-[4px] bg-[#00663C] z-20" />
             
             {/* The text */}
             <span className="relative z-10 font-black tracking-tight text-[0.8em] sm:text-[0.9em] leading-none uppercase drop-shadow-md">

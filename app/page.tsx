@@ -58,9 +58,9 @@ export default async function LandingPage() {
           <div className="w-full h-full bg-[url('/illustrations/lagos-animated.svg')] bg-cover bg-no-repeat bg-bottom mix-blend-multiply opacity-90" />
         </div>
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-4">
+        <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-4 mb-8">
           <div className="w-full">
-            <h1 className="font-extrabold text-5xl md:text-6xl tracking-tighter max-w-3xl mx-auto text-text-primary h-[2.5em] md:h-[2em] flex items-end justify-center perspective-[1000px]">
+            <h1 className="font-extrabold text-5xl md:text-6xl tracking-tighter max-w-3xl mx-auto text-text-primary flex items-end justify-center perspective-[1000px] min-h-[120px]">
               <AnimatedHeadline />
             </h1>
           </div>
