@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Calendar, Settings2 } from "lucide-react";
-import { generateGoogleCalendarLink } from "@/lib/utils"; // Assuming a utility exists, or we can just build the ICS download link
+import { useState } from "react";
 
 interface PlanCTAsProps {
   planId: string;
@@ -15,6 +15,8 @@ interface PlanCTAsProps {
 }
 
 export function PlanCTAs({ planId, venueName, address, budget, squadSize, vibe, startArea }: PlanCTAsProps) {
+  const [isUpNepa, setIsUpNepa] = useState(false);
+
   // Construct the Forge pre-fill URL using the exact keys from Zod schema
   // forgeParamsSchema: vibe, squad, budget, area
   const forgeParams = new URLSearchParams({
@@ -26,17 +28,32 @@ export function PlanCTAs({ planId, venueName, address, budget, squadSize, vibe, 
   
   const forgeUrl = `/forge?${forgeParams.toString()}`;
 
-  // Simple calendar generic handler (in real app, triggers ics download or opens GCal)
   const handleCalendar = () => {
-    // Basic Google Calendar link generation for demo
-    const text = encodeURIComponent(`OyaPlan: ${venueName}`);
-    const details = encodeURIComponent(`Plan ID: ${planId}\n\nView full dossier: https://oyaplan.vercel.app/plan/${planId}`);
-    const location = encodeURIComponent(address || venueName);
-    window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}&location=${location}`, '_blank');
+    // Up NEPA Animation sequence
+    setIsUpNepa(true);
+    
+    // Hold exactly 150ms then snap back, and trigger calendar action
+    setTimeout(() => {
+      setIsUpNepa(false);
+      
+      const text = encodeURIComponent(`OyaPlan: ${venueName}`);
+      const details = encodeURIComponent(`Plan ID: ${planId}\n\nView full dossier: https://oyaplan.vercel.app/plan/${planId}`);
+      const location = encodeURIComponent(address || venueName);
+      window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}&location=${location}`, '_blank');
+    }, 150);
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mx-auto mt-8">
+    <div className={`flex flex-col sm:flex-row items-center gap-4 w-full max-w-lg mx-auto mt-8 relative ${isUpNepa ? 'animate-up-nepa' : ''}`}>
+      {/* SQUAD LOCKED stamp drops during Up NEPA */}
+      {isUpNepa && (
+        <div className="absolute -top-6 right-0 z-50 animate-squad-stamp pointer-events-none">
+          <div className="bg-black text-[#F6C642] px-3 py-1 font-black uppercase tracking-widest text-[14px] transform border-2 border-black">
+            Squad Locked
+          </div>
+        </div>
+      )}
+
       <button 
         onClick={handleCalendar}
         className="w-full sm:flex-1 bg-black text-white font-sans font-bold uppercase tracking-widest text-xs h-14 rounded-[8px] flex items-center justify-center gap-2 btn-intent-snaps tap-feedback"

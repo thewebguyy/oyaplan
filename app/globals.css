@@ -276,6 +276,8 @@
   .animation-delay-0 { animation-delay: 0ms; }
   .animation-delay-80 { animation-delay: 80ms; }
   .animation-delay-160 { animation-delay: 160ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-250 { animation-delay: 250ms; }
 
   .animate-progress {
     animation: progress-loading 1.5s infinite linear;
@@ -458,10 +460,81 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-slam {
+  .animate-slam,
+  .animate-slide-up-in,
+  .animate-slide-up-out,
+  .dossier-card,
+  .animate-wipe-down,
+  .animate-hold-up,
+  .animate-up-nepa,
+  .animate-danfo-launch,
+  .animate-map-lurch,
+  .animate-squad-tilt,
+  .animate-squad-stamp {
     animation: none !important;
     transform: none !important;
     opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
   }
+}
+
+/* ==========================================
+   Motion Rhythm Layer (Phase E8: Lagos Traffic)
+   ========================================== */
+
+/* Up NEPA Success State */
+@keyframes up-nepa-invert {
+  0%, 100% { filter: invert(0); }
+  10%, 90% { filter: invert(1) hue-rotate(180deg); }
+}
+
+.animate-up-nepa {
+  /* 150ms exact hard-cut */
+  animation: up-nepa-invert 0.15s steps(1, end) forwards;
+}
+
+@keyframes squad-stamp-drop {
+  from { transform: scale(1.5) rotate(-5deg); opacity: 0; }
+  to { transform: scale(1) rotate(-5deg); opacity: 1; }
+}
+
+.animate-squad-stamp {
+  animation: squad-stamp-drop 0.05s linear forwards;
+}
+
+/* Map Lurch */
+@keyframes map-lurch {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.2); }
+  80% { transform: scale(1.2); }
+  100% { transform: scale(1.5); }
+}
+.animate-map-lurch {
+  animation: map-lurch 0.2s linear forwards;
+}
+
+/* Squad Builder Tilt */
+@keyframes squad-tilt {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(15deg); }
+  100% { transform: rotate(0deg); }
+}
+.animate-squad-tilt {
+  animation: squad-tilt 0.08s linear;
+}
+
+/* Hold-Up Entrance */
+@keyframes holdup-slam {
+  from { transform: scaleY(1.1); opacity: 0; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+.animate-holdup-slam {
+  animation: holdup-slam 0.1s cubic-bezier(0.9, 0, 0.1, 1) forwards;
+}
+
+/* Danfo Launch Easing Class */
+.ease-danfo {
+  transition-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
 }
 
