@@ -33,7 +33,7 @@ export default function RotatingHeadline() {
   }, []);
 
   const lines = [
-    "Do you know where to go?",
+    "Where you wan go?",
     "Do you know how much it is going to cost?",
     "How much dey your hand?",
     "Only you or na full squad?"
