@@ -32,8 +32,8 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
       <div 
         className={`absolute inset-0 transition-transform duration-200 ease-out motion-reduce:transition-none ${
           isDetailsPage 
-            ? "-translate-y-[30vh] md:translate-y-0 md:-translate-x-[20vw]" 
-            : "translate-y-0 translate-x-0"
+            ? "-translate-y-[30vh] md:-translate-x-[20vw]" 
+            : "translate-y-0"
         }`}
       >
         {/* Ticker & Header Layer */}
@@ -77,7 +77,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
           /* Mobile styling: bottom sheet */
           bottom-0 inset-x-0 h-[60vh] border-t-2 md:border-t-0 rounded-t-3xl
           /* Transform states */
-          ${isDetailsPage ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}
+          ${isDetailsPage ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-x-full"}
         `}
       >
         {/* Mobile Drag Handle (Visual only) */}
