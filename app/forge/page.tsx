@@ -26,6 +26,7 @@ const forgeParamsSchema = z.object({
   budget: z.coerce.number().int().positive().min(5000).max(2000000),
   area: z.string().optional().default("anywhere"),
   pinned: z.string().optional(),
+  fresh: z.string().optional(),
 });
 
 function isBotRequest(userAgent: string | null): boolean {
@@ -112,7 +113,17 @@ export default async function ForgePage({
 
   let allSpots;
   try {
-    const { data, error } = await getForgeSpots(allowedCategories ?? undefined);
+    const isFreshSubmission = parsed.data.fresh === "true";
+    const spotsPromise = getForgeSpots(allowedCategories ?? undefined);
+    
+    // Data-gated Hold-Up logic: only enforce the 900ms floor on fresh submissions
+    const promises: Promise<any>[] = [spotsPromise];
+    if (isFreshSubmission) {
+      promises.push(new Promise(resolve => setTimeout(resolve, 900)));
+    }
+    
+    const [spotsResult] = await Promise.all(promises);
+    const { data, error } = spotsResult;
 
     if (error || !data || data.length === 0) {
       redirect("/?error=spots_unavailable");

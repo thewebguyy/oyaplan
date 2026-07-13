@@ -111,7 +111,7 @@ export default function ForgeResultsClient({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12 pb-20 animate-in fade-in duration-500 motion-reduce:duration-0">
+    <div className="max-w-4xl mx-auto space-y-12 pb-20 animate-holdup-slam">
       {/* Recommendations Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-2">
@@ -155,7 +155,7 @@ export default function ForgeResultsClient({
           )}
 
           {/* Plan 1: Full Width */}
-          <div className="w-full dossier-card">
+          <div className="w-full dossier-card ease-danfo animate-slide-up-in animation-delay-0">
             <EditorialPlan 
               key={`top-${evaluations[0].plan.spot.id}`} 
               evaluation={evaluations[0]} 
@@ -171,7 +171,7 @@ export default function ForgeResultsClient({
           {evaluations.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {evaluations.slice(1, 3).map((evaluation, index) => (
-                <div key={evaluation.plan.spot.id} className="dossier-card">
+                <div key={evaluation.plan.spot.id} className={`dossier-card ease-danfo animate-slide-up-in ${index === 0 ? 'animation-delay-200' : 'animation-delay-250'}`}>
                   <EditorialPlan 
                     key={`other-${evaluation.plan.spot.id}`}
                     evaluation={evaluation} 

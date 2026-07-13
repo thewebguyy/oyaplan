@@ -124,6 +124,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
       }
     });
 
+    params.set("fresh", "true");
     router.push(`/forge?${params.toString()}`);
   };
 
