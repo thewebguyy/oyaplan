@@ -1,4 +1,4 @@
-import ForgeForm from "@/components/ForgeForm";
+import dynamic from "next/dynamic";
 import ErrorBanner from "@/components/ErrorBanner";
 import PageError from "@/components/PageError";
 import { captureServerException } from "@/lib/sentry";
@@ -8,6 +8,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Check, Clock } from "lucide-react";
 import MotionSection from "@/components/motion/MotionSection";
+
+const ForgeForm = dynamic(() => import("@/components/ForgeForm"), {
+  ssr: true,
+  loading: () => <div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />,
+});
 
 export const revalidate = 300;
 
@@ -39,40 +44,39 @@ export default async function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white text-text-primary antialiased">
+    <main className="min-h-screen bg-brand-green text-white antialiased">
       <Suspense fallback={null}>
         <ErrorBanner />
       </Suspense>
 
       {/* Hero Section */}
-      <div className="relative pt-24 md:pt-32 pb-16 px-4 bg-white min-h-[85vh] flex flex-col items-center justify-start border-b border-border-default overflow-hidden">
+      <div className="relative pt-24 md:pt-32 pb-16 px-4 min-h-[85vh] flex flex-col items-center justify-start border-b border-white/20 overflow-hidden">
         
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-4">
-          <MotionSection delay={0} className="w-full">
-            <h1 className="font-extrabold text-5xl md:text-6xl text-text-primary tracking-tight max-w-3xl mx-auto">
+          <div className="w-full">
+            <h1 className="font-extrabold text-5xl md:text-6xl tracking-tight max-w-3xl mx-auto text-white">
               Find where to go, know what it costs.
             </h1>
-          </MotionSection>
+          </div>
 
-          <MotionSection delay={100} className="mt-4 px-4">
-            <p className="type-body text-text-secondary max-w-lg mx-auto md:text-lg">
+          <div className="mt-4 px-4">
+            <p className="type-body max-w-lg mx-auto md:text-lg text-white/90">
               We've already worked out the prices, transport, and hidden costs.
             </p>
-          </MotionSection>
+          </div>
 
-          {/* Form and Preview Card Stack */}
-          <div className="w-full max-w-lg mx-auto mt-10 flex flex-col gap-6">
-            <MotionSection delay={200} className="w-full">
-              <div className="bg-white rounded-[24px] shadow-float border border-border-default overflow-hidden p-2">
+          <div className="w-full max-w-5xl mx-auto mt-10 flex flex-col md:flex-row gap-6 items-start justify-center">
+            <div className="w-full md:w-1/2">
+              <div className="bg-white rounded-[24px] shadow-float border border-transparent overflow-hidden p-2 text-text-primary">
                 <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
                   <ForgeForm areas={areas} />
                 </Suspense>
               </div>
-            </MotionSection>
+            </div>
 
             {/* Static Plan Result Preview Card */}
-            <MotionSection delay={300} className="w-full">
-               <div className="bg-white rounded-[24px] p-5 shadow-float border border-border-default text-left">
+            <div className="w-full md:w-1/2">
+               <div className="bg-white rounded-[24px] p-5 shadow-float border border-transparent text-left text-text-primary">
                   <div className="flex justify-between items-start mb-3">
                     <span className="text-[10px] text-brand-green font-bold uppercase tracking-wider bg-brand-green-15 px-2 py-1 rounded-full flex items-center gap-1">
                       <Check className="w-3 h-3" strokeWidth={3} /> Verified
@@ -82,7 +86,7 @@ export default async function LandingPage() {
                     </div>
                   </div>
                   <div className="mb-4 border-b border-border-default pb-4">
-                    <h3 className="type-venue-name text-base leading-none mb-1 text-text-primary font-bold">Nok by Alara</h3>
+                    <h3 className="type-venue-name text-base leading-none mb-1 text-text-primary font-bold">Premium Dinner Spot</h3>
                     <p className="text-xs text-text-muted font-medium flex items-center gap-1">📍 Victoria Island, Lagos</p>
                   </div>
                   <div className="space-y-2 mb-4">
@@ -100,33 +104,33 @@ export default async function LandingPage() {
                     <span className="font-black tabular-nums text-text-primary text-xl">₦38,500 <span className="text-[10px] text-text-muted font-bold tracking-wider uppercase font-sans">/ person</span></span>
                   </div>
                </div>
-            </MotionSection>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Trust Strip */}
-      <div className="py-6 bg-white border-b border-border-default">
+      <div className="py-6 border-b border-white/20">
         <div className="max-w-4xl mx-auto px-4">
-          <MotionSection delay={400} className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4">
+          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both">
              <div className="flex items-center gap-2">
-               <Check className="w-4 h-4 text-brand-green" strokeWidth={3} />
-               <span className="type-label text-text-secondary font-medium text-sm">Verified pricing</span>
+               <Check className="w-4 h-4 text-white" strokeWidth={3} />
+               <span className="type-label text-white/90 font-medium text-sm">Verified pricing</span>
              </div>
              <div className="flex items-center gap-2">
-               <Check className="w-4 h-4 text-brand-green" strokeWidth={3} />
-               <span className="type-label text-text-secondary font-medium text-sm">Transport included</span>
+               <Check className="w-4 h-4 text-white" strokeWidth={3} />
+               <span className="type-label text-white/90 font-medium text-sm">Transport included</span>
              </div>
              <div className="flex items-center gap-2">
-               <Check className="w-4 h-4 text-brand-green" strokeWidth={3} />
-               <span className="type-label text-text-secondary font-medium text-sm">No hidden fees</span>
+               <Check className="w-4 h-4 text-white" strokeWidth={3} />
+               <span className="type-label text-white/90 font-medium text-sm">No hidden fees</span>
              </div>
-          </MotionSection>
+          </div>
         </div>
       </div>
 
       {/* Feature Cards Section */}
-      <div className="py-20 bg-surface-grey">
+      <div className="py-20">
         <div className="max-w-5xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <MotionSection delay={100} className="h-full">
