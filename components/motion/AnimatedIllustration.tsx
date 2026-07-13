@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface AnimatedIllustrationProps {
   src: string;
@@ -65,16 +66,17 @@ export default function AnimatedIllustration({
           isVisible && float && "motion-safe:animate-hero-breathe"
         )}
       >
-        <div className="w-full h-full md:group-hover:rotate-x-1 md:group-hover:-rotate-y-1 md:group-hover:-translate-y-1 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
-          <img
+        <div className="relative w-full h-full md:group-hover:rotate-x-1 md:group-hover:-rotate-y-1 md:group-hover:-translate-y-1 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+          <Image
             src={src}
             alt={alt}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className={cn(
-              "w-full h-full object-cover rounded-[16px] shadow-lg shadow-black/5",
+              "object-cover rounded-[16px] shadow-lg shadow-black/5",
               imageClassName
             )}
-            loading={priority ? "eager" : "lazy"}
-            decoding="async"
+            priority={priority}
           />
         </div>
       </div>

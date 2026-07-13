@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, MouseEvent, TouchEvent } from "react";
+import Image from "next/image";
 
 interface ScrubbablePhotosProps {
   images?: string[];
@@ -72,10 +73,12 @@ export default function ScrubbablePhotos({ images, venueName }: ScrubbablePhotos
 
       {/* Black crushed contact sheet frame */}
       <div className="absolute inset-0 z-10 filter contrast-125 brightness-95 grayscale scale-100 dossier-photo">
-        <img 
+        <Image 
           src={images[activeFrame]} 
           alt={`${venueName} frame ${activeFrame}`}
-          className="w-full h-full object-cover"
+          fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-cover"
           style={{ filter: "contrast(1.3) brightness(0.85) saturate(0.85)" }}
         />
       </div>

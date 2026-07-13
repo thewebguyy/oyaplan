@@ -10,8 +10,14 @@ import PageError from "@/components/PageError";
 import AreaLayout from "@/components/explore/AreaLayout";
 import ScrubbablePhotos from "@/components/explore/ScrubbablePhotos";
 import { TrustBadge } from "@/components/ui/trust-badge";
+import { Spot } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+interface FilteredSpot extends Spot {
+  fitsBudget?: boolean;
+  fitsVibe?: boolean;
+}
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -144,7 +150,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   }
 
   // 2. Try Area View
-  let area: { id: string; name: string; slug: string; spots: Array<{ id: string; name: string; active: boolean; category: string; address: string; price_per_person: number; fitsBudget?: boolean; fitsVibe?: boolean }> } | null = null;
+  let area: { id: string; name: string; slug: string; spots: Spot[] } | null = null;
   let areaFetchError = false;
   try {
     const { data, error, notFound: isNotFound } = await getAreaWithSpots(slug);
@@ -152,7 +158,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     if (error) {
       areaFetchError = true;
     } else {
-      area = data as any;
+      area = data as { id: string; name: string; slug: string; spots: Spot[] };
     }
   } catch (e) {
     captureServerException(e);
@@ -167,7 +173,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   // Process spots with budget and vibe filters resolved server-side
   const squadCount = urlParams.squad ? parseInt(urlParams.squad) : 2;
-  const spots = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
+  const spots: FilteredSpot[] = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
     const estimatedTotal = spot.price_per_person * squadCount * 1.1;
     const fitsBudget = budget ? estimatedTotal <= budget : true;
     
@@ -175,7 +181,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     let fitsVibe = true;
     if (vibe) {
       const cat = (spot.category || "").toLowerCase();
-      const tags = Array.isArray((spot as any).tags) ? (spot as any).tags.map((t: string) => t.toLowerCase()) : [];
+      const tags = Array.isArray(spot.vibe_tags) ? spot.vibe_tags.map((t: string) => t.toLowerCase()) : [];
       const vibeLower = vibe.toLowerCase();
       
       fitsVibe = cat.includes(vibeLower) || 
@@ -274,10 +280,14 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
             );
           })
         ) : (
-          <div className="col-span-full text-center py-20 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
-            <p className="type-body text-text-muted">No spots match your active vibe/budget filters.</p>
-            <Link href={`/explore/${slug}`} className="type-label text-brand-green hover:underline inline-block">
-              Clear filters and view all spots &rarr;
+          <div className="col-span-full text-center py-20 px-6 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
+            <p className="type-body text-text-muted">
+              {budget 
+                ? `To protect your budget, we've filtered out spots that exceed your ₦${budget.toLocaleString('en-NG')} limit. We only show venues with verified pricing so your squad never gets stranded.`
+                : "No spots match your active vibe or budget filters."}
+            </p>
+            <Link href={`/explore/${slug}`} className="type-label text-brand-green hover:underline inline-block mt-2">
+              Clear filters and view all verified spots &rarr;
             </Link>
           </div>
         )}
