@@ -51,11 +51,11 @@ export default async function LandingPage() {
       </Suspense>
 
       {/* Hero Section */}
-      <div className="relative pt-24 md:pt-32 pb-16 px-4 min-h-[85vh] flex flex-col items-center justify-start border-b border-border-default overflow-hidden bg-[#FFFBF2]">
+      <div className="relative pt-24 md:pt-32 pb-16 px-4 min-h-screen flex flex-col items-center justify-start border-b border-border-default overflow-hidden bg-[#FFFBF2]">
         
-        {/* Vibrant Lagos Vector Illustration */}
+        {/* Animated Lagos Vector Illustration */}
         <div className="absolute inset-0 z-0 pointer-events-none flex items-end justify-center overflow-hidden">
-          <div className="w-full h-[70%] bg-[url('/illustrations/lagos-vibrant.png')] bg-cover sm:bg-contain bg-no-repeat bg-bottom mix-blend-multiply opacity-90" />
+          <div className="w-full h-full bg-[url('/illustrations/lagos-animated.svg')] bg-cover bg-no-repeat bg-bottom mix-blend-multiply opacity-90" />
         </div>
 
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-4">
