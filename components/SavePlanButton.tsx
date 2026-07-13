@@ -26,7 +26,7 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
         setIsSaved(true);
         toast.success("Plan saved to your Saved Plans!");
         AnalyticsService.track('plan_saved', {
-          session_id: 'browser',
+          session_id: '00000000-0000-0000-0000-000000000000',
           properties: {
             category: 'Engagement',
             shared_plan_id: planId,
@@ -66,3 +66,4 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
     </Button>
   );
 }
+

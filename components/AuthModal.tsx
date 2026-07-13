@@ -24,7 +24,7 @@ export default function AuthModal() {
     setError(null);
 
     AnalyticsService.track('auth_initiated', {
-      session_id: 'browser',
+      session_id: '00000000-0000-0000-0000-000000000000',
       properties: {
         category: 'Activation',
         source: 'magic_link',
@@ -55,7 +55,7 @@ export default function AuthModal() {
 
   const handleGoogle = async () => {
     AnalyticsService.track('auth_initiated', {
-      session_id: 'browser',
+      session_id: '00000000-0000-0000-0000-000000000000',
       properties: {
         category: 'Activation',
         source: 'google',
@@ -153,3 +153,4 @@ export default function AuthModal() {
     </Dialog>
   );
 }
+

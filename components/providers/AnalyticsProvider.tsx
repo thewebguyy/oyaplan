@@ -12,7 +12,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     if (pathname && trackedPath.current !== pathname) {
       trackedPath.current = pathname;
       AnalyticsService.track('page_viewed', { 
-        session_id: 'browser',
+        session_id: '00000000-0000-0000-0000-000000000000',
         properties: {
           category: 'Engagement',
           path: pathname,
@@ -24,3 +24,4 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
+

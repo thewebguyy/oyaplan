@@ -113,7 +113,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     }
     
     AnalyticsService.track('forge_started', {
-      session_id: 'browser',
+      session_id: '00000000-0000-0000-0000-000000000000',
       properties: {
         category: 'Activation',
         source: 'conversational_flow',
@@ -301,3 +301,4 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     </div>
   );
 }
+

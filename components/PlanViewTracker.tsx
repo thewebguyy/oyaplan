@@ -11,7 +11,7 @@ export default function PlanViewTracker({ planId }: { planId: string }) {
     hasTracked.current = true;
 
     AnalyticsService.track('plan_viewed', {
-      session_id: 'browser',
+      session_id: '550e8400-e29b-41d4-a716-446655440000',
       properties: {
         category: 'Engagement',
         plan_id: planId,
@@ -22,3 +22,4 @@ export default function PlanViewTracker({ planId }: { planId: string }) {
 
   return null;
 }
+

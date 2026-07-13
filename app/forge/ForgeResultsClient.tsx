@@ -53,7 +53,7 @@ export default function ForgeResultsClient({
   // Analytics tracking on mount/change
   useEffect(() => {
     AnalyticsService.track('forge_completed', {
-      session_id: 'browser',
+      session_id: '00000000-0000-0000-0000-000000000000',
       properties: {
         category: 'Activation',
         plans_generated: evaluations.length,
@@ -396,3 +396,4 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
     </form>
   );
 }
+
