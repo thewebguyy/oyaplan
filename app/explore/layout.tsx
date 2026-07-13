@@ -5,6 +5,8 @@ import { Spot } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
+
 export default async function ExploreLayout({ children }: { children: React.ReactNode }) {
   let spots: Spot[] = [];
 
@@ -18,8 +20,10 @@ export default async function ExploreLayout({ children }: { children: React.Reac
   }
 
   return (
-    <ExploreClientLayout spots={spots}>
-      {children}
-    </ExploreClientLayout>
+    <Suspense fallback={<div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">Loading map...</div>}>
+      <ExploreClientLayout spots={spots}>
+        {children}
+      </ExploreClientLayout>
+    </Suspense>
   );
 }
