@@ -60,10 +60,8 @@ export default async function LandingPage() {
 
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-4">
           <div className="w-full">
-            <h1 className="font-extrabold text-5xl md:text-6xl tracking-tighter max-w-3xl mx-auto text-text-primary">
+            <h1 className="font-extrabold text-5xl md:text-6xl tracking-tighter max-w-3xl mx-auto text-text-primary h-[2.5em] md:h-[2em] flex items-end justify-center perspective-[1000px]">
               <AnimatedHeadline />
-              <br />
-              know what it costs.
             </h1>
           </div>
 

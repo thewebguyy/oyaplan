@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PHRASES = [
-  "Find where to go,",
-  "Wetin dey sup?",
-  "Ekaabo!"
+  "Where you wan go?",
+  "How much is your budget?",
+  "Na only you?",
+  "Is it a full squad?"
 ];
 
 export default function AnimatedHeadline() {
@@ -15,45 +16,39 @@ export default function AnimatedHeadline() {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % PHRASES.length);
-    }, 3000); // Rotate every 3 seconds
+    }, 3500);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <span className="relative inline-block w-full text-brand-green">
-      <span className="relative inline-flex items-center justify-center overflow-hidden h-[1.2em] w-full align-top">
+    <span className="relative inline-block w-full" style={{ perspective: "1200px" }}>
+      <span className="relative flex items-center justify-center overflow-visible h-[1.8em] w-full">
         <AnimatePresence mode="popLayout">
-          <motion.span
+          <motion.div
             key={index}
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -80, opacity: 0 }}
+            initial={{ rotateX: 90, opacity: 0 }}
+            animate={{ rotateX: 0, opacity: 1 }}
+            exit={{ rotateX: -90, opacity: 0 }}
             transition={{
               type: "spring",
-              stiffness: 400,
-              damping: 30,
-              mass: 1
+              stiffness: 120,
+              damping: 15,
+              mass: 1.2
             }}
-            className="absolute left-0 right-0 w-full text-center z-10"
+            style={{ 
+              transformOrigin: "center center",
+              transformStyle: "preserve-3d"
+            }}
+            className="absolute flex items-center justify-center w-fit px-8 py-3 sm:py-4 bg-[#111111] text-chow-yellow-100 rounded-[12px] sm:rounded-[16px] shadow-[0_20px_40px_rgba(0,0,0,0.3)] border-b-4 border-black/50"
           >
-            {PHRASES[index]}
-          </motion.span>
-        </AnimatePresence>
-
-        {/* Highlighter Swish */}
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={`highlight-${index}`}
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.1 } }}
-            transition={{
-              delay: 0.3, // Wait for text to snap into place
-              duration: 0.4,
-              ease: "circOut"
-            }}
-            className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 w-fit min-w-[300px] h-[30%] bg-chow-yellow-100 z-0 origin-left rounded-sm"
-          />
+            {/* The physical split-flap line */}
+            <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[3px] sm:h-[4px] bg-black z-20" />
+            
+            {/* The text */}
+            <span className="relative z-10 font-black tracking-tight text-[0.8em] sm:text-[0.9em] leading-none uppercase drop-shadow-md">
+              {PHRASES[index]}
+            </span>
+          </motion.div>
         </AnimatePresence>
       </span>
     </span>
