@@ -91,8 +91,8 @@
 
   /* Radius Scale */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 24px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
   --radius: var(--radius-md);
 
   /* Shadow & Elevation Scale */
@@ -100,7 +100,7 @@
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-float: 0 24px 48px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
   
   /* Semantic Spacing (Strict 8pt Grid) */
   --space-05: 4px;
@@ -147,8 +147,15 @@
   }
 
   .tap-feedback {
-    @apply active:scale-[0.98] transition-all duration-100;
+    @apply active:scale-[0.95] transition-all duration-200;
+    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
     touch-action: manipulation;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .tap-feedback {
+      @apply active:scale-100 transition-none;
+    }
   }
 
   /* Typography System (Phase C) */
@@ -309,6 +316,15 @@
 
   .animate-hero-breathe {
     animation: hero-breathe 8s ease-in-out infinite;
+  }
+
+  @keyframes float-4px {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  .animate-float-4px {
+    animation: float-4px 4s ease-in-out infinite;
   }
 }
 

@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AuthModal from "@/components/AuthModal";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-body", display: "swap" });
-// Using Geist (sans-serif) for both body and display to enforce "Clash Display + Inter only" constraints
-// without loading a separate serif font like Fraunces.
-const displayFont = Geist({ subsets: ["latin"], variable: "--font-display", display: "swap" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+// Using Inter (sans-serif) for both body and display
+const displayFont = Inter({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://oyaplan.com"),
@@ -53,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${displayFont.variable}`}>
+    <html lang="en" className={`${inter.variable} ${displayFont.variable}`}>
       <body className="font-body antialiased">
         <AnalyticsProvider>
           <AuthProvider>

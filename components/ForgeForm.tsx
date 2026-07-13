@@ -291,9 +291,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             <Button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full h-[64px] rounded-[8px] bg-[#0A0A0A] hover:bg-black/80 text-white type-venue-name overflow-hidden tap-feedback btn-intent-snaps"
+              className="w-full h-[64px] rounded-full bg-brand-green hover:bg-brand-green-70 text-white font-extrabold text-lg overflow-hidden tap-feedback"
             >
-              {loading ? "Finding your plan..." : "See My Plan"}
+              {loading ? "Finding your plan..." : "Get my plan"}
             </Button>
           </div>
         )}
