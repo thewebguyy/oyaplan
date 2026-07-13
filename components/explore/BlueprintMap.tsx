@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { AREAS } from "@/lib/config/areas";
@@ -8,8 +9,18 @@ export default function BlueprintMap() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const scrollRef = useRef<HTMLDivElement>(null);
   
   const activeSlug = pathname === "/explore" ? null : pathname.replace("/explore/", "");
+
+  useEffect(() => {
+    // Auto-center the map scroll position on mount so it doesn't start at the top-left edge
+    if (scrollRef.current) {
+      const el = scrollRef.current;
+      el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+      el.scrollTop = (el.scrollHeight - el.clientHeight) / 2;
+    }
+  }, []);
 
   const handleAreaClick = (slug: string, isActive: boolean, areaName: string) => {
     if (!isActive) {
@@ -27,13 +38,16 @@ export default function BlueprintMap() {
   };
 
   return (
-    <div className="w-full h-[55vh] md:h-auto md:aspect-[1200/800] max-w-[1000px] relative select-none mx-auto my-0 md:my-8 md:rounded-[32px] overflow-hidden md:border-2 md:border-border-default md:shadow-float bg-[#F8FAFC]">
+    <div 
+      ref={scrollRef}
+      className="w-full h-[55vh] md:h-auto md:aspect-[1200/800] max-w-[1000px] relative select-none mx-auto my-0 md:my-8 md:rounded-[32px] overflow-auto md:border-2 md:border-border-default md:shadow-float bg-[#F8FAFC] scrollbar-hide touch-pan-x touch-pan-y"
+    >
       <svg 
         viewBox="0 0 1200 800" 
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio="xMidYMid meet"
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        className="w-full h-full"
+        className="w-[200%] sm:w-[150%] md:w-full h-auto min-w-[800px] md:min-w-0 pointer-events-auto"
       >
         <defs>
           <style>
