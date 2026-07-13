@@ -6,8 +6,9 @@ import { getActiveAreas } from "@/lib/queries/areas";
 import { Area } from "@/lib/types";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Check, Clock, Heart, Coffee, Music, Zap } from "lucide-react";
+import { CheckCircle, Clock, Heart, Coffee, MusicNotes, Lightning, ShareNetwork } from "@phosphor-icons/react/dist/ssr";
 import MotionSection from "@/components/motion/MotionSection";
+import MobilePlannerDrawer from "@/components/MobilePlannerDrawer";
 
 const ForgeForm = dynamic(() => import("@/components/ForgeForm"), {
   ssr: true,
@@ -60,7 +61,7 @@ export default async function LandingPage() {
 
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-4">
           <div className="w-full">
-            <h1 className="font-extrabold text-5xl md:text-6xl tracking-tight max-w-3xl mx-auto text-text-primary">
+            <h1 className="font-extrabold text-5xl md:text-6xl tracking-tighter max-w-3xl mx-auto text-text-primary">
               <span className="word-rotate text-brand-green">
                 <span>Find where to go,</span>
                 <span>Wetin dey sup?</span>
@@ -78,7 +79,16 @@ export default async function LandingPage() {
           </div>
 
           <div className="w-full max-w-5xl mx-auto mt-10 flex flex-col md:flex-row gap-6 items-start justify-center">
-            <div className="w-full md:w-1/2">
+            
+            {/* Mobile Drawer Form */}
+            <MobilePlannerDrawer>
+               <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
+                 <ForgeForm areas={areas} />
+               </Suspense>
+            </MobilePlannerDrawer>
+
+            {/* Desktop Inline Form */}
+            <div className="hidden md:block w-full md:w-1/2">
               <div className="bg-white rounded-[24px] shadow-float border border-transparent overflow-hidden p-2 text-text-primary">
                 <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
                   <ForgeForm areas={areas} />
@@ -91,7 +101,7 @@ export default async function LandingPage() {
                <div className="bg-white rounded-[24px] p-5 shadow-float border border-transparent text-left text-text-primary">
                   <div className="flex justify-between items-start mb-3">
                     <span className="text-[10px] text-brand-green font-bold uppercase tracking-wider bg-brand-green-15 px-2 py-1 rounded-full flex items-center gap-1">
-                      <Check className="w-3 h-3" strokeWidth={3} /> Verified
+                      <CheckCircle weight="fill" className="w-3 h-3" /> Verified
                     </span>
                     <div className="w-8 h-8 rounded-full bg-surface-grey flex items-center justify-center">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-primary"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
@@ -125,15 +135,15 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both">
              <div className="flex items-center gap-2">
-               <Check className="w-4 h-4 text-brand-green" strokeWidth={3} />
+               <CheckCircle weight="fill" className="w-5 h-5 text-brand-green" />
                <span className="type-label text-text-secondary font-medium text-sm">Verified pricing</span>
              </div>
              <div className="flex items-center gap-2">
-               <Check className="w-4 h-4 text-brand-green" strokeWidth={3} />
+               <CheckCircle weight="fill" className="w-5 h-5 text-brand-green" />
                <span className="type-label text-text-secondary font-medium text-sm">Transport included</span>
              </div>
              <div className="flex items-center gap-2">
-               <Check className="w-4 h-4 text-brand-green" strokeWidth={3} />
+               <CheckCircle weight="fill" className="w-5 h-5 text-brand-green" />
                <span className="type-label text-text-secondary font-medium text-sm">No hidden fees</span>
              </div>
           </div>
@@ -144,7 +154,7 @@ export default async function LandingPage() {
       <div className="py-16 bg-surface-grey border-b border-border-default relative z-10">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="type-heading text-2xl text-text-primary">What's the vibe?</h2>
+            <h2 className="type-heading text-2xl tracking-tighter text-text-primary">What's the vibe?</h2>
             <Link href="/explore" className="text-sm font-bold text-brand-green hover:text-brand-green-70 transition-colors">
               See all
             </Link>
@@ -152,25 +162,25 @@ export default async function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/explore?vibe=chill" className="group rounded-[24px] p-6 bg-[var(--color-pastel-blue)] shadow-sm hover:shadow-md transition-all duration-150 card-lift min-h-[140px] flex flex-col justify-between">
               <div className="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center">
-                <Coffee className="w-5 h-5 text-blue-600" />
+                <Coffee weight="fill" className="w-6 h-6 text-blue-600" />
               </div>
               <span className="font-bold text-text-primary mt-4 block">Chill Hangout</span>
             </Link>
             <Link href="/explore?vibe=date-night" className="group rounded-[24px] p-6 bg-[var(--color-pastel-pink)] shadow-sm hover:shadow-md transition-all duration-150 card-lift min-h-[140px] flex flex-col justify-between">
               <div className="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center">
-                <Heart className="w-5 h-5 text-pink-600" />
+                <Heart weight="fill" className="w-6 h-6 text-pink-600" />
               </div>
               <span className="font-bold text-text-primary mt-4 block">Date Night</span>
             </Link>
             <Link href="/explore?vibe=party" className="group rounded-[24px] p-6 bg-[var(--color-pastel-yellow)] shadow-sm hover:shadow-md transition-all duration-150 card-lift min-h-[140px] flex flex-col justify-between">
               <div className="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center">
-                <Music className="w-5 h-5 text-yellow-600" />
+                <MusicNotes weight="fill" className="w-6 h-6 text-yellow-600" />
               </div>
               <span className="font-bold text-text-primary mt-4 block">Turn Up</span>
             </Link>
             <Link href="/explore?vibe=quick-link" className="group rounded-[24px] p-6 bg-[var(--color-pastel-cream)] shadow-sm hover:shadow-md transition-all duration-150 card-lift min-h-[140px] flex flex-col justify-between">
               <div className="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-orange-500" />
+                <Lightning weight="fill" className="w-6 h-6 text-orange-500" />
               </div>
               <span className="font-bold text-text-primary mt-4 block">Squad Link-up</span>
             </Link>
@@ -185,27 +195,27 @@ export default async function LandingPage() {
             <MotionSection delay={100} className="h-full">
               <div className="bg-[var(--color-pastel-cream)] rounded-[24px] p-8 shadow-float border border-transparent h-full">
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-6 shadow-sm">
-                  <Check className="w-6 h-6 text-brand-green" strokeWidth={2.5} />
+                  <CheckCircle weight="duotone" className="w-7 h-7 text-brand-green" />
                 </div>
-                <h3 className="type-heading text-xl mb-2 text-text-primary">Budget-matched</h3>
+                <h3 className="type-heading text-xl tracking-tighter mb-2 text-text-primary">Budget-matched</h3>
                 <p className="type-body text-text-secondary text-sm">Get recommendations that perfectly fit your group's budget.</p>
               </div>
             </MotionSection>
             <MotionSection delay={200} className="h-full">
               <div className="bg-[var(--color-pastel-blue)] rounded-[24px] p-8 shadow-float border border-transparent h-full">
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-6 shadow-sm">
-                  <Clock className="w-6 h-6 text-brand-green" strokeWidth={2.5} />
+                  <Clock weight="duotone" className="w-7 h-7 text-brand-green" />
                 </div>
-                <h3 className="type-heading text-xl mb-2 text-text-primary">Transport-included</h3>
+                <h3 className="type-heading text-xl tracking-tighter mb-2 text-text-primary">Transport-included</h3>
                 <p className="type-body text-text-secondary text-sm">Every plan includes accurate ride-hailing estimates.</p>
               </div>
             </MotionSection>
             <MotionSection delay={300} className="h-full">
               <div className="bg-[var(--color-pastel-pink)] rounded-[24px] p-8 shadow-float border border-transparent h-full">
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-6 shadow-sm">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                  <ShareNetwork weight="duotone" className="w-7 h-7 text-brand-green" />
                 </div>
-                <h3 className="type-heading text-xl mb-2 text-text-primary">Squad-shareable</h3>
+                <h3 className="type-heading text-xl tracking-tighter mb-2 text-text-primary">Squad-shareable</h3>
                 <p className="type-body text-text-secondary text-sm">Share the complete plan with your group in one tap.</p>
               </div>
             </MotionSection>
