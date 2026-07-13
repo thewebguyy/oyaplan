@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { CheckCircle, Clock, Heart, Coffee, MusicNotes, Lightning, ShareNetwork } from "@phosphor-icons/react/dist/ssr";
 import MotionSection from "@/components/motion/MotionSection";
 import MobilePlannerDrawer from "@/components/MobilePlannerDrawer";
-
+import AnimatedHeadline from "@/components/AnimatedHeadline";
 const ForgeForm = dynamic(() => import("@/components/ForgeForm"), {
   ssr: true,
   loading: () => <div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />,
@@ -62,11 +62,7 @@ export default async function LandingPage() {
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-4">
           <div className="w-full">
             <h1 className="font-extrabold text-5xl md:text-6xl tracking-tighter max-w-3xl mx-auto text-text-primary">
-              <span className="word-rotate text-brand-green">
-                <span>Find where to go,</span>
-                <span>Wetin dey sup?</span>
-                <span>Ekaabo!</span>
-              </span>
+              <AnimatedHeadline />
               <br />
               know what it costs.
             </h1>

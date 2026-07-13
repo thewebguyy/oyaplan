@@ -341,30 +341,6 @@
   .animate-float-4px {
     animation: float-4px 4s ease-in-out infinite;
   }
-
-  /* Localized Word Rotation */
-  .word-rotate {
-    display: inline-grid;
-  }
-  .word-rotate > span {
-    grid-area: 1/1;
-    opacity: 0;
-    animation: word-crossfade 9s infinite;
-  }
-  .word-rotate > span:nth-child(1) { animation-delay: 0s; }
-  .word-rotate > span:nth-child(2) { animation-delay: 3s; }
-  .word-rotate > span:nth-child(3) { animation-delay: 6s; }
-
-  @keyframes word-crossfade {
-    0%, 10% { opacity: 0; transform: translateY(10px); }
-    15%, 33% { opacity: 1; transform: translateY(0); }
-    38%, 100% { opacity: 0; transform: translateY(-10px); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .word-rotate > span { animation: none !important; opacity: 0; }
-    .word-rotate > span:nth-child(1) { opacity: 1; transform: none; }
-  }
 }
 
 /* ==========================================
