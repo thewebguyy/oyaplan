@@ -53,45 +53,31 @@ export default async function LandingPage() {
       </Suspense>
 
       {/* Centered Compositional Hero */}
-      <div className="relative pt-24 md:pt-32 pb-0 px-4 bg-[#FFFDF4] overflow-hidden flex flex-col items-center justify-center border-b border-border-default">
+      <div className="relative pt-24 md:pt-32 pb-24 md:pb-32 px-4 bg-[#FFFDF4] min-h-[85vh] flex flex-col items-center justify-center border-b border-border-default overflow-x-hidden overflow-y-visible">
         
-        {/* Subtle Background Atmospheric Elements */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <AmbientParallax speed={-0.1} className="absolute top-10 left-20 w-64 h-64 bg-white/60 blur-3xl rounded-full" />
-          <AmbientParallax speed={0.1} className="absolute top-40 right-10 w-96 h-96 bg-brand-green/5 blur-[100px] rounded-full" />
-        </div>
-
-        {/* Subtle Lagos Landmark Motifs (Anchoring the background) */}
-        <div className="absolute bottom-6 left-8 hidden lg:block text-border-strong opacity-25 pointer-events-none select-none z-0">
-          <svg viewBox="0 0 100 150" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-20 h-32">
-            <path d="M50 10 L25 140 M50 10 L75 140" />
-            <path d="M38 60 L62 60 M33 90 L67 90 M28 120 L72 120" strokeWidth="2" />
-            <path d="M50 30 L5 140 M50 30 L95 140" strokeWidth="1.5" />
-            <path d="M50 50 L10 140 M50 50 L90 140" strokeWidth="1.5" />
-            <path d="M50 70 L15 140 M50 70 L85 140" strokeWidth="1.5" />
+        {/* Abstract Editorial Map Grid (z-0) */}
+        <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.06]">
+          <svg width="100%" height="100%" className="absolute inset-0">
+            <defs>
+              <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="currentColor" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            {/* Some editorial lines representing routes */}
+            <path d="M -100 200 C 300 200, 400 600, 800 500 S 1200 200, 1600 300" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="5 5"/>
           </svg>
-          <span className="type-caption block text-center mt-2 tracking-widest text-[9px] uppercase font-bold text-text-secondary">Lekki-Ikoyi Bridge</span>
         </div>
 
-        <div className="absolute bottom-8 right-8 hidden lg:block text-border-strong opacity-25 pointer-events-none select-none z-0">
-          <svg viewBox="0 0 150 100" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-28 h-20">
-            <path d="M10 50 C 40 10, 110 10, 140 50 C 120 70, 30 70, 10 50 Z" />
-            <path d="M30 65 L30 85 L120 85 L120 65" />
-            <path d="M40 35 L45 68" strokeWidth="1.5" />
-            <path d="M60 22 L62 69" strokeWidth="1.5" />
-            <path d="M75 18 L75 70" strokeWidth="1.5" />
-            <path d="M90 22 L88 69" strokeWidth="1.5" />
-            <path d="M110 35 L105 68" strokeWidth="1.5" />
-          </svg>
-          <span className="type-caption block text-center mt-2 tracking-widest text-[9px] uppercase font-bold text-text-secondary">National Theatre</span>
-        </div>
+        {/* Ambient Glow (Only behind illustration) (z-0) */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-brand-green/10 blur-[120px] rounded-[100%] pointer-events-none z-0" />
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center">
+        <div className="relative z-10 w-full max-w-5xl mx-auto text-center flex flex-col items-center mt-8">
           <MotionSection delay={0} className="w-full">
             <RotatingHeadline />
           </MotionSection>
 
-          {/* Trust Strip */}
+          {/* Trust Strip - Anchored */}
           <MotionSection delay={200} className="mt-8 mb-10 flex flex-wrap justify-center items-center gap-x-6 gap-y-3">
              <div className="flex items-center gap-2">
                <Check className="w-4 h-4 text-brand-green" strokeWidth={3} />
@@ -114,53 +100,78 @@ export default async function LandingPage() {
           </MotionSection>
         </div>
 
+        {/* Depth Perforation Pattern (z-10) */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[500px] opacity-[0.04] pointer-events-none z-10 flex justify-center items-end">
+           <svg viewBox="0 0 400 300" className="w-full h-full">
+             {/* Receipt edge perforation dots */}
+             <path d="M 0 50 Q 10 50 10 60 Q 10 70 0 70 Z M 0 90 Q 10 90 10 100 Q 10 110 0 110 Z" fill="currentColor" stroke="none" />
+             <line x1="20" y1="20" x2="20" y2="280" stroke="currentColor" strokeWidth="2" strokeDasharray="4 8" />
+             <line x1="380" y1="20" x2="380" y2="280" stroke="currentColor" strokeWidth="2" strokeDasharray="4 8" />
+           </svg>
+        </div>
+
         {/* Compositional Product + Illustration Layer */}
-        <div className="relative w-full max-w-[1200px] mx-auto mt-16 md:mt-24 h-[250px] md:h-[350px] flex justify-center items-end pointer-events-none">
+        <div className="relative w-full max-w-[1200px] mx-auto mt-20 md:mt-28 h-[250px] md:h-[400px] flex justify-center items-end pointer-events-none">
            
-           {/* Center Piece (Main Illustration) */}
-           <MotionSection delay={600} className="relative z-20 w-full max-w-[320px] md:max-w-[420px]">
+           {/* Center Piece (Main Illustration Dominates 55-60%) */}
+           <MotionSection delay={600} className="relative z-30 w-full max-w-[400px] md:max-w-[550px] lg:max-w-[650px] origin-bottom">
              <AnimatedIllustration 
                src="/illustrations/img1.png" 
                alt="Budget Confidence" 
                priority={true} 
                float={true}
+               className="aspect-[4/5] md:aspect-square w-full"
              />
            </MotionSection>
            
-           {/* Left Floating Product Preview (Venue Card Silhouette) */}
-           <MotionSection delay={800} className="absolute left-4 md:left-24 bottom-12 z-30 w-[180px] md:w-[240px] hidden sm:block">
-             <div className="bg-white rounded-[12px] p-3 shadow-float border border-border-default transform -rotate-3 hover:rotate-0 transition-transform duration-500 will-change-transform">
-               <div className="w-full h-20 md:h-24 bg-surface-grey rounded-[8px] mb-3 overflow-hidden flex items-center justify-center relative border border-border-default">
-                 <span className="text-[9px] md:text-[10px] text-text-muted font-bold tracking-widest uppercase">Verified Spot</span>
-                 <div className="absolute top-1.5 right-1.5"><TrustBadge status="verified" freshnessText="today" /></div>
-               </div>
-               <div className="space-y-2">
-                 <div className="h-3 w-3/4 bg-border-strong rounded-full"></div>
-                 <div className="flex justify-between items-center">
-                   <div className="h-2 w-1/2 bg-border-default rounded-full"></div>
-                   <div className="h-2 w-1/4 bg-brand-green/20 rounded-full"></div>
+           {/* Left Floating Product Preview (Nok By Alara) */}
+           <MotionSection delay={800} className="absolute left-0 md:left-12 lg:left-24 bottom-16 z-20 w-[200px] md:w-[260px] hidden sm:block">
+             <div className="bg-white rounded-[16px] p-4 shadow-float border border-border-default transform -rotate-3 transition-transform duration-500 will-change-transform animate-[hero-breathe_6s_ease-in-out_infinite]">
+               <div className="flex justify-between items-start mb-3">
+                 <div>
+                   <h3 className="type-venue-name text-sm md:text-base leading-none mb-1">Nok by Alara</h3>
+                   <span className="type-caption text-[10px] text-brand-green font-bold uppercase tracking-wider">Verified this week</span>
                  </div>
+                 <div className="bg-brand-green/10 p-1.5 rounded-full">
+                   <Check className="w-3 h-3 text-brand-green" strokeWidth={4} />
+                 </div>
+               </div>
+               <div className="w-full h-24 bg-surface-grey rounded-[8px] mb-3 overflow-hidden">
+                 <img src="/illustrations/img2.png" className="w-full h-full object-cover opacity-80 mix-blend-multiply" alt="" />
+               </div>
+               <div className="pt-2 border-t border-border-default flex justify-between items-center">
+                 <span className="type-ui-label text-text-muted text-[10px]">Total Est.</span>
+                 <span className="type-price text-text-primary text-sm md:text-base">₦42,000</span>
                </div>
              </div>
            </MotionSection>
 
-           {/* Right Floating Product Preview (Forge Fragment / Cost Breakdown) */}
-           <MotionSection delay={900} className="absolute right-4 md:right-24 bottom-24 z-10 w-[160px] md:w-[220px] hidden sm:block">
-             <div className="bg-white rounded-[12px] p-4 shadow-float border border-border-default transform rotate-3 hover:rotate-0 transition-transform duration-500 will-change-transform">
-               <div className="flex items-center gap-2 mb-3 border-b border-border-default pb-2">
-                 <div className="w-5 h-5 rounded-full bg-intent-yellow/20 flex items-center justify-center">
-                   <Check className="w-3 h-3 text-intent-yellow" strokeWidth={4} />
+           {/* Right Floating Product Preview (Cost Breakdown) */}
+           <MotionSection delay={900} className="absolute right-0 md:right-12 lg:right-24 bottom-28 z-20 w-[200px] md:w-[260px] hidden sm:block">
+             <div className="bg-white rounded-[16px] p-5 shadow-float border border-border-default transform rotate-3 transition-transform duration-500 will-change-transform animate-[hero-breathe_7s_ease-in-out_infinite_reverse]">
+               <div className="flex items-center gap-2 mb-4 border-b border-border-default pb-3">
+                 <div className="w-6 h-6 rounded-full bg-intent-yellow/20 flex items-center justify-center">
+                   <Clock className="w-3 h-3 text-intent-yellow" strokeWidth={3} />
                  </div>
-                 <span className="type-ui-label text-[10px] md:text-xs">Transport Added</span>
+                 <span className="type-ui-label text-[11px] md:text-xs text-text-primary font-bold">Estimated Spend</span>
                </div>
-               <div className="space-y-2">
-                 <div className="flex justify-between items-center">
-                   <div className="h-2 w-1/3 bg-border-default rounded-full"></div>
-                   <div className="h-2 w-1/4 bg-border-strong rounded-full"></div>
+               
+               <div className="space-y-3">
+                 <div className="flex justify-between items-center text-xs">
+                   <span className="text-text-secondary font-medium">Food</span>
+                   <span className="font-semibold tabular-nums">₦25,000</span>
                  </div>
-                 <div className="flex justify-between items-center">
-                   <div className="h-2 w-1/2 bg-border-default rounded-full"></div>
-                   <div className="h-2 w-1/5 bg-border-strong rounded-full"></div>
+                 <div className="flex justify-between items-center text-xs">
+                   <span className="text-text-secondary font-medium">Transport</span>
+                   <span className="font-semibold tabular-nums">₦8,500</span>
+                 </div>
+                 <div className="flex justify-between items-center text-xs">
+                   <span className="text-text-secondary font-medium">VAT & Service</span>
+                   <span className="font-semibold tabular-nums">₦3,500</span>
+                 </div>
+                 <div className="flex justify-between items-center text-xs">
+                   <span className="text-text-secondary font-medium text-brand-green">Buffer (15%)</span>
+                   <span className="font-semibold tabular-nums text-brand-green">₦5,000</span>
                  </div>
                </div>
              </div>
