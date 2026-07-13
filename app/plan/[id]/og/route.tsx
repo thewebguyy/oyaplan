@@ -52,12 +52,12 @@ export async function GET(
         >
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {/* Wordmark */}
-            <div style={{ display: 'flex', fontSize: 32, fontWeight: 900, letterSpacing: '-0.05em', marginBottom: '40px' }}>
-              <span style={{ color: 'white' }}>Oya</span>
-              <span style={{ color: '#FCD116' }}>Plan</span>
+            <div style={{ display: 'flex', fontSize: 32, fontWeight: 900, letterSpacing: '-0.04em' }}>
+              <span style={{ color: '#008751' }}>Oya</span>
+              <span style={{ color: '#F6C642' }}>Plan</span>
             </div>
 
-            <div style={{ display: 'flex', fontSize: 20, color: '#FCD116', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', fontSize: 20, color: '#F6C642', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
               {vibe} Outing • {squadSize} People
             </div>
             

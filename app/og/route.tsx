@@ -21,7 +21,7 @@ export async function GET() {
         {/* Wordmark */}
         <div style={{ display: 'flex', fontSize: 48, fontWeight: 900, letterSpacing: '-0.05em', marginBottom: '20px' }}>
           <span style={{ color: 'white' }}>Oya</span>
-          <span style={{ color: '#FCD116' }}>Plan</span>
+          <span style={{ color: '#F6C642' }}>Plan</span>
         </div>
 
         {/* Rule */}

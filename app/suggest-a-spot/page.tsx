@@ -72,18 +72,17 @@ export default function SuggestSpotPage() {
         </Link>
 
         <div className="bg-white border border-border-default rounded-[32px] p-8 md:p-12 shadow-sm space-y-10 relative z-10">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-yellow/10 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-brand-yellow fill-brand-yellow" />
-              <span className="text-[11px] font-[700] uppercase tracking-wider text-text-secondary">Community Growth</span>
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-intent-yellow/10 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-intent-yellow fill-intent-yellow" />
+              <span className="type-ui-label text-intent-yellow text-[11px]">Help build the map</span>
             </div>
-            <h1 className="type-heading text-text-primary">
+          </div>  <h1 className="type-heading text-text-primary">
               Suggest a spot.
             </h1>
             <p className="type-body text-text-muted max-w-lg">
               Know a hidden gem in Lagos? Help other squads find their next favorite link.
             </p>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

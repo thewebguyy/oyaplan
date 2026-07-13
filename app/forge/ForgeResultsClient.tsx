@@ -64,6 +64,17 @@ export default function ForgeResultsClient({
     });
   }, [evaluations.length, forgeInput.vibe, forgeInput.budget]);
 
+  // Strip 'fresh' param from URL to prevent 900ms delay on reload
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("fresh")) {
+        url.searchParams.delete("fresh");
+        window.history.replaceState(null, "", url.toString());
+      }
+    }
+  }, []);
+
   const handleAdjustBudget = (delta: number) => {
     const newBudget = forgeInput.budget + delta;
     
@@ -143,7 +154,7 @@ export default function ForgeResultsClient({
         <DossierDropWrapper className="space-y-12 dossier-grid">
           {/* Fallback Banner */}
           {evaluations[0].plan.explanation?.reason === "semantic_classification_missing" && (
-            <div className="bg-brand-yellow-15 border border-brand-yellow text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
+            <div className="bg-trust-warning-15 border border-trust-warning text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
               <div className="mt-0.5">
                 <AlertCircle className="w-5 h-5 text-brand-green" />
               </div>

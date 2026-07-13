@@ -7,7 +7,7 @@ export default function NotFound() {
       <div className="space-y-8 max-w-md">
         <span className="text-2xl font-[900] tracking-tighter">
           <span className="text-brand-green">Oya</span>
-          <span className="text-brand-yellow">Plan</span>
+          <span className="text-intent-yellow">Plan</span>
         </span>
         
         <div className="space-y-3">

@@ -81,8 +81,10 @@ export async function GET(req: NextRequest) {
                   Squad Outing in {formattedArea}
                 </h1>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{ color: '#FCD116', fontSize: 32, fontWeight: 700 }}>
-                    OyaPlan — Verified Menus & Cost Estimation
+                  <span style={{ color: 'white', fontSize: 32, fontWeight: 700 }}>
+                    <span style={{ color: 'white' }}>Oya</span>
+                    <span style={{ color: '#F6C642' }}>Plan</span>
+                    {' — Verified Menus & Cost Estimation'}
                   </span>
                 </div>
               </div>

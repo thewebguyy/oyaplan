@@ -10,9 +10,12 @@
   --color-brand-green-40: var(--brand-green-40);
   --color-brand-green-15: var(--brand-green-15);
   --color-brand-green-5: var(--brand-green-5);
-  --color-brand-yellow: var(--brand-yellow);
-  --color-brand-yellow-40: var(--brand-yellow-40);
-  --color-brand-yellow-15: var(--brand-yellow-15);
+  --color-trust-warning: var(--trust-warning);
+  --color-trust-warning-40: var(--trust-warning-40);
+  --color-trust-warning-15: var(--trust-warning-15);
+  --color-intent-yellow: var(--intent-yellow);
+  --color-intent-yellow-40: var(--intent-yellow-40);
+  --color-intent-yellow-15: var(--intent-yellow-15);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
@@ -55,9 +58,13 @@
   --brand-green-15: #00875126;
   --brand-green-5: #0087510d;
   
-  --brand-yellow: #FCD116;
-  --brand-yellow-40: #FCD11666;
-  --brand-yellow-15: #FCD11626;
+  --trust-warning: #F59E0B;
+  --trust-warning-40: #F59E0B66;
+  --trust-warning-15: #F59E0B26;
+
+  --intent-yellow: #F6C642;
+  --intent-yellow-40: #F6C64266;
+  --intent-yellow-15: #F6C64226;
 
   --text-primary: #0A0A0A;
   --text-secondary: #404040;
@@ -302,7 +309,7 @@
 
 /* Task 2: Global Text Selection */
 ::selection {
-  background-color: #F6C642 !important;
+  background-color: var(--intent-yellow) !important;
   color: #000000 !important;
 }
 
@@ -311,9 +318,9 @@
   transition: none !important;
 }
 .btn-intent-snaps:hover {
-  background-color: #F6C642 !important;
+  background-color: var(--intent-yellow) !important;
   color: #000000 !important;
-  border-color: #F6C642 !important;
+  border-color: var(--intent-yellow) !important;
   transition: none !important;
 }
 

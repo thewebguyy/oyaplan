@@ -19,7 +19,7 @@ export function BudgetFitBadge({ status, size = "md", className, ...props }: Bud
       case "within":
         return "bg-surface-grey text-text-primary" // Neutral
       case "stretch":
-        return "bg-brand-yellow-15 text-yellow-700" // Soft amber background
+        return "bg-trust-warning-15 text-trust-warning" // Soft amber background, amber text
       case "over":
         return "bg-red-100 text-error" // Soft red background
     }

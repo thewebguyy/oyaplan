@@ -103,7 +103,7 @@ export default async function LandingPage() {
               </div>
               <div className="hidden sm:block w-px h-6 bg-border-default" />
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-brand-yellow" />
+                <div className="w-3 h-3 rounded-full bg-trust-warning" />
                 <span className="type-ui-label text-text-primary text-xs font-black">Pending Verification</span>
               </div>
             </div>

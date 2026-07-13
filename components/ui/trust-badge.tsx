@@ -20,7 +20,7 @@ export function TrustBadge({ status, freshnessText, size = "md", className, ...p
       case "estimated":
         return "bg-surface-grey text-text-primary"
       case "pending":
-        return "bg-brand-yellow text-text-primary"
+        return "bg-trust-warning text-text-primary"
       case "unavailable":
         return "bg-error text-white"
     }

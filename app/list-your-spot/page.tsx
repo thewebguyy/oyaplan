@@ -132,7 +132,7 @@ export default function ListYourSpotPage() {
           <Link href="/" className="inline-block tap-feedback">
             <span className="text-2xl font-[900] tracking-tighter">
               <span className="text-white">Oya</span>
-              <span className="text-brand-yellow">Plan</span>
+              <span className="text-intent-yellow">Plan</span>
             </span>
           </Link>
 
@@ -148,19 +148,19 @@ export default function ListYourSpotPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pt-12 border-t border-white/10">
             <div className="space-y-3">
               <h3 className="type-subheading text-white flex items-center gap-2">
-                <span className="text-brand-yellow">🎯</span> Intent-matched
+                <span className="text-intent-yellow">🎯</span> Intent-matched
               </h3>
               <p className="type-body text-white/70">Users who see your spot have already decided to go out and spend money today.</p>
             </div>
             <div className="space-y-3">
               <h3 className="type-subheading text-white flex items-center gap-2">
-                <span className="text-brand-yellow">💰</span> Budget-transparent
+                <span className="text-intent-yellow">💰</span> Budget-transparent
               </h3>
               <p className="type-body text-white/70">Your spot appears when someone&apos;s budget genuinely fits what you charge.</p>
             </div>
             <div className="space-y-3">
               <h3 className="type-subheading text-white flex items-center gap-2">
-                <span className="text-brand-yellow">💬</span> WhatsApp-native
+                <span className="text-intent-yellow">💬</span> WhatsApp-native
               </h3>
               <p className="type-body text-white/70">Every plan is copied to a WhatsApp group chat — your spot name travels with it.</p>
             </div>
@@ -189,11 +189,11 @@ export default function ListYourSpotPage() {
 
           {/* Featured Tier */}
           <div className="bg-white border-2 border-brand-green rounded-[24px] p-8 flex flex-col shadow-[0px_24px_48px_rgba(0,135,81,0.1)] relative transform md:scale-105 z-10">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-yellow text-text-primary type-label uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md text-[10px]">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-intent-yellow text-text-primary type-label uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md text-[10px]">
               Most Popular
             </div>
             <h3 className="type-heading text-brand-green mb-2 flex items-center gap-2">
-              Featured <Star className="w-5 h-5 fill-brand-yellow text-brand-yellow" />
+              Featured <Star className="w-5 h-5 fill-intent-yellow text-intent-yellow" />
             </h3>
             <div className="text-4xl font-[900] text-text-primary mb-6">₦25,000<span className="type-label text-text-muted ml-2">/month</span></div>
             <p className="type-body text-text-secondary flex-grow mb-8 leading-relaxed">
