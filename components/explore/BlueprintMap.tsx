@@ -27,9 +27,10 @@ export default function BlueprintMap() {
   };
 
   return (
-    <div className="w-full max-w-[1000px] aspect-[1200/800] relative select-none mx-auto my-8 rounded-[32px] overflow-hidden border-2 border-border-default shadow-float bg-[#F8FAFC]">
+    <div className="w-full h-[55vh] md:h-auto md:aspect-[1200/800] max-w-[1000px] relative select-none mx-auto my-0 md:my-8 md:rounded-[32px] overflow-hidden md:border-2 md:border-border-default md:shadow-float bg-[#F8FAFC]">
       <svg 
         viewBox="0 0 1200 800" 
+        preserveAspectRatio="xMidYMid slice"
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
         className="w-full h-full"
