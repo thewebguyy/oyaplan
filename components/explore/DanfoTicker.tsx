@@ -12,6 +12,25 @@ export default function DanfoTicker({ spots }: DanfoTickerProps) {
   const router = useRouter();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [isAutoPaused, setIsAutoPaused] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const cycleAnimation = () => {
+      // It just finished a pause (or started), now run for 2.5s
+      setIsAutoPaused(false);
+      timeoutId = setTimeout(() => {
+        // Run finished, pause for 1.5s
+        setIsAutoPaused(true);
+        timeoutId = setTimeout(cycleAnimation, 1500);
+      }, 2500);
+    };
+
+    cycleAnimation();
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   if (!spots || spots.length === 0) return null;
 
@@ -46,7 +65,8 @@ export default function DanfoTicker({ spots }: DanfoTickerProps) {
       <div 
         className="flex items-center gap-12 whitespace-nowrap"
         style={{
-          animation: isPaused ? "none" : "danfo-marquee 40s linear infinite",
+          animation: "danfo-marquee 40s linear infinite",
+          animationPlayState: isPaused || isAutoPaused ? "paused" : "running",
           width: "max-content"
         }}
       >

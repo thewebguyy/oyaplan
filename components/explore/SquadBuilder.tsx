@@ -1,13 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SquadBuilder() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentSquad = searchParams.get("squad") ? parseInt(searchParams.get("squad") || "1") : 2;
+  const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
 
   const handleSelectSquad = (size: number) => {
+    setAnimatingIndex(size);
+    setTimeout(() => setAnimatingIndex(null), 100);
     const nextParams = new URLSearchParams(searchParams.toString());
     nextParams.set("squad", size.toString());
     router.replace(`/explore?${nextParams.toString()}`, { scroll: false });
@@ -22,6 +26,7 @@ export default function SquadBuilder() {
         {Array.from({ length: 10 }).map((_, i) => {
           const index = i + 1;
           const isActive = index <= currentSquad;
+          const isAnimating = index === animatingIndex;
 
           return (
             <button
@@ -32,7 +37,7 @@ export default function SquadBuilder() {
             >
               <svg 
                 viewBox="0 0 24 24" 
-                className="w-7 h-7"
+                className={`w-7 h-7 ${isAnimating ? "animate-squad-tilt" : ""}`}
                 style={{
                   fill: isActive ? "#F6C642" : "#0A0A0A",
                   transition: "none" // Instant color fill
@@ -43,6 +48,7 @@ export default function SquadBuilder() {
               </svg>
             </button>
           );
+
         })}
       </div>
     </div>

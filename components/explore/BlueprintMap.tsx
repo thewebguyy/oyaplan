@@ -61,13 +61,13 @@ export default function BlueprintMap() {
                 cx={area.textX}
                 cy={area.textY}
                 r="12"
+                className={isActive ? "animate-map-lurch" : ""}
                 style={{
                   fill: pinColor,
                   stroke: "#000000",
                   strokeWidth: strokeWidth,
                   transformOrigin: `${area.textX}px ${area.textY}px`,
-                  transform: pinScale,
-                  transition: "all 0.2s ease"
+                  transition: isActive ? "none" : "all 0.2s ease"
                 }}
               />
               
