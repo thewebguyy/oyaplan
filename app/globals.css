@@ -285,38 +285,46 @@
 @layer utilities {
 
   /* ==========================================
-     Motion Timing System (V1.1 canonical)
+     Motion Timing System (V2.0 Overrides)
      ========================================== */
   :root {
     --duration-instant:  120ms;
-    --duration-hover:    250ms;
+    --duration-fast:     120ms;
+    --duration-hover:    220ms;
     --duration-press:    180ms;
-    --duration-lift:     350ms;
+    --duration-lift:     380ms;
     --duration-reveal:   700ms;
+    --duration-number:   450ms;
+    --duration-loading:  600ms;
+    --duration-page:     500ms;
     --duration-zoom:     600ms;
     --duration-idle:     6000ms;
     --duration-drift:    12000ms;
 
     --ease-spring:    cubic-bezier(0.175, 0.885, 0.32, 1.1);
-    --ease-standard:  cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-standard:  cubic-bezier(0.16, 1, 0.3, 1);
     --ease-exit:      cubic-bezier(0.4, 0, 1, 1);
   }
 
   /* ==========================================
-     Colored Shadow Utilities
+     Premium Shadow Overrides
      ========================================== */
   .shadow-warm   { box-shadow: 0 12px 32px -8px rgba(246,198,66,0.14); }
   .shadow-cool   { box-shadow: 0 12px 32px -8px rgba(0,75,142,0.14); }
   .shadow-lagoon { box-shadow: 0 12px 32px -8px rgba(1,5,40,0.14); }
   .shadow-green  { box-shadow: 0 12px 32px -8px rgba(0,135,81,0.14); }
 
-  /* Combined lift + color */
+  .shadow-lagoon-soft { box-shadow: 0 16px 36px -8px rgba(1, 5, 40, 0.08); }
+  .shadow-green-soft { box-shadow: 0 16px 36px -8px rgba(0, 135, 81, 0.06); }
+  .shadow-yellow-soft { box-shadow: 0 16px 36px -8px rgba(246, 198, 66, 0.08); }
+
+  /* Combined lift + color shadow values */
   .shadow-lift-lagoon { box-shadow: 0 20px 48px -12px rgba(1,5,40,0.16), 0 4px 12px -4px rgba(0,0,0,0.06); }
   .shadow-lift-warm   { box-shadow: 0 20px 48px -12px rgba(246,198,66,0.16), 0 4px 12px -4px rgba(0,0,0,0.06); }
   .shadow-lift-green  { box-shadow: 0 20px 48px -12px rgba(0,135,81,0.16), 0 4px 12px -4px rgba(0,0,0,0.06); }
 
   /* ==========================================
-     Section Atmosphere Backgrounds (ambient radial lighting, 2–5% opacity)
+     Section Atmosphere Backgrounds (ambient radial lighting, 2–4% opacity)
      ========================================== */
   .section-calm {
     background: #FFFFFF;
@@ -408,8 +416,36 @@
     transform: translateY(-6px) scale(1.012);
     filter: brightness(1.01);
   }
-  /* Pair with colored shadow utility for full effect:
-     className="card-lift shadow-lagoon hover:shadow-lift-lagoon" */
+
+  /* Unified Premium Hover Card with Parallax Asset Handling */
+  .premium-hover-card {
+    transition: 
+      transform var(--duration-editorial) var(--ease-standard),
+      box-shadow var(--duration-editorial) var(--ease-standard),
+      background-color var(--duration-hover) ease;
+    will-change: transform;
+  }
+  .premium-hover-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px -8px rgba(1, 5, 40, 0.08);
+  }
+  .premium-hover-card:hover .parallax-asset {
+    transform: scale(1.06) rotate(1.5deg);
+    transition: transform var(--duration-reveal) var(--ease-standard);
+  }
+
+  /* Button Press Physics Utility */
+  .btn-press-tactile {
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .btn-press-tactile:active {
+    transform: scale(0.97);
+  }
+
+  /* Ambient light overlay backgrounds */
+  .bg-warm-cream-glow { background-image: radial-gradient(circle at top right, rgba(246, 198, 66, 0.03), transparent); }
+  .bg-palm-green-glow { background-image: radial-gradient(circle at bottom left, rgba(0, 135, 81, 0.03), transparent); }
+  .bg-lagoon-glow { background-image: radial-gradient(circle at top right, rgba(1, 5, 40, 0.04), transparent); }
 
   /* ==========================================
      Image Zoom System (venue photos)
@@ -467,8 +503,16 @@
   .idle-delay-5  { animation-delay: 4000ms; }
 
   /* ==========================================
-     Warm Shimmer (loading skeletons)
+     Lasgidi Warm Shimmer Skeletons
      ========================================== */
+  @keyframes warmPulse {
+    0%, 100% { background-color: #F4F3EE; }
+    50% { background-color: #ECEAE0; }
+  }
+  .animate-warm-shimmer {
+    animation: warmPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
   @keyframes shimmer-warm {
     0%   { background-position: -200% 0; }
     100% { background-position:  200% 0; }
@@ -478,6 +522,13 @@
       90deg,
       rgba(250,250,248,0) 0%,
       rgba(246,198,66,0.06) 40%,
+      rgba(250,250,248,0.3) 50%,
+      rgba(246,198,66,0.06) 60%,
+      rgba(250,250,248,0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-warm 2s ease-in-out infinite;
+  }
       rgba(250,250,248,0.3) 50%,
       rgba(246,198,66,0.06) 60%,
       rgba(250,250,248,0) 100%
