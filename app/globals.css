@@ -249,6 +249,13 @@
     text-transform: uppercase;
   }
   
+  .type-caption {
+    font-family: var(--font-body), sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  
   .type-price {
     font-family: var(--font-body), sans-serif;
     font-weight: 600;

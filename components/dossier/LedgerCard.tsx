@@ -14,7 +14,7 @@ export function LedgerCard({ totalCost, neonColor = "#000000", trustStatus, fres
       style={{ borderTopWidth: "8px", borderTopColor: neonColor }}
     >
       <div className="p-8 text-center space-y-4">
-        <span className="block type-label text-text-muted uppercase tracking-widest text-[10px] font-black">Estimated Total</span>
+        <span className="block type-label text-text-muted uppercase tracking-widest text-[10px] font-black">You'll likely spend</span>
         <h2 className="type-display text-5xl sm:text-6xl text-black font-sans font-black tracking-[-0.04em]">
           ₦{totalCost.toLocaleString()}
         </h2>

@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import PageError from "@/components/PageError";
 import ActualSpendCapture from "@/components/ActualSpendCapture";
 import PlanViewTracker from "@/components/PlanViewTracker";
+import Image from "next/image";
 
 import { LedgerCard } from "@/components/dossier/LedgerCard";
 import { ReceiptStructure } from "@/components/dossier/ReceiptStructure";
@@ -108,20 +109,32 @@ export default async function PlanPage({ params }: PlanPageProps) {
 
   return (
     <main className="min-h-screen bg-white flex flex-col antialiased">
-      {/* Brutalist Top Nav */}
-      <div className="w-full bg-white border-b-2 border-black py-4 px-6 flex items-center justify-between">
+      {/* Clean Top Nav */}
+      <div className="w-full bg-white border-b border-border-default py-4 px-6 flex items-center justify-between">
         <Link href="/" className="inline-block tap-feedback">
           <span className="text-xl font-black tracking-tighter uppercase text-black">
             OyaPlan
           </span>
         </Link>
-        <span className="type-ui-label text-black text-[10px] bg-[#F6C642] px-2 py-1 font-bold">
-          Live Plan
+        <span className="type-ui-label text-text-secondary text-[11px] bg-surface-grey px-3 py-1 rounded-full font-bold">
+          Shared Plan
         </span>
       </div>
 
       <div className="max-w-2xl mx-auto w-full px-4 pt-12 pb-24 space-y-8">
         
+        {/* Hero Photo */}
+        {plan?.spot?.image_url && (
+          <div className="w-full aspect-[16/9] relative rounded-[24px] overflow-hidden shadow-sm">
+            <Image 
+              src={plan.spot.image_url} 
+              alt={plan.spot?.name || "Venue"} 
+              fill 
+              className="object-cover"
+            />
+          </div>
+        )}
+
         {/* Zero-Context Explainer */}
         <div className="text-center max-w-sm mx-auto mb-8">
           <p className="font-sans font-medium text-black text-sm sm:text-base leading-relaxed">
@@ -158,6 +171,15 @@ export default async function PlanPage({ params }: PlanPageProps) {
           vibe={plan?.vibe || "Chill"}
           startArea={plan?.start_area || ""}
         />
+
+        {/* Create My Own Plan CTA for viewers */}
+        <div className="w-full max-w-lg mx-auto pt-2">
+          <Link href="/">
+            <button className="w-full bg-brand-green text-white font-sans font-bold uppercase tracking-widest text-xs h-14 rounded-[8px] flex items-center justify-center gap-2 hover:bg-brand-green-70 transition-colors tap-feedback">
+              Create My Own Plan
+            </button>
+          </Link>
+        </div>
 
         {/* New Reassurance Modules */}
         <WhyWePickedThis plan={plan!} />

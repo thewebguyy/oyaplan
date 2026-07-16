@@ -57,7 +57,7 @@ export function ReceiptStructure({
         {/* Transport Row */}
         <div className="flex justify-between items-center p-4 border-b border-black">
           <div className="flex items-center gap-2 relative">
-            <span className="font-bold text-black uppercase tracking-tight">Round-trip Transport</span>
+            <span className="font-bold text-black uppercase tracking-tight">Getting there</span>
             
             <button 
               className="text-text-muted hover:text-black transition-colors"

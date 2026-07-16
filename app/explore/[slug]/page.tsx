@@ -11,6 +11,7 @@ import AreaLayout from "@/components/explore/AreaLayout";
 import ScrubbablePhotos from "@/components/explore/ScrubbablePhotos";
 import { TrustBadge } from "@/components/ui/trust-badge";
 import { Spot } from "@/lib/types";
+import SaveForLater from "@/components/SaveForLater";
 
 export const dynamic = "force-dynamic";
 
@@ -252,7 +253,8 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
                     <span className="bg-black text-white text-[9px] font-extrabold tracking-widest uppercase px-2 py-1 rounded-[4px] shadow-sm select-none">
                       {spot.category}
                     </span>
-                    <div className="pointer-events-auto select-none">
+                    <div className="pointer-events-auto flex items-center gap-2">
+                      <SaveForLater spot={spot} />
                       <TrustBadge status="verified" freshnessText="today" />
                     </div>
                   </div>
