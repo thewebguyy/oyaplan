@@ -23,6 +23,11 @@ export function PlanHeader({ input, plan, isTopPick = false }: { input: ForgeInp
 
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${isTopPick ? 'bg-surface-grey/50' : 'bg-white'}`}>
+      {isTopPick && (
+        <div className="mb-6 flex items-center gap-2 bg-[#F6C642]/12 border border-[#F6C642]/30 text-[#7A5D00] px-4 py-1.5 rounded-full">
+          <span className="text-[11px] font-black uppercase tracking-[0.12em]">★ Our top pick</span>
+        </div>
+      )}
       {plan.spot.image_url ? (
         <div className="w-full max-w-2xl aspect-[16/9] mb-8 rounded-[20px] img-zoom-container shadow-lagoon">
           <Image 

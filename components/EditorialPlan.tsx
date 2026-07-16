@@ -55,7 +55,7 @@ export default function EditorialPlan({
   return (
     <div className={`w-full bg-white transition-all duration-300 overflow-hidden ${
       isTopPick 
-        ? "border-none shadow-[0px_24px_48px_-8px_rgba(1,5,40,0.12)] rounded-[32px]" 
+        ? "border-none shadow-[0px_28px_56px_-10px_rgba(1,5,40,0.15),0px_4px_0px_0px_rgba(0,135,81,0.9)] rounded-[32px]" 
         : "border border-border-default/60 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]"
     }`}>
       

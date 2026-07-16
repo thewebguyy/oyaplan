@@ -3,6 +3,7 @@
 import { BudgetFitBadge, BudgetFitStatus } from "@/components/ui/budget-fit-badge";
 import { HelpCircle, Check } from "lucide-react";
 import { useState } from "react";
+import { NumericCounter } from "@/components/ui/NumericCounter";
 
 interface ReceiptStructureProps {
   venueName: string;
@@ -46,21 +47,27 @@ export function ReceiptStructure({
         </div>
 
         {/* Venue Row */}
-        <div className="flex justify-between items-start p-4 border-b border-black">
+        <div 
+          className="flex justify-between items-start p-4 border-b border-black"
+          style={{ animationDelay: '0ms' }}
+        >
           <div className="flex flex-col gap-2">
             <span className="font-bold text-black uppercase tracking-tight">{venueName}</span>
             <BudgetFitBadge status={budgetFitStatus} size="sm" className="w-fit" />
           </div>
-          <span className="font-bold">₦{venueCost.toLocaleString()}</span>
+          <span className="font-bold">₦<NumericCounter value={venueCost} /></span>
         </div>
 
         {/* Transport Row */}
-        <div className="flex justify-between items-center p-4 border-b border-black">
+        <div 
+          className="flex justify-between items-center p-4 border-b border-black"
+          style={{ animationDelay: '80ms' }}
+        >
           <div className="flex items-center gap-2 relative">
             <span className="font-bold text-[#004B8E] uppercase tracking-tight">Getting there</span>
             
             <button 
-              className="text-text-muted hover:text-black transition-colors"
+              className="text-text-muted hover:text-black transition-colors btn-press-tactile"
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
               onClick={() => setShowTooltip(!showTooltip)}
@@ -83,23 +90,29 @@ export function ReceiptStructure({
         </div>
 
         {/* Buffer Row */}
-        <div className="flex justify-between items-center p-4 border-b border-black">
+        <div 
+          className="flex justify-between items-center p-4 border-b border-black"
+          style={{ animationDelay: '160ms' }}
+        >
           <span className="font-bold text-black uppercase tracking-tight text-text-muted">Buffer (Just in case)</span>
           <span className="font-bold text-text-muted">₦{Math.round(contingency).toLocaleString()}</span>
         </div>
 
         {/* Final Spend Inverted Row */}
-        <div className="flex justify-between items-center p-5 bg-black text-white font-sans">
+        <div 
+          className="flex justify-between items-center p-5 bg-black text-white font-sans"
+          style={{ animationDelay: '240ms' }}
+        >
           <span className="font-black tracking-widest text-[11px] uppercase">Estimated Spend (Per Person)</span>
-          <span className="font-black text-xl">₦{Math.round(finalTallyPerPerson).toLocaleString()}</span>
+          <span className="font-black text-xl">₦<NumericCounter value={Math.round(finalTallyPerPerson)} /></span>
         </div>
 
       </div>
 
       {/* What's Included Transparency Module */}
-      <div className="mt-6 border border-border-default bg-[#F9F9F9] rounded-[12px] p-5">
+      <div className="mt-6 border border-border-default bg-[#F9F9F9] rounded-[12px] p-5 scroll-reveal is-visible">
         <h4 className="type-ui-label text-text-primary text-xs uppercase font-bold tracking-widest mb-3">Included in this estimate</h4>
-        <div className="space-y-2">
+        <div className="space-y-2 stagger-children">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
               <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />

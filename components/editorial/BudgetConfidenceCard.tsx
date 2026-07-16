@@ -1,47 +1,73 @@
 "use client";
 
 import { Plan } from "@/lib/types";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { NumericCounter } from "@/components/ui/NumericCounter";
+
+type BudgetState = "safe" | "near" | "over";
+
+function getBudgetState(diff: number, budget: number): BudgetState {
+  if (diff < 0) return "over";
+  if (diff / budget < 0.1) return "near";   // less than 10% remaining
+  return "safe";
+}
+
+const STATE_CONFIG = {
+  safe: {
+    card:   "bg-[#F5FAF7] border-[#C3DDD1]",
+    divider: "border-[#C3DDD1]/50",
+    icon:   <CheckCircle className="w-6 h-6 text-[#008751] shrink-0 mt-0.5" />,
+    headline: "You're good.",
+    sub: (diff: number) => `You'll likely have ₦${diff.toLocaleString("en-NG")} left over.`,
+  },
+  near: {
+    card:   "bg-[#FAFAF8] border-[#DDD8C8]",
+    divider: "border-[#DDD8C8]/50",
+    icon:   <AlertCircle className="w-6 h-6 text-[#A07C3A] shrink-0 mt-0.5" />,
+    headline: "Cutting it close.",
+    sub: (diff: number) => `About ₦${diff.toLocaleString("en-NG")} to spare — leave room for extras.`,
+  },
+  over: {
+    card:   "bg-[#FFFBF0] border-[#EDD98A]",
+    divider: "border-[#EDD98A]/50",
+    icon:   <XCircle className="w-6 h-6 text-[#C18500] shrink-0 mt-0.5" />,
+    headline: "Slightly over.",
+    sub: (diff: number) => `₦${Math.abs(diff).toLocaleString("en-NG")} more than planned — consider trimming one stop.`,
+  },
+} as const;
 
 export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; originalBudget?: number }) {
   if (!originalBudget) return null;
 
-  const diff = originalBudget - plan.totalCost;
-  const isAffordable = diff >= 0;
+  const diff  = originalBudget - plan.totalCost;
+  const state = getBudgetState(diff, originalBudget);
+  const cfg   = STATE_CONFIG[state];
 
   return (
-    <div className="bg-[#FFFBF2] rounded-[24px] p-6 sm:p-8 border border-[#EAE3D1] mb-6">
+    <div className={`${cfg.card} rounded-[24px] p-6 sm:p-8 border mb-6 transition-colors duration-500`}>
       <h3 className="type-heading text-lg mb-6">Can You Afford It?</h3>
 
       <div className="flex flex-row justify-between mb-6">
         <div>
           <p className="type-caption text-text-muted mb-1">Your budget</p>
-          <p className="text-xl font-bold line-through text-text-muted">₦{originalBudget.toLocaleString()}</p>
+          <p className="text-xl font-bold line-through text-text-muted">
+            ₦{originalBudget.toLocaleString("en-NG")}
+          </p>
         </div>
         <div className="text-right">
           <p className="type-caption text-text-muted mb-1">Expected spend</p>
-          <p className="text-3xl font-black text-midnight-lagoon">₦{plan.totalCost.toLocaleString()}</p>
+          <p className="text-3xl font-black text-midnight-lagoon">
+            ₦<NumericCounter value={plan.totalCost} />
+          </p>
         </div>
       </div>
 
-      <div className="pt-6 border-t border-[#EAE3D1]/50 flex items-start gap-3">
-        {isAffordable ? (
-          <>
-            <CheckCircle className="w-6 h-6 text-brand-green shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold text-lg leading-tight">Yes.</p>
-              <p className="text-text-muted">You'll likely have ₦{diff.toLocaleString()} left.</p>
-            </div>
-          </>
-        ) : (
-          <>
-            <XCircle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold text-lg leading-tight">Slightly over.</p>
-              <p className="text-text-muted">It's ₦{Math.abs(diff).toLocaleString()} more than planned.</p>
-            </div>
-          </>
-        )}
+      <div className={`pt-6 border-t ${cfg.divider} flex items-start gap-3`}>
+        {cfg.icon}
+        <div>
+          <p className="font-bold text-lg leading-tight">{cfg.headline}</p>
+          <p className="text-text-muted">{cfg.sub(diff)}</p>
+        </div>
       </div>
     </div>
   );

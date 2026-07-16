@@ -67,6 +67,15 @@ export default function BlueprintMap() {
               @keyframes dash-scroll {
                 to { stroke-dashoffset: -1000; }
               }
+              @keyframes pin-select {
+                0%   { transform: scale(1); }
+                40%  { transform: scale(1.14); }
+                70%  { transform: scale(1.05); }
+                100% { transform: scale(1.08); }
+              }
+              .map-pin-group.is-active > g {
+                animation: pin-select 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+              }
             `}
           </style>
           <filter id="map-shadow" x="-10%" y="-10%" width="120%" height="120%">
@@ -144,7 +153,7 @@ export default function BlueprintMap() {
           return (
             <g 
               key={area.slug} 
-              className="cursor-pointer map-pin-group"
+              className={`cursor-pointer map-pin-group${isActive ? ' is-active' : ''}`}
               onClick={() => handleAreaClick(area.slug, area.isActive, area.name)}
               data-testid={`pin-${area.slug}`}
             >
@@ -161,8 +170,8 @@ export default function BlueprintMap() {
 
               {/* Teardrop Pin */}
               <g 
-                transform={`translate(${area.textX}, ${area.textY}) scale(${isActive ? 1.1 : 1})`}
-                style={{ transition: "transform 0.2s ease" }}
+                transform={`translate(${area.textX}, ${area.textY}) scale(${isActive ? 1.08 : 1})`}
+                style={{ transition: "transform 380ms cubic-bezier(0.16, 1, 0.3, 1)", transformOrigin: "center" }}
               >
                 <path 
                   d="M0 0 C-6 -8 -12 -16 -12 -24 C-12 -31 -6 -36 0 -36 C6 -36 12 -31 12 -24 C12 -16 6 -8 0 0 Z" 
@@ -190,11 +199,10 @@ export default function BlueprintMap() {
               >
                 <div className="flex items-center justify-center w-full h-full">
                   <div 
-                    className={`inline-flex items-center justify-center bg-white border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,1)] px-3 py-1.5 transition-all ${
-                      isActive ? "scale-110" : "scale-100"
-                    } hover:scale-105 active:scale-95`}
+                    className={`inline-flex items-center justify-center bg-white border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,1)] px-3 py-1.5 hover:scale-105 active:scale-95`}
                     style={{
-                      transform: `rotate(${area.name.length % 2 === 0 ? -4 : 3}deg) ${isActive ? "scale(1.1)" : "scale(1)"}`,
+                      transform: `rotate(${area.name.length % 2 === 0 ? -4 : 3}deg) ${isActive ? "scale(1.08)" : "scale(1)"}`,
+                      transition: "transform 380ms cubic-bezier(0.16, 1, 0.3, 1)",
                       opacity: isInactive ? 0.6 : 1,
                     }}
                   >
