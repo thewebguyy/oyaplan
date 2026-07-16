@@ -189,7 +189,10 @@ export default async function ForgePage({
   }
 
   return (
-    <main className="min-h-screen bg-white py-8 px-4">
+    <main
+      className="min-h-screen pt-24 pb-16 px-4"
+      style={{ background: 'linear-gradient(to bottom, #FAFAF8 0px, #FFFFFF 120px)' }}
+    >
       <ForgeResultsClient
         evaluations={evaluations}
         vibeMetrics={vibeMetrics}

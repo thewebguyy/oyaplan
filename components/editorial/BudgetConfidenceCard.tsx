@@ -20,7 +20,7 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
         </div>
         <div className="text-right">
           <p className="type-caption text-text-muted mb-1">Expected spend</p>
-          <p className="text-3xl font-black text-brand-green">₦{plan.totalCost.toLocaleString()}</p>
+          <p className="text-3xl font-black text-midnight-lagoon">₦{plan.totalCost.toLocaleString()}</p>
         </div>
       </div>
 

@@ -283,20 +283,207 @@
 }
 
 @layer utilities {
+
+  /* ==========================================
+     Motion Timing System (V1.1 canonical)
+     ========================================== */
+  :root {
+    --duration-instant:  120ms;
+    --duration-hover:    250ms;
+    --duration-press:    180ms;
+    --duration-lift:     350ms;
+    --duration-reveal:   700ms;
+    --duration-zoom:     600ms;
+    --duration-idle:     6000ms;
+    --duration-drift:    12000ms;
+
+    --ease-spring:    cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    --ease-standard:  cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-exit:      cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  /* ==========================================
+     Colored Shadow Utilities
+     ========================================== */
+  .shadow-warm   { box-shadow: 0 12px 32px -8px rgba(246,198,66,0.14); }
+  .shadow-cool   { box-shadow: 0 12px 32px -8px rgba(0,75,142,0.14); }
+  .shadow-lagoon { box-shadow: 0 12px 32px -8px rgba(1,5,40,0.14); }
+  .shadow-green  { box-shadow: 0 12px 32px -8px rgba(0,135,81,0.14); }
+
+  /* Combined lift + color */
+  .shadow-lift-lagoon { box-shadow: 0 20px 48px -12px rgba(1,5,40,0.16), 0 4px 12px -4px rgba(0,0,0,0.06); }
+  .shadow-lift-warm   { box-shadow: 0 20px 48px -12px rgba(246,198,66,0.16), 0 4px 12px -4px rgba(0,0,0,0.06); }
+  .shadow-lift-green  { box-shadow: 0 20px 48px -12px rgba(0,135,81,0.16), 0 4px 12px -4px rgba(0,0,0,0.06); }
+
+  /* ==========================================
+     Section Atmosphere Backgrounds (ambient radial lighting, 2–5% opacity)
+     ========================================== */
+  .section-calm {
+    background: #FFFFFF;
+  }
+  .section-focused {
+    background:
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(246,198,66,0.04) 0%, transparent 70%),
+      #FAFAF8;
+  }
+  .section-exciting {
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(246,198,66,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 10% 80%, rgba(246,198,66,0.03) 0%, transparent 50%),
+      #FFFBF0;
+  }
+  .section-trustworthy {
+    background:
+      radial-gradient(ellipse 50% 60% at 15% 70%, rgba(0,135,81,0.05) 0%, transparent 60%),
+      #F5FAF7;
+  }
+  .section-editorial {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 100%, rgba(1,5,40,0.03) 0%, transparent 60%),
+      #FAFAF6;
+  }
+  .section-quiet {
+    background: #F7F7F5;
+  }
+  .section-guides {
+    background:
+      radial-gradient(ellipse 50% 40% at 90% 10%, rgba(1,5,40,0.04) 0%, transparent 60%),
+      #FAFAF8;
+  }
+  .section-explore {
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(0,75,142,0.04) 0%, transparent 60%),
+      #FFFFFF;
+  }
+
+  /* ==========================================
+     Scroll Reveal System (IntersectionObserver)
+     ========================================== */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px) scale(0.99);
+    transition:
+      opacity   var(--duration-reveal) var(--ease-standard),
+      transform var(--duration-reveal) var(--ease-standard);
+    will-change: opacity, transform;
+  }
+  .scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Stagger delays for children inside a revealed section */
+  .stagger-children > *:nth-child(1) { transition-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { transition-delay: 80ms; }
+  .stagger-children > *:nth-child(3) { transition-delay: 160ms; }
+  .stagger-children > *:nth-child(4) { transition-delay: 240ms; }
+  .stagger-children > *:nth-child(5) { transition-delay: 240ms; }
+  .stagger-children > *:nth-child(6) { transition-delay: 240ms; }
+
+  /* ==========================================
+     Gradient Drift (Collection Card Backgrounds)
+     ========================================== */
+  @keyframes gradient-drift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .gradient-drift {
+    background-size: 200% 200%;
+    animation: gradient-drift var(--duration-drift) linear infinite;
+  }
+
+  /* ==========================================
+     Upgraded Card Lift (Chowdeck Hover Physics)
+     ========================================== */
+  .card-lift {
+    transition:
+      transform    var(--duration-lift) var(--ease-standard),
+      box-shadow   var(--duration-lift) var(--ease-standard),
+      filter       var(--duration-lift) var(--ease-standard),
+      border-color var(--duration-lift) var(--ease-standard);
+    will-change: transform;
+  }
+  .card-lift:hover {
+    transform: translateY(-6px) scale(1.012);
+    filter: brightness(1.01);
+  }
+  /* Pair with colored shadow utility for full effect:
+     className="card-lift shadow-lagoon hover:shadow-lift-lagoon" */
+
+  /* ==========================================
+     Image Zoom System (venue photos)
+     ========================================== */
+  .img-zoom-container {
+    overflow: hidden;
+    border-radius: inherit;
+    isolation: isolate; /* prevents border-radius clipping issue in Safari */
+  }
+  .img-zoom {
+    transition: transform var(--duration-zoom) var(--ease-standard),
+                filter    var(--duration-zoom) var(--ease-standard);
+    will-change: transform;
+  }
+  .img-zoom-container:hover .img-zoom,
+  .group:hover .img-zoom {
+    transform: scale(1.04);
+    filter: brightness(1.02) saturate(1.03);
+  }
+
+  /* ==========================================
+     Chip Fill Animation (area chips, ribbon pills)
+     ========================================== */
+  .chip-fill {
+    background-image: linear-gradient(
+      to right,
+      transparent 50%,
+      rgba(246,198,66,0.12) 50%
+    );
+    background-size: 200% 100%;
+    background-position: 0% 0%;
+    transition: background-position var(--duration-hover) var(--ease-standard),
+                border-color        var(--duration-hover) var(--ease-standard),
+                color               var(--duration-hover) var(--ease-standard);
+  }
+  .chip-fill:hover {
+    background-position: -100% 0%;
+    border-color: rgba(246,198,66,0.5);
+    color: #010528;
+  }
+
+  /* ==========================================
+     Idle Breathe (cards float gently, never in sync)
+     ========================================== */
+  @keyframes idle-breathe {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-2px); }
+  }
+  .animate-idle-breathe { animation: idle-breathe var(--duration-idle) ease-in-out infinite; }
+  .idle-delay-0  { animation-delay: 0ms; }
+  .idle-delay-1  { animation-delay: 800ms; }
+  .idle-delay-2  { animation-delay: 1600ms; }
+  .idle-delay-3  { animation-delay: 2400ms; }
+  .idle-delay-4  { animation-delay: 3200ms; }
+  .idle-delay-5  { animation-delay: 4000ms; }
+
+  /* ==========================================
+     Warm Shimmer (loading skeletons)
+     ========================================== */
+  @keyframes shimmer-warm {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+  }
   .shimmer-bg {
     background: linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.2) 50%,
-      rgba(255, 255, 255, 0) 100%
+      rgba(250,250,248,0) 0%,
+      rgba(246,198,66,0.06) 40%,
+      rgba(250,250,248,0.3) 50%,
+      rgba(246,198,66,0.06) 60%,
+      rgba(250,250,248,0) 100%
     );
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    animation: shimmer-warm 2s ease-in-out infinite;
   }
 
   @keyframes progress-loading {
@@ -313,8 +500,8 @@
     animation: slide-up-fade-in var(--motion-considered) both;
   }
 
-  .animation-delay-0 { animation-delay: 0ms; }
-  .animation-delay-80 { animation-delay: 80ms; }
+  .animation-delay-0   { animation-delay: 0ms; }
+  .animation-delay-80  { animation-delay: 80ms; }
   .animation-delay-160 { animation-delay: 160ms; }
   .animation-delay-200 { animation-delay: 200ms; }
   .animation-delay-250 { animation-delay: 250ms; }
@@ -324,34 +511,30 @@
   }
 
   .focus-ring {
-    @apply focus-visible:ring-2 focus-visible:ring-brand-green-15 focus-visible:border-brand-green outline-none;
+    @apply focus-visible:ring-2 focus-visible:ring-lasgidi-yellow/60 focus-visible:border-lasgidi-yellow outline-none;
   }
 
   .focus-ring-inverse {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-green;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lasgidi-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-lagoon;
   }
 
-  .card-lift {
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-  
-  .card-lift:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-float);
-  }
-
+  /* ==========================================
+     Button Spring (tactile press)
+     ========================================== */
   .btn-spring {
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    transition: transform var(--duration-press) var(--ease-spring);
   }
   .btn-spring:active {
     transform: scale(0.96);
   }
 
+  /* ==========================================
+     Hero Breathe (bridge illustration ambient)
+     ========================================== */
   @keyframes hero-breathe {
     0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
     50% { transform: translateY(-4px) rotate(0.5deg) scale(1.01); }
   }
-
   .animate-hero-breathe {
     animation: hero-breathe 8s ease-in-out infinite;
   }
@@ -360,11 +543,30 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-4px); }
   }
-
   .animate-float-4px {
     animation: float-4px 4s ease-in-out infinite;
   }
+
+  /* ==========================================
+     Section Gap (editorial breathing room)
+     ========================================== */
+  .section-gap { padding-top: 6rem; padding-bottom: 6rem; }
+  @media (max-width: 640px) { .section-gap { padding-top: 3.5rem; padding-bottom: 3.5rem; } }
 }
+
+/* ==========================================
+   Global Focus Ring Override (Lasgidi Yellow)
+   ========================================== */
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(246,198,66,0.6);
+  }
+}
+
+
 
 /* ==========================================
    Motion & Cultural Identity Layer (Phase E5)

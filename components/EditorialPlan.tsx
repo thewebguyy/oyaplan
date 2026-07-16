@@ -55,8 +55,8 @@ export default function EditorialPlan({
   return (
     <div className={`w-full bg-white transition-all duration-300 overflow-hidden ${
       isTopPick 
-        ? "border-none shadow-[0px_24px_48px_rgba(0,0,0,0.06)] rounded-[32px]" 
-        : "border border-border-default shadow-sm hover:shadow-md rounded-[24px]"
+        ? "border-none shadow-[0px_24px_48px_-8px_rgba(1,5,40,0.12)] rounded-[32px]" 
+        : "border border-border-default/60 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]"
     }`}>
       
       <PlanHeader input={input} plan={plan} isTopPick={isTopPick} />

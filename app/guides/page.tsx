@@ -11,15 +11,15 @@ export const metadata: Metadata = {
 
 export default function GuidesPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 bg-white min-h-screen">
+    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 bg-white-sand min-h-screen">
       <div className="space-y-4">
         <Link href="/">
-          <button className="type-label text-text-secondary hover:text-brand-green transition-colors flex items-center gap-2 tap-feedback py-2">
+          <button className="type-label text-text-secondary hover:text-midnight-lagoon transition-colors flex items-center gap-2 tap-feedback py-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Planner
           </button>
         </Link>
-        <h1 className="type-display-product text-text-primary text-3xl sm:text-4xl font-black">
+        <h1 className="type-display-product text-midnight-lagoon text-3xl sm:text-4xl font-black">
           Planning Guides
         </h1>
         <p className="type-body text-text-muted max-w-xl">
@@ -27,7 +27,7 @@ export default function GuidesPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
         {PLANNING_GUIDES.map((guide) => (
           <EditorialGuideCard key={guide.slug} guide={guide} />
         ))}

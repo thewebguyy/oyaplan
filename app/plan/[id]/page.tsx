@@ -108,15 +108,15 @@ export default async function PlanPage({ params }: PlanPageProps) {
   else if (diff < 0) budgetFitStatus = "over";
 
   return (
-    <main className="min-h-screen bg-white flex flex-col antialiased">
+    <main className="min-h-screen bg-white-sand flex flex-col antialiased">
       {/* Clean Top Nav */}
-      <div className="w-full bg-white border-b border-border-default py-4 px-6 flex items-center justify-between">
+      <div className="w-full bg-white-sand border-b border-border-default py-4 px-6 flex items-center justify-between">
         <Link href="/" className="inline-block tap-feedback">
           <span className="text-xl font-black tracking-tighter uppercase text-black">
             OyaPlan
           </span>
         </Link>
-        <span className="type-ui-label text-text-secondary text-[11px] bg-surface-grey px-3 py-1 rounded-full font-bold">
+        <span className="type-ui-label text-text-secondary text-[11px] bg-white border border-border-default/50 px-3 py-1 rounded-full font-bold">
           Shared Plan
         </span>
       </div>
@@ -125,19 +125,19 @@ export default async function PlanPage({ params }: PlanPageProps) {
         
         {/* Hero Photo */}
         {plan?.spot?.image_url && (
-          <div className="w-full aspect-[16/9] relative rounded-[24px] overflow-hidden shadow-sm">
+          <div className="w-full aspect-[16/9] relative rounded-[28px] img-zoom-container shadow-lagoon">
             <Image 
               src={plan.spot.image_url} 
               alt={plan.spot?.name || "Venue"} 
               fill 
-              className="object-cover"
+              className="object-cover img-zoom"
             />
           </div>
         )}
 
         {/* Zero-Context Explainer */}
         <div className="text-center max-w-sm mx-auto mb-8">
-          <p className="font-sans font-medium text-black text-sm sm:text-base leading-relaxed">
+          <p className="type-body text-midnight-lagoon/80 leading-relaxed text-sm sm:text-base">
             Someone built a plan for <strong>{plan?.squad_size} people</strong> going to <strong>{plan?.spot?.name}</strong>. We did the math so you can just enjoy the night. No unexpected billing.
           </p>
         </div>
@@ -175,7 +175,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
         {/* Create My Own Plan CTA for viewers */}
         <div className="w-full max-w-lg mx-auto pt-2">
           <Link href="/">
-            <button className="w-full bg-brand-green text-white font-sans font-bold uppercase tracking-widest text-xs h-14 rounded-[8px] flex items-center justify-center gap-2 hover:bg-brand-green-70 transition-colors tap-feedback">
+            <button className="w-full bg-lasgidi-yellow text-midnight-lagoon font-sans font-black uppercase tracking-widest text-xs h-14 rounded-[8px] flex items-center justify-center gap-2 hover:bg-[#E2B63B] transition-colors tap-feedback btn-spring border-none shadow-sm">
               Create My Own Plan
             </button>
           </Link>

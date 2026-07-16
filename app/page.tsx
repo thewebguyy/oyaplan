@@ -13,6 +13,8 @@ import ExperienceCollections from "@/components/ExperienceCollections";
 import RecentlyVerified from "@/components/RecentlyVerified";
 import TrustSection from "@/components/TrustSection";
 import { Button } from "@/components/ui/button";
+import RevealOnScroll from "@/components/motion/RevealOnScroll";
+
 
 const ForgeForm = dynamic(() => import("@/components/ForgeForm"), {
   ssr: true,
@@ -49,12 +51,12 @@ export default async function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-surface-grey text-text-primary antialiased">
+    <main className="min-h-screen bg-white-sand text-text-primary antialiased">
       <Suspense fallback={null}>
         <ErrorBanner />
       </Suspense>
 
-      {/* Hero Section */}
+      {/* Hero Section — FROZEN, do not modify */}
       <div className="relative pt-24 md:pt-32 pb-12 px-4 flex flex-col items-center justify-start overflow-hidden bg-[#FFFBF2]">
         {/* Animated Lagos Vector Illustration */}
         <div className="absolute inset-0 z-0 pointer-events-none flex items-end justify-center overflow-hidden">
@@ -86,26 +88,38 @@ export default async function LandingPage() {
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="relative z-10 bg-surface-grey pt-8 pb-16">
-        <div className="max-w-4xl mx-auto px-4 space-y-16">
-          
-          {/* Desktop Inline Planner (Scroll Target) */}
+      {/* Section divider — thin gradient line */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-border-default to-transparent" />
+
+      {/* ── CHAPTER 1: Planner ── */}
+      <section className="section-focused w-full pb-10 pt-10">
+        <div className="max-w-4xl mx-auto px-4">
           <div id="planner" className="hidden md:block scroll-mt-24">
-            <div className="bg-white rounded-[24px] shadow-float border border-transparent overflow-hidden p-2 text-text-primary max-w-lg mx-auto">
-              <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
-                <ForgeForm areas={areas} />
-              </Suspense>
-            </div>
+            <RevealOnScroll>
+              <div className="bg-white rounded-[28px] shadow-[0px_24px_48px_-12px_rgba(1,5,40,0.08)] border border-border-default/50 overflow-hidden p-2 text-text-primary max-w-lg mx-auto">
+                <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
+                  <ForgeForm areas={areas} />
+                </Suspense>
+              </div>
+            </RevealOnScroll>
           </div>
+        </div>
+      </section>
 
+      {/* ── CHAPTER 2: Collections — full-bleed ── */}
+      <section className="section-exciting w-full py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-4">
           <ExperienceCollections />
+        </div>
+      </section>
 
-          {/* Explore Lagos (Area Chips) */}
-          <section className="w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="type-heading text-xl">Explore Lagos</h2>
-              <Link href="/explore" className="text-sm font-bold text-midnight-lagoon hover:text-midnight-lagoon/80 transition-colors">
+      {/* ── CHAPTER 3: Explore Lagos ── */}
+      <section className="section-explore w-full py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4">
+          <RevealOnScroll>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="type-heading text-midnight-lagoon">Explore Lagos</h2>
+              <Link href="/explore" className="text-sm font-bold text-atlantic-blue hover:text-midnight-lagoon transition-colors">
                 Map view
               </Link>
             </div>
@@ -114,42 +128,57 @@ export default async function LandingPage() {
                 <Link
                   key={area.id}
                   href={`/explore/${area.slug}`}
-                  className="px-4 py-2 bg-white border border-border-default rounded-full type-ui-label text-text-primary hover:border-lasgidi-yellow hover:text-midnight-lagoon transition-colors tap-feedback"
+                  className="px-4 py-2 bg-white border border-border-default rounded-full type-ui-label text-text-primary chip-fill tap-feedback"
                 >
                   {area.name}
                 </Link>
               ))}
             </div>
-          </section>
+          </RevealOnScroll>
+        </div>
+      </section>
 
+      {/* ── CHAPTER 4: Recently Verified ── */}
+      <section className="section-trustworthy w-full py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4">
           <Suspense fallback={null}>
             <RecentlyVerified />
           </Suspense>
+        </div>
+      </section>
 
-          {/* Planning Guides Placeholder for Milestone 3 */}
-          {/* Will be added in Milestone 3 */}
-
+      {/* ── CHAPTER 5: Trust ── */}
+      <section className="section-editorial w-full py-20 sm:py-24">
+        <div className="max-w-4xl mx-auto px-4">
           <TrustSection />
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-white border-t border-border-default text-center text-text-muted space-y-4">
-        <p className="type-body text-sm font-medium">&copy; {new Date().getFullYear()} OyaPlan</p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
-          <Link href="/explore" className="type-label text-text-muted hover:text-text-primary transition-colors">
-            Explore
-          </Link>
-          <div className="w-1 h-1 rounded-full bg-border-strong hidden sm:block" />
-          <Link href="/list-your-spot" className="type-label text-text-muted hover:text-text-primary transition-colors">
-            Own a venue?
-          </Link>
-          <div className="w-1 h-1 rounded-full bg-border-strong hidden sm:block" />
-          <Link href="/legal" className="type-label text-text-muted hover:text-text-primary transition-colors">
-            Legal / Privacy
-          </Link>
+      {/* ── Footer ── */}
+      <footer className="section-quiet border-t border-border-default/50 py-14">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <span className="text-midnight-lagoon font-black tracking-tighter text-lg uppercase select-none">
+              OyaPlan
+            </span>
+            <nav className="flex items-center gap-6 sm:gap-8">
+              <Link href="/explore" className="type-caption text-text-muted hover:text-midnight-lagoon transition-colors font-medium">
+                Explore
+              </Link>
+              <span className="w-1 h-1 rounded-full bg-border-strong hidden sm:block" />
+              <Link href="/guides" className="type-caption text-text-muted hover:text-midnight-lagoon transition-colors font-medium">
+                Guides
+              </Link>
+              <span className="w-1 h-1 rounded-full bg-border-strong hidden sm:block" />
+              <Link href="/list-your-spot" className="type-caption text-text-muted hover:text-midnight-lagoon transition-colors font-medium">
+                Own a venue?
+              </Link>
+            </nav>
+            <p className="type-caption text-text-muted">&copy; {new Date().getFullYear()} OyaPlan</p>
+          </div>
         </div>
       </footer>
     </main>
   );
 }
+

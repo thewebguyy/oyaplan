@@ -18,7 +18,7 @@ export default function SavedPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 bg-white min-h-screen text-text-primary">
+    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 bg-white-sand min-h-screen text-text-primary">
       <div className="space-y-4">
         <Link href="/">
           <button className="type-label text-text-secondary hover:text-brand-green transition-colors flex items-center gap-2 tap-feedback py-2">
@@ -47,9 +47,9 @@ export default function SavedPage() {
             return (
               <div 
                 key={spot.id} 
-                className="bg-white border border-border-default rounded-[20px] flex flex-col overflow-hidden dossier-card h-full transition-all duration-200"
+                className="bg-white border border-border-default/60 rounded-[28px] flex flex-col overflow-hidden card-lift shadow-lagoon hover:shadow-lift-lagoon h-full transition-all duration-[350ms]"
               >
-                <div className="w-full aspect-[4/3] relative border-b border-border-default bg-surface-grey">
+                <div className="w-full aspect-[4/3] relative border-b border-border-default/30 bg-surface-grey img-zoom-container">
                   <ScrubbablePhotos venueName={spot.name} />
                   <div className="absolute top-3 right-3 z-40">
                     <button
@@ -74,7 +74,7 @@ export default function SavedPage() {
                     </div>
                     
                     <Link href={`/forge?${prefillParams.toString()}&fresh=true`}>
-                      <Button className="bg-[#0A0A0A] text-white type-ui-label text-xs uppercase font-extrabold px-5 py-2.5 rounded-[8px] btn-intent-snaps cursor-pointer">
+                      <Button className="bg-midnight-lagoon text-white type-ui-label text-xs uppercase font-extrabold px-5 py-2.5 rounded-[8px] btn-spring tap-feedback cursor-pointer">
                         Forge Plan
                       </Button>
                     </Link>
@@ -85,9 +85,9 @@ export default function SavedPage() {
           })}
         </div>
       ) : (
-        <div className="text-center py-20 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
+        <div className="text-center py-20 section-trustworthy rounded-[28px] border border-palm-green/10 space-y-4">
           <p className="type-body text-text-muted">No saved spots yet.</p>
-          <Link href="/explore" className="type-label text-brand-green hover:underline inline-block">
+          <Link href="/explore" className="type-label text-atlantic-blue hover:text-midnight-lagoon transition-colors inline-block">
             Explore Lagos spots to save some &rarr;
           </Link>
         </div>

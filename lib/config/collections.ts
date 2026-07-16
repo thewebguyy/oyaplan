@@ -1,69 +1,87 @@
-import { Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee } from "lucide-react";
-import { ReactNode } from "react";
-
 export interface Collection {
   id: string;
   title: string;
-  icon: any; // We'll just instantiate the icon in the component or use strings
+  iconName: string;
   gradient: string;
   forgeParams: string;
+  /** Inline box-shadow color for the card (nearly invisible at low opacity) */
+  shadowColor: string;
+  /** True if the card background is light — text should be midnight-lagoon instead of white */
+  darkText: boolean;
 }
 
-export const COLLECTIONS = [
+export const COLLECTIONS: Collection[] = [
   {
     id: "date-night",
     title: "Date Night",
     iconName: "Heart",
-    gradient: "from-pink-500 to-rose-500",
-    forgeParams: "?vibe=date-night&budget=30000"
+    gradient: "from-[#010528] via-[#021060] to-[#004B8E]",
+    forgeParams: "?vibe=date-night&budget=30000",
+    shadowColor: "rgba(1,5,40,0.20)",
+    darkText: false,
   },
   {
     id: "birthday",
     title: "Birthday",
     iconName: "Gift",
-    gradient: "from-purple-500 to-indigo-500",
-    forgeParams: "?vibe=party&squad=5"
+    gradient: "from-[#F6C642] via-[#F0B429] to-[#E8A020]",
+    forgeParams: "?vibe=party&squad=5",
+    shadowColor: "rgba(246,198,66,0.25)",
+    darkText: true,
   },
   {
     id: "team-hangout",
     title: "Team Hangout",
     iconName: "Users",
-    gradient: "from-blue-500 to-cyan-500",
-    forgeParams: "?vibe=chill&squad=6"
+    gradient: "from-[#004B8E] via-[#005FAE] to-[#0073CC]",
+    forgeParams: "?vibe=chill&squad=6",
+    shadowColor: "rgba(0,75,142,0.20)",
+    darkText: false,
   },
   {
     id: "under-20k",
     title: "Under ₦20k",
     iconName: "Wallet",
-    gradient: "from-emerald-500 to-teal-500",
-    forgeParams: "?budget=20000"
+    gradient: "from-[#008751] via-[#009B5C] to-[#00B568]",
+    forgeParams: "?budget=20000",
+    shadowColor: "rgba(0,135,81,0.20)",
+    darkText: false,
   },
   {
     id: "sunday-plans",
     title: "Sunday Plans",
     iconName: "Sun",
-    gradient: "from-amber-400 to-orange-500",
-    forgeParams: "?vibe=brunch"
+    gradient: "from-[#FEFBEE] via-[#FDF3C0] to-[#F6C642]",
+    forgeParams: "?vibe=brunch",
+    shadowColor: "rgba(246,198,66,0.18)",
+    darkText: true,
   },
   {
     id: "after-work",
     title: "After Work",
     iconName: "Briefcase",
-    gradient: "from-slate-600 to-slate-800",
-    forgeParams: "?vibe=drinks"
+    gradient: "from-[#1D1D1F] via-[#252527] to-[#2E2E30]",
+    forgeParams: "?vibe=drinks",
+    shadowColor: "rgba(29,29,31,0.25)",
+    darkText: false,
   },
   {
     id: "first-date",
     title: "First Date",
     iconName: "GlassWater",
-    gradient: "from-fuchsia-500 to-pink-600",
-    forgeParams: "?vibe=casual&budget=15000&squad=2"
+    gradient: "from-[#F6C642] via-[#F5BC30] to-[#F0AE1A]",
+    forgeParams: "?vibe=casual&budget=15000&squad=2",
+    shadowColor: "rgba(246,198,66,0.22)",
+    darkText: true,
   },
   {
     id: "quick-lunch",
     title: "Quick Lunch",
     iconName: "Coffee",
-    gradient: "from-orange-400 to-red-500",
-    forgeParams: "?vibe=foodie&budget=10000"
-  }
+    gradient: "from-[#004B8E] via-[#003D72] to-[#010528]",
+    forgeParams: "?vibe=foodie&budget=10000",
+    shadowColor: "rgba(0,75,142,0.20)",
+    darkText: false,
+  },
 ];
+

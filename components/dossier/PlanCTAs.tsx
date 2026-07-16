@@ -64,7 +64,7 @@ export function PlanCTAs({ planId, venueName, address, budget, squadSize, vibe, 
 
       <Link 
         href={forgeUrl}
-        className="w-full sm:flex-1 bg-transparent border-2 border-black text-black font-sans font-bold uppercase tracking-widest text-xs h-14 rounded-[8px] flex items-center justify-center gap-2 hover:bg-surface-grey transition-colors tap-feedback"
+        className="w-full sm:flex-1 bg-transparent border-2 border-midnight-lagoon/30 text-midnight-lagoon font-sans font-bold uppercase tracking-widest text-xs h-14 rounded-[8px] flex items-center justify-center gap-2 hover:border-midnight-lagoon transition-all duration-[250ms] tap-feedback"
       >
         <Settings2 className="w-4 h-4" />
         Too Costly? Tweak the Budget

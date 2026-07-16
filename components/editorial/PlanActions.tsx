@@ -96,7 +96,7 @@ export function PlanActions({
 
       {planId ? (
         <Link href={`/plan/${planId}`} className="flex-1 sm:flex-none">
-          <Button className="w-full h-12 px-6 rounded-[12px] type-label bg-text-primary hover:bg-black text-white border-none shadow-none flex items-center justify-center">
+          <Button className="w-full h-12 px-6 rounded-[12px] type-label bg-midnight-lagoon hover:bg-charcoal text-white border-none shadow-none flex items-center justify-center">
             View Plan <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </Link>

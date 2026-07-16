@@ -36,7 +36,7 @@ export default function LoadingState() {
       {/* Calm, un-animated wordmark */}
       <div className="type-heading flex items-center opacity-70">
         <span>Oya</span>
-        <span className="text-brand-green">Plan</span>
+        <span className="text-lasgidi-yellow">Plan</span>
       </div>
 
       {/* Absolute positioned cross-fading text */}
