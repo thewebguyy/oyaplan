@@ -189,7 +189,7 @@ export default async function ForgePage({
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen bg-white py-8 px-4">
       <ForgeResultsClient
         evaluations={evaluations}
         vibeMetrics={vibeMetrics}

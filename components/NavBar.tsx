@@ -15,9 +15,9 @@ export default function NavBar() {
   if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
 
   const centerLinks = [
+    { name: "Plan", href: "/" },
     { name: "Explore", href: "/explore" },
-    { name: "How it Works", href: "/#how-it-works" },
-    { name: "For Venues", href: "/list-your-spot" },
+    { name: "Saved Ideas", href: "/saved" },
   ];
 
   return (
@@ -41,10 +41,7 @@ export default function NavBar() {
         </Link>
       </div>
 
-      {/* Center: Tagline (Desktop) */}
-      <div className="hidden md:block absolute left-1/2 -translate-x-1/2">
-        <span className="type-label text-text-muted opacity-80">Lagos Squad Planner</span>
-      </div>
+
 
       {/* Right: Links (Desktop) / CTA (Mobile) */}
       <div className="flex items-center gap-4 md:gap-6">
@@ -71,15 +68,7 @@ export default function NavBar() {
           })}
         </div>
 
-          <div className="hidden md:block w-px h-6 bg-border-default mx-2" />
-          <div className="hidden md:flex items-center">
-             <Link
-                href="/blog"
-                className="type-label text-text-secondary hover:text-brand-green transition-colors"
-             >
-                Blog
-             </Link>
-          </div>
+
 
           {isLoading ? (
             <div className="w-10 h-10 rounded-full bg-surface-grey animate-pulse"></div>

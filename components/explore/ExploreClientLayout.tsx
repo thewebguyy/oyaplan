@@ -7,6 +7,13 @@ import BlueprintMap from "./BlueprintMap";
 import DanfoTicker from "./DanfoTicker";
 import VibeIsland from "./VibeIsland";
 import QuickSwapWipe from "./QuickSwapWipe";
+import { COLLECTIONS } from "@/lib/config/collections";
+import Link from "next/link";
+import { Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee } from "lucide-react";
+
+const iconMap: Record<string, any> = {
+  Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee
+};
 
 interface ExploreClientLayoutProps {
   spots: Spot[];
@@ -46,6 +53,25 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
         <div className="absolute top-0 inset-x-0 z-10 flex flex-col pointer-events-none">
           <div className="pointer-events-auto">
             <DanfoTicker spots={spots} />
+          </div>
+
+          {/* Collection Chips Layer */}
+          <div className="pointer-events-auto mt-4 px-4 overflow-x-auto hide-scrollbar flex items-center gap-3">
+            {COLLECTIONS.map((collection) => {
+              const Icon = iconMap[collection.iconName];
+              return (
+                <Link
+                  key={collection.id}
+                  href={`/forge${collection.forgeParams}`}
+                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-md border border-black/10 rounded-full shadow-sm hover:shadow-md transition-all tap-feedback"
+                >
+                  {Icon && <Icon className="w-4 h-4 text-brand-green" />}
+                  <span className="type-ui-label text-sm font-bold text-text-primary whitespace-nowrap">
+                    {collection.title}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
 

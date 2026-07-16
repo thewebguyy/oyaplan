@@ -13,11 +13,11 @@ const displayFont = Inter({ subsets: ["latin"], variable: "--font-display", disp
 export const metadata: Metadata = {
   metadataBase: new URL("https://oyaplan.com"),
   title: "OyaPlan | Find where to go, know what it costs",
-  description: "Find where to go. Know what it'll cost. In seconds. Get one complete Lagos outing plan with accurate food costs, transport estimates, and squad-ready vibes.",
+  description: "Stop debating, start outing. Get a complete Lagos plan with verified prices and transport estimates in under two minutes.",
   keywords: ["Lagos", "Planning", "Outing", "Squad", "Food", "Transport", "Nigeria"],
   openGraph: {
     title: "OyaPlan | Find where to go, know what it costs",
-    description: "One tap to copy a complete Lagos plan to WhatsApp.",
+    description: "Stop debating, start outing. Get your Lagos plan in under two minutes.",
     url: "https://oyaplan.com",
     siteName: "OyaPlan",
     locale: "en_NG",

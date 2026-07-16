@@ -44,10 +44,10 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { id: 'vibe', title: "What's the plan today?" },
-  { id: 'squad', title: "Nice. How many people?", reassurance: "Great choice." },
-  { id: 'budget', title: "What's comfortable to spend?", reassurance: "Perfect. We'll find something that fits." },
-  { id: 'area', title: "Anywhere in mind?", reassurance: "Almost there." }
+  { id: 'budget', title: "What's the budget?" },
+  { id: 'area', title: "Where are we heading?", reassurance: "Nice. We'll find somewhere that fits." },
+  { id: 'squad', title: "Who's coming?", reassurance: "Great choice." },
+  { id: 'vibe', title: "What are we in the mood for?", reassurance: "Almost there." }
 ];
 
 const VIBE_URL_MAP: Record<string, string> = {
@@ -133,21 +133,21 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
   // Helper to render the summary ribbon
   const renderSummaryRibbon = () => {
     const parts = [];
-    if (formData.vibe) {
-      const v = VIBE_OPTIONS.find(o => o.value === formData.vibe)?.label;
-      if (v) parts.push({ label: v, step: 0 });
-    }
-    if (formData.squadSize) {
-      const s = SQUAD_OPTIONS.find(o => o.value === formData.squadSize)?.label;
-      if (s) parts.push({ label: s, step: 1 });
-    }
     if (formData.budget) {
       const b = BUDGET_OPTIONS.find(o => o.value === formData.budget)?.label;
-      if (b) parts.push({ label: b, step: 2 });
+      if (b) parts.push({ label: b, step: 0 });
     }
     if (formData.startArea) {
       const a = formData.startArea === "Anywhere" ? "Anywhere" : areas.find(a => a.slug === formData.startArea)?.name;
-      if (a) parts.push({ label: a, step: 3 });
+      if (a) parts.push({ label: a, step: 1 });
+    }
+    if (formData.squadSize) {
+      const s = SQUAD_OPTIONS.find(o => o.value === formData.squadSize)?.label;
+      if (s) parts.push({ label: s, step: 2 });
+    }
+    if (formData.vibe) {
+      const v = VIBE_OPTIONS.find(o => o.value === formData.vibe)?.label;
+      if (v) parts.push({ label: v, step: 3 });
     }
 
     if (parts.length === 0) return null;
@@ -286,14 +286,14 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
         )}
 
         {/* Final CTA - Only show when we're on the last step and have a value */}
-        {currentStep.id === 'area' && formData.startArea !== "" && (
+        {currentStep.id === 'vibe' && formData.vibe !== "" && (
           <div className="mt-8 animate-in fade-in slide-in-from-bottom-4">
             <Button
               onClick={handleSubmit}
               disabled={loading}
               className="w-full h-[64px] rounded-full bg-brand-green hover:bg-brand-green-70 text-white font-extrabold text-lg overflow-hidden tap-feedback"
             >
-              {loading ? "Finding your plan..." : "Get my plan"}
+              {loading ? "Finding your plan..." : "Find Places"}
             </Button>
           </div>
         )}

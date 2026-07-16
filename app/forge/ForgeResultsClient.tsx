@@ -127,17 +127,17 @@ export default function ForgeResultsClient({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <h1 className="type-heading text-text-primary">Our recommendations.</h1>
+            <h1 className="type-heading text-text-primary">We found {evaluations.length} places that fit your budget.</h1>
           </div>
           <p className="type-body text-text-secondary">
-            Based on <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span> & <span className="text-text-primary font-[600]">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput.squadSize} people</span>.
+            Based on <span className="text-text-primary font-[600]">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput.squadSize} people</span> around <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span>.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/">
             <button className="type-label text-text-secondary hover:text-brand-green transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-[10px]">
               <ArrowLeft className="w-3.5 h-3.5" />
-              Change details
+              Adjust plan
             </button>
           </Link>
           <Button 
@@ -145,7 +145,7 @@ export default function ForgeResultsClient({
             onClick={() => router.refresh()}
           >
             <RefreshCw className="w-4 h-4" />
-            Get Another Plan
+            Try different spots
           </Button>
         </div>
       </div>

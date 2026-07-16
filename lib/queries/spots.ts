@@ -61,3 +61,26 @@ export async function getStaleSpotsForAdmin(
     return { data: null, error: 'Unexpected error fetching stale spots' };
   }
 }
+
+export async function getRecentlyVerifiedSpots(
+  limit: number = 3
+): Promise<{ data: Spot[] | null; error: string | null }> {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const cutoffIso = thirtyDaysAgo.toISOString();
+
+    const { data, error } = await supabase
+      .from('spots')
+      .select('*, areas(*)')
+      .gte('price_updated_at', cutoffIso)
+      .eq('active', true)
+      .order('price_updated_at', { ascending: false })
+      .limit(limit);
+
+    if (error) return { data: null, error: error.message };
+    return { data: data as Spot[], error: null };
+  } catch {
+    return { data: null, error: 'Unexpected error fetching recently verified spots' };
+  }
+}

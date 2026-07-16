@@ -2,7 +2,7 @@
 
 import { ForgeInput, PlanEvaluation } from "@/lib/types";
 import { PlanHeader } from "./editorial/PlanHeader";
-import { BudgetSection } from "./editorial/BudgetSection";
+import { BudgetConfidenceCard } from "./editorial/BudgetConfidenceCard";
 import { PlanFacts } from "./editorial/PlanFacts";
 import { AdjustmentPanel } from "./editorial/AdjustmentPanel";
 import { PlanActions } from "./editorial/PlanActions";
@@ -64,7 +64,7 @@ export default function EditorialPlan({
       <div className="w-full h-px bg-border-default/50" />
 
       <div className="px-6 sm:px-10 py-8 bg-white space-y-6">
-        <BudgetSection plan={plan} originalBudget={originalBudget} />
+        <BudgetConfidenceCard plan={plan} originalBudget={originalBudget} />
 
         <AdjustmentPanel 
           input={input} 
