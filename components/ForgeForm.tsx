@@ -158,7 +158,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div key={i} className="flex items-center gap-2">
             <button 
               onClick={() => setCurrentStepIndex(p.step)}
-              className="type-ui-label text-text-secondary hover:text-text-primary transition-colors py-1 px-3 bg-surface-grey rounded-full tap-feedback"
+              className="type-ui-label text-text-secondary hover:text-midnight-lagoon transition-colors py-1 px-3 bg-surface-grey hover:bg-lasgidi-yellow/20 rounded-full tap-feedback"
             >
               {p.label}
             </button>
@@ -197,8 +197,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                   onClick={() => handleSelect('vibe', o.value)}
                   className={`flex flex-col items-start p-5 rounded-[8px] transition-all duration-200 tap-feedback text-left border-2 ${
                     isSelected 
-                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white shadow-sm" 
-                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
+                      ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-sm" 
+                      : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <o.icon className="w-6 h-6 mb-3" />
@@ -220,8 +220,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                   onClick={() => handleSelect('squadSize', o.value)}
                   className={`w-full text-left px-6 py-5 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                     isSelected
-                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
-                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
+                      ? "bg-midnight-lagoon border-midnight-lagoon text-white"
+                      : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <span className="type-venue-name">{o.label}</span>
@@ -242,8 +242,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                   onClick={() => handleSelect('budget', o.value)}
                   className={`w-full text-left px-6 py-5 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                     isSelected
-                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
-                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
+                      ? "bg-midnight-lagoon border-midnight-lagoon text-white"
+                      : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <span className="type-venue-name">{o.label}</span>
@@ -260,8 +260,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
               onClick={() => handleSelect('startArea', 'Anywhere')}
               className={`w-full text-left px-6 py-4 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                 formData.startArea === 'Anywhere'
-                  ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
-                  : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
+                  ? "bg-midnight-lagoon border-midnight-lagoon text-white"
+                  : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
               }`}
             >
               <span className="type-body font-semibold">Anywhere</span>
@@ -274,8 +274,8 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                   onClick={() => handleSelect('startArea', a.slug)}
                   className={`w-full text-left px-6 py-4 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
                     isSelected
-                      ? "bg-[#0A0A0A] border-[#0A0A0A] text-white"
-                      : "bg-[#F7F7F7] border-transparent text-text-primary hover:bg-[#0A0A0A] hover:text-white hover:border-[#0A0A0A]"
+                      ? "bg-midnight-lagoon border-midnight-lagoon text-white"
+                      : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <span className="type-body font-semibold">{a.name}</span>
@@ -291,7 +291,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             <Button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full h-[64px] rounded-full bg-brand-green hover:bg-brand-green-70 text-white font-extrabold text-lg overflow-hidden tap-feedback"
+              className="w-full h-[64px] rounded-full bg-lasgidi-yellow hover:bg-lasgidi-yellow/90 text-midnight-lagoon font-extrabold text-lg overflow-hidden tap-feedback btn-spring disabled:opacity-50"
             >
               {loading ? "Finding your plan..." : "Find Places"}
             </Button>

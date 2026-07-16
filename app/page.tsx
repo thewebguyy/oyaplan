@@ -69,7 +69,7 @@ export default async function LandingPage() {
             {/* Desktop Start Planning Button */}
             <div className="hidden md:block w-full">
               <Link href="#planner" className="w-full block">
-                <Button className="w-full h-14 bg-brand-green hover:bg-brand-green-70 text-white font-[900] text-lg rounded-full shadow-lg tap-feedback">
+                <Button className="w-full h-14 bg-lasgidi-yellow hover:bg-[#E2B63B] text-midnight-lagoon font-[900] text-lg rounded-full shadow-lg tap-feedback btn-spring border-none">
                   Start Planning
                 </Button>
               </Link>
@@ -105,7 +105,7 @@ export default async function LandingPage() {
           <section className="w-full">
             <div className="flex items-center justify-between mb-4">
               <h2 className="type-heading text-xl">Explore Lagos</h2>
-              <Link href="/explore" className="text-sm font-bold text-brand-green hover:text-brand-green-70 transition-colors">
+              <Link href="/explore" className="text-sm font-bold text-midnight-lagoon hover:text-midnight-lagoon/80 transition-colors">
                 Map view
               </Link>
             </div>
@@ -114,7 +114,7 @@ export default async function LandingPage() {
                 <Link
                   key={area.id}
                   href={`/explore/${area.slug}`}
-                  className="px-4 py-2 bg-white border border-border-default rounded-full type-ui-label text-text-primary hover:border-brand-green hover:text-brand-green transition-colors tap-feedback"
+                  className="px-4 py-2 bg-white border border-border-default rounded-full type-ui-label text-text-primary hover:border-lasgidi-yellow hover:text-midnight-lagoon transition-colors tap-feedback"
                 >
                   {area.name}
                 </Link>

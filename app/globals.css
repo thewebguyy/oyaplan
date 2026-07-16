@@ -37,6 +37,14 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
 
+  /* New theme additions */
+  --color-midnight-lagoon: #010528;
+  --color-lasgidi-yellow: #F6C642;
+  --color-atlantic-blue: #004B8E;
+  --color-palm-green: #008751;
+  --color-white-sand: #FAFAF8;
+  --color-charcoal: #1D1D1F;
+
   /* New Tokens */
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
@@ -72,8 +80,8 @@
   --intent-yellow-40: #F6C64266;
   --intent-yellow-15: #F6C64226;
 
-  --text-primary: #0A0A0A;
-  --text-secondary: #404040;
+  --text-primary: #010528;      /* Midnight Lagoon */
+  --text-secondary: #1D1D1F;    /* Charcoal */
   --text-muted: #6B6B6B;
   --text-on-green: #FFFFFF;
 
@@ -83,27 +91,27 @@
   --pastel-pink: #FDE8E9;
 
   --surface-white: #FFFFFF;
-  --surface-grey: #F7F7F7;
+  --surface-grey: #FAFAF8;      /* White Sand */
   
   --border-default: #E8E8E8;
   --border-strong: #D0D0D0;
   
-  --error: #DC2626;
+  --error: #D72638;             /* Red Rail */
   --success: #008751;
 
-  --background: #FFFFFF;
-  --foreground: #0A0A0A;
+  --background: #FAFAF8;        /* White Sand default page background */
+  --foreground: #010528;        /* Midnight Lagoon */
 
   --popover: #FFFFFF;
-  --popover-foreground: #0A0A0A;
+  --popover-foreground: #010528;
   
-  --accent: #F7F7F7;
-  --accent-foreground: #0A0A0A;
+  --accent: #FAFAF8;
+  --accent-foreground: #010528;
 
   /* Radius Scale */
-  --radius-sm: 8px;
-  --radius-md: 20px;
-  --radius-lg: 28px;
+  --radius-sm: 12px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
   --radius: var(--radius-md);
 
   /* Shadow & Elevation Scale */
@@ -111,7 +119,7 @@
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-float: 0 20px 40px -12px rgba(0, 135, 81, 0.08), 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+  --shadow-float: 0 20px 40px -12px rgba(1, 5, 40, 0.08), 0 10px 15px -3px rgba(0, 0, 0, 0.04);
   
   /* Semantic Spacing (Strict 8pt Grid) */
   --space-05: 4px;
@@ -129,8 +137,8 @@
   --duration-normal: 250ms;
   --duration-slow: 350ms;
 
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-emphasized: cubic-bezier(0.34, 1.56, 0.64, 1); /* Apple-like spring */
+  --ease-standard: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-emphasized: cubic-bezier(0.175, 0.885, 0.32, 1.1); /* Apple-like spring */
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
   /* Legacy Motion Tokens for backwards compat */
@@ -324,11 +332,19 @@
   }
 
   .card-lift {
-    transition: transform var(--motion-responsive), box-shadow var(--motion-responsive);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   }
   
   .card-lift:hover {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-float);
+  }
+
+  .btn-spring {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  }
+  .btn-spring:active {
+    transform: scale(0.96);
   }
 
   @keyframes hero-breathe {
