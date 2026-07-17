@@ -195,7 +195,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={o.value}
                   onClick={() => handleSelect('vibe', o.value)}
-                  className={`flex flex-col items-start p-5 rounded-[8px] transition-all duration-200 tap-feedback text-left border-2 ${
+                  className={`flex flex-col items-start p-5 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback text-left border-2 ${
                     isSelected 
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-sm" 
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
@@ -218,7 +218,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={o.value}
                   onClick={() => handleSelect('squadSize', o.value)}
-                  className={`w-full text-left px-6 py-5 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
+                  className={`w-full text-left px-6 py-5 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 ${
                     isSelected
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white"
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
@@ -240,7 +240,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={o.value}
                   onClick={() => handleSelect('budget', o.value)}
-                  className={`w-full text-left px-6 py-5 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
+                  className={`w-full text-left px-6 py-5 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 ${
                     isSelected
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white"
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
@@ -258,7 +258,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => handleSelect('startArea', 'Anywhere')}
-              className={`w-full text-left px-6 py-4 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
+              className={`w-full text-left px-6 py-4 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 ${
                 formData.startArea === 'Anywhere'
                   ? "bg-midnight-lagoon border-midnight-lagoon text-white"
                   : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
@@ -272,7 +272,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
                 <button
                   key={a.slug}
                   onClick={() => handleSelect('startArea', a.slug)}
-                  className={`w-full text-left px-6 py-4 rounded-[8px] transition-all duration-200 tap-feedback border-2 ${
+                  className={`w-full text-left px-6 py-4 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 ${
                     isSelected
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white"
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"

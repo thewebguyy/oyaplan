@@ -3,17 +3,16 @@
 import { useState, useEffect } from "react";
 
 const messages = [
-  "Checking recent prices...",
-  "Finding options that fit your budget...",
-  "Putting everything together...",
+  "Checking verified prices...",
+  "Comparing local venues...",
+  "Estimating squad transport...",
+  "Almost ready...",
 ];
 
 export default function LoadingState() {
   const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
-    // ~400ms per message ensures all 3 are seen within the ~1200ms minimum duration.
-    // The cross-fade takes 150ms.
     const timer = setInterval(() => {
       setMessageIndex((prev) => {
         if (prev >= messages.length - 1) {
@@ -22,7 +21,7 @@ export default function LoadingState() {
         }
         return prev + 1;
       });
-    }, 400);
+    }, 600);
 
     return () => clearInterval(timer);
   }, []);
@@ -33,10 +32,9 @@ export default function LoadingState() {
       aria-live="polite"
       className="flex flex-col items-center justify-center space-y-8 py-32 max-w-[320px] mx-auto text-center animate-in fade-in duration-700 motion-reduce:duration-0"
     >
-      {/* Calm, un-animated wordmark */}
-      <div className="type-heading flex items-center opacity-70">
-        <span>Oya</span>
-        <span className="text-lasgidi-yellow">Plan</span>
+      {/* Forge Pulse — editorial heartbeat line */}
+      <div className="w-full max-w-[120px] h-[2px] bg-border-default/30 rounded-full overflow-hidden">
+        <div className="h-full w-full bg-lasgidi-yellow animate-forge-pulse motion-reduce:animate-none" />
       </div>
 
       {/* Absolute positioned cross-fading text */}
@@ -46,9 +44,10 @@ export default function LoadingState() {
           return (
             <p
               key={idx}
-              className={`absolute type-body text-text-secondary transition-opacity duration-150 ease-in-out motion-reduce:transition-none ${
+              className={`absolute type-body text-text-secondary transition-opacity ease-in-out motion-reduce:transition-none ${
                 isActive ? "opacity-100" : "opacity-0"
               }`}
+              style={{ transitionDuration: "var(--duration-hover)" }}
             >
               {msg}
             </p>

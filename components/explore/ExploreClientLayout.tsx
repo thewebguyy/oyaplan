@@ -38,7 +38,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
       <div 
         className={`absolute inset-0 transition-transform duration-200 ease-out motion-reduce:transition-none flex flex-col ${
           isDetailsPage 
-            ? "-translate-y-[15vh] md:-translate-y-0 md:-translate-x-[225px]" 
+            ? "-translate-y-[15vh] md:-translate-y-0 md:-translate-x-[225px] md:scale-[1.03] md:origin-left" 
             : "translate-y-0"
         }`}
       >

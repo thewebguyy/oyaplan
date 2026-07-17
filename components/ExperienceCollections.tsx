@@ -43,19 +43,21 @@ export default function ExperienceCollections() {
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_80%_20%,rgba(255,255,255,0.08)_0%,transparent_70%)] pointer-events-none" />
 
               {/* Hover — card tinted border */}
-              <div className="absolute inset-0 rounded-[28px] border border-white/10 group-hover:border-white/25 transition-colors duration-[350ms] pointer-events-none" />
+              <div className="absolute inset-0 rounded-[28px] border border-white/10 group-hover:border-white/25 transition-colors pointer-events-none" style={{ transitionDuration: 'var(--duration-lift)' }} />
 
               {/* Content layer — stationary */}
               <div className="absolute inset-0 p-5 flex flex-col justify-between z-10">
                 {/* Icon — floats independently from the card */}
                 <div
-                  className={`w-10 h-10 rounded-full ${iconBg} flex items-center justify-center shadow-inner animate-idle-breathe ${idleClass} group-hover:scale-110 transition-transform duration-[250ms] ease-[cubic-bezier(0.175,0.885,0.32,1.1)]`}
+                  className={`w-10 h-10 rounded-full ${iconBg} flex items-center justify-center shadow-inner animate-idle-breathe ${idleClass} group-hover:scale-110 transition-transform`}
+                  style={{ transitionDuration: 'var(--duration-hover)', transitionTimingFunction: 'var(--ease-spring)' }}
                 >
                   {Icon && <Icon className={`w-5 h-5 ${textClass}`} />}
                 </div>
 
                 <span
-                  className={`type-ui-label ${textClass} font-bold text-sm leading-tight drop-shadow-sm group-hover:translate-x-0.5 transition-transform duration-[350ms]`}
+                  className={`type-ui-label ${textClass} font-bold text-sm leading-tight drop-shadow-sm group-hover:translate-x-0.5 transition-transform`}
+                  style={{ transitionDuration: 'var(--duration-lift)' }}
                 >
                   {collection.title}
                 </span>

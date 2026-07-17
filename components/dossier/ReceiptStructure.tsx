@@ -38,7 +38,7 @@ export function ReceiptStructure({
         {transportToggleNode}
       </div>
 
-      <div className="w-full border border-black bg-white flex flex-col font-mono text-sm shadow-sm relative">
+      <div className="w-full border border-black bg-white receipt-paper flex flex-col font-mono text-sm shadow-sm relative scroll-reveal is-visible">
         
         {/* Header Row */}
         <div className="flex justify-between items-center p-4 border-b border-black bg-[#F5F5F5]">
@@ -52,7 +52,7 @@ export function ReceiptStructure({
           style={{ animationDelay: '0ms' }}
         >
           <div className="flex flex-col gap-2">
-            <span className="font-bold text-black uppercase tracking-tight">{venueName}</span>
+            <span className="font-bold text-black uppercase tracking-tight mix-blend-multiply">{venueName}</span>
             <BudgetFitBadge status={budgetFitStatus} size="sm" className="w-fit" />
           </div>
           <span className="font-bold">₦<NumericCounter value={venueCost} /></span>
@@ -64,7 +64,7 @@ export function ReceiptStructure({
           style={{ animationDelay: '80ms' }}
         >
           <div className="flex items-center gap-2 relative">
-            <span className="font-bold text-[#004B8E] uppercase tracking-tight">Getting there</span>
+            <span className="font-bold text-[#004B8E] uppercase tracking-tight mix-blend-multiply">Getting there</span>
             
             <button 
               className="text-text-muted hover:text-black transition-colors btn-press-tactile"
@@ -94,7 +94,7 @@ export function ReceiptStructure({
           className="flex justify-between items-center p-4 border-b border-black"
           style={{ animationDelay: '160ms' }}
         >
-          <span className="font-bold text-black uppercase tracking-tight text-text-muted">Buffer (Just in case)</span>
+          <span className="font-bold text-black uppercase tracking-tight text-text-muted mix-blend-multiply">Buffer (Just in case)</span>
           <span className="font-bold text-text-muted">₦{Math.round(contingency).toLocaleString()}</span>
         </div>
 
@@ -104,7 +104,7 @@ export function ReceiptStructure({
           style={{ animationDelay: '240ms' }}
         >
           <span className="font-black tracking-widest text-[11px] uppercase">Estimated Spend (Per Person)</span>
-          <span className="font-black text-xl">₦<NumericCounter value={Math.round(finalTallyPerPerson)} /></span>
+          <span className="font-black text-2xl">₦<NumericCounter value={Math.round(finalTallyPerPerson)} /></span>
         </div>
 
       </div>

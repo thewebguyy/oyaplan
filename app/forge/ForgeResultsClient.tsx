@@ -182,7 +182,7 @@ export default function ForgeResultsClient({
           {evaluations.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {evaluations.slice(1, 3).map((evaluation, index) => (
-                <div key={evaluation.plan.spot.id} className={`dossier-card ease-danfo animate-slide-up-in ${index === 0 ? 'animation-delay-200' : 'animation-delay-250'}`}>
+                <div key={evaluation.plan.spot.id} className={`dossier-card ease-danfo animate-slide-up-in scale-[0.99] opacity-[0.97] ${index === 0 ? 'animation-delay-200' : 'animation-delay-250'}`}>
                   <EditorialPlan 
                     key={`other-${evaluation.plan.spot.id}`}
                     evaluation={evaluation} 

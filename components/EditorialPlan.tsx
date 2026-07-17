@@ -53,17 +53,17 @@ export default function EditorialPlan({
   ].filter(Boolean) as string[];
 
   return (
-    <div className={`w-full bg-white transition-all duration-300 overflow-hidden ${
+    <div className={`w-full bg-white transition-[colors,box-shadow,transform] overflow-hidden ${
       isTopPick 
         ? "border-none shadow-[0px_28px_56px_-10px_rgba(1,5,40,0.15),0px_4px_0px_0px_rgba(0,135,81,0.9)] rounded-[32px]" 
         : "border border-border-default/60 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]"
-    }`}>
+    }`} style={{ transitionDuration: 'var(--duration-editorial)' }}>
       
       <PlanHeader input={input} plan={plan} isTopPick={isTopPick} />
 
       <div className="w-full h-px bg-border-default/50" />
 
-      <div className="px-6 sm:px-10 py-8 bg-white space-y-6">
+      <div className={`${isTopPick ? 'px-6 sm:px-10 py-10' : 'px-6 sm:px-10 py-8'} bg-white space-y-6`}>
         <BudgetConfidenceCard plan={plan} originalBudget={originalBudget} />
 
         <AdjustmentPanel 

@@ -85,10 +85,24 @@ export default function SavedPage() {
           })}
         </div>
       ) : (
-        <div className="text-center py-20 section-trustworthy rounded-[28px] border border-palm-green/10 space-y-4">
-          <p className="type-body text-text-muted">No saved spots yet.</p>
+        <div className="text-center py-20 section-trustworthy rounded-[28px] border border-palm-green/10 space-y-5">
+          {/* Small decorative danfo illustration */}
+          <div className="flex justify-center pb-1">
+            <svg width="64" height="36" viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-60">
+              <rect width="64" height="28" rx="4" fill="#FCD116"/>
+              <rect y="12" width="64" height="4" fill="#008751" fillOpacity="0.3"/>
+              <rect x="8" y="4" width="20" height="8" rx="1" fill="#008751"/>
+              <rect x="36" y="4" width="20" height="8" rx="1" fill="#008751"/>
+              <circle cx="16" cy="30" r="6" fill="#1A1A1A"/>
+              <circle cx="48" cy="30" r="6" fill="#1A1A1A"/>
+            </svg>
+          </div>
+          <h2 className="type-heading text-text-primary text-xl">Your pocket is empty, but outside is calling.</h2>
+          <p className="type-body text-text-muted max-w-md mx-auto">
+            Discover verified spots in zones like Lekki or Yaba to start building your next squad outing.
+          </p>
           <Link href="/explore" className="type-label text-atlantic-blue hover:text-midnight-lagoon transition-colors inline-block">
-            Explore Lagos spots to save some &rarr;
+            Explore Lagos spots &rarr;
           </Link>
         </div>
       )}
