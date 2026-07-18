@@ -38,8 +38,8 @@ export default function NavBar() {
           <Image
             src="/logo.png"
             alt="OyaPlan"
-            width={120}
-            height={28}
+            width={610}
+            height={143}
             className="h-7 w-auto"
             priority
           />
