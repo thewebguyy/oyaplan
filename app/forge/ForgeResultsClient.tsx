@@ -40,12 +40,11 @@ export default function ForgeResultsClient({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [revealStep, setRevealStep] = useState(0);
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(evaluations.length === 0);
 
   // Client-side simulated audit reveal sequence
   useEffect(() => {
     if (evaluations.length === 0) {
-      setIsRevealed(true);
       return;
     }
 

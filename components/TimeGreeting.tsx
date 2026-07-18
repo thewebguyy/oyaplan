@@ -7,13 +7,16 @@ export default function TimeGreeting() {
 
   useEffect(() => {
     const hour = new Date().getHours();
+    let computedGreeting = "Good evening.";
     if (hour < 12) {
-      setGreeting("Good morning.");
+      computedGreeting = "Good morning.";
     } else if (hour < 17) {
-      setGreeting("Good afternoon.");
-    } else {
-      setGreeting("Good evening.");
+      computedGreeting = "Good afternoon.";
     }
+    const raf = requestAnimationFrame(() => {
+      setGreeting(computedGreeting);
+    });
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (

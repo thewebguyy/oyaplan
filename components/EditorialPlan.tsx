@@ -28,20 +28,8 @@ export default function EditorialPlan({
   onAdjustBudget, 
   isAdjusting = false 
 }: EditorialPlanProps) {
-  const { plan, trustSignals } = evaluation;
+  const { plan } = evaluation;
   const diff = originalBudget ? originalBudget - plan.totalCost : 0;
-  
-  // Format the assurance string
-  let budgetAssurance = "Typically fits within your budget";
-  if (originalBudget) {
-    if (diff < 0) {
-      budgetAssurance = `Slightly above your ₦${originalBudget.toLocaleString()} budget (by ~₦${Math.abs(diff).toLocaleString()})`;
-    } else if (diff < 2000) {
-      budgetAssurance = `Fits exactly within your ₦${originalBudget.toLocaleString()} budget`;
-    } else {
-      budgetAssurance = `Fits comfortably within your ₦${originalBudget.toLocaleString()} budget`;
-    }
-  }
 
   // Dynamic scorecard calculation
   const getQualityMetrics = () => {

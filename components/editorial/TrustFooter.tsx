@@ -2,7 +2,7 @@
 
 import { Plan } from "@/lib/types";
 import { ReactNode } from "react";
-import { Check, Circle } from "lucide-react";
+
 
 export function TrustFooter({
   plan,
