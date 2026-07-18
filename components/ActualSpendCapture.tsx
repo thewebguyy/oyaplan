@@ -112,7 +112,7 @@ export default function ActualSpendCapture({
                 const raw = e.target.value.replace(/[^0-9,]/g, "");
                 setActualTotal(raw);
               }}
-              className="w-full h-12 pl-8 pr-4 bg-surface-grey border border-border-default rounded-[10px] type-body text-text-primary focus:outline-none focus:border-brand-green focus:bg-white transition-all"
+              className="w-full h-12 pl-8 pr-4 bg-surface-grey border border-border-default rounded-[10px] type-body text-text-primary focus:outline-none focus:border-brand-green focus:bg-white transition-[colors,border-color,background-color]"
               aria-label="Actual total spend in Naira"
             />
           </div>

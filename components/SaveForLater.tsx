@@ -25,7 +25,7 @@ export default function SaveForLater({ spot }: { spot: Spot }) {
     <button
       onClick={handleToggle}
       aria-label={saved ? "Remove from Saved Ideas" : "Save for Later"}
-      className={`p-2 rounded-full border transition-all tap-feedback flex items-center justify-center ${
+      className={`p-2 rounded-full border transition-colors tap-feedback flex items-center justify-center ${
         saved 
           ? "bg-brand-green/10 border-brand-green text-brand-green" 
           : "bg-white border-border-default text-text-muted hover:text-text-primary"

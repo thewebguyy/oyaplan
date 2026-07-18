@@ -9,7 +9,7 @@ export function BudgetSection({ plan, originalBudget }: { plan: Plan; originalBu
     <div className="space-y-6">
       <div>
         <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-1">Estimated Total</p>
-        <p className="text-[32px] font-[600] font-display text-text-primary leading-none">₦{plan.totalCost.toLocaleString()}</p>
+        <p className="type-display-product text-text-primary leading-none tabular-nums">₦{plan.totalCost.toLocaleString()}</p>
       </div>
 
       <div className="space-y-3 pt-2">
@@ -26,7 +26,7 @@ export function BudgetSection({ plan, originalBudget }: { plan: Plan; originalBu
       {originalBudget && originalBudget > 0 && diff > 0 && (
         <div className="pt-5 border-t border-border-default/50">
           <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-1">Remaining Budget</p>
-          <p className="text-[20px] font-[600] text-brand-green">About ₦{diff.toLocaleString()}</p>
+          <p className="type-tagline text-brand-green tabular-nums">About ₦{diff.toLocaleString()}</p>
         </div>
       )}
     </div>

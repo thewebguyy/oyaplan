@@ -51,7 +51,7 @@ export default function GuidedDiscoveryClient() {
               <Button
                 key={opt.value}
                 onClick={() => updateParams("budget", opt.value)}
-                className={`rounded-full type-label h-[48px] px-6 tap-feedback border transition-all duration-200 ${
+                className={`rounded-full type-label h-[48px] px-6 tap-feedback border transition-[colors,border-color] duration-[var(--duration-hover)] ${
                   isSelected
                     ? "bg-text-primary text-white border-text-primary"
                     : "bg-white text-text-primary border-border-default hover:border-text-secondary"
@@ -75,7 +75,7 @@ export default function GuidedDiscoveryClient() {
                 <Button
                   key={opt.value}
                   onClick={() => updateParams("vibe", opt.value)}
-                  className={`rounded-full type-label h-[48px] px-6 tap-feedback border transition-all duration-200 ${
+                  className={`rounded-full type-label h-[48px] px-6 tap-feedback border transition-[colors,border-color] duration-[var(--duration-hover)] ${
                     isSelected
                       ? "bg-text-primary text-white border-text-primary"
                       : "bg-white text-text-primary border-border-default hover:border-text-secondary"

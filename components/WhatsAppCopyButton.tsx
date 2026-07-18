@@ -163,7 +163,7 @@ ${url}`;
       <Button
         onClick={handleShareLink}
         disabled={sharing}
-        className="w-full bg-surface-grey hover:bg-gray-200 text-text-secondary type-body flex items-center justify-center gap-2 h-[44px] transition-all rounded-[10px] border-none tap-feedback"
+        className="w-full bg-surface-grey hover:bg-border-default text-text-secondary type-body flex items-center justify-center gap-2 h-[44px] transition-colors rounded-[10px] border-none tap-feedback"
       >
         {sharing ? (
           <Loader2 className="w-4 h-4 animate-spin text-brand-green" />
