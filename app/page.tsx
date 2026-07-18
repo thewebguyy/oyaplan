@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import ErrorBanner from "@/components/ErrorBanner";
 import PageError from "@/components/PageError";
 import { captureServerException } from "@/lib/sentry";
-import { getActiveAreas } from "@/lib/queries/areas";
+import { getAreasWithSpotCounts } from "@/lib/queries/areas";
 import { Area } from "@/lib/types";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -24,16 +24,16 @@ const ForgeForm = dynamic(() => import("@/components/ForgeForm"), {
 export const revalidate = 300;
 
 export default async function LandingPage() {
-  let areas: Area[] = [];
+  let areas: Array<Area & { activeSpotCount?: number }> = [];
   let landingFetchError = false;
 
   try {
-    const areasResult = await getActiveAreas();
+    const areasResult = await getAreasWithSpotCounts();
 
     if (areasResult.error) {
       landingFetchError = true;
     } else {
-      areas = (areasResult.data || []) as Area[];
+      areas = (areasResult.data || []) as Array<Area & { activeSpotCount?: number }>;
     }
   } catch (e) {
     captureServerException(e);
@@ -67,6 +67,32 @@ export default async function LandingPage() {
           <TimeGreeting />
           <AnimatedHeadline />
 
+          {/* Static Preview Cost Card (Proof of Mechanism) */}
+          <div className="mt-8 w-full max-w-sm bg-white border border-border-default/80 rounded-[20px] p-5 shadow-[0px_12px_24px_-8px_rgba(1,5,40,0.04)] text-left font-mono text-xs text-text-secondary space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-200">
+            <div className="flex items-center justify-between border-b border-border-default/40 pb-2">
+              <span className="font-sans font-bold text-[10px] uppercase tracking-wider text-text-muted">Verification Proof</span>
+              <span className="bg-[#008751]/10 text-[#008751] px-2 py-0.5 rounded-full font-sans font-bold text-[9px] uppercase tracking-wider">Lagos Outing</span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between">
+                <span>1x Date Night in Ikeja</span>
+                <span className="font-semibold text-text-primary">₦35,000</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Round-trip Transport (Bolt)</span>
+                <span className="font-semibold text-text-primary">₦4,000</span>
+              </div>
+              <div className="flex justify-between text-text-muted">
+                <span>Baked-in Buffer (VAT & service)</span>
+                <span className="font-semibold">Included</span>
+              </div>
+            </div>
+            <div className="flex justify-between border-t border-dashed border-border-default/60 pt-2 text-sm font-black text-midnight-lagoon">
+              <span>ESTIMATED TOTAL</span>
+              <span>₦39,000</span>
+            </div>
+          </div>
+
           <div className="mt-8 flex flex-col items-center w-full max-w-sm gap-4">
             {/* Desktop Start Planning Button */}
             <div className="hidden md:block w-full">
@@ -80,7 +106,7 @@ export default async function LandingPage() {
             <div className="md:hidden w-full">
               <MobilePlannerDrawer>
                  <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
-                   <ForgeForm areas={areas} />
+                   <ForgeForm areas={areas as Area[]} />
                  </Suspense>
               </MobilePlannerDrawer>
             </div>
@@ -117,20 +143,28 @@ export default async function LandingPage() {
       <section className="section-explore w-full py-16 sm:py-20">
         <div className="max-w-4xl mx-auto px-4">
           <RevealOnScroll>
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <h2 className="type-heading text-midnight-lagoon">Explore Lagos</h2>
               <Link href="/explore" className="text-sm font-bold text-atlantic-blue hover:text-midnight-lagoon transition-colors">
                 Map view
               </Link>
             </div>
-            <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {areas.map((area) => (
                 <Link
                   key={area.id}
                   href={`/explore/${area.slug}`}
-                  className="px-4 py-2 bg-white border border-border-default rounded-full type-ui-label text-text-primary chip-fill tap-feedback"
+                  className="group relative p-5 bg-white border border-border-default/60 rounded-[20px] shadow-xs hover:shadow-lift-warm tap-feedback card-lift overflow-hidden flex flex-col justify-between h-28"
                 >
-                  {area.name}
+                  <div className="absolute inset-0 bg-gradient-to-br from-midnight-lagoon/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10 flex flex-col justify-between h-full w-full">
+                    <span className="type-ui-label text-midnight-lagoon font-bold text-base group-hover:text-brand-green transition-colors">
+                      {area.name}
+                    </span>
+                    <span className="text-[11px] font-black uppercase tracking-wider text-text-muted mt-auto">
+                      {area.activeSpotCount ?? 0} spots
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>

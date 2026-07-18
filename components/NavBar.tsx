@@ -51,26 +51,34 @@ export default function NavBar() {
       {/* Right: Links (Desktop) / CTA (Mobile) */}
       <div className="flex items-center gap-4 md:gap-6">
         <div className="hidden md:flex items-center gap-6">
-          {centerLinks.map((link) => {
-            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-            return (
-              <div key={link.href} className="flex items-center">
-                <Link
-                  href={link.href}
-                  className={`type-label relative h-[56px] flex items-center transition-all duration-150 ${
-                    isActive 
-                      ? "text-brand-green" 
-                      : "text-text-secondary hover:text-brand-green"
-                  }`}
-                >
-                  {link.name}
-                  <div className={`absolute bottom-0 left-0 right-0 h-1 bg-brand-green transition-all duration-300 ${
-                    isActive ? "opacity-100" : "opacity-0"
-                  }`} style={{ transitionTimingFunction: 'var(--motion-considered)' }} />
-                </Link>
-              </div>
-            );
-          })}
+          {centerLinks
+            .filter((link) => !(link.name === "Plan" && pathname === "/"))
+            .map((link) => {
+              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              return (
+                <div key={link.href} className="flex items-center">
+                  <Link
+                    href={link.href}
+                    className={`type-label relative h-[56px] flex items-center transition-all duration-150 ${
+                      isActive 
+                        ? "text-brand-green" 
+                        : "text-text-secondary hover:text-brand-green"
+                    }`}
+                  >
+                    {link.name}
+                    {isActive && (
+                      <div 
+                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-green origin-bottom"
+                        style={{
+                          transition: "transform 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                          transform: "scaleX(1)"
+                        }}
+                      />
+                    )}
+                  </Link>
+                </div>
+              );
+            })}
         </div>
 
 
@@ -88,8 +96,11 @@ export default function NavBar() {
                 <User className="w-5 h-5" />
               </button>
 
-              {/* Dropdown menu */}
-              <div role="menu" className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 py-2">
+              {/* Dropdown menu — with slide and fade transition */}
+              <div 
+                role="menu" 
+                className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible translate-y-2 scale-95 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:scale-100 transition-all duration-200 ease-out py-2"
+              >
                 <Link href="/dashboard" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
                   <Bookmark className="w-4 h-4 text-text-muted" />
                   Saved Plans

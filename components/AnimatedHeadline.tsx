@@ -21,7 +21,7 @@ export default function AnimatedHeadline() {
   }, []);
 
   return (
-    <span className="relative inline-block w-full h-[32px] sm:h-[40px] mt-2 overflow-hidden">
+    <span className="relative inline-block w-full h-[40px] sm:h-[48px] mt-2 overflow-hidden">
       <AnimatePresence mode="popLayout">
         <motion.div
           key={index}

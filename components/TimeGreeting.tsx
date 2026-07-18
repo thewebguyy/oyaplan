@@ -17,13 +17,13 @@ export default function TimeGreeting() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
-      <h1 className="type-display text-text-primary tracking-tight">
+    <div className="flex flex-col items-center justify-center gap-1.5 mb-2">
+      <p className="font-serif italic text-text-muted text-sm sm:text-base tracking-wide select-none">
         {greeting}
-      </h1>
-      <p className="type-body text-text-muted text-lg md:text-xl">
-        Where are we going today?
       </p>
+      <h2 className="type-display text-midnight-lagoon text-2xl sm:text-3xl font-black tracking-tight leading-none uppercase">
+        Lagos Outing Budget
+      </h2>
     </div>
   );
 }
