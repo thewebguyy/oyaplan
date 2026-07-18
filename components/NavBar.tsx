@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { ChevronLeft, User, LogOut, Bookmark } from "lucide-react";
@@ -22,7 +23,7 @@ export default function NavBar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-[56px] bg-white border-b border-border-default z-50 flex items-center justify-between px-4 md:px-6">
-      {/* Left: Back (Mobile) + Wordmark */}
+      {/* Left: Back (Mobile) + Logo */}
       <div className="flex items-center gap-1 md:gap-0">
         {pathname !== "/" && (
           <button 
@@ -34,10 +35,14 @@ export default function NavBar() {
           </button>
         )}
         <Link href="/" className="flex items-center tap-feedback">
-          <span className="text-[20px] font-[800] tracking-tight">
-            <span className="text-text-primary">Oya</span>
-            <span className="text-brand-green">Plan</span>
-          </span>
+          <Image
+            src="/logo.png"
+            alt="OyaPlan"
+            width={120}
+            height={28}
+            className="h-7 w-auto"
+            priority
+          />
         </Link>
       </div>
 
