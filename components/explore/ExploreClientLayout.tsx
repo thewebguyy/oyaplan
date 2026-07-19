@@ -3,17 +3,9 @@
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import { Spot } from "@/lib/types";
-import BlueprintMap from "./BlueprintMap";
-import DanfoTicker from "./DanfoTicker";
-import VibeIsland from "./VibeIsland";
+import EditorialAtlas from "./EditorialAtlas";
 import QuickSwapWipe from "./QuickSwapWipe";
-import { COLLECTIONS } from "@/lib/config/collections";
 import Link from "next/link";
-import { Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee, type LucideIcon } from "lucide-react";
-
-const iconMap: Record<string, LucideIcon> = {
-  Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee
-};
 
 interface ExploreClientLayoutProps {
   spots: Spot[];
@@ -27,98 +19,54 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
   const isDetailsPage = pathname.startsWith("/explore/") && pathname !== "/explore";
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#FAFAFA]">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#F9F8F6] lg:flex">
       
       {/* 
-        MAP LAYER
-        Always mounted. On desktop, when details are open, we translate the map left by 225px 
-        so its center is in the middle of the remaining space.
-        On mobile, we translate it up by 15vh so it stays visible above the bottom sheet.
+        MAP LAYER (Left Page on Desktop)
       */}
       <div 
-        className={`absolute inset-0 transition-transform duration-200 ease-out motion-reduce:transition-none flex flex-col ${
+        className={`transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] w-full h-screen ${
           isDetailsPage 
-            ? "-translate-y-[15vh] md:-translate-y-0 md:-translate-x-[225px] md:scale-[1.03] md:origin-left" 
-            : "translate-y-0"
+            ? "lg:w-1/2 -translate-y-[15vh] lg:translate-y-0" 
+            : "lg:w-full translate-y-0"
         }`}
       >
-
-
-        {/* Ticker Layer */}
-        <div className="absolute top-0 inset-x-0 z-10 flex flex-col pointer-events-none">
-          <div className="pointer-events-auto">
-            <DanfoTicker spots={spots} />
-          </div>
-
-          {/* Collection Chips Layer */}
-          <div className="pointer-events-auto mt-4 px-4 overflow-x-auto hide-scrollbar flex items-center gap-3">
-            {COLLECTIONS.map((collection) => {
-              const Icon = iconMap[collection.iconName];
-              return (
-                <Link
-                  key={collection.id}
-                  href={`/forge${collection.forgeParams}`}
-                  className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-md border border-black/10 rounded-full shadow-sm hover:shadow-md transition-all tap-feedback"
-                >
-                  {Icon && <Icon className="w-4 h-4 text-brand-green" />}
-                  <span className="type-ui-label text-sm font-bold text-text-primary whitespace-nowrap">
-                    {collection.title}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* The Map Component */}
-        <div className="flex-1 w-full flex items-center justify-center pt-[5vh] pb-[10vh] pointer-events-none z-10">
-          <div className="pointer-events-auto w-full max-w-[1000px]">
-            <BlueprintMap />
-          </div>
-        </div>
-
-        {/* Vibe Island (Bottom Dock) */}
-        <div className="absolute bottom-6 sm:bottom-10 inset-x-0 z-20 pointer-events-none">
-          <div className="w-full max-w-xl mx-auto px-4 pointer-events-auto">
-            <VibeIsland />
-          </div>
-        </div>
+        <EditorialAtlas />
       </div>
 
       {/* 
-        RESULTS PANEL LAYER
-        Desktop: Side-by-side panel (450px wide, right aligned)
+        RESULTS PANEL LAYER (Right Page on Desktop)
+        Desktop: Side-by-side panel (50% wide)
         Mobile: Bottom sheet (60vh tall)
       */}
       <div 
-        className={`fixed z-50 bg-white border-black/80 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none shadow-[0_0_40px_rgba(0,0,0,0.1)]
+        className={`fixed lg:static z-50 bg-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_40px_rgba(0,0,0,0.05)] lg:shadow-none lg:border-l border-border-default/40
           /* Desktop styling: right panel */
-          md:top-0 md:right-0 md:left-auto md:w-[450px] md:h-screen md:border-l-2 md:bottom-auto md:rounded-t-none
+          lg:w-1/2 lg:h-screen
           /* Mobile styling: bottom sheet */
-          bottom-0 inset-x-0 h-[60vh] border-t-2 md:border-t-0 rounded-t-3xl
-          /* Transform states with transition delays for camera choreography sync */
-          ${isDetailsPage ? "translate-y-0 md:translate-x-0 delay-300" : "translate-y-full md:translate-x-full delay-0"}
+          bottom-0 inset-x-0 h-[65vh] lg:bottom-auto rounded-t-3xl lg:rounded-none
+          /* Transform states with transition delays */
+          ${isDetailsPage ? "translate-y-0 lg:translate-x-0 opacity-100" : "translate-y-full lg:translate-x-full opacity-0 pointer-events-none lg:hidden"}
         `}
       >
         {/* Sticky Header Actions */}
-        <div className="absolute top-0 inset-x-0 z-20 flex justify-center md:justify-end p-4 pointer-events-none">
+        <div className="absolute top-0 inset-x-0 z-20 flex justify-center lg:justify-end p-4 pointer-events-none">
            {/* Mobile Drag Handle (Visual only) */}
-           <div className="md:hidden w-12 h-1.5 bg-black/20 rounded-full" />
+           <div className="lg:hidden w-12 h-1.5 bg-black/10 rounded-full mt-2" />
            
            {/* Close Button */}
-           <Link href="/explore" className="absolute top-3 right-4 w-8 h-8 flex items-center justify-center bg-surface-grey hover:bg-black/10 rounded-full transition-colors pointer-events-auto tap-feedback">
-             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-black"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+           <Link href="/explore" className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-surface-grey hover:bg-black/5 rounded-full transition-colors pointer-events-auto tap-feedback">
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-black"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
            </Link>
         </div>
         
         {/* Scrollable Container with Wipe Wrapper */}
-        <div className="w-full h-full overflow-y-auto pt-10 md:pt-0">
+        <div className="w-full h-full overflow-y-auto lg:px-6">
           <QuickSwapWipe pathname={pathname}>
             {children}
           </QuickSwapWipe>
         </div>
       </div>
-
     </div>
   );
 }

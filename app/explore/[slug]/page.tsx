@@ -213,17 +213,18 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
         </div>
       )}
 
-      {/* Header back button */}
-      <div className="pt-8 px-6 max-w-5xl mx-auto">
-        <Link href="/explore" className="inline-flex items-center gap-2 type-ui-label text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-text-primary transition-colors">
-          &larr; Back to Map
-        </Link>
-      </div>
-
       <AreaLayout
         slug={slug}
         areaName={area.name}
-        description={`Outing venue listings for ${area.name}, Lagos.`}
+        description={`Verified outing venues and experiences across ${area.name}, Lagos.`}
+        characterProfile={
+          slug === 'yaba' ? "Fast-moving. Creative. Builders. Dense tech district." :
+          slug === 'lekki-phase-1' ? "Weekend energy. Waterfront. Lounges. Coastal breeze." :
+          slug === 'ikoyi' ? "Quiet confidence. Refined. Slow evenings. Spacious estates." :
+          slug === 'vi' ? "Business. Rooftops. After-work. Premium energy." :
+          slug === 'surulere' ? "Mainland soul. Sports. Local culture. Rich history." :
+          "Lagos local outing district."
+        }
         spotsCount={spots.length}
       >
         {spots.length > 0 ? (
