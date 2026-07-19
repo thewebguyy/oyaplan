@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import { Spot } from "@/lib/types";
-import WorldRenderer from "../crl/WorldRenderer";
+import ExperienceRenderer from "../cxl/ExperienceRenderer";
 import QuickSwapWipe from "./QuickSwapWipe";
 import Link from "next/link";
 
@@ -32,7 +32,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
             : "lg:w-full translate-y-0"
         }`}
       >
-        <WorldRenderer sceneId="lagos" activeSlug={activeSlug} />
+        <ExperienceRenderer city="lagos" chapter={activeSlug} />
       </div>
 
       {/* 
