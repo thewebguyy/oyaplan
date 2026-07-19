@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import { Spot } from "@/lib/types";
-import LivingLagosScene from "./LivingLagosScene";
+import WorldRenderer from "../world/WorldRenderer";
 import QuickSwapWipe from "./QuickSwapWipe";
 import Link from "next/link";
 
@@ -17,6 +17,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
   
   // Detect if we are on a details/results page (/explore/[slug])
   const isDetailsPage = pathname.startsWith("/explore/") && pathname !== "/explore";
+  const activeSlug = pathname === "/explore" ? null : pathname.replace("/explore/", "");
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#F9F8F6] lg:flex">
@@ -31,7 +32,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
             : "lg:w-full translate-y-0"
         }`}
       >
-        <LivingLagosScene />
+        <WorldRenderer sceneId="lagos" activeSlug={activeSlug} />
       </div>
 
       {/* 
