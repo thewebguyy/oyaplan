@@ -105,7 +105,7 @@ export default function PlannerWidget({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-[16px] border border-[#E5E7EB] p-6 sm:p-10 shadow-[0_4px_16px_rgba(0,0,0,0.06)] w-full max-w-[500px] flex flex-col gap-8"
+      className="bg-white rounded-[16px] border border-[#E5E7EB] p-5 sm:p-8 md:p-10 shadow-[0_4px_16px_rgba(0,0,0,0.06)] w-full max-w-[500px] flex flex-col gap-6 sm:gap-8"
       noValidate
     >
       <fieldset className="flex flex-col gap-6 p-0 m-0 border-none">

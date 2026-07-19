@@ -964,4 +964,13 @@
   background-color: #006039;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
+
+/* Hide scrollbars for carousels */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 

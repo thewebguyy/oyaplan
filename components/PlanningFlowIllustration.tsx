@@ -133,9 +133,9 @@ export default function PlanningFlowIllustration({
   );
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-[280px] mx-auto md:max-w-none">
+    <div className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible snap-x snap-mandatory gap-4 pb-4 scrollbar-none w-full -mx-4 px-4 md:mx-0 md:px-0">
       {/* PANEL 1: Your Squad */}
-      <div className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 shadow-[0px_4px_16px_rgba(0,0,0,0.03)] flex flex-col items-center justify-between min-h-[220px]">
+      <div className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 shadow-[0px_4px_16px_rgba(0,0,0,0.03)] flex flex-col items-center justify-between min-h-[220px] shrink-0 w-[240px] md:w-full snap-start">
         {/* SVG Squad Illustration */}
         <div className="w-full flex justify-center items-center h-28 relative">
           <svg
@@ -224,7 +224,7 @@ export default function PlanningFlowIllustration({
       </div>
 
       {/* PANEL 2: The Budget */}
-      <div className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 shadow-[0px_4px_16px_rgba(0,0,0,0.03)] flex flex-col items-center justify-between min-h-[220px]">
+      <div className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 shadow-[0px_4px_16px_rgba(0,0,0,0.03)] flex flex-col items-center justify-between min-h-[220px] shrink-0 w-[240px] md:w-full snap-start">
         {/* SVG/HTML Gauge Illustration */}
         <div className="w-full flex flex-col justify-center items-center h-28 px-4">
           <div className="w-full flex justify-between text-xs font-mono text-[#6B7280] mb-2">
@@ -251,7 +251,7 @@ export default function PlanningFlowIllustration({
       </div>
 
       {/* PANEL 3: Verified Plan + Cost Breakdown */}
-      <div className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 shadow-[0px_4px_16px_rgba(0,0,0,0.03)] flex flex-col items-center justify-between min-h-[220px] relative overflow-hidden">
+      <div className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 shadow-[0px_4px_16px_rgba(0,0,0,0.03)] flex flex-col items-center justify-between min-h-[220px] shrink-0 w-[240px] md:w-full snap-start relative overflow-hidden">
         {/* Visual cost cards & venue */}
         <div className="w-full flex flex-col justify-center items-center h-28 relative">
           <AnimatePresence mode="wait">

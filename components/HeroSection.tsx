@@ -150,7 +150,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
       initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{ type: "spring", stiffness: 100, damping: 15, duration: 0.8 }}
-      className="relative w-full bg-white pt-24 pb-16 px-6 sm:px-12 md:px-20 lg:px-24 border-b border-[#F3F4F6]"
+      className="relative w-full bg-[#FAF9F6] pt-20 pb-12 px-4 sm:px-8 md:px-16 border-b border-[#F3F4F6]"
     >
       <div className="max-w-5xl mx-auto flex flex-col gap-10 md:gap-12 text-left">
         {/* Header and Subhead Area */}
@@ -167,7 +167,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
                   ease: [0.16, 1, 0.3, 1],
                   duration: 0.6,
                 }}
-                className="absolute left-0 text-[32px] md:text-[48px] font-bold text-[#1A1A1A] leading-[1.2] tracking-[-0.5px]"
+                className="absolute left-0 text-[32px] sm:text-[40px] md:text-[50px] font-black text-[#1A1A1A] leading-[1.15] tracking-[-1px]"
               >
                 {renderPhrase(phraseIndex)}
               </motion.h1>
@@ -180,8 +180,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
 
         {/* Content Area: Side-by-side on desktop, vertical stack on mobile */}
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-10 md:gap-16">
-          {/* Left Column: Planning Narrative Illustration (40% width on desktop) */}
-          <div className="w-full md:w-[40%] md:max-w-[280px] shrink-0">
+          {/* Left Column: Planning Narrative Illustration (40% width on desktop) - stacks underneath on mobile */}
+          <div className="w-full md:w-[40%] md:max-w-[280px] shrink-0 order-2 md:order-1">
             <PlanningFlowIllustration
               squadSize={squadSize}
               budget={budget}
@@ -190,8 +190,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
             />
           </div>
 
-          {/* Right Column: Planner Form (60% width on desktop) */}
-          <div className="w-full md:w-[60%] flex justify-center md:justify-end">
+          {/* Right Column: Planner Form (60% width on desktop) - stacks on top on mobile */}
+          <div className="w-full md:w-[60%] flex justify-center md:justify-end order-1 md:order-2">
             <PlannerWidget
               squadSize={squadSize}
               setSquadSize={setSquadSize}
