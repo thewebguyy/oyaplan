@@ -1,11 +1,8 @@
-import { supabase } from "@/lib/supabase";
+import { getActiveAreas } from "@/lib/queries/areas";
 import FeedbackForm from "./FeedbackForm";
 
 export default async function FeedbackPage() {
-  const { data: areas } = await supabase
-    .from("areas")
-    .select("id, name, slug")
-    .order("name");
+  const { data: areas } = await getActiveAreas();
 
   return (
     <main className="min-h-screen bg-white pb-20">

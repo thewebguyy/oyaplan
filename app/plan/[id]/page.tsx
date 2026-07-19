@@ -1,9 +1,8 @@
-import { supabase } from "@/lib/supabase";
 import { captureServerException } from "@/lib/sentry";
+import { getSharedPlanWithSpot } from "@/lib/queries/plans";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
 import PageError from "@/components/PageError";
 import ActualSpendCapture from "@/components/ActualSpendCapture";
 import PlanViewTracker from "@/components/PlanViewTracker";
@@ -29,13 +28,10 @@ interface PlanPageProps {
 export async function generateMetadata({ params }: PlanPageProps): Promise<Metadata> {
   const { id } = await params;
   try {
-    const { data: plan } = await supabase
-      .from("shared_plans")
-      .select("*, spot:spots(*)")
-      .eq("id", id)
-      .single();
+    const { data, notFound: isNotFound } = await getSharedPlanWithSpot(id);
+    const plan = data as SharedPlanRow | null;
 
-    if (!plan) return { title: "Plan Not Found | OyaPlan" };
+    if (isNotFound || !plan) return { title: "Plan Not Found | OyaPlan" };
 
     const spotName = plan.spot?.name || "Unknown Spot";
     const totalCost = plan.total_cost.toLocaleString('en-NG');
@@ -63,19 +59,14 @@ export default async function PlanPage({ params }: PlanPageProps) {
   let plan: SharedPlanRow | undefined;
   let planFetchError = false;
   try {
-    const { data, error } = await supabase
-      .from("shared_plans")
-      .select("*, spot:spots(*)")
-      .eq("id", id)
-      .single();
+    const { data, notFound: isNotFound, error } = await getSharedPlanWithSpot(id);
 
     if (error) {
-      if (error.code === "PGRST116") notFound();
       planFetchError = true;
-    } else if (!data) {
+    } else if (isNotFound || !data) {
       notFound();
     } else {
-      plan = data;
+      plan = data as SharedPlanRow;
     }
   } catch (e) {
     captureServerException(e);
@@ -94,7 +85,6 @@ export default async function PlanPage({ params }: PlanPageProps) {
   const hasCar = explanation.has_car === true;
   
   // Compute Trust
-  const confScore = explanation.confidence_score || 50;
   let trustStatus: TrustStatus = "pending";
   if (explanation.status === 'verified' || explanation.status === 'owner_verified') trustStatus = "verified";
   else if (explanation.status === 'community_verified') trustStatus = "estimated";

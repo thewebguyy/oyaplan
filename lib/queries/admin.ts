@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
+import type { PendingEvidenceDbRow } from '../types';
 // NOTE: Privileged admin query functions accept an authenticated `db` client.
 // Functions that query public/anon-readable tables still use the module-level supabase client.
 
@@ -579,5 +580,23 @@ export async function getPredictiveDashboard(): Promise<{
     };
   } catch (err: any) {
     return { data: null, error: err.message };
+  }
+}
+
+export async function getPendingEvidence(
+  db: SupabaseClient
+): Promise<{ data: PendingEvidenceDbRow[] | null; error: string | null }> {
+  try {
+    const { data, error } = await db
+      .from('price_evidence')
+      .select('id, source_type, recorded_price, evidence_url, created_at, submitted_by, venues(name), menu_items(name)')
+      .eq('verification_status', 'pending')
+      .order('created_at', { ascending: false });
+
+    if (error) return { data: null, error: error.message };
+    return { data: data as PendingEvidenceDbRow[], error: null };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unexpected error fetching pending evidence';
+    return { data: null, error: message };
   }
 }

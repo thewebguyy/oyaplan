@@ -270,3 +270,15 @@ export interface ActualSpendSummary {
   over_estimate_count: number; // actual > estimated
   under_estimate_count: number; // actual < estimated
 }
+
+export interface PendingEvidenceDbRow {
+  id: string;
+  source_type: string;
+  recorded_price: number;
+  evidence_url: string | null;
+  created_at: string;
+  submitted_by: string;
+  venues: { name: string } | Array<{ name: string }> | null;
+  menu_items: { name: string } | Array<{ name: string }> | null;
+}
+

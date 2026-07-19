@@ -7,6 +7,7 @@ import {
   getSpotSuggestions,
   getOperatorInquiries,
   getDataHealthKPIs,
+  getPendingEvidence,
 } from "@/lib/queries/admin";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
@@ -72,11 +73,7 @@ export default async function AdminDashboard() {
       staleSpots = (staleSpotsResult.data || []) as typeof staleSpots;
       if (dataHealthResult.data) dataHealth = dataHealthResult.data;
 
-      const { data: pendingEvidenceData } = await serverClient
-        .from("price_evidence")
-        .select("id, source_type, recorded_price, evidence_url, created_at, submitted_by, venues(name), menu_items(name)")
-        .eq("verification_status", "pending")
-        .order("created_at", { ascending: false });
+      const { data: pendingEvidenceData } = await getPendingEvidence(serverClient);
 
       pendingEvidence = (pendingEvidenceData || []).map(item => {
         const venueObj = Array.isArray(item.venues) 
