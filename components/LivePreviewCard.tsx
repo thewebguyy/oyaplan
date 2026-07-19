@@ -72,13 +72,6 @@ export default function LivePreviewCard({
   const totalCost = foodCost + transportCost + taxCost;
   const remainingBuffer = Math.max(0, budget - totalCost);
 
-  // Percentage Calculations for horizontal segmented bar
-  const totalDenominator = Math.max(budget, totalCost);
-  const foodPct = (foodCost / totalDenominator) * 100;
-  const transportPct = (transportCost / totalDenominator) * 100;
-  const taxPct = (taxCost / totalDenominator) * 100;
-  const bufferPct = (remainingBuffer / totalDenominator) * 100;
-
   // Percentage of overall budget consumed by transport
   const transportRatio = budget > 0 ? (transportCost / budget) * 100 : 0;
 
@@ -88,10 +81,10 @@ export default function LivePreviewCard({
       return "⚠️ Budget exceeded. Try reducing squad size or increasing budget to fit venue prices.";
     }
     if (transportRatio > 30) {
-      return `⚠️ Transport is consuming ${Math.round(transportRatio)}% of your budget. Consider sharing rides.`;
+      return `⚠️ Transport is consuming ${Math.round(transportRatio)}% of your budget. Consider reducing squad size.`;
     }
     if (remainingBuffer / budget >= 0.15) {
-      return "✓ Great balance. You have enough remaining buffer for dessert or extra drinks.";
+      return "✓ Great balance. You still have enough remaining buffer for dessert.";
     }
     return "✓ Great balance. Most users choose this range.";
   };
@@ -105,15 +98,7 @@ export default function LivePreviewCard({
   };
 
   return (
-    <motion.div
-      className="bg-[#F3F4F6] rounded-[16px] border border-[#E5E7EB] p-5 text-left font-mono text-xs text-[#1A1A1A] space-y-4 relative overflow-hidden"
-      animate={{ opacity: [1, 0.98, 1] }}
-      transition={{
-        repeat: Infinity,
-        duration: 4,
-        ease: "easeInOut",
-      }}
-    >
+    <div className="bg-white rounded-[16px] border border-[#EAE8E3] p-5 text-left font-sans text-xs text-[#1A1A1A] space-y-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
       <motion.div
         key={`${squadSize}-${budget}-${vibe}-${spot.id}`}
         variants={containerVariants}
@@ -123,8 +108,8 @@ export default function LivePreviewCard({
       >
         {/* Recommended Venue Header */}
         <motion.div variants={itemVariants} className="space-y-0.5">
-          <div className="text-[10px] uppercase tracking-wider text-[#6B7280] font-bold">
-            Prediction Evidence
+          <div className="text-[10px] uppercase tracking-wider text-[#6B7280] font-bold font-sans">
+            Recommended Spot
           </div>
           <h2 className="text-base font-extrabold text-[#1A1A1A] leading-tight truncate">
             {spot.name}
@@ -135,88 +120,57 @@ export default function LivePreviewCard({
         </motion.div>
 
         {/* Why it Fits Explanations */}
-        <motion.div variants={itemVariants} className="space-y-1.5 border-t border-b border-[#E5E7EB] py-3">
+        <motion.div variants={itemVariants} className="space-y-1.5 border-t border-b border-[#F3F4F6] py-3.5 font-sans">
           <div className="text-[10px] text-[#6B7280] font-bold uppercase tracking-wider mb-1">
-            Why this fits:
+            Why this fits
           </div>
-          <ul className="space-y-1 text-[#1A1A1A]">
-            <li className="flex items-center gap-1.5">
+          <ul className="space-y-1.5 text-[#1A1A1A]">
+            <li className="flex items-center gap-2">
               <span className="text-[#008751] font-bold">✓</span>
               <span>Matches selected {vibe || "Date Night"} vibe</span>
             </li>
-            <li className="flex items-center gap-1.5">
+            <li className="flex items-center gap-2">
               <span className="text-[#008751] font-bold">✓</span>
-              <span>Fits {formatCurrency(budget)} total budget</span>
+              <span>Fits {formatCurrency(budget)} budget</span>
             </li>
-            <li className="flex items-center gap-1.5">
+            <li className="flex items-center gap-2">
               <span className="text-[#008751] font-bold">✓</span>
-              <span>{squadSize === 1 ? "Accommodates solo outing" : `Accommodates ${squadSize} people`}</span>
+              <span>{squadSize === 1 ? "Supports solo planner" : `Supports ${squadSize} people`}</span>
             </li>
-            <li className="flex items-center gap-1.5">
+            <li className="flex items-center gap-2">
               <span className="text-[#008751] font-bold">✓</span>
-              <span>Transport is {Math.round(transportRatio)}% of spend</span>
+              <span>Transport remains under {Math.round(transportRatio)}% of spend</span>
             </li>
           </ul>
         </motion.div>
 
-        {/* Precise Budget Health Allocation Bar */}
+        {/* Precise Cost Breakdown (Ledger style) */}
         <motion.div variants={itemVariants} className="space-y-2">
-          <div className="text-[10px] text-[#6B7280] font-bold uppercase tracking-wider">
-            Budget Allocation
+          <div className="text-[10px] text-[#6B7280] font-bold font-sans uppercase tracking-wider">
+            Cost Breakdown
           </div>
-          {/* Segmented Horizontal Progress Track */}
-          <div className="h-3.5 w-full bg-[#E5E7EB] rounded-full flex overflow-hidden relative shadow-inner">
-            {foodPct > 0 && (
-              <div
-                style={{ width: `${foodPct}%` }}
-                className="bg-[#008751] h-full"
-                title={`Food & Drinks: ${formatCurrency(foodCost)}`}
-              />
-            )}
-            {transportPct > 0 && (
-              <div
-                style={{ width: `${transportPct}%` }}
-                className="bg-[#1A1A1A] h-full"
-                title={`Transport: ${formatCurrency(transportCost)}`}
-              />
-            )}
-            {taxPct > 0 && (
-              <div
-                style={{ width: `${taxPct}%` }}
-                className="bg-[#6B7280] h-full"
-                title={`Taxes: ${formatCurrency(taxCost)}`}
-              />
-            )}
-            {bufferPct > 0 && (
-              <div
-                style={{ width: `${bufferPct}%` }}
-                className="bg-[#FCC630] h-full"
-                title={`Remaining Buffer: ${formatCurrency(remainingBuffer)}`}
-              />
-            )}
-          </div>
-
-          {/* Allocation Legend */}
-          <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10px] pt-1">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-[#008751] rounded-sm shrink-0" />
-              <span className="text-[#6B7280]">Food &amp; Drinks:</span>
-              <span className="font-bold text-[#1A1A1A] ml-auto">{formatCurrency(foodCost)}</span>
+          <div className="space-y-1.5 text-xs text-[#1A1A1A] font-mono">
+            <div className="flex justify-between">
+              <span className="text-[#6B7280] font-sans">Food &amp; Drinks:</span>
+              <span className="font-semibold">{formatCurrency(foodCost)}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-[#1A1A1A] rounded-sm shrink-0" />
-              <span className="text-[#6B7280]">Transport:</span>
-              <span className="font-bold text-[#1A1A1A] ml-auto">{formatCurrency(transportCost)}</span>
+            <div className="flex justify-between">
+              <span className="text-[#6B7280] font-sans">Estimated Transport:</span>
+              <span className="font-semibold">{formatCurrency(transportCost)}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-[#6B7280] rounded-sm shrink-0" />
-              <span className="text-[#6B7280]">Taxes &amp; Fees:</span>
-              <span className="font-bold text-[#1A1A1A] ml-auto">{formatCurrency(taxCost)}</span>
+            <div className="flex justify-between">
+              <span className="text-[#6B7280] font-sans">Taxes &amp; Fees:</span>
+              <span className="font-semibold">{formatCurrency(taxCost)}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-[#FCC630] rounded-sm shrink-0" />
-              <span className="text-[#1A1A1A] font-extrabold">Buffer:</span>
-              <span className="font-extrabold text-[#1A1A1A] ml-auto">{formatCurrency(remainingBuffer)}</span>
+            <div className="flex justify-between border-t border-dashed border-[#EAE8E3] pt-1.5 mt-1 font-bold font-sans text-[13px]">
+              <span>Total Estimated Cost:</span>
+              <span className="text-[#008751] font-mono">{formatCurrency(totalCost)}</span>
+            </div>
+            <div className="flex justify-between pt-1 border-t border-dashed border-[#F3F4F6] font-bold font-sans">
+              <span>Remaining Buffer:</span>
+              <span className="text-[#1A1A1A] bg-[#FCC630] px-2 py-0.5 rounded font-mono text-xs">
+                {formatCurrency(remainingBuffer)}
+              </span>
             </div>
           </div>
         </motion.div>
@@ -224,32 +178,16 @@ export default function LivePreviewCard({
         {/* Deterministic Mathematical Guidance */}
         <motion.div
           variants={itemVariants}
-          className="bg-white rounded-lg p-2.5 border border-[#E5E7EB] text-[11px] text-[#1A1A1A] space-y-1"
+          className="bg-[#FAF9F6] rounded-lg p-3 border border-[#EAE8E3] text-[11px] text-[#1A1A1A] space-y-1.5 font-sans"
         >
-          <div className="font-bold leading-snug">{getMathGuidance()}</div>
+          <div className="font-bold leading-normal">{getMathGuidance()}</div>
           {getSavingsTip() && (
-            <div className="text-[#6B7280] text-[10px] leading-tight pt-0.5 border-t border-dashed border-[#F3F4F6] mt-1.5">
+            <div className="text-[#6B7280] text-[10px] leading-relaxed pt-1.5 border-t border-dashed border-[#EAE8E3]">
               {getSavingsTip()}
             </div>
           )}
         </motion.div>
-
-        {/* Measurable Trust Badges */}
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-wrap gap-x-2 gap-y-1 pt-1 text-[9px] font-bold text-[#6B7280]"
-        >
-          <span className="flex items-center gap-1 px-1.5 py-0.5 bg-white border border-[#E5E7EB] rounded-full">
-            ✓ pricing verified
-          </span>
-          <span className="flex items-center gap-1 px-1.5 py-0.5 bg-white border border-[#E5E7EB] rounded-full">
-            ✓ transport estimated
-          </span>
-          <span className="flex items-center gap-1 px-1.5 py-0.5 bg-white border border-[#E5E7EB] rounded-full">
-            ✓ taxes included
-          </span>
-        </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

@@ -259,16 +259,18 @@ export default function PlannerWidget({
         )}
       </AnimatePresence>
 
-      {/* Live Preview Card */}
-      <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} recommendedSpot={recommendedSpot} />
+      {/* Live Preview Card (Mobile Only: inline before submit CTA) */}
+      <div className="block md:hidden w-full">
+        <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} recommendedSpot={recommendedSpot} />
+      </div>
 
       {/* Primary CTA Submit Button */}
       <button
         type="submit"
         className="w-full h-14 bg-[#008751] text-white font-bold text-lg rounded-[12px] flex items-center justify-center cursor-pointer shadow-sm hover:brightness-90 active:scale-[0.98] active:shadow-md transition-all duration-150 outline-none focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#008751] focus-visible:outline-offset-2"
-        aria-label="Generate outing plan based on constraints"
+        aria-label="Submit criteria and view plan"
       >
-        Generate Plan
+        See My Plan
       </button>
     </form>
   );
