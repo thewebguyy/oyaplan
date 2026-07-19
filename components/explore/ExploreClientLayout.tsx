@@ -1,19 +1,39 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { ReactNode } from "react";
-import { Spot } from "@/lib/types";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ReactNode, useEffect, useState } from "react";
 import ExperienceRenderer from "../cxl/ExperienceRenderer";
+import { lagosCityData } from "../cxl/data/lagos.city";
+import { resolveTimeState, TimeOfDay } from "../cxl/utils/time";
 import QuickSwapWipe from "./QuickSwapWipe";
 import Link from "next/link";
 
 interface ExploreClientLayoutProps {
-  spots: Spot[];
   children: ReactNode;
 }
 
-export default function ExploreClientLayout({ spots, children }: ExploreClientLayoutProps) {
+export default function ExploreClientLayout({ children }: ExploreClientLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("afternoon");
+
+  const budgetParam = searchParams.get("budget");
+  const budget = budgetParam ? parseInt(budgetParam) : null;
+
+  useEffect(() => {
+    const resolved = resolveTimeState();
+    if (resolved !== "afternoon") {
+      setTimeOfDay(resolved);
+    }
+  }, []);
+
+  const handleDistrictClick = (slug: string, isActive: boolean) => {
+    if (!isActive) return;
+    const nextParams = new URLSearchParams(searchParams.toString());
+    router.push(`/explore/${slug}?${nextParams.toString()}`);
+  };
   
   // Detect if we are on a details/results page (/explore/[slug])
   const isDetailsPage = pathname.startsWith("/explore/") && pathname !== "/explore";
@@ -32,7 +52,13 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
             : "lg:w-full translate-y-0"
         }`}
       >
-        <ExperienceRenderer city="lagos" chapter={activeSlug} />
+        <ExperienceRenderer 
+          scene={lagosCityData} 
+          chapter={activeSlug} 
+          timeOfDay={timeOfDay} 
+          budget={budget}
+          onDistrictClick={handleDistrictClick}
+        />
       </div>
 
       {/* 

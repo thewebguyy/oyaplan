@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { lagosCityData } from "./data/lagos.city";
-import { lagosThemeData } from "./data/lagos.theme";
 import { useLivingMotion } from "./animation/useLivingMotion";
+import { CityDataDescription } from "./data/lagos.city";
+import { lagosThemeData } from "./data/lagos.theme";
+import { TimeOfDay } from "./utils/time";
 
 import SkyLayer from "./layers/SkyLayer";
 import CloudLayer from "./layers/CloudLayer";
@@ -15,35 +14,15 @@ import TransportLayer from "./layers/TransportLayer";
 import AtmosphereLayer from "./layers/AtmosphereLayer";
 
 interface ExperienceRendererProps {
-  city: string;
+  scene: CityDataDescription;
   chapter: string | null;
+  timeOfDay: TimeOfDay;
+  budget: number | null;
+  onDistrictClick: (slug: string, isActive: boolean) => void;
 }
 
-type TimeOfDay = "morning" | "afternoon" | "golden-hour" | "night";
-
-export default function ExperienceRenderer({ city, chapter }: ExperienceRendererProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export default function ExperienceRenderer({ scene, chapter, timeOfDay, budget, onDistrictClick }: ExperienceRendererProps) {
   const parallax = useLivingMotion();
-
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("afternoon");
-
-  const budgetParam = searchParams.get("budget");
-  const budget = budgetParam ? parseInt(budgetParam) : null;
-
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 11) setTimeOfDay("morning");
-    else if (hour >= 11 && hour < 16) setTimeOfDay("afternoon");
-    else if (hour >= 16 && hour < 19) setTimeOfDay("golden-hour");
-    else setTimeOfDay("night");
-  }, []);
-
-  const handleDistrictClick = (slug: string, isActive: boolean) => {
-    if (!isActive) return;
-    const nextParams = new URLSearchParams(searchParams.toString());
-    router.push(`/explore/${slug}?${nextParams.toString()}`);
-  };
 
   // camera configuration presets resolved cleanly from CXL theme data
   let scale = 1;
@@ -87,7 +66,7 @@ export default function ExperienceRenderer({ city, chapter }: ExperienceRenderer
           activeSlug={chapter} 
           timeOfDay={timeOfDay} 
           budget={budget}
-          onDistrictClick={handleDistrictClick} 
+          onDistrictClick={onDistrictClick} 
         />
         
         <AtmosphereLayer timeOfDay={timeOfDay} />
