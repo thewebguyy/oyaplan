@@ -6,6 +6,7 @@ import RecentlyVerified from "@/components/RecentlyVerified";
 import TrustSection from "@/components/TrustSection";
 import HeroSection from "@/components/HeroSection";
 import FAQSection from "@/components/FAQSection";
+import HowItWorksSection from "@/components/HowItWorksSection";
 import { getForgeSpots } from "@/lib/queries/spots";
 import { Spot } from "@/lib/types";
 
@@ -31,6 +32,9 @@ export default async function LandingPage() {
 
       {/* Redesigned Trust Section (moved to position #2 in layout) */}
       <TrustSection />
+
+      {/* How OyaPlan Works Section */}
+      <HowItWorksSection />
 
       {/* ── CHAPTER 2: Collections — full-bleed ── */}
       <section className="section-exciting w-full py-16 sm:py-20">

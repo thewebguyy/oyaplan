@@ -141,7 +141,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
             <span className="highlight-green">budget confidence.</span>
           </h1>
           <p className="text-lg leading-relaxed text-[#6B7280] font-medium max-w-[600px] mt-3">
-            Planning a night out in Ikeja? We show you exactly what you&apos;ll spend. No surprises.
+            Know what you&apos;ll spend before you leave home. Plan your next Lagos outing with verified venue prices, transport estimates, and zero surprise costs.
           </p>
           <div className="relative flex items-center gap-1.5 text-sm md:text-base text-[#6B7280] font-semibold mt-3 h-[24px] overflow-hidden">
             <span>Planning:</span>
