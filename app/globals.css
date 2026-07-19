@@ -898,4 +898,70 @@
 .ease-danfo {
   transition-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
 }
+
+/* ==========================================
+   Premium Range Sliders (Mobile Touch Layer)
+   ========================================== */
+.premium-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  outline: none;
+  background: #F3F4F6;
+  touch-action: none; /* prevents browser zoom/swipe interference while dragging */
+}
+
+/* Chrome/Safari/Edge Webkit thumb styling */
+.premium-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #008751;
+  border: 12px solid transparent;
+  background-clip: padding-box;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.15s ease;
+  will-change: transform;
+}
+
+.premium-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  background-color: #007646;
+}
+
+.premium-range-slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  background-color: #006039;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Firefox thumb styling */
+.premium-range-slider::-moz-range-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #008751;
+  border: 12px solid transparent;
+  background-clip: padding-box;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.15s ease;
+  will-change: transform;
+}
+
+.premium-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  background-color: #007646;
+}
+
+.premium-range-slider::-moz-range-thumb:active {
+  transform: scale(1.2);
+  background-color: #006039;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
 

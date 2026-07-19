@@ -23,30 +23,59 @@ export default function PlanningFlowIllustration({
     }).format(val).replace("NGN", "₦");
   };
 
-  // Calculations for Panel 3 Card
+  // Calculations for Panel 3 Card (dynamic & budget-bounded)
   const transportCost = squadSize > 4 ? 10000 : 5000;
-  // Estimate food and drinks: 70% of the budget
-  const rawFood = budget * 0.7;
-  const foodCost = Math.round(rawFood / 1000) * 1000;
-  // Estimate tax and service fee: 10% of the food cost
-  const taxCost = Math.round((foodCost * 0.1) / 1000) * 1000;
+  // Target spending ~90% of total budget
+  const targetSpent = budget * 0.9;
+  const rawFood = (targetSpent - transportCost) / 1.1;
+  // Floor the food cost at a baseline of ₦2,000 per person
+  const foodCost = Math.max(Math.round(rawFood / 1000) * 1000, squadSize * 2000);
+  const taxCost = Math.round((foodCost * 0.1) / 500) * 500;
   const totalCost = foodCost + transportCost + taxCost;
 
-  // Decide Venue name based on vibe
+  // Decide Venue name based on vibe, budget tier, and squad size group indicators
   const getVenueName = () => {
+    const isGroup = squadSize >= 5;
+    
+    // Budget Tiers: Tier 1 (Value/Casual), Tier 2 (Premium), Tier 3 (Luxury/Exclusive)
+    let tier = 2; // Default Standard/Premium
+    if (budget < 30000) {
+      tier = 1; // Casual
+    } else if (budget >= 70000) {
+      tier = 3; // Luxury
+    }
+
     switch (vibe) {
-      case "Dinner":
-        return "Lekki Grill";
-      case "Chill":
-        return "Gbagada Lounge";
-      case "Foodie":
-        return "Ikeja Serious Chop";
-      case "Party":
-        return "Quilox Club & Bar";
-      case "Quick":
-        return "Yaba Quick Bites";
-      case "Brunch":
-        return "Victoria Island Garden";
+      case "Dinner": // 💕 Date Night
+        if (tier === 1) return isGroup ? "Cozy Corner (Private Lounge)" : "The Cozy Corner Café";
+        if (tier === 3) return isGroup ? "Shiro (Luxury Cabana Room)" : "Shiro (Oceanview Deck)";
+        return isGroup ? "Lekki Grill (VIP Group Suite)" : "Lekki Grill";
+
+      case "Chill": // 👥 Squad Linkup
+        if (tier === 1) return isGroup ? "Mega Chicken (Entourage Table)" : "Mega Chicken Food Court";
+        if (tier === 3) return isGroup ? "Hard Rock (Private Band Room)" : "Hard Rock Café (VIP Stage)";
+        return isGroup ? "Gbagada Lounge (Banquette Table)" : "Gbagada Lounge & Grill";
+
+      case "Party": // 🎉 Birthday Turn Up
+        if (tier === 1) return isGroup ? "Mykonos (Sofa Entourage Area)" : "Mykonos Rooftop (Casual)";
+        if (tier === 3) return isGroup ? "Zaza (Royal VIP Lounge)" : "Zaza VIP Lounge & Club";
+        return isGroup ? "Quilox (Executive Group Table)" : "Quilox Club (Dance VIP Table)";
+
+      case "Quick": // ⚡ Quick Bites
+        if (tier === 1) return isGroup ? "Bungalow Express (Group Table)" : "Bungalow Express";
+        if (tier === 3) return isGroup ? "Talindo (Grand Banquet Table)" : "Talindo Steakhouse";
+        return isGroup ? "Yaba Bites (Entourage Table)" : "Yaba Bites (Main Hall)";
+
+      case "Foodie": // 🍲 Serious Chop
+        if (tier === 1) return isGroup ? "The Place (Family Feast Banquet)" : "The Place Restaurant";
+        if (tier === 3) return isGroup ? "Nok by Alara (The Royal Court)" : "Nok by Alara (Gourmet Dining)";
+        return isGroup ? "Ikeja Chop (Private Dining Room)" : "Ikeja Serious Chop";
+
+      case "Brunch": // 🥞 Brunch Vibe
+        if (tier === 1) return isGroup ? "Orchid House (Garden Conservatory)" : "Orchid House Café";
+        if (tier === 3) return isGroup ? "HSE Gourmet (Group Chef Table)" : "HSE Gourmet (High Brunch)";
+        return isGroup ? "VI Garden Café (Conservatory Banquet)" : "Victoria Island Garden Café";
+
       default:
         return "Lekki Grill";
     }

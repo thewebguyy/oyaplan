@@ -125,9 +125,7 @@ export default function PlannerWidget({
             step="1"
             value={squadSize}
             onChange={(e) => setSquadSize(Number(e.target.value))}
-            className="w-full h-2 rounded-full appearance-none cursor-pointer outline-none transition-all
-              [&::-webkit-slider-thumb]:w-11 [&::-webkit-slider-thumb]:h-11 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#008751] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-none [&::-webkit-slider-thumb]:focus-visible:ring-3 [&::-webkit-slider-thumb]:focus-visible:ring-[#008751]/50
-              [&::-moz-range-thumb]:w-11 [&::-moz-range-thumb]:h-11 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#008751] [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:focus-visible:ring-3 [&::-moz-range-thumb]:focus-visible:ring-[#008751]/50"
+            className="premium-range-slider"
             style={{
               background: `linear-gradient(to right, #008751 ${squadPct}%, #F3F4F6 ${squadPct}%)`,
             }}
@@ -156,9 +154,7 @@ export default function PlannerWidget({
             step="5000"
             value={budget}
             onChange={(e) => setBudget(Number(e.target.value))}
-            className="w-full h-2 rounded-full appearance-none cursor-pointer outline-none transition-all
-              [&::-webkit-slider-thumb]:w-11 [&::-webkit-slider-thumb]:h-11 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#008751] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-none
-              [&::-moz-range-thumb]:w-11 [&::-moz-range-thumb]:h-11 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#008751] [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:shadow-md"
+            className="premium-range-slider"
             style={{
               background: `linear-gradient(to right, #008751 ${budgetPct}%, #F3F4F6 ${budgetPct}%)`,
             }}

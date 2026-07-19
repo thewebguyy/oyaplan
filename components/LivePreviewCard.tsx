@@ -87,6 +87,13 @@ export default function LivePreviewCard({ squadSize, budget, vibe }: LivePreview
           </span>
         </motion.div>
 
+        <motion.div variants={itemVariants} className="flex items-start gap-2.5">
+          <span className="text-[#10B981] font-bold shrink-0" aria-hidden="true">✓</span>
+          <span className="text-[#008751] font-bold">
+            100% Price Confidence
+          </span>
+        </motion.div>
+
         {vibe && (
           <motion.div
             variants={itemVariants}
