@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import ErrorBanner from "@/components/ErrorBanner";
 import ExperienceCollections from "@/components/ExperienceCollections";
 import RecentlyVerified from "@/components/RecentlyVerified";
 import TrustSection from "@/components/TrustSection";
 import HeroSection from "@/components/HeroSection";
 import FAQSection from "@/components/FAQSection";
+import Footer from "@/components/Footer";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import { getForgeSpots } from "@/lib/queries/spots";
 import { Spot } from "@/lib/types";
@@ -56,29 +58,7 @@ export default async function LandingPage() {
       <FAQSection />
 
       {/* ── Footer ── */}
-      <footer className="section-quiet border-t border-border-default/50 py-14">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <span className="text-midnight-lagoon font-black tracking-tighter text-lg uppercase select-none">
-              OyaPlan
-            </span>
-            <nav className="flex items-center gap-6 sm:gap-8">
-              <Link href="/explore" className="type-caption text-text-muted hover:text-midnight-lagoon transition-colors font-medium">
-                Explore
-              </Link>
-              <span className="w-1 h-1 rounded-full bg-border-strong hidden sm:block" />
-              <Link href="/guides" className="type-caption text-text-muted hover:text-midnight-lagoon transition-colors font-medium">
-                Guides
-              </Link>
-              <span className="w-1 h-1 rounded-full bg-border-strong hidden sm:block" />
-              <Link href="/list-your-spot" className="type-caption text-text-muted hover:text-midnight-lagoon transition-colors font-medium">
-                Own a venue?
-              </Link>
-            </nav>
-            <p className="type-caption text-text-muted">&copy; {new Date().getFullYear()} OyaPlan</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
