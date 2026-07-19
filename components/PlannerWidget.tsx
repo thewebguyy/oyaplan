@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LivePreviewCard from "./LivePreviewCard";
 
+import { Spot } from "@/lib/types";
+
 interface PlannerWidgetProps {
   squadSize: number;
   setSquadSize: (val: number) => void;
@@ -13,6 +15,7 @@ interface PlannerWidgetProps {
   setBudget: (val: number) => void;
   vibe: string | null;
   setVibe: (val: string | null) => void;
+  recommendedSpot: Spot | null;
 }
 
 const PRIMARY_VIBES = [
@@ -43,6 +46,7 @@ export default function PlannerWidget({
   setBudget,
   vibe,
   setVibe,
+  recommendedSpot,
 }: PlannerWidgetProps) {
   const router = useRouter();
   const [showMoreVibes, setShowMoreVibes] = useState(false);
@@ -59,7 +63,7 @@ export default function PlannerWidget({
   };
 
   // Calculations for sliders CSS backgrounds
-  const squadPct = ((squadSize - 2) / 6) * 100;
+  const squadPct = ((squadSize - 1) / 7) * 100;
   const budgetPct = ((budget - 10000) / 90000) * 100;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -111,16 +115,16 @@ export default function PlannerWidget({
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="squad-size-input" className="text-sm font-semibold text-[#6B7280]">
-              How many of you?
+              Who's going?
             </label>
             <span className="text-base font-bold text-[#1A1A1A]">
-              {squadSize === 8 ? "8+ people" : `${squadSize} people`}
+              {squadSize === 1 ? "Just me" : squadSize === 8 ? "8+ people" : `${squadSize} people`}
             </span>
           </div>
           <input
             id="squad-size-input"
             type="range"
-            min="2"
+            min="1"
             max="8"
             step="1"
             value={squadSize}
@@ -129,7 +133,7 @@ export default function PlannerWidget({
             style={{
               background: `linear-gradient(to right, #008751 ${squadPct}%, #F3F4F6 ${squadPct}%)`,
             }}
-            aria-label={`Squad size: current value ${squadSize} people. Choose between 2 and 8+ people.`}
+            aria-label={`Squad size: current value ${squadSize === 1 ? "Just me" : squadSize === 8 ? "8+ people" : `${squadSize} people`}. Choose between 1 (Just me) and 8+ people.`}
           />
         </div>
 
@@ -256,7 +260,7 @@ export default function PlannerWidget({
       </AnimatePresence>
 
       {/* Live Preview Card */}
-      <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} />
+      <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} recommendedSpot={recommendedSpot} />
 
       {/* Primary CTA Submit Button */}
       <button

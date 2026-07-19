@@ -5,10 +5,20 @@ import ExperienceCollections from "@/components/ExperienceCollections";
 import RecentlyVerified from "@/components/RecentlyVerified";
 import TrustSection from "@/components/TrustSection";
 import HeroSection from "@/components/HeroSection";
+import { getForgeSpots } from "@/lib/queries/spots";
+import { Spot } from "@/lib/types";
 
 export const revalidate = 300;
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  let spots: Spot[] = [];
+  try {
+    const spotsResult = await getForgeSpots();
+    spots = (spotsResult.data || []) as Spot[];
+  } catch (e) {
+    console.error("Failed to load spots for prediction engine", e);
+  }
+
   return (
     <main className="min-h-screen bg-white-sand text-text-primary antialiased">
       <Suspense fallback={null}>
@@ -16,7 +26,7 @@ export default function LandingPage() {
       </Suspense>
 
       {/* Redesigned Hero Section (incorporates sequential narrative panels and interactive sliders) */}
-      <HeroSection />
+      <HeroSection spots={spots} />
 
       {/* Redesigned Trust Section (moved to position #2 in layout) */}
       <div className="max-w-4xl mx-auto px-4 pt-12 pb-6">
