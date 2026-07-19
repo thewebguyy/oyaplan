@@ -14,6 +14,8 @@ export interface DistrictVisualConfig {
     secondary: string;
     accent: string;
   };
+  minSpend: number;
+  maxSpend: number;
 }
 
 export interface SceneDescription {
@@ -65,7 +67,9 @@ export const lagosScene: SceneDescription = {
         primary: "#E57373",
         secondary: "#FFCDD2",
         accent: "#3949AB"
-      }
+      },
+      minSpend: 12000,
+      maxSpend: 25000
     },
     {
       slug: "lekki-phase-1",
@@ -82,7 +86,9 @@ export const lagosScene: SceneDescription = {
         primary: "#00897B",
         secondary: "#E0F2F1",
         accent: "#FF8F00"
-      }
+      },
+      minSpend: 35000,
+      maxSpend: 75000
     },
     {
       slug: "vi",
@@ -99,7 +105,9 @@ export const lagosScene: SceneDescription = {
         primary: "#0288D1",
         secondary: "#B3E5FC",
         accent: "#FFD54F"
-      }
+      },
+      minSpend: 30000,
+      maxSpend: 80000
     },
     {
       slug: "ikoyi",
@@ -116,7 +124,9 @@ export const lagosScene: SceneDescription = {
         primary: "#2E7D32",
         secondary: "#C8E6C9",
         accent: "#8D6E63"
-      }
+      },
+      minSpend: 40000,
+      maxSpend: 90000
     },
     {
       slug: "ikeja",
@@ -133,7 +143,9 @@ export const lagosScene: SceneDescription = {
         primary: "#FFB300",
         secondary: "#FFE082",
         accent: "#E53935"
-      }
+      },
+      minSpend: 15000,
+      maxSpend: 30000
     },
     {
       slug: "surulere",
@@ -150,7 +162,9 @@ export const lagosScene: SceneDescription = {
         primary: "#F44336",
         secondary: "#FFCDD2",
         accent: "#FF8F00"
-      }
+      },
+      minSpend: 10000,
+      maxSpend: 30000
     }
   ]
 };

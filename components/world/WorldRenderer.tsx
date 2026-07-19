@@ -93,10 +93,11 @@ export default function WorldRenderer({ sceneId, activeSlug }: WorldRendererProp
         <DistrictLayer 
           activeSlug={activeSlug} 
           timeOfDay={timeOfDay} 
+          budget={budget}
           onDistrictClick={handleDistrictClick} 
         />
         
-        <AtmosphereLayer timeOfDay={timeOfDay} budget={budget} vibe={vibe} />
+        <AtmosphereLayer timeOfDay={timeOfDay} />
       </svg>
     </div>
   );

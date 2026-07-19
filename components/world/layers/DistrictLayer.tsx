@@ -3,10 +3,11 @@ import { lagosScene } from "../data/lagos.scene";
 interface DistrictLayerProps {
   activeSlug: string | null;
   timeOfDay: "morning" | "afternoon" | "golden-hour" | "night";
+  budget: number | null;
   onDistrictClick: (slug: string, isActive: boolean) => void;
 }
 
-export default function DistrictLayer({ activeSlug, timeOfDay, onDistrictClick }: DistrictLayerProps) {
+export default function DistrictLayer({ activeSlug, timeOfDay, budget, onDistrictClick }: DistrictLayerProps) {
   const isNight = timeOfDay === "night";
 
   return (
@@ -58,12 +59,24 @@ export default function DistrictLayer({ activeSlug, timeOfDay, onDistrictClick }
               50% { opacity: 1; filter: drop-shadow(0 0 8px #FFCA28); }
             }
             .surulere-pulse { animation: stadiumPulse 3s ease-in-out infinite; }
+
+            @keyframes budgetHalo {
+              0%, 100% { stroke-opacity: 0.2; r: 85; }
+              50% { stroke-opacity: 0.8; r: 92; }
+            }
+            .budget-halo {
+              animation: budgetHalo 3s ease-in-out infinite;
+              fill: none;
+              stroke: #4CAF50;
+              stroke-width: 1.5;
+            }
           `}
         </style>
       </defs>
 
       {lagosScene.districts.map((district) => {
         const isActive = activeSlug === district.slug;
+        const isCompatible = budget !== null && budget >= district.minSpend;
         const isDimmed = activeSlug !== null && !isActive;
 
         return (
@@ -75,6 +88,10 @@ export default function DistrictLayer({ activeSlug, timeOfDay, onDistrictClick }
               isDimmed ? "opacity-30 scale-95" : "opacity-100 scale-100 hover:scale-105"
             }`}
           >
+            {/* Compatibility Indicator Halo */}
+            {isCompatible && (
+              <circle cx="0" cy="0" r="90" className="budget-halo" strokeDasharray="6 4" />
+            )}
             {/* Visual Silhouettes and landmarks (Lagos World Bible compliant) */}
 
             {/* YABA: The Builders */}
