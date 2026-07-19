@@ -42,3 +42,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# spec markdown documents
+/OyaPlan Homepage Redesign.md
+/THE REDESIGNED ILLUSTRATION_ _Planning Flow Narrative_.md
