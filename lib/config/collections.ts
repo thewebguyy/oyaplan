@@ -13,7 +13,7 @@ export interface Collection {
 export const COLLECTIONS: Collection[] = [
   {
     id: "date-night",
-    title: "Date Night",
+    title: "Date Night (Chop Eye)",
     iconName: "Heart",
     gradient: "from-[#010528] via-[#021060] to-[#004B8E]",
     forgeParams: "?vibe=date-night&budget=30000",
@@ -22,7 +22,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "birthday",
-    title: "Birthday",
+    title: "Birthday Turn Up",
     iconName: "Gift",
     gradient: "from-[#F6C642] via-[#F0B429] to-[#E8A020]",
     forgeParams: "?vibe=party&squad=5",
@@ -31,7 +31,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "team-hangout",
-    title: "Team Hangout",
+    title: "Squad Linkup",
     iconName: "Users",
     gradient: "from-[#004B8E] via-[#005FAE] to-[#0073CC]",
     forgeParams: "?vibe=chill&squad=6",
@@ -40,7 +40,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "under-20k",
-    title: "Under ₦20k",
+    title: "₦20k Budget Clean",
     iconName: "Wallet",
     gradient: "from-[#008751] via-[#009B5C] to-[#00B568]",
     forgeParams: "?budget=20000",
@@ -49,7 +49,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "sunday-plans",
-    title: "Sunday Plans",
+    title: "Sunday Brunch Vibe",
     iconName: "Sun",
     gradient: "from-[#FEFBEE] via-[#FDF3C0] to-[#F6C642]",
     forgeParams: "?vibe=brunch",
@@ -58,7 +58,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "after-work",
-    title: "After Work",
+    title: "After Work Cool Down",
     iconName: "Briefcase",
     gradient: "from-[#1D1D1F] via-[#252527] to-[#2E2E30]",
     forgeParams: "?vibe=drinks",
@@ -67,7 +67,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "first-date",
-    title: "First Date",
+    title: "First Date Casuals",
     iconName: "GlassWater",
     gradient: "from-[#F6C642] via-[#F5BC30] to-[#F0AE1A]",
     forgeParams: "?vibe=casual&budget=15000&squad=2",
@@ -76,7 +76,7 @@ export const COLLECTIONS: Collection[] = [
   },
   {
     id: "quick-lunch",
-    title: "Quick Lunch",
+    title: "Quick Serious Chop",
     iconName: "Coffee",
     gradient: "from-[#004B8E] via-[#003D72] to-[#010528]",
     forgeParams: "?vibe=foodie&budget=10000",

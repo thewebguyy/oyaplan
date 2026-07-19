@@ -13,7 +13,7 @@ export default function ExperienceCollections() {
   return (
     <RevealOnScroll className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="type-heading text-midnight-lagoon">Popular Collections</h2>
+        <h2 className="type-heading text-midnight-lagoon">Curated Vibe Checks</h2>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 stagger-children">

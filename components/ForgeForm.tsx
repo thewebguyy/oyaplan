@@ -12,19 +12,19 @@ interface ForgeFormProps {
 }
 
 const VIBE_OPTIONS = [
-  { value: "Dinner", label: "Date Night", icon: Heart },
-  { value: "Chill",  label: "Chill Hangout", icon: Coffee },
+  { value: "Dinner", label: "Date Night (Chop Eye)", icon: Heart },
+  { value: "Chill",  label: "Chill Vibe", icon: Coffee },
   { value: "Foodie", label: "Serious Chop", icon: Utensils },
   { value: "Party",  label: "Turn Up", icon: Music },
-  { value: "Quick",  label: "Quick Link", icon: Zap },
-  { value: "Brunch", label: "Brunch Vibes", icon: Sun },
+  { value: "Quick",  label: "Quick Linkup", icon: Zap },
+  { value: "Brunch", label: "Brunch Vibe", icon: Sun },
 ];
 
 const SQUAD_OPTIONS = [
-  { value: "1", label: "Just Me" },
-  { value: "2", label: "2 people" },
-  { value: "4", label: "3-4 people" },
-  { value: "6", label: "5+ people" },
+  { value: "1", label: "Na only me (1)" },
+  { value: "2", label: "Me & plus one (2)" },
+  { value: "4", label: "Small squad (3-4)" },
+  { value: "6", label: "Full entourage (5+)" },
 ];
 
 const BUDGET_OPTIONS = [
@@ -44,10 +44,10 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { id: 'budget', title: "What's the budget?" },
-  { id: 'area', title: "Where are we heading?", reassurance: "Nice. We'll find somewhere that fits." },
-  { id: 'squad', title: "Who's coming?", reassurance: "Great choice." },
-  { id: 'vibe', title: "What are we in the mood for?", reassurance: "Almost there." }
+  { id: 'budget', title: "How much is your budget? (What's the damage?)" },
+  { id: 'area', title: "Where you wan go?", reassurance: "Understood. We'll find somewhere fresh that fits." },
+  { id: 'squad', title: "Who's coming? (Na only you or squad?)", reassurance: "Solid squad size." },
+  { id: 'vibe', title: "What's the gbedu/vibe?", reassurance: "Almost active. Prepping plans..." }
 ];
 
 const VIBE_URL_MAP: Record<string, string> = {

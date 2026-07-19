@@ -14,14 +14,14 @@ export default async function RecentlyVerified() {
   return (
     <RevealOnScroll className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="type-heading text-midnight-lagoon">Recently Verified</h2>
+        <h2 className="type-heading text-midnight-lagoon">Vibe Checks (Fresh Menus)</h2>
       </div>
       <div className="flex flex-row gap-4 overflow-x-auto pb-3 snap-x -mx-4 px-4 hide-scrollbar stagger-children">
         {spots.map((spot) => {
           const areaName = spot.areas ? Array.isArray(spot.areas) ? spot.areas[0]?.name : spot.areas.name : "Lagos";
           const updatedString = spot.price_updated_at 
-            ? `Verified ${timeAgo(spot.price_updated_at)}` 
-            : "Recently verified";
+            ? `Vetted ${timeAgo(spot.price_updated_at)}` 
+            : "Vetted recently";
 
           return (
             <Link

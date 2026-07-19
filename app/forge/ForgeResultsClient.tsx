@@ -154,35 +154,35 @@ export default function ForgeResultsClient({
         {revealStep < 4 ? (
           <div className="w-full space-y-6 animate-in fade-in duration-300">
             <div className="space-y-2 text-center">
-              <span className="text-[11px] font-black uppercase tracking-[0.15em] text-text-muted">Budget Audit</span>
-              <h2 className="type-display-product text-midnight-lagoon text-2xl font-black">Checking calculations...</h2>
+              <span className="text-[11px] font-black uppercase tracking-[0.15em] text-text-muted">Vibe Check</span>
+              <h2 className="type-display-product text-midnight-lagoon text-2xl font-black">Vetting the vibe damage...</h2>
             </div>
             
             <div className="space-y-4 font-mono text-sm border border-border-default/50 rounded-[20px] p-6 bg-[#FAFAF8] shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="text-text-muted">Checking transport…</span>
+                <span className="text-text-muted">Calculating transport damage…</span>
                 <span className={revealStep >= 1 ? "text-[#008751] font-bold" : "text-text-muted animate-pulse"}>
-                  {revealStep >= 1 ? "✓ Transport estimated" : "Checking..."}
+                  {revealStep >= 1 ? "✓ Transit sorted (Bolt)" : "Calculating..."}
                 </span>
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-text-muted">Checking venue pricing…</span>
+                <span className="text-text-muted">Checking menu prices…</span>
                 <span className={revealStep >= 2 ? "text-[#008751] font-bold" : revealStep >= 1 ? "text-text-muted animate-pulse" : "text-text-muted/40"}>
-                  {revealStep >= 2 ? "✓ Venue pricing verified" : revealStep >= 1 ? "Checking..." : "Pending"}
+                  {revealStep >= 2 ? "✓ Menus vetted (no cap)" : revealStep >= 1 ? "Vetting..." : "Pending"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-text-muted">Adding budget buffer…</span>
+                <span className="text-text-muted">Baking in VAT + service buffer…</span>
                 <span className={revealStep >= 3 ? "text-[#008751] font-bold" : revealStep >= 2 ? "text-text-muted animate-pulse" : "text-text-muted/40"}>
-                  {revealStep >= 3 ? "✓ Buffer included" : revealStep >= 2 ? "Adding..." : "Pending"}
+                  {revealStep >= 3 ? "✓ Buffers added" : revealStep >= 2 ? "Baking..." : "Pending"}
                 </span>
               </div>
 
               {revealStep >= 3 && (
                 <div className="pt-4 border-t border-border-default/50 text-center animate-in fade-in zoom-in-95 duration-300">
-                  <p className="type-label text-[#008751] text-base font-black">Plan Ready.</p>
+                  <p className="type-label text-[#008751] text-base font-black">Gbedu Ready.</p>
                 </div>
               )}
             </div>
@@ -190,16 +190,16 @@ export default function ForgeResultsClient({
         ) : (
           <div className="w-full space-y-6 animate-in fade-in duration-400">
             <div className="space-y-2 text-center">
-              <span className="text-[11px] font-black uppercase tracking-[0.15em] text-text-muted font-bold font-mono">Confidence Summary</span>
-              <h2 className="type-display-product text-midnight-lagoon text-2xl font-black">Verified parameters</h2>
+              <span className="text-[11px] font-black uppercase tracking-[0.15em] text-text-muted font-bold font-mono">Outing Scorecard</span>
+              <h2 className="type-display-product text-midnight-lagoon text-2xl font-black">Squad checks</h2>
             </div>
 
             <div className="space-y-4 font-sans text-sm border border-border-default/50 rounded-[20px] p-6 bg-[#FAFAF8] shadow-sm">
               {[
-                { label: "Budget", val: "✓ Comfortable" },
-                { label: "Travel", val: "✓ Reasonable" },
-                { label: "Group Size", val: "✓ Good fit" },
-                { label: "Vibe", val: "✓ Strong match" }
+                { label: "Budget Fit", val: "✓ Clean" },
+                { label: "Transit Time", val: "✓ Nearby" },
+                { label: "Squad Size", val: "✓ Sorted" },
+                { label: "Vibe Match", val: "✓ Hits" }
               ].map((item, idx) => (
                 <div key={item.label} className={`flex items-center justify-between transition-all duration-300 ${
                   revealStep >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
@@ -211,7 +211,7 @@ export default function ForgeResultsClient({
             </div>
 
             <div className="pt-4 text-center animate-in fade-in duration-300 delay-700">
-              <p className="type-label text-[#008751] text-base font-black">Plan Ready</p>
+              <p className="type-label text-[#008751] text-base font-black">Active Outing Ready</p>
             </div>
           </div>
         )}

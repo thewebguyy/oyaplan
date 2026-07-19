@@ -5,9 +5,9 @@ export default function TrustSection() {
     <RevealOnScroll>
       <section className="w-full bg-[#FAFAF8] border border-border-default/80 rounded-[32px] p-6 sm:p-10 shadow-[0px_24px_48px_-12px_rgba(1,5,40,0.03)]">
         <div className="flex flex-col text-center sm:text-left mb-10 border-b border-border-default/40 pb-6">
-          <h2 className="type-heading text-midnight-lagoon text-xl sm:text-2xl uppercase tracking-tight font-black">Audit Ledger</h2>
+          <h2 className="type-heading text-midnight-lagoon text-xl sm:text-2xl uppercase tracking-tight font-black">How We Bill</h2>
           <p className="type-body text-text-muted mt-2 font-mono text-xs uppercase tracking-wider">
-            Vetted pricing and transportation audits · Updated regularly
+            No surprises. Vetted menus and transport rates.
           </p>
         </div>
 
@@ -23,13 +23,13 @@ export default function TrustSection() {
                 </svg>
               </div>
               <div className="space-y-1">
-                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Verified Spot Pricing</h3>
-                <p className="type-body text-text-muted font-sans text-xs">Direct menu audits of food & drinks. No stale online estimates.</p>
+                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Vetted Menus (No Cap)</h3>
+                <p className="type-body text-text-muted font-sans text-xs">We check the actual menus ourselves. No fake online pricing.</p>
               </div>
             </div>
             <div className="bg-white border border-border-default/60 rounded-xl px-4 py-2.5 md:text-right shrink-0">
-              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Calculation System</span>
-              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Menu Price] + 10% [VAT & Service] = ₦ Vetted Price</p>
+              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Billing Breakdown</span>
+              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Menu Spend] + 10% [VAT & Service] = ₦ Vetted Outing Cost</p>
             </div>
           </div>
 
@@ -43,13 +43,13 @@ export default function TrustSection() {
                 </svg>
               </div>
               <div className="space-y-1">
-                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Transport Coverage</h3>
-                <p className="type-body text-text-muted font-sans text-xs">Calculates real-time squad transit rates based on zone mapping.</p>
+                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Transit Estimates (Bolt Rates)</h3>
+                <p className="type-body text-text-muted font-sans text-xs">Estimates round-trip Bolt fares so squad does not get stranded.</p>
               </div>
             </div>
             <div className="bg-white border border-border-default/60 rounded-xl px-4 py-2.5 md:text-right shrink-0">
-              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Calculation System</span>
-              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Bolt Fare VI ⇋ Lekki] × 2 = ₦ Round-trip Fare</p>
+              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Billing Breakdown</span>
+              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Bolt Fare VI ⇋ Lekki] × 2 = ₦ Round-trip Transport</p>
             </div>
           </div>
 
@@ -63,13 +63,13 @@ export default function TrustSection() {
                 </svg>
               </div>
               <div className="space-y-1">
-                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">No Hidden splits</h3>
-                <p className="type-body text-text-muted font-sans text-xs">Total buffer fees are included directly to safeguard group budgets.</p>
+                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Zero Hidden Billing</h3>
+                <p className="type-body text-text-muted font-sans text-xs">What you see is what you pay. We bake in standard service buffers.</p>
               </div>
             </div>
             <div className="bg-white border border-border-default/60 rounded-xl px-4 py-2.5 md:text-right shrink-0">
-              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Calculation System</span>
-              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Spot Spend] + [Ride Share] + [Buffer] = ₦ Expected Cost</p>
+              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Billing Breakdown</span>
+              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Chop Spend] + [Transport] + [Service Buffer] = ₦ Expected Damage</p>
             </div>
           </div>
         </div>

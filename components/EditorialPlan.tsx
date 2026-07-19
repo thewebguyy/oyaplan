@@ -93,7 +93,7 @@ export default function EditorialPlan({
         <div className="bg-[#FAFAF8] border border-border-default/80 rounded-[20px] p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs uppercase tracking-wider font-bold text-text-muted">Plan Match Quality</span>
+              <span className="text-xs uppercase tracking-wider font-bold text-text-muted">Vibe Match Score</span>
               <p className="text-lg font-black text-midnight-lagoon">{matchLabel}</p>
             </div>
             <div className="text-right">
@@ -102,15 +102,15 @@ export default function EditorialPlan({
           </div>
 
           <p className="text-sm text-text-secondary">
-            Best suited for your ₦{(originalBudget || plan.totalCost).toLocaleString()} budget and group of {getSquadWord(input.squadSize)}.
+            Perfect for your ₦{(originalBudget || plan.totalCost).toLocaleString()} budget and squad of {getSquadWord(input.squadSize)}.
           </p>
 
           <div className="space-y-2.5 pt-2">
             {[
-              { label: "Budget", score: budgetScore },
-              { label: "Travel", score: travelScore },
-              { label: "Vibe", score: vibeScore },
-              { label: "Group Fit", score: groupFitScore }
+              { label: "Budget Fit", score: budgetScore },
+              { label: "Transit Time", score: travelScore },
+              { label: "Vibe Match", score: vibeScore },
+              { label: "Squad Fit", score: groupFitScore }
             ].map(metric => (
               <div key={metric.label} className="space-y-1">
                 <div className="flex justify-between text-xs text-text-secondary font-medium">
@@ -135,14 +135,14 @@ export default function EditorialPlan({
 
         {/* Why this plan? Section */}
         <div className="bg-white border border-border-default/60 rounded-[20px] p-6 space-y-3">
-          <h4 className="type-ui-label font-bold text-midnight-lagoon uppercase tracking-wider text-xs">Why this plan?</h4>
+          <h4 className="type-ui-label font-bold text-midnight-lagoon uppercase tracking-wider text-xs">Why this fits you</h4>
           <ul className="space-y-2">
             <li className="flex items-start gap-2.5 text-sm text-text-secondary">
               <span className="text-palm-green font-bold select-none">•</span>
               <span>
                 {diff < 0 
-                  ? `Stays near your budget, costing ₦${plan.totalCost.toLocaleString()} total`
-                  : `Fits comfortably within your ₦${(originalBudget || plan.totalCost).toLocaleString()} budget`
+                  ? `Stays near your budget limits, costing ₦${plan.totalCost.toLocaleString()} total`
+                  : `Fits comfortably inside your ₦${(originalBudget || plan.totalCost).toLocaleString()} budget limit (no cap)`
                 }
               </span>
             </li>
@@ -150,18 +150,18 @@ export default function EditorialPlan({
               <span className="text-palm-green font-bold select-none">•</span>
               <span>
                 {input.startArea && input.startArea !== "anywhere"
-                  ? `Travel stays under 20 minutes from ${input.startArea}`
-                  : "Travel estimates included for standard Lagos routes"
+                  ? `Bolt rides are under 20 mins from ${input.startArea}`
+                  : "Bolt transport costs are factored into standard Lagos routes"
                 }
               </span>
             </li>
             <li className="flex items-start gap-2.5 text-sm text-text-secondary">
               <span className="text-palm-green font-bold select-none">•</span>
-              <span>Matches your selected {input.vibe.toLowerCase()} vibe</span>
+              <span>Hits your chosen {input.vibe.toLowerCase()} vibe</span>
             </li>
             <li className="flex items-start gap-2.5 text-sm text-text-secondary">
               <span className="text-palm-green font-bold select-none">•</span>
-              <span>Suitable for a group of {getSquadWord(input.squadSize)}</span>
+              <span>Perfect for a squad size of {getSquadWord(input.squadSize)}</span>
             </li>
           </ul>
         </div>

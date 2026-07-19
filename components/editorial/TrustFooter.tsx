@@ -20,7 +20,7 @@ export function TrustFooter({
     <div className="px-6 sm:px-10 py-8 bg-surface-grey/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
       <div className="space-y-4">
         <div>
-          <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-2">Verified Signals</p>
+          <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-2">Outing Check</p>
           <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
             <div className="flex items-center gap-2">
               {isPricingVerified ? (
@@ -28,7 +28,7 @@ export function TrustFooter({
               ) : (
                 <span className="text-text-muted">○</span>
               )}
-              <span className={isPricingVerified ? "text-text-primary font-medium" : "text-text-muted"}>Pricing</span>
+              <span className={isPricingVerified ? "text-text-primary font-medium" : "text-text-muted"}>Damage Vetted</span>
             </div>
             
             <div className="flex items-center gap-2">
@@ -37,7 +37,7 @@ export function TrustFooter({
               ) : (
                 <span className="text-text-muted">○</span>
               )}
-              <span className={isTransportEstimated ? "text-text-primary font-medium" : "text-text-muted"}>Transport</span>
+              <span className={isTransportEstimated ? "text-text-primary font-medium" : "text-text-muted"}>Transit Sorted</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -46,7 +46,7 @@ export function TrustFooter({
               ) : (
                 <span className="text-[#008751] font-bold">✓</span> // Let's default to verified if standard hours exist or are checked by OyaPlan
               )}
-              <span className="text-text-primary font-medium">Hours</span>
+              <span className="text-text-primary font-medium">Open & Active</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -55,12 +55,12 @@ export function TrustFooter({
               ) : (
                 <span className="text-text-muted">○</span>
               )}
-              <span className="text-text-muted">Availability</span>
+              <span className="text-text-muted">Ready for Squad</span>
             </div>
           </div>
         </div>
         <p className="type-caption text-text-muted">
-          Real venue pricing. Verified by OyaPlan.
+          Real menus checked by hand. No fake pricing.
         </p>
       </div>
 
