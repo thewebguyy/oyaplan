@@ -50,7 +50,7 @@ function getClientIp(request: NextRequest): string {
   );
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Rate limit check — runs before Supabase auth to avoid wasted round-trips on blocked requests.
   // Early 429 returns do not touch supabaseResponse, so cookie rotation is unaffected.
   if (isRateLimitedRoute(request)) {

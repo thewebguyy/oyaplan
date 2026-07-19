@@ -143,31 +143,33 @@ export default function HeroSection({ spots }: HeroSectionProps) {
           <p className="text-lg leading-relaxed text-[#6B7280] font-medium max-w-[600px] mt-3">
             Know what you&apos;ll spend before you leave home. Plan your next Lagos outing with verified venue prices, transport estimates, and zero surprise costs.
           </p>
-          <div className="relative flex items-center gap-1.5 text-sm md:text-base text-[#6B7280] font-semibold mt-3 h-[24px] overflow-hidden">
+          <div className="relative flex items-center gap-1.5 text-sm md:text-base text-[#6B7280] font-semibold mt-3 h-[24px] overflow-hidden w-full">
             <span>Planning:</span>
-            <AnimatePresence mode="popLayout">
-              <motion.span
-                key={phraseIndex}
-                initial={{ y: 8, opacity: 0, filter: "blur(1px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ y: -8, opacity: 0, filter: "blur(1px)" }}
-                transition={{
-                  type: "tween",
-                  ease: [0.16, 1, 0.3, 1],
-                  duration: 0.5,
-                }}
-                className="text-[#008751] font-bold text-sm md:text-base absolute left-[65px] whitespace-nowrap"
-              >
-                {PHRASES[phraseIndex]}
-              </motion.span>
-            </AnimatePresence>
+            <div className="relative h-full flex-1">
+              <AnimatePresence mode="popLayout">
+                <motion.span
+                  key={phraseIndex}
+                  initial={{ y: 8, opacity: 0, filter: "blur(1px)" }}
+                  animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                  exit={{ y: -8, opacity: 0, filter: "blur(1px)" }}
+                  transition={{
+                    type: "tween",
+                    ease: [0.16, 1, 0.3, 1],
+                    duration: 0.5,
+                  }}
+                  className="text-[#008751] font-bold text-sm md:text-base absolute left-0 whitespace-nowrap"
+                >
+                  {PHRASES[phraseIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
         {/* Content Area: Side-by-side on desktop, vertical stack on mobile */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 md:gap-12">
-          {/* Left Column: Planner Widget (65% width on desktop) */}
-          <div className="w-full md:w-[63%] shrink-0">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 lg:gap-8">
+          {/* Left Column: Planner Widget (62% width on desktop) */}
+          <div className="w-full md:w-[62%]">
             <PlannerWidget
               squadSize={squadSize}
               setSquadSize={setSquadSize}
@@ -179,8 +181,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
             />
           </div>
 
-          {/* Right Column: Live Recommendation Card (35% width on desktop) - hidden on mobile */}
-          <div className="w-full md:w-[33%] shrink-0 hidden md:block">
+          {/* Right Column: Live Recommendation Card (34% width on desktop) - hidden on mobile */}
+          <div className="w-full md:w-[34%] hidden md:block">
             <LivePreviewCard
               squadSize={squadSize}
               budget={budget}
