@@ -9,9 +9,9 @@ import VibeIsland from "./VibeIsland";
 import QuickSwapWipe from "./QuickSwapWipe";
 import { COLLECTIONS } from "@/lib/config/collections";
 import Link from "next/link";
-import { Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee } from "lucide-react";
+import { Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee, type LucideIcon } from "lucide-react";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   Heart, Gift, Users, Wallet, Sun, Briefcase, GlassWater, Coffee
 };
 
@@ -42,12 +42,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
             : "translate-y-0"
         }`}
       >
-        {/* Massive Background Texture Text */}
-        <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none opacity-[0.03]">
-          <h1 className="font-sans font-black text-[120px] sm:text-[200px] md:text-[280px] leading-none text-center uppercase whitespace-nowrap -rotate-12 select-none" style={{ WebkitTextStroke: "4px black", color: "transparent" }}>
-            LAGOS RAW AND UNFILTERED
-          </h1>
-        </div>
+
 
         {/* Ticker Layer */}
         <div className="absolute top-0 inset-x-0 z-10 flex flex-col pointer-events-none">
@@ -96,13 +91,13 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
         Mobile: Bottom sheet (60vh tall)
       */}
       <div 
-        className={`fixed z-50 bg-white border-black/80 transition-transform duration-200 ease-out motion-reduce:transition-none shadow-[0_0_40px_rgba(0,0,0,0.1)]
+        className={`fixed z-50 bg-white border-black/80 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none shadow-[0_0_40px_rgba(0,0,0,0.1)]
           /* Desktop styling: right panel */
           md:top-0 md:right-0 md:left-auto md:w-[450px] md:h-screen md:border-l-2 md:bottom-auto md:rounded-t-none
           /* Mobile styling: bottom sheet */
           bottom-0 inset-x-0 h-[60vh] border-t-2 md:border-t-0 rounded-t-3xl
-          /* Transform states */
-          ${isDetailsPage ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-x-full"}
+          /* Transform states with transition delays for camera choreography sync */
+          ${isDetailsPage ? "translate-y-0 md:translate-x-0 delay-300" : "translate-y-full md:translate-x-full delay-0"}
         `}
       >
         {/* Sticky Header Actions */}
@@ -111,9 +106,9 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
            <div className="md:hidden w-12 h-1.5 bg-black/20 rounded-full" />
            
            {/* Close Button */}
-           <a href="/explore" className="absolute top-3 right-4 w-8 h-8 flex items-center justify-center bg-surface-grey hover:bg-black/10 rounded-full transition-colors pointer-events-auto tap-feedback">
+           <Link href="/explore" className="absolute top-3 right-4 w-8 h-8 flex items-center justify-center bg-surface-grey hover:bg-black/10 rounded-full transition-colors pointer-events-auto tap-feedback">
              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-black"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-           </a>
+           </Link>
         </div>
         
         {/* Scrollable Container with Wipe Wrapper */}

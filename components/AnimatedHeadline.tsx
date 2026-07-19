@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PHRASES = [
-  "Date night in Ikeja? What's the damage?",
-  "Sunday brunch in Lekki? What's the damage?",
-  "Friday cruise in Yaba? What's the damage?",
-  "Rooftop in Victoria Island? What's the damage?"
+  "Where you wan go?",
+  "How much is your budget?",
+  "Na only you?",
+  "Is it a full squad?"
 ];
 
 export default function AnimatedHeadline() {
