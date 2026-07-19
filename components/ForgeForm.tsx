@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Area } from "@/lib/types";
+import { Area, Spot } from "@/lib/types";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { Button } from "@/components/ui/button";
 import { Heart, Coffee, Utensils, Music, Zap, Sun } from "lucide-react";
+import { getAvailableOptions } from "@/lib/services/matching/forgeMatcher";
 
 interface ForgeFormProps {
   areas: Area[];
+  spots: Spot[];
 }
 
 const VIBE_OPTIONS = [
@@ -68,24 +70,93 @@ const VIBE_TO_URL_MAP: Record<string, string> = {
   "Brunch": "brunch"
 };
 
-export default function ForgeForm({ areas }: ForgeFormProps) {
+export default function ForgeForm({ areas, spots }: ForgeFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const rawVibe = searchParams.get("vibe") || "";
-  const initialVibe = VIBE_URL_MAP[rawVibe] || rawVibe;
+  const getInitialVibe = () => {
+    const rawVibe = searchParams.get("vibe") || "";
+    return VIBE_URL_MAP[rawVibe] || rawVibe;
+  };
 
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [formData, setFormData] = useState({
-    vibe: initialVibe,
-    squadSize: searchParams.get("squad") || "",
-    budget: searchParams.get("budget") || "",
-    startArea: searchParams.get("area") || "",
-  });
+  const getInitialState = () => {
+    return {
+      vibe: getInitialVibe(),
+      squadSize: searchParams.get("squad") || searchParams.get("squadSize") || "",
+      budget: searchParams.get("budget") || "",
+      startArea: searchParams.get("area") || searchParams.get("startArea") || "",
+      pinnedSpotId: searchParams.get("pinned") || searchParams.get("pinnedSpotId") || "",
+    };
+  };
+
+  const [formData, setFormData] = useState(getInitialState);
+
+  // Determine initial step dynamically on load based on prefilled URL parameters
+  const getInitialStep = () => {
+    const init = getInitialState();
+    if (!init.budget) return 0;
+    if (!init.startArea) return 1;
+    if (!init.squadSize) return 2;
+    if (!init.vibe) return 3;
+    return 3;
+  };
+
+  const [currentStepIndex, setCurrentStepIndex] = useState(getInitialStep);
   const [loading, setLoading] = useState(false);
 
+  // Sync component state when URL search parameters change (Back/Forward, Explore redirection)
+  useEffect(() => {
+    const nextState = getInitialState();
+    setFormData(nextState);
+  }, [searchParams]);
+
+  // Compute option viability using the shared matching constraints from forgeMatcher
+  const selections = {
+    budget: formData.budget ? Number(formData.budget) : undefined,
+    startArea: formData.startArea || undefined,
+    squadSize: formData.squadSize ? Number(formData.squadSize) : undefined,
+    vibe: formData.vibe || undefined,
+  };
+
+  const viability = getAvailableOptions(spots || [], selections);
+
   const handleSelect = (field: keyof typeof formData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const nextState = { ...prev, [field]: value };
+      
+      // Cascade resets: invalidate subsequent choices if they become impossible under the new selection
+      const currentViability = getAvailableOptions(spots || [], {
+        budget: nextState.budget ? Number(nextState.budget) : undefined,
+        startArea: nextState.startArea || undefined,
+        squadSize: nextState.squadSize ? Number(nextState.squadSize) : undefined,
+        vibe: nextState.vibe || undefined,
+      });
+
+      if (field === 'budget') {
+        if (nextState.startArea && nextState.startArea !== 'Anywhere' && currentViability.areas[nextState.startArea]?.disabled) {
+          nextState.startArea = '';
+        }
+        if (nextState.squadSize && currentViability.squadSizes[nextState.squadSize]?.disabled) {
+          nextState.squadSize = '';
+        }
+        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.disabled) {
+          nextState.vibe = '';
+        }
+      } else if (field === 'startArea') {
+        if (nextState.squadSize && currentViability.squadSizes[nextState.squadSize]?.disabled) {
+          nextState.squadSize = '';
+        }
+        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.disabled) {
+          nextState.vibe = '';
+        }
+      } else if (field === 'squadSize') {
+        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.disabled) {
+          nextState.vibe = '';
+        }
+      }
+
+      return nextState;
+    });
     
     // Auto-advance
     if (currentStepIndex < STEPS.length - 1) {
@@ -110,6 +181,9 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
     if (formData.budget) params.append("budget", formData.budget);
     if (formData.startArea && formData.startArea !== "Anywhere") {
       params.append("area", formData.startArea);
+    }
+    if (formData.pinnedSpotId) {
+      params.append("pinned", formData.pinnedSpotId);
     }
     
     AnalyticsService.track('forge_started', {
@@ -152,6 +226,7 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
     if (parts.length === 0) return null;
 
+
     return (
       <div className="flex flex-wrap items-center gap-2 mb-8 animate-in fade-in slide-in-from-top-2">
         {parts.map((p, i) => (
@@ -176,11 +251,6 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
 
       <div key={currentStep.id} className="animate-in fade-in slide-in-from-right-4 duration-300">
         <div className="space-y-2 mb-8">
-          {currentStep.reassurance && (
-            <p className="type-body text-text-muted animate-in fade-in slide-in-from-bottom-1 delay-150 fill-mode-both">
-              {currentStep.reassurance}
-            </p>
-          )}
           <h1 className="type-heading text-text-primary">
             {currentStep.title}
           </h1>
@@ -191,25 +261,34 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {VIBE_OPTIONS.map((o) => {
               const isSelected = formData.vibe === o.value;
+              const vViab = viability.vibes[o.value] || { disabled: false };
               return (
                 <button
                   key={o.value}
-                  onClick={() => handleSelect('vibe', o.value)}
+                  disabled={vViab.disabled}
+                  onClick={() => !vViab.disabled && handleSelect('vibe', o.value)}
                   className={`flex flex-col items-start p-5 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback text-left border-2 ${
                     isSelected 
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-sm" 
+                      : vViab.disabled 
+                      ? "bg-surface-grey border-transparent text-text-muted opacity-40 cursor-not-allowed"
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <o.icon className="w-6 h-6 mb-3" />
                   <span className="type-body font-bold tracking-tight">{o.label}</span>
+                  {vViab.disabled && vViab.reason && (
+                    <span className="text-[10px] text-red-500 font-semibold mt-1 block">
+                      {vViab.reason}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
         )}
 
-        {/* Step 1: Squad (Large Pills) */}
+        {/* Step 1: Squad (Large Pills - Always selectable for user flexibility) */}
         {currentStep.id === 'squad' && (
           <div className="flex flex-col gap-3">
             {SQUAD_OPTIONS.map((o) => {
@@ -268,17 +347,26 @@ export default function ForgeForm({ areas }: ForgeFormProps) {
             </button>
             {areas.map((a) => {
               const isSelected = formData.startArea === a.slug;
+              const aViab = viability.areas[a.slug] || { disabled: false };
               return (
                 <button
                   key={a.slug}
-                  onClick={() => handleSelect('startArea', a.slug)}
-                  className={`w-full text-left px-6 py-4 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 ${
+                  disabled={aViab.disabled}
+                  onClick={() => !aViab.disabled && handleSelect('startArea', a.slug)}
+                  className={`w-full text-left px-6 py-4 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 flex items-center justify-between ${
                     isSelected
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white"
+                      : aViab.disabled
+                      ? "bg-surface-grey border-transparent text-text-muted opacity-40 cursor-not-allowed"
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <span className="type-body font-semibold">{a.name}</span>
+                  {aViab.disabled && aViab.reason && (
+                    <span className="text-xs text-red-500 font-semibold">
+                      {aViab.reason}
+                    </span>
+                  )}
                 </button>
               );
             })}

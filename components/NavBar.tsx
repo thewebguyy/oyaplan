@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
 import { ChevronLeft, User, LogOut, Bookmark } from "lucide-react";
 import { useAuth } from "./providers/AuthProvider";
@@ -10,6 +10,7 @@ import { useAuth } from "./providers/AuthProvider";
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { session, isLoading, openModal, signOut } = useAuth();
 
   // Hide on feedback and list-your-spot pages (if standalone)
@@ -55,10 +56,31 @@ export default function NavBar() {
             .filter((link) => !(link.name === "Plan" && pathname === "/"))
             .map((link) => {
               const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              
+              // Dynamic link builders to preserve planning context strictly between Plan and Explore
+              const getLinkHref = (href: string) => {
+                if (href !== "/" && href !== "/explore") return href;
+                const params = new URLSearchParams();
+                const budget = searchParams.get("budget");
+                const squad = searchParams.get("squad") || searchParams.get("squadSize");
+                const vibe = searchParams.get("vibe");
+                const area = searchParams.get("area") || searchParams.get("startArea");
+                const pinned = searchParams.get("pinned") || searchParams.get("pinnedSpotId");
+
+                if (budget) params.set("budget", budget);
+                if (squad) params.set("squad", squad);
+                if (vibe) params.set("vibe", vibe);
+                if (area) params.set("area", area);
+                if (pinned) params.set("pinned", pinned);
+
+                const qs = params.toString();
+                return qs ? `${href}?${qs}` : href;
+              };
+
               return (
                 <div key={link.href} className="flex items-center">
                   <Link
-                    href={link.href}
+                    href={getLinkHref(link.href)}
                     className={`type-label relative h-[56px] flex items-center transition-all duration-150 ${
                       isActive 
                         ? "text-brand-green" 
@@ -129,7 +151,23 @@ export default function NavBar() {
         {/* Mobile CTA */}
         <div className="md:hidden ml-4">
           {pathname !== "/" && (
-            <Link href="/">
+            <Link href={(() => {
+              const params = new URLSearchParams();
+              const budget = searchParams.get("budget");
+              const squad = searchParams.get("squad") || searchParams.get("squadSize");
+              const vibe = searchParams.get("vibe");
+              const area = searchParams.get("area") || searchParams.get("startArea");
+              const pinned = searchParams.get("pinned") || searchParams.get("pinnedSpotId");
+
+              if (budget) params.set("budget", budget);
+              if (squad) params.set("squad", squad);
+              if (vibe) params.set("vibe", vibe);
+              if (area) params.set("area", area);
+              if (pinned) params.set("pinned", pinned);
+
+              const qs = params.toString();
+              return qs ? `/?${qs}` : "/";
+            })()}>
               <Button className="bg-brand-green text-white font-[900] rounded-full type-label h-10 px-5 tap-feedback border-none hover:bg-brand-green-70">
                 Start Planning
               </Button>

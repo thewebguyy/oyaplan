@@ -148,6 +148,17 @@ export default function ForgeResultsClient({
     "Brunch": "brunch"
   };
 
+  const adjustParams = new URLSearchParams();
+  if (forgeInput.budget) adjustParams.set("budget", forgeInput.budget.toString());
+  if (forgeInput.squadSize) adjustParams.set("squad", forgeInput.squadSize.toString());
+  if (forgeInput.vibe) {
+    const urlVibe = VIBE_TO_URL_MAP[forgeInput.vibe] || forgeInput.vibe;
+    adjustParams.set("vibe", urlVibe);
+  }
+  if (forgeInput.startArea) adjustParams.set("area", forgeInput.startArea);
+  if (forgeInput.pinnedSpotId) adjustParams.set("pinned", forgeInput.pinnedSpotId);
+  const adjustUrl = `/?${adjustParams.toString()}`;
+
   if (!isRevealed && evaluations.length > 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center max-w-md mx-auto px-6 py-12 space-y-12">
@@ -232,7 +243,7 @@ export default function ForgeResultsClient({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/">
+          <Link href={adjustUrl}>
             <button className="type-label text-text-secondary hover:text-midnight-lagoon transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-[10px]">
               <ArrowLeft className="w-3.5 h-3.5" />
               Adjust plan
@@ -397,7 +408,7 @@ export default function ForgeResultsClient({
       {evaluations.length === 0 && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-white/80 backdrop-blur-md border-t border-border-default z-40 animate-in fade-in slide-in-from-bottom-4">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex-1">
+            <Link href={adjustUrl} className="flex-1">
               <Button variant="outline" className="w-full type-label h-12 rounded-[12px] border-border-default text-text-primary tap-feedback">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Change

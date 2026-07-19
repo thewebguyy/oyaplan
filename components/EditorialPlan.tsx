@@ -81,14 +81,6 @@ export default function EditorialPlan({
       <div className="w-full h-px bg-border-default/50" />
 
       <div className={`${isTopPick ? 'px-6 sm:px-10 py-10' : 'px-6 sm:px-10 py-8'} bg-white space-y-6`}>
-        <BudgetConfidenceCard plan={plan} originalBudget={originalBudget} />
-
-        <AdjustmentPanel 
-          input={input} 
-          onAdjustBudget={onAdjustBudget} 
-          isAdjusting={isAdjusting} 
-        />
-
         {/* Quality Scorecard */}
         <div className="bg-[#FAFAF8] border border-border-default/80 rounded-[20px] p-6 space-y-4">
           <div className="flex items-center justify-between">
@@ -169,6 +161,15 @@ export default function EditorialPlan({
         <ChangeSummary changes={evaluation.changes} />
 
         <ExclusionList exclusions={evaluation.exclusions} />
+
+        {/* Pricing Reassurance & Controls (Subordinated to curational narrative) */}
+        <BudgetConfidenceCard plan={plan} originalBudget={originalBudget} />
+
+        <AdjustmentPanel 
+          input={input} 
+          onAdjustBudget={onAdjustBudget} 
+          isAdjusting={isAdjusting} 
+        />
       </div>
       
       <div className="w-full h-px bg-border-default/50" />

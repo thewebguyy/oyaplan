@@ -3,7 +3,8 @@ import ErrorBanner from "@/components/ErrorBanner";
 import PageError from "@/components/PageError";
 import { captureServerException } from "@/lib/sentry";
 import { getAreasWithSpotCounts } from "@/lib/queries/areas";
-import { Area } from "@/lib/types";
+import { getForgeSpots } from "@/lib/queries/spots";
+import { Area, Spot } from "@/lib/types";
 import Link from "next/link";
 import { Suspense } from "react";
 import MobilePlannerDrawer from "@/components/MobilePlannerDrawer";
@@ -25,15 +26,20 @@ export const revalidate = 300;
 
 export default async function LandingPage() {
   let areas: Array<Area & { activeSpotCount?: number }> = [];
+  let spots: Spot[] = [];
   let landingFetchError = false;
 
   try {
-    const areasResult = await getAreasWithSpotCounts();
+    const [areasResult, spotsResult] = await Promise.all([
+      getAreasWithSpotCounts(),
+      getForgeSpots()
+    ]);
 
-    if (areasResult.error) {
+    if (areasResult.error || spotsResult.error) {
       landingFetchError = true;
     } else {
       areas = (areasResult.data || []) as Array<Area & { activeSpotCount?: number }>;
+      spots = (spotsResult.data || []) as Spot[];
     }
   } catch (e) {
     captureServerException(e);
@@ -106,7 +112,7 @@ export default async function LandingPage() {
             <div className="md:hidden w-full">
               <MobilePlannerDrawer>
                  <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
-                   <ForgeForm areas={areas as Area[]} />
+                   <ForgeForm areas={areas as Area[]} spots={spots} />
                  </Suspense>
               </MobilePlannerDrawer>
             </div>
@@ -124,7 +130,7 @@ export default async function LandingPage() {
             <RevealOnScroll>
               <div className="bg-white rounded-[28px] shadow-[0px_24px_48px_-12px_rgba(1,5,40,0.08)] border border-border-default/50 overflow-hidden p-2 text-text-primary max-w-lg mx-auto">
                 <Suspense fallback={<div className="h-64 shimmer-bg opacity-10 rounded-[24px]" />}>
-                  <ForgeForm areas={areas} />
+                  <ForgeForm areas={areas} spots={spots} />
                 </Suspense>
               </div>
             </RevealOnScroll>

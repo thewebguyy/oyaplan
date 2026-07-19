@@ -89,6 +89,8 @@ export type Plan = {
   explanation?: PlanExplanation;
   id?: string;
   saved_at?: string;
+  title?: string;
+  subtitle?: string;
 };
 
 export interface PlanEvaluation {

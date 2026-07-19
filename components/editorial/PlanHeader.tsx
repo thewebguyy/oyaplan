@@ -60,11 +60,11 @@ export function PlanHeader({ input, plan, isTopPick = false }: { input: ForgeInp
       )}
 
       <h2 className="type-display-product text-midnight-lagoon uppercase tracking-tight text-xl sm:text-2xl font-black mb-2">
-        {getHeadline()}
+        {plan.title || getHeadline()}
       </h2>
       <div className="flex flex-col sm:flex-row items-center gap-2 justify-center">
         <p className="type-tagline text-text-muted text-lg font-medium">
-          at {plan.spot.name}
+          {plan.subtitle || `at ${plan.spot.name}`}
         </p>
         
         {plan.spot.computed_confidence_score !== undefined && plan.spot.computed_confidence_score > 70 && (

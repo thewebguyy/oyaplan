@@ -58,7 +58,7 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
           </p>
         </div>
         <div className="text-right">
-          <p className="type-caption text-text-muted mb-1">Expected spend</p>
+          <p className="type-caption text-text-muted mb-1">Estimated spend</p>
           <p className="text-4xl font-black text-midnight-lagoon tabular-nums">
             ₦<NumericCounter value={plan.totalCost} />
           </p>

@@ -263,6 +263,38 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         status,
       };
 
+      const getTheme = (v: string, dp?: string) => {
+        const vl = v.toLowerCase();
+        const dpl = dp?.toLowerCase();
+        if (vl === 'brunch') return 'Weekend Brunch';
+        if (vl === 'dinner') return 'Date Night';
+        if (vl === 'party') return 'Night Out';
+        if (vl === 'foodie') return 'Serious Chop';
+        if (vl === 'quick') return 'Quick Linkup';
+        if (vl === 'chill') return 'Chill Outing';
+        if (dpl === 'morning') return 'Morning Outing';
+        if (dpl === 'afternoon') return 'Afternoon Outing';
+        if (dpl === 'evening') return 'Evening Outing';
+        if (dpl === 'night') return 'Night Out';
+        return 'Chill Outing';
+      };
+
+      const getVibeLabel = (v: string) => {
+        const vl = v.toLowerCase();
+        if (vl === 'dinner') return 'Date Night';
+        if (vl === 'chill') return 'Chill Hangout';
+        if (vl === 'foodie') return 'Serious Chop';
+        if (vl === 'party') return 'Turn Up';
+        if (vl === 'quick') return 'Quick Linkup';
+        if (vl === 'brunch') return 'Weekend Brunch';
+        return 'Outing';
+      };
+
+      const destArea = spot.areas?.name || (spot.address_slug ? spot.address_slug.charAt(0).toUpperCase() + spot.address_slug.slice(1) : "Lagos");
+      const generatedTitle = `${getTheme(vibe, daypart)} in ${destArea}`;
+      const squadText = squadSize === 1 ? "1 person" : `${squadSize} people`;
+      const generatedSubtitle = `A verified ${getVibeLabel(vibe).toLowerCase()} for ${squadText} at ${spot.name}.`;
+
       return {
         spot,
         foodCost: activityCost,
@@ -270,7 +302,9 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         totalCost,
         whyItFits,
         explanation: fullExplanation,
-        score: totalScore
+        score: totalScore,
+        title: generatedTitle,
+        subtitle: generatedSubtitle
       };
     });
 
@@ -386,3 +420,106 @@ function timeAgo(dateString?: string): string {
     return "recently";
   }
 }
+
+export interface OptionViability {
+  disabled: boolean;
+  reason?: string;
+}
+
+export interface AvailableOptionsResult {
+  areas: Record<string, OptionViability>;
+  squadSizes: Record<string, OptionViability>;
+  vibes: Record<string, OptionViability>;
+}
+
+export function getAvailableOptions(
+  allSpots: Spot[],
+  selections: {
+    budget?: number;
+    startArea?: string;
+    squadSize?: number;
+    vibe?: string;
+  }
+): AvailableOptionsResult {
+  const { budget, startArea, squadSize } = selections;
+
+  const result: AvailableOptionsResult = {
+    areas: {},
+    squadSizes: {},
+    vibes: {}
+  };
+
+  // 1. Evaluate Area viability based on budget
+  if (budget !== undefined) {
+    const areasList = ["ikeja", "gbagada", "yaba", "surulere", "ogudu", "agege", "lekki-phase-1", "vi", "ikoyi", "maryland", "ebute-metta", "apapa"];
+    areasList.forEach(areaSlug => {
+      const hasFittingSpot = allSpots.some(spot => {
+        if (!spot.active) return false;
+        const transportCost = spot.transport_matrix?.[areaSlug] ?? calculateZoneFare(areaSlug, spot.address_slug || "ikeja");
+        if (transportCost > budget * 0.35) return false;
+        const totalCost = spot.price_per_person + transportCost;
+        return totalCost <= budget;
+      });
+
+      if (!hasFittingSpot) {
+        result.areas[areaSlug] = {
+          disabled: true,
+          reason: "Exceeds budget bounds"
+        };
+      } else {
+        result.areas[areaSlug] = { disabled: false };
+      }
+    });
+  }
+
+  // 2. Evaluate Squad Size viability based on budget and startArea
+  if (budget !== undefined && startArea && startArea !== "Anywhere") {
+    const squadOptions = ["1", "2", "4", "6"];
+    squadOptions.forEach(sizeStr => {
+      const size = Number(sizeStr);
+      const hasFittingSpot = allSpots.some(spot => {
+        if (!spot.active) return false;
+        const transportCost = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+        if (transportCost > budget * 0.35) return false;
+        const totalCost = (spot.price_per_person * size) + transportCost;
+        return totalCost <= budget;
+      });
+
+      if (!hasFittingSpot) {
+        result.squadSizes[sizeStr] = {
+          disabled: true,
+          reason: `Exceeds ₦${Math.round(budget / 1000)}k budget`
+        };
+      } else {
+        result.squadSizes[sizeStr] = { disabled: false };
+      }
+    });
+  }
+
+  // 3. Evaluate Vibe viability based on budget, startArea, and squadSize
+  if (budget !== undefined && startArea && startArea !== "Anywhere" && squadSize !== undefined) {
+    const vibeOptions = ["Dinner", "Chill", "Foodie", "Party", "Quick", "Brunch"];
+    vibeOptions.forEach(v => {
+      const hasFittingSpot = allSpots.some(spot => {
+        if (!spot.active) return false;
+        if (!spot.vibe_tags.includes(v)) return false;
+        const transportCost = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+        if (transportCost > budget * 0.35) return false;
+        const totalCost = (spot.price_per_person * squadSize) + transportCost;
+        return totalCost <= budget;
+      });
+
+      if (!hasFittingSpot) {
+        result.vibes[v] = {
+          disabled: true,
+          reason: "Need higher budget for this vibe"
+        };
+      } else {
+        result.vibes[v] = { disabled: false };
+      }
+    });
+  }
+
+  return result;
+}
+
