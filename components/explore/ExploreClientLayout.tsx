@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import { Spot } from "@/lib/types";
-import WorldRenderer from "../world/WorldRenderer";
+import WorldRenderer from "../crl/WorldRenderer";
 import QuickSwapWipe from "./QuickSwapWipe";
 import Link from "next/link";
 
