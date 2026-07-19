@@ -25,7 +25,7 @@ const DEFAULT_FALLBACK_SPOT: Spot = {
 
 const PHRASES = [
   "Heading out solo?",
-  "Planning a date night?",
+  "A date night?",
   "Gathering the squad?",
   "Checking verified pricing?",
 ];
@@ -126,15 +126,23 @@ export default function HeroSection({ spots }: HeroSectionProps) {
       initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{ type: "spring", stiffness: 100, damping: 15, duration: 0.8 }}
-      className="relative w-full bg-[#FAF9F6] pt-20 pb-16 px-4 sm:px-8 md:px-16 border-b border-[#F3F4F6]"
+      className="relative w-full bg-[#FAF9F6] pt-20 pb-16 px-4 sm:px-8 md:px-16 border-b border-[#F3F4F6] overflow-hidden"
     >
-      <div className="max-w-5xl mx-auto flex flex-col gap-10 md:gap-12 text-left">
+      {/* Animated breathing gradient background & floating shapes */}
+      <div className="hero-background" aria-hidden="true" />
+      <div className="floating-element circle-1" aria-hidden="true" />
+      <div className="floating-element circle-2" aria-hidden="true" />
+
+      <div className="max-w-5xl mx-auto flex flex-col gap-10 md:gap-12 text-left relative z-10">
         {/* Header and Subhead Area */}
         <div className="max-w-3xl">
           <h1 className="text-[32px] sm:text-[40px] md:text-[50px] font-black text-[#1A1A1A] leading-[1.1] tracking-[-1px]">
             Decide where to go in Lagos with{" "}
-            <span className="text-[#008751]">budget confidence</span>.
+            <span className="highlight-green">budget confidence.</span>
           </h1>
+          <p className="text-lg leading-relaxed text-[#6B7280] font-medium max-w-[600px] mt-3">
+            Planning a night out in Ikeja? We show you exactly what you&apos;ll spend. No surprises.
+          </p>
           <div className="relative flex items-center gap-1.5 text-sm md:text-base text-[#6B7280] font-semibold mt-3 h-[24px] overflow-hidden">
             <span>Planning:</span>
             <AnimatePresence mode="popLayout">

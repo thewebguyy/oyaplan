@@ -5,6 +5,7 @@ import ExperienceCollections from "@/components/ExperienceCollections";
 import RecentlyVerified from "@/components/RecentlyVerified";
 import TrustSection from "@/components/TrustSection";
 import HeroSection from "@/components/HeroSection";
+import FAQSection from "@/components/FAQSection";
 import { getForgeSpots } from "@/lib/queries/spots";
 import { Spot } from "@/lib/types";
 
@@ -29,9 +30,7 @@ export default async function LandingPage() {
       <HeroSection spots={spots} />
 
       {/* Redesigned Trust Section (moved to position #2 in layout) */}
-      <div className="max-w-4xl mx-auto px-4 pt-12 pb-6">
-        <TrustSection />
-      </div>
+      <TrustSection />
 
       {/* ── CHAPTER 2: Collections — full-bleed ── */}
       <section className="section-exciting w-full py-16 sm:py-20">
@@ -48,6 +47,9 @@ export default async function LandingPage() {
           </Suspense>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* ── Footer ── */}
       <footer className="section-quiet border-t border-border-default/50 py-14">

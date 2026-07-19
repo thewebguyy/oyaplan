@@ -7,7 +7,7 @@ export interface RateLimitResult {
   remaining: number;
 }
 
-const MAX_REQUESTS = 10;
+const MAX_REQUESTS = 60;
 const WINDOW_STRING = '60 s';
 
 const ratelimit = new Ratelimit({
@@ -49,22 +49,17 @@ export async function checkRateLimit(ip: string): Promise<RateLimitResult> {
   }
 
   try {
-    const { success, limit, remaining, reset } = await ratelimit.limit(`rl:${ip}`);
+    const { success, remaining } = await ratelimit.limit(`rl:${ip}`);
     
     return {
       limited: !success,
       remaining,
     };
   } catch (error) {
-    if (!isProduction) {
-      console.log(`[RATE_LIMIT_FAIL_OPEN] Error executing rate limit: ${error}`);
-      return { limited: false, remaining: -1 };
-    } else {
-      console.error('[RATE_LIMIT_FAIL_CLOSED] Rate limit exception in production.', error);
-      if (typeof captureServerException === 'function') {
-        captureServerException(error);
-      }
-      return { limited: true, remaining: 0 };
+    console.error('[RATE_LIMIT_FAIL_OPEN] Rate limit exception.', error);
+    if (typeof captureServerException === 'function') {
+      captureServerException(error);
     }
+    return { limited: false, remaining: -1 };
   }
 }

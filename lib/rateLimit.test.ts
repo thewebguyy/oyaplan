@@ -84,10 +84,10 @@ describe('checkRateLimit', () => {
     expect(result.remaining).toBe(-1);
   });
 
-  it('should fail-closed when Ratelimit throws in production', async () => {
+  it('should fail-open when Ratelimit throws in production', async () => {
     (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
     const result = await checkRateLimit('error-trigger');
-    expect(result.limited).toBe(true);
-    expect(result.remaining).toBe(0);
+    expect(result.limited).toBe(false);
+    expect(result.remaining).toBe(-1);
   });
 });
