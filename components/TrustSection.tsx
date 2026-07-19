@@ -1,77 +1,68 @@
+"use client";
+
 import RevealOnScroll from "@/components/motion/RevealOnScroll";
 
 export default function TrustSection() {
   return (
     <RevealOnScroll>
-      <section className="w-full bg-[#FAFAF8] border border-border-default/80 rounded-[32px] p-6 sm:p-10 shadow-[0px_24px_48px_-12px_rgba(1,5,40,0.03)]">
-        <div className="flex flex-col text-center sm:text-left mb-10 border-b border-border-default/40 pb-6">
-          <h2 className="type-heading text-midnight-lagoon text-xl sm:text-2xl uppercase tracking-tight font-black">How We Bill</h2>
-          <p className="type-body text-text-muted mt-2 font-mono text-xs uppercase tracking-wider">
-            No surprises. Vetted menus and transport rates.
+      <section className="w-full bg-[#FAFAF8] border border-[#E8E8E8]/80 rounded-[32px] p-8 sm:p-12 shadow-[0px_24px_48px_-12px_rgba(1,5,40,0.03)] text-left">
+        {/* Headline */}
+        <div className="mb-10 pb-6 border-b border-[#E8E8E8]/40">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#010528] tracking-tight">
+            Here&apos;s exactly what you&apos;ll spend
+          </h2>
+          <p className="text-xs text-[#6B6B6B] mt-2 font-mono uppercase tracking-wider">
+            Verified venues. Honest pricing. No hidden surprises.
           </p>
         </div>
 
-        <div className="flex flex-col divide-y divide-border-default/60 font-mono text-xs text-text-secondary">
-          {/* Row 1: Verified Spot Pricing */}
-          <div className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              {/* Custom two-tone block indicator */}
-              <div className="w-10 h-10 rounded-lg bg-lasgidi-yellow/15 flex items-center justify-center shrink-0 border border-lasgidi-yellow/30">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="3" width="18" height="18" rx="2" fill="#F6C642" fillOpacity="0.2"/>
-                  <path d="M12 8V16M8 12H16" stroke="#B0860A" strokeWidth="2.5" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <div className="space-y-1">
-                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Vetted Menus (No Cap)</h3>
-                <p className="type-body text-text-muted font-sans text-xs">We check the actual menus ourselves. No fake online pricing.</p>
-              </div>
+        {/* 3 Callouts Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Callout 1: Verified Venue Prices */}
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-[#10B981]/15 flex items-center justify-center shrink-0 border border-[#10B981]/30">
+              <span className="text-[#10B981] font-bold" aria-hidden="true">✓</span>
             </div>
-            <div className="bg-white border border-border-default/60 rounded-xl px-4 py-2.5 md:text-right shrink-0">
-              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Billing Breakdown</span>
-              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Menu Spend] + 10% [VAT & Service] = ₦ Vetted Outing Cost</p>
+            <div>
+              <h3 className="font-bold text-[#010528] text-base font-sans">Verified venue prices</h3>
+              <p className="text-[#6B6B6B] text-sm mt-1 leading-relaxed">
+                We check actual menus. No markup.
+              </p>
             </div>
           </div>
 
-          {/* Row 2: Transport Coverage */}
-          <div className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-atlantic-blue/10 flex items-center justify-center shrink-0 border border-atlantic-blue/20">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="3" width="18" height="18" rx="2" fill="#2E75D3" fillOpacity="0.15"/>
-                  <circle cx="12" cy="12" r="4" stroke="#255EB0" strokeWidth="2.5"/>
-                </svg>
-              </div>
-              <div className="space-y-1">
-                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Transit Estimates (Bolt Rates)</h3>
-                <p className="type-body text-text-muted font-sans text-xs">Estimates round-trip Bolt fares so squad does not get stranded.</p>
-              </div>
+          {/* Callout 2: Real Transport Costs */}
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-[#10B981]/15 flex items-center justify-center shrink-0 border border-[#10B981]/30">
+              <span className="text-[#10B981] font-bold" aria-hidden="true">✓</span>
             </div>
-            <div className="bg-white border border-border-default/60 rounded-xl px-4 py-2.5 md:text-right shrink-0">
-              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Billing Breakdown</span>
-              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Bolt Fare VI ⇋ Lekki] × 2 = ₦ Round-trip Transport</p>
+            <div>
+              <h3 className="font-bold text-[#010528] text-base font-sans">Real transport costs</h3>
+              <p className="text-[#6B6B6B] text-sm mt-1 leading-relaxed">
+                Bolt rates for your squad size.
+              </p>
             </div>
           </div>
 
-          {/* Row 3: Total Transparency Buffer */}
-          <div className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-palm-green/15 flex items-center justify-center shrink-0 border border-palm-green/30">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="3" width="18" height="18" rx="2" fill="#008751" fillOpacity="0.2"/>
-                  <path d="M7 12H17" stroke="#00663C" strokeWidth="2.5" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <div className="space-y-1">
-                <h3 className="type-ui-label font-bold text-midnight-lagoon font-sans text-sm">Zero Hidden Billing</h3>
-                <p className="type-body text-text-muted font-sans text-xs">What you see is what you pay. We bake in standard service buffers.</p>
-              </div>
+          {/* Callout 3: All Fees Included */}
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 rounded-full bg-[#10B981]/15 flex items-center justify-center shrink-0 border border-[#10B981]/30">
+              <span className="text-[#10B981] font-bold" aria-hidden="true">✓</span>
             </div>
-            <div className="bg-white border border-border-default/60 rounded-xl px-4 py-2.5 md:text-right shrink-0">
-              <span className="text-[10px] text-text-muted uppercase tracking-wider font-bold">Billing Breakdown</span>
-              <p className="font-semibold text-text-primary mt-0.5 text-[11px]">[Chop Spend] + [Transport] + [Service Buffer] = ₦ Expected Damage</p>
+            <div>
+              <h3 className="font-bold text-[#010528] text-base font-sans">All fees included</h3>
+              <p className="text-[#6B6B6B] text-sm mt-1 leading-relaxed">
+                VAT &amp; service baked in. No surprises.
+              </p>
             </div>
           </div>
+        </div>
+
+        {/* Closing Line */}
+        <div className="mt-10 pt-6 border-t border-[#E8E8E8]/40">
+          <p className="text-lg font-black text-[#008751] font-sans">
+            What you see is what you pay.
+          </p>
         </div>
       </section>
     </RevealOnScroll>
