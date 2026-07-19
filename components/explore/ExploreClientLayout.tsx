@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import { Spot } from "@/lib/types";
-import EditorialAtlas from "./EditorialAtlas";
+import LivingLagosScene from "./LivingLagosScene";
 import QuickSwapWipe from "./QuickSwapWipe";
 import Link from "next/link";
 
@@ -31,7 +31,7 @@ export default function ExploreClientLayout({ spots, children }: ExploreClientLa
             : "lg:w-full translate-y-0"
         }`}
       >
-        <EditorialAtlas />
+        <LivingLagosScene />
       </div>
 
       {/* 

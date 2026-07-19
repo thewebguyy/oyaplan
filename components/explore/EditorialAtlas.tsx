@@ -57,14 +57,7 @@ export default function EditorialAtlas() {
       ref={scrollRef}
       className="w-full h-full min-h-[50vh] relative select-none bg-[#F9F8F6] overflow-hidden flex items-center justify-center touch-pan-x touch-pan-y"
     >
-      {/* Background Architectural Grid */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
-        }}
-      />
+
 
       <svg 
         viewBox="0 0 1200 800" 
@@ -76,17 +69,7 @@ export default function EditorialAtlas() {
           transform: `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`,
         }}
       >
-        <defs>
-          <filter id="paper-edge" x="-10%" y="-10%" width="120%" height="120%">
-            <feDropShadow dx="0" dy="4" stdDeviation="8" floodOpacity="0.04" floodColor="#000000" />
-            <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.02" floodColor="#000000" />
-          </filter>
-        </defs>
 
-        {/* Global Context Labels (Fixed behind the scaling/moving layer) */}
-        <text x="100" y="100" className="font-serif italic text-sm tracking-[0.3em] fill-text-muted opacity-30 select-none">
-          THE LAGOS INDEX
-        </text>
 
         {/* Map Elements */}
         <g>
@@ -96,7 +79,7 @@ export default function EditorialAtlas() {
           <path d="M 685,465 Q 730,468 765,482" stroke="#000000" strokeWidth="0.5" strokeDasharray="2 4" opacity="0.2" />
 
           {/* Landmass Shapes */}
-          <g filter="url(#paper-edge)">
+          <g>
             {AREAS.map((area) => {
               const isActiveRoute = activeSlug === area.slug;
               const hasSelection = activeSlug !== null;
@@ -170,17 +153,7 @@ export default function EditorialAtlas() {
                   {area.name}
                 </text>
 
-                {/* Subtitle / Volume number (abstract editorial detail) */}
-                {isActiveRoute && (
-                  <text
-                    x={area.textX}
-                    y={area.textY + 16}
-                    textAnchor="middle"
-                    className="text-[7px] font-mono uppercase tracking-[0.3em] fill-text-muted pointer-events-none animate-in fade-in zoom-in duration-700"
-                  >
-                    Vol. 0{Math.abs(area.name.length % 9) + 1}
-                  </text>
-                )}
+
               </g>
             );
           })}

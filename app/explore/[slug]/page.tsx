@@ -225,6 +225,22 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
           slug === 'surulere' ? "Mainland soul. Sports. Local culture. Rich history." :
           "Lagos local outing district."
         }
+        whatPeopleComeHereFor={
+          slug === 'yaba' ? "Deep tech community, campus hangouts, and affordable spots with fast wifi." :
+          slug === 'lekki-phase-1' ? "Premium brunches, beach clubs, and upscale lounges." :
+          slug === 'ikoyi' ? "Quiet luxury, high-end fine dining, and exclusive members clubs." :
+          slug === 'vi' ? "Corporate after-work drinks, rooftop views, and the best of Lagos nightlife." :
+          slug === 'surulere' ? "Authentic mainland energy, street food, and sports viewing centers." :
+          "Good food and great vibes."
+        }
+        typicalSpend={
+          slug === 'yaba' ? "₦12k – ₦25k" :
+          slug === 'lekki-phase-1' ? "₦35k – ₦75k" :
+          slug === 'ikoyi' ? "₦40k – ₦90k" :
+          slug === 'vi' ? "₦30k – ₦80k" :
+          slug === 'surulere' ? "₦10k – ₦30k" :
+          "₦15k – ₦45k"
+        }
         spotsCount={spots.length}
       >
         {spots.length > 0 ? (
