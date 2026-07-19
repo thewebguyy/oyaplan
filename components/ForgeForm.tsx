@@ -133,24 +133,24 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
       });
 
       if (field === 'budget') {
-        if (nextState.startArea && nextState.startArea !== 'Anywhere' && currentViability.areas[nextState.startArea]?.disabled) {
+        if (nextState.startArea && nextState.startArea !== 'Anywhere' && currentViability.areas[nextState.startArea]?.status === 'unavailable') {
           nextState.startArea = '';
         }
-        if (nextState.squadSize && currentViability.squadSizes[nextState.squadSize]?.disabled) {
+        if (nextState.squadSize && currentViability.squadSizes[nextState.squadSize]?.status === 'unavailable') {
           nextState.squadSize = '';
         }
-        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.disabled) {
+        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.status === 'unavailable') {
           nextState.vibe = '';
         }
       } else if (field === 'startArea') {
-        if (nextState.squadSize && currentViability.squadSizes[nextState.squadSize]?.disabled) {
+        if (nextState.squadSize && currentViability.squadSizes[nextState.squadSize]?.status === 'unavailable') {
           nextState.squadSize = '';
         }
-        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.disabled) {
+        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.status === 'unavailable') {
           nextState.vibe = '';
         }
       } else if (field === 'squadSize') {
-        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.disabled) {
+        if (nextState.vibe && currentViability.vibes[nextState.vibe]?.status === 'unavailable') {
           nextState.vibe = '';
         }
       }
@@ -261,25 +261,34 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {VIBE_OPTIONS.map((o) => {
               const isSelected = formData.vibe === o.value;
-              const vViab = viability.vibes[o.value] || { disabled: false };
+              const vStatus = viability.vibes[o.value] || { status: "recommended" };
+              const isUnavailable = vStatus.status === "unavailable";
+              const isPossible = vStatus.status === "possible";
               return (
                 <button
                   key={o.value}
-                  disabled={vViab.disabled}
-                  onClick={() => !vViab.disabled && handleSelect('vibe', o.value)}
+                  disabled={isUnavailable}
+                  onClick={() => !isUnavailable && handleSelect('vibe', o.value)}
                   className={`flex flex-col items-start p-5 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback text-left border-2 ${
                     isSelected 
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-sm" 
-                      : vViab.disabled 
+                      : isUnavailable 
                       ? "bg-surface-grey border-transparent text-text-muted opacity-40 cursor-not-allowed"
+                      : isPossible
+                      ? "bg-[#FFFBF0] border-[#EDD98A]/60 text-[#7A5D00] hover:bg-[#FFFBF0] hover:border-[#EDD98A]"
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <o.icon className="w-6 h-6 mb-3" />
                   <span className="type-body font-bold tracking-tight">{o.label}</span>
-                  {vViab.disabled && vViab.reason && (
+                  {isPossible && (
+                    <span className="text-[10px] text-amber-600 font-semibold mt-1 block">
+                      ⚠️ {vStatus.reason || "May exceed budget"}
+                    </span>
+                  )}
+                  {isUnavailable && vStatus.reason && (
                     <span className="text-[10px] text-red-500 font-semibold mt-1 block">
-                      {vViab.reason}
+                      {vStatus.reason}
                     </span>
                   )}
                 </button>
@@ -347,24 +356,33 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
             </button>
             {areas.map((a) => {
               const isSelected = formData.startArea === a.slug;
-              const aViab = viability.areas[a.slug] || { disabled: false };
+              const aStatus = viability.areas[a.slug] || { status: "recommended" };
+              const isUnavailable = aStatus.status === "unavailable";
+              const isPossible = aStatus.status === "possible";
               return (
                 <button
                   key={a.slug}
-                  disabled={aViab.disabled}
-                  onClick={() => !aViab.disabled && handleSelect('startArea', a.slug)}
+                  disabled={isUnavailable}
+                  onClick={() => !isUnavailable && handleSelect('startArea', a.slug)}
                   className={`w-full text-left px-6 py-4 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 flex items-center justify-between ${
                     isSelected
                       ? "bg-midnight-lagoon border-midnight-lagoon text-white"
-                      : aViab.disabled
+                      : isUnavailable
                       ? "bg-surface-grey border-transparent text-text-muted opacity-40 cursor-not-allowed"
+                      : isPossible
+                      ? "bg-[#FFFBF0] border-[#EDD98A]/60 text-[#7A5D00] hover:bg-[#FFFBF0] hover:border-[#EDD98A]"
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
                   <span className="type-body font-semibold">{a.name}</span>
-                  {aViab.disabled && aViab.reason && (
+                  {isPossible && (
+                    <span className="text-xs text-amber-600 font-semibold flex items-center gap-1">
+                      ⚠️ {aStatus.reason || "Might exceed budget"}
+                    </span>
+                  )}
+                  {isUnavailable && aStatus.reason && (
                     <span className="text-xs text-red-500 font-semibold">
-                      {aViab.reason}
+                      {aStatus.reason}
                     </span>
                   )}
                 </button>

@@ -8,6 +8,8 @@ import { PlanActions } from "./editorial/PlanActions";
 import { TrustFooter } from "./editorial/TrustFooter";
 import { ChangeSummary } from "./editorial/ChangeSummary";
 import { ExclusionList } from "./editorial/ExclusionList";
+import { formatConfidenceEvidence } from "@/lib/utils/editorialFormatter";
+import { Shield, Check } from "lucide-react";
 
 interface EditorialPlanProps {
   evaluation: PlanEvaluation;
@@ -31,39 +33,6 @@ export default function EditorialPlan({
   const { plan } = evaluation;
   const diff = originalBudget ? originalBudget - plan.totalCost : 0;
 
-  // Dynamic scorecard calculation
-  const getQualityMetrics = () => {
-    let budgetScore = 10;
-    if (diff < 0) {
-      const overPercentage = Math.abs(diff) / (originalBudget || plan.totalCost);
-      budgetScore = Math.max(5, Math.round(10 - overPercentage * 20));
-    } else if (diff / (originalBudget || 1) < 0.05) {
-      budgetScore = 9;
-    }
-
-    const travelScore = input.startArea && input.startArea !== "anywhere" ? 8 : 10;
-    const vibeScore = 10;
-    const groupFitScore = input.squadSize > 6 ? 8 : 10;
-
-    const averageScore = Math.round((budgetScore + travelScore + vibeScore + groupFitScore) * 2.5);
-
-    let matchLabel = "Good Match";
-    if (averageScore >= 95) matchLabel = "Excellent Match";
-    else if (averageScore >= 85) matchLabel = "Great Match";
-    else if (averageScore >= 75) matchLabel = "Fair Match";
-
-    return {
-      budgetScore,
-      travelScore,
-      vibeScore,
-      groupFitScore,
-      averageScore,
-      matchLabel
-    };
-  };
-
-  const { budgetScore, travelScore, vibeScore, groupFitScore, averageScore, matchLabel } = getQualityMetrics();
-
   const getSquadWord = (size: number) => {
     const words = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
     return words[size - 1] || size.toString();
@@ -81,48 +50,52 @@ export default function EditorialPlan({
       <div className="w-full h-px bg-border-default/50" />
 
       <div className={`${isTopPick ? 'px-6 sm:px-10 py-10' : 'px-6 sm:px-10 py-8'} bg-white space-y-6`}>
-        {/* Quality Scorecard */}
-        <div className="bg-[#FAFAF8] border border-border-default/80 rounded-[20px] p-6 space-y-4">
+        {/* Decision Summary Callout */}
+        {plan.decisionSummary && (
+          <div className="bg-[#FAFAF8] border border-border-default/50 rounded-[20px] p-6 shadow-xs relative overflow-hidden flex items-start gap-4">
+            <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#008751]" />
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#008751] block">Decision Summary</span>
+              <p className="type-body text-text-primary text-sm font-semibold leading-relaxed">
+                {plan.decisionSummary}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Decision Confidence Scorecard */}
+        <div className="bg-[#FAFAF8] border border-border-default/80 rounded-[20px] p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <div>
-              <span className="text-xs uppercase tracking-wider font-bold text-text-muted">Vibe Match Score</span>
-              <p className="text-lg font-black text-midnight-lagoon">{matchLabel}</p>
-            </div>
-            <div className="text-right">
-              <span className="text-3xl font-black text-midnight-lagoon">{averageScore}%</span>
-            </div>
-          </div>
-
-          <p className="text-sm text-text-secondary">
-            Perfect for your ₦{(originalBudget || plan.totalCost).toLocaleString()} budget and squad of {getSquadWord(input.squadSize)}.
-          </p>
-
-          <div className="space-y-2.5 pt-2">
-            {[
-              { label: "Budget Fit", score: budgetScore },
-              { label: "Transit Time", score: travelScore },
-              { label: "Vibe Match", score: vibeScore },
-              { label: "Squad Fit", score: groupFitScore }
-            ].map(metric => (
-              <div key={metric.label} className="space-y-1">
-                <div className="flex justify-between text-xs text-text-secondary font-medium">
-                  <span>{metric.label}</span>
-                </div>
-                <div className="flex gap-0.5" role="img" aria-label={`${metric.label}: ${metric.score}/10`}>
-                  {Array.from({ length: 10 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-2 flex-1 rounded-xs ${
-                        i < metric.score 
-                          ? "bg-palm-green" 
-                          : "bg-surface-grey/85 border border-border-default/10"
-                      }`}
-                    />
-                  ))}
-                </div>
+            <div className="flex items-center gap-2.5">
+              <Shield className={`w-5 h-5 ${
+                plan.decisionConfidence?.level === "Very High" || plan.decisionConfidence?.level === "High"
+                  ? "text-[#008751]"
+                  : "text-amber-500"
+              }`} />
+              <div>
+                <span className="text-[10px] uppercase tracking-wider font-bold text-text-muted block">Decision Confidence</span>
+                <p className="text-base font-black text-midnight-lagoon">{plan.decisionConfidence?.level || "High"} Confidence</p>
               </div>
-            ))}
+            </div>
+            {plan.spot.computed_confidence_score !== undefined && (
+              <span className="text-3xl font-black text-midnight-lagoon">{Math.round(plan.spot.computed_confidence_score)}%</span>
+            )}
           </div>
+
+          {plan.decisionConfidence?.evidenceList && plan.decisionConfidence.evidenceList.length > 0 && (
+            <div className="space-y-3 pt-4 border-t border-border-default/45">
+              {plan.decisionConfidence.evidenceList.map((ev, i) => (
+                <div key={i} className="flex items-center gap-2.5">
+                  <div className="w-4 h-4 rounded-full bg-palm-green/10 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-[#008751] stroke-[3]" />
+                  </div>
+                  <span className="text-xs text-text-secondary font-medium">
+                    {formatConfidenceEvidence(ev)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Why this plan? Section */}

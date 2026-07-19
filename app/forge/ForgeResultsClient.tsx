@@ -2,9 +2,10 @@
 
 import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Spot, ForgeInput, PlanEvaluation } from "@/lib/types";
+import { Spot, ForgeInput, PlanEvaluation, RecoverySuggestion } from "@/lib/types";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { formatRecoverySuggestion } from "@/lib/utils/editorialFormatter";
 import EditorialPlan from "@/components/EditorialPlan";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, ArrowLeft, AlertCircle } from "lucide-react";
@@ -27,6 +28,7 @@ interface ForgeResultsClientProps {
   targetAreaName: string;
   forgeInput: ForgeInput;
   allSpots: Spot[];
+  recoverySuggestions?: RecoverySuggestion[];
 }
 
 export default function ForgeResultsClient({
@@ -35,7 +37,8 @@ export default function ForgeResultsClient({
   nearbySpots,
   targetAreaName,
   forgeInput,
-  allSpots
+  allSpots,
+  recoverySuggestions = []
 }: ForgeResultsClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -91,6 +94,24 @@ export default function ForgeResultsClient({
     }
   }, [evaluations.length, forgeInput.vibe, forgeInput.budget, isRevealed]);
 
+  // Analytics for recovery suggestions
+  useEffect(() => {
+    if (isRevealed && evaluations.length === 0 && recoverySuggestions.length > 0) {
+      AnalyticsService.track('recovery_shown', {
+        session_id: '00000000-0000-0000-0000-000000000000',
+        properties: {
+          category: 'Activation',
+          vibe: forgeInput.vibe,
+          budget: forgeInput.budget,
+          squad_size: forgeInput.squadSize,
+          start_area: forgeInput.startArea,
+          suggestions_count: recoverySuggestions.length,
+          version: '1.0'
+        }
+      });
+    }
+  }, [evaluations.length, isRevealed, recoverySuggestions.length, forgeInput]);
+
   // Strip 'fresh' param from URL to prevent 900ms delay on reload
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -133,10 +154,6 @@ export default function ForgeResultsClient({
   };
 
   const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput.startArea)?.areas?.name || forgeInput.startArea;
-  
-  const recoveryBudget = (vibeMetrics && forgeInput.budget < vibeMetrics.median)
-    ? vibeMetrics.median 
-    : forgeInput.budget * 1.2;
 
   // URL vibe mapper for redirecting back
   const VIBE_TO_URL_MAP: Record<string, string> = {
@@ -146,6 +163,46 @@ export default function ForgeResultsClient({
     "Party": "party",
     "Quick": "quick-link",
     "Brunch": "brunch"
+  };
+
+  const getRecoveryUrl = (sug: RecoverySuggestion) => {
+    const params = new URLSearchParams();
+    
+    let targetBudget = forgeInput.budget;
+    let targetArea = forgeInput.startArea || "anywhere";
+    let targetVibe = forgeInput.vibe;
+    const targetSquad = forgeInput.squadSize;
+
+    if (sug.type === "IncreaseBudget" && sug.deltaBudget) {
+      targetBudget = forgeInput.budget + sug.deltaBudget;
+    } else if (sug.type === "SwitchArea" && sug.suggestedArea) {
+      targetArea = sug.suggestedArea.toLowerCase().replace(/\s+/g, "-");
+    } else if (sug.type === "ChangeVibe" && sug.suggestedVibe) {
+      targetVibe = sug.suggestedVibe;
+    }
+
+    params.set("budget", String(targetBudget));
+    params.set("area", targetArea);
+    params.set("vibe", VIBE_TO_URL_MAP[targetVibe] || targetVibe.toLowerCase());
+    params.set("squad", String(targetSquad));
+    params.set("fresh", "true");
+
+    return `/?${params.toString()}`;
+  };
+
+  const handleAcceptRecovery = (sug: RecoverySuggestion) => {
+    AnalyticsService.track('recovery_accepted', {
+      session_id: '00000000-0000-0000-0000-000000000000',
+      properties: {
+        category: 'Activation',
+        suggestion_type: sug.type,
+        delta_budget: sug.deltaBudget || null,
+        suggested_area: sug.suggestedArea || null,
+        suggested_vibe: sug.suggestedVibe || null,
+        unlocked_venue_count: sug.unlockedVenueCount,
+        version: '1.0'
+      }
+    });
   };
 
   const adjustParams = new URLSearchParams();
@@ -334,7 +391,7 @@ export default function ForgeResultsClient({
             </p>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {vibeMetrics && (
               <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                 <p className="type-caption text-text-muted">
@@ -354,11 +411,30 @@ export default function ForgeResultsClient({
               </div>
             )}
 
-            <Link href={`/?area=${forgeInput.startArea}&budget=${Math.round(recoveryBudget)}&vibe=${VIBE_TO_URL_MAP[forgeInput.vibe] || forgeInput.vibe}&squad=${forgeInput.squadSize}`}>
-              <Button className="bg-brand-green text-white type-label h-12 px-10 rounded-[12px] tap-feedback shadow-none">
-                Try ₦{Math.round(recoveryBudget).toLocaleString()} budget
-              </Button>
-            </Link>
+            {recoverySuggestions.length > 0 && (
+              <div className="space-y-3 max-w-md mx-auto pt-4 text-left">
+                <p className="text-xs uppercase font-bold tracking-wider text-text-muted text-center mb-2">Confidence Recovery Suggestions</p>
+                {recoverySuggestions.map((sug, idx) => {
+                  const message = formatRecoverySuggestion(sug, targetAreaName);
+                  return (
+                    <Link
+                      key={idx}
+                      href={getRecoveryUrl(sug)}
+                      onClick={() => handleAcceptRecovery(sug)}
+                      className="w-full p-4 rounded-[16px] border border-border-default/80 hover:border-brand-green bg-[#FAFAF8] hover:bg-white transition-[colors,border-color,box-shadow] duration-200 shadow-xs flex items-center justify-between group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3 pr-2">
+                        <span className="text-lg select-none">💡</span>
+                        <span className="type-body font-semibold text-text-primary text-xs sm:text-sm">
+                          {message}
+                        </span>
+                      </div>
+                      <span className="text-text-muted group-hover:text-brand-green transition-colors font-bold text-lg select-none">→</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {nearbySpots.length > 0 && (

@@ -80,6 +80,25 @@ export type PlanAdjustment = {
   vibe?: string;
 };
 
+export type ConfidenceEvidence =
+  | "price_verified"
+  | "menu_recent"
+  | "transport_predictable"
+  | "tax_buffer_applied";
+
+export interface DecisionConfidence {
+  level: "Very High" | "High" | "Medium" | "Low";
+  evidenceList: ConfidenceEvidence[];
+}
+
+export interface RecoverySuggestion {
+  type: "IncreaseBudget" | "SwitchArea" | "ChangeVibe";
+  deltaBudget?: number;
+  suggestedArea?: string;
+  suggestedVibe?: string;
+  unlockedVenueCount: number;
+}
+
 export type Plan = {
   spot: Spot;
   foodCost: number;
@@ -91,6 +110,8 @@ export type Plan = {
   saved_at?: string;
   title?: string;
   subtitle?: string;
+  decisionConfidence?: DecisionConfidence;
+  decisionSummary?: string;
 };
 
 export interface PlanEvaluation {

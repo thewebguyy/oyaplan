@@ -134,6 +134,26 @@ export const EventSchemas = {
     version: z.literal('1.0')
   }),
 
+  // Recovery suggestions tracking
+  'recovery_shown': z.object({
+    category: z.literal('Activation'),
+    vibe: z.string().optional(),
+    budget: z.number().optional(),
+    squad_size: z.number().optional(),
+    start_area: z.string().optional(),
+    suggestions_count: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+  'recovery_accepted': z.object({
+    category: z.literal('Activation'),
+    suggestion_type: z.string(),
+    delta_budget: z.number().nullable(),
+    suggested_area: z.string().nullable(),
+    suggested_vibe: z.string().nullable(),
+    unlocked_venue_count: z.number(),
+    version: z.literal('1.0')
+  }),
+
   // Identity
   'identity_merge_skipped_no_session': z.object({
     category: z.literal('Operations'),

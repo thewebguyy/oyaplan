@@ -3,10 +3,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getForgeSpots } from "@/lib/queries/spots";
-import { getAllowedCategories, forgePlans } from "@/lib/services/matching/forgeMatcher";
+import { getAllowedCategories, forgePlans, generateRecoverySuggestions } from "@/lib/services/matching/forgeMatcher";
 import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { captureServerException } from "@/lib/sentry";
-import { ForgeInput, Spot } from "@/lib/types";
+import { ForgeInput, Spot, RecoverySuggestion } from "@/lib/types";
 import ForgeResultsClient from "./ForgeResultsClient";
 
 export const dynamic = "force-dynamic";
@@ -166,8 +166,11 @@ export default async function ForgePage({
   let vibeMetrics = null;
   let nearbySpots: Spot[] = [];
   let targetAreaName = "";
+  let recoverySuggestions: RecoverySuggestion[] = [];
 
   if (evaluations.length === 0) {
+    recoverySuggestions = generateRecoverySuggestions(input, allSpots);
+    
     const vibeSpots = allSpots.filter(s => s.vibe_tags.includes(input.vibe));
     const prices = vibeSpots.map(s => s.price_per_person * input.squadSize * (s.has_food !== false ? 1.1 : 1.0));
     
@@ -200,6 +203,7 @@ export default async function ForgePage({
         targetAreaName={targetAreaName}
         forgeInput={input}
         allSpots={allSpots}
+        recoverySuggestions={recoverySuggestions}
       />
     </main>
   );
