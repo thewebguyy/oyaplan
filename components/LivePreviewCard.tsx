@@ -1,12 +1,36 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 interface LivePreviewCardProps {
   squadSize: number;
   budget: number;
   vibe: string | null;
 }
+
+const containerVariants: Variants = {
+  hidden: { opacity: 1 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 8, filter: "blur(1.5px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      type: "spring",
+      stiffness: 120,
+      damping: 18,
+    },
+  },
+};
 
 export default function LivePreviewCard({ squadSize, budget, vibe }: LivePreviewCardProps) {
   // Format numbers to match standard Nigerian Naira currency layout
@@ -27,7 +51,7 @@ export default function LivePreviewCard({ squadSize, budget, vibe }: LivePreview
 
   return (
     <motion.div
-      className="bg-[#F3F4F6] rounded-[12px] border border-[#E5E7EB] p-5 text-left font-mono text-sm text-[#1A1A1A] space-y-3"
+      className="bg-[#F3F4F6] rounded-[12px] border border-[#E5E7EB] p-5 text-left font-mono text-sm text-[#1A1A1A] space-y-3 relative overflow-hidden"
       animate={{ opacity: [1, 0.96, 1] }}
       transition={{
         repeat: Infinity,
@@ -35,32 +59,43 @@ export default function LivePreviewCard({ squadSize, budget, vibe }: LivePreview
         ease: "easeInOut",
       }}
     >
-      <div className="flex items-start gap-2.5">
-        <span className="text-[#10B981] font-bold shrink-0" aria-hidden="true">✓</span>
-        <span>
-          <strong className="font-bold">{squadSize >= 8 ? "8+" : squadSize} people</strong>, {formatCurrency(budget)} total
-        </span>
-      </div>
+      <motion.div
+        key={`${squadSize}-${budget}-${vibe}`}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-3"
+      >
+        <motion.div variants={itemVariants} className="flex items-start gap-2.5">
+          <span className="text-[#10B981] font-bold shrink-0" aria-hidden="true">✓</span>
+          <span>
+            <strong className="font-bold">{squadSize >= 8 ? "8+" : squadSize} people</strong>, {formatCurrency(budget)} total
+          </span>
+        </motion.div>
 
-      <div className="flex items-start gap-2.5">
-        <span className="text-[#10B981] font-bold shrink-0" aria-hidden="true">✓</span>
-        <span>
-          Estimated <strong className="font-bold">{formatCurrency(perPerson)}</strong> per person
-        </span>
-      </div>
+        <motion.div variants={itemVariants} className="flex items-start gap-2.5">
+          <span className="text-[#10B981] font-bold shrink-0" aria-hidden="true">✓</span>
+          <span>
+            Estimated <strong className="font-bold">{formatCurrency(perPerson)}</strong> per person
+          </span>
+        </motion.div>
 
-      <div className="flex items-start gap-2.5">
-        <span className="text-[#10B981] font-bold shrink-0" aria-hidden="true">✓</span>
-        <span>
-          Transport: <strong className="font-bold">~{formatCurrency(transportEstimate)}</strong>
-        </span>
-      </div>
+        <motion.div variants={itemVariants} className="flex items-start gap-2.5">
+          <span className="text-[#10B981] font-bold shrink-0" aria-hidden="true">✓</span>
+          <span>
+            Transport: <strong className="font-bold">~{formatCurrency(transportEstimate)}</strong>
+          </span>
+        </motion.div>
 
-      {vibe && (
-        <div className="pt-2 mt-2 border-t border-dashed border-[#E5E7EB] text-xs text-[#6B7280]">
-          Active Vibe: <span className="font-bold text-[#1A1A1A]">{vibe}</span>
-        </div>
-      )}
+        {vibe && (
+          <motion.div
+            variants={itemVariants}
+            className="pt-2 mt-2 border-t border-dashed border-[#E5E7EB] text-xs text-[#6B7280]"
+          >
+            Active Vibe: <span className="font-bold text-[#1A1A1A]">{vibe}</span>
+          </motion.div>
+        )}
+      </motion.div>
     </motion.div>
   );
 }

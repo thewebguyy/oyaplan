@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LivePreviewCard from "./LivePreviewCard";
 
@@ -196,32 +197,38 @@ export default function PlannerWidget({
             })}
 
             {/* Render Extended Vibes inline if More Vibes link toggled */}
-            {showMoreVibes &&
-              EXTENDED_VIBES.map((item) => {
-                const isActive = vibe === item.value;
-                return (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => handleVibeClick(item.value)}
-                    className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none
-                      ${
-                        isActive
-                          ? "bg-[#FCC630] text-[#1A1A1A] border-2 border-[#008751]"
-                          : "bg-[#F3F4F6] text-[#1A1A1A] border-2 border-transparent hover:bg-[#D1E7DB]"
-                      }
-                      focus-visible:ring-3 focus-visible:ring-[#008751]/50`}
-                    role="button"
-                    aria-pressed={isActive}
-                    aria-label={`${item.label} vibe selection`}
-                  >
-                    <span className="text-base shrink-0" aria-hidden="true">
-                      {item.emoji}
-                    </span>
-                    <span className="truncate">{item.label}</span>
-                  </button>
-                );
-              })}
+            <AnimatePresence>
+              {showMoreVibes &&
+                EXTENDED_VIBES.map((item) => {
+                  const isActive = vibe === item.value;
+                  return (
+                    <motion.button
+                      key={item.value}
+                      type="button"
+                      initial={{ opacity: 0, y: 8, filter: "blur(1.5px)" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, y: 8, filter: "blur(1.5px)" }}
+                      transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                      onClick={() => handleVibeClick(item.value)}
+                      className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none
+                        ${
+                          isActive
+                            ? "bg-[#FCC630] text-[#1A1A1A] border-2 border-[#008751]"
+                            : "bg-[#F3F4F6] text-[#1A1A1A] border-2 border-transparent hover:bg-[#D1E7DB]"
+                        }
+                        focus-visible:ring-3 focus-visible:ring-[#008751]/50`}
+                      role="button"
+                      aria-pressed={isActive}
+                      aria-label={`${item.label} vibe selection`}
+                    >
+                      <span className="text-base shrink-0" aria-hidden="true">
+                        {item.emoji}
+                      </span>
+                      <span className="truncate">{item.label}</span>
+                    </motion.button>
+                  );
+                })}
+            </AnimatePresence>
           </div>
 
           <div className="flex justify-start">
@@ -237,11 +244,20 @@ export default function PlannerWidget({
       </fieldset>
 
       {/* Validation Message */}
-      {validationError && (
-        <p className="text-sm text-red-600 font-semibold -mt-2 animate-in fade-in slide-in-from-top-1" role="alert">
-          {validationError}
-        </p>
-      )}
+      <AnimatePresence>
+        {validationError && (
+          <motion.p
+            initial={{ opacity: 0, y: -6, filter: "blur(1px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -6, filter: "blur(1px)" }}
+            transition={{ type: "spring", stiffness: 150, damping: 15 }}
+            className="text-sm text-red-600 font-semibold -mt-2"
+            role="alert"
+          >
+            {validationError}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       {/* Live Preview Card */}
       <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} />

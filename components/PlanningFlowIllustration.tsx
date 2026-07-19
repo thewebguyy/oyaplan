@@ -191,9 +191,10 @@ export default function PlanningFlowIllustration({
             ) : (
               <motion.div
                 key="cost-card-active"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: 10, filter: "blur(2px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -10, filter: "blur(2px)" }}
+                transition={{ type: "spring", stiffness: 100, damping: 15 }}
                 className="w-full max-w-[220px] bg-white border border-[#E5E7EB] rounded-[10px] p-3 shadow-sm font-mono text-[10px] text-[#1A1A1A] space-y-1"
               >
                 <div className="flex items-center justify-between border-b border-[#F3F4F6] pb-1.5 mb-1.5">
@@ -203,14 +204,14 @@ export default function PlanningFlowIllustration({
                       {getVenueName()}
                     </span>
                   </div>
-                  {/* Verified badge animates in */}
+                  {/* Verified badge animates in with blur, opacity and slight translate */}
                   <motion.span
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
+                    initial={{ opacity: 0, y: 6, filter: "blur(1px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     transition={{
                       type: "spring",
-                      stiffness: 260,
-                      damping: 20,
+                      stiffness: 120,
+                      damping: 18,
                       delay: 0.1,
                     }}
                     className="bg-[#10B981] text-white w-4 h-4 rounded-full flex items-center justify-center font-sans font-bold text-[9px]"

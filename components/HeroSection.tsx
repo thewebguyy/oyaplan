@@ -29,9 +29,9 @@ export default function HeroSection() {
 
   return (
     <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ type: "spring", stiffness: 100, damping: 15, duration: 0.8 }}
       className="relative w-full bg-white pt-24 pb-16 px-6 sm:px-12 md:px-20 lg:px-24 border-b border-[#F3F4F6]"
     >
       <div className="max-w-5xl mx-auto flex flex-col gap-10 md:gap-12 text-left">
@@ -41,9 +41,9 @@ export default function HeroSection() {
             <AnimatePresence mode="popLayout">
               <motion.h1
                 key={phraseIndex}
-                initial={{ y: 24, opacity: 0, filter: "blur(2px)" }}
+                initial={{ y: 12, opacity: 0, filter: "blur(2px)" }}
                 animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ y: -24, opacity: 0, filter: "blur(2px)" }}
+                exit={{ y: -12, opacity: 0, filter: "blur(2px)" }}
                 transition={{
                   type: "tween",
                   ease: [0.16, 1, 0.3, 1],
