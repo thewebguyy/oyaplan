@@ -1,5 +1,6 @@
 import { captureServerException } from "@/lib/sentry";
 import { getSharedPlanWithSpot } from "@/lib/queries/plans";
+import { getForgeSpots } from "@/lib/queries/spots";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -71,6 +72,14 @@ export default async function PlanPage({ params }: PlanPageProps) {
   } catch (e) {
     captureServerException(e);
     planFetchError = true;
+  }
+
+  let spots: any[] = [];
+  try {
+    const spotsResult = await getForgeSpots();
+    spots = spotsResult.data || [];
+  } catch (e) {
+    captureServerException(e);
   }
 
   if (planFetchError) {
@@ -149,6 +158,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
           budgetFitStatus={budgetFitStatus}
           hasCar={hasCar}
           transportToggleNode={<TransportToggle planId={plan?.id || id} hasCar={hasCar} />}
+          budget={plan?.budget || plan?.total_cost || 0}
         />
 
         {/* Action CTAs */}
@@ -160,6 +170,11 @@ export default async function PlanPage({ params }: PlanPageProps) {
           squadSize={plan?.squad_size || 1}
           vibe={plan?.vibe || "Chill"}
           startArea={plan?.start_area || ""}
+          spots={spots}
+          currentSpotId={plan?.spot?.id || ""}
+          foodCost={plan?.food_cost || 0}
+          transportCost={plan?.transport_cost || 0}
+          totalCost={plan?.total_cost || 0}
         />
 
         {/* Create My Own Plan CTA for viewers */}

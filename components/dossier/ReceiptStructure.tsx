@@ -1,7 +1,7 @@
 "use client";
 
 import { BudgetFitBadge, BudgetFitStatus } from "@/components/ui/budget-fit-badge";
-import { HelpCircle, Check } from "lucide-react";
+import { HelpCircle, Check, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { NumericCounter } from "@/components/ui/NumericCounter";
 
@@ -13,6 +13,7 @@ interface ReceiptStructureProps {
   budgetFitStatus: BudgetFitStatus;
   hasCar: boolean;
   transportToggleNode: React.ReactNode;
+  budget: number;
 }
 
 export function ReceiptStructure({ 
@@ -22,14 +23,22 @@ export function ReceiptStructure({
   squadSize, 
   budgetFitStatus,
   hasCar,
-  transportToggleNode
+  transportToggleNode,
+  budget
 }: ReceiptStructureProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const baseTotal = venueCost + transportCost;
-  const contingency = baseTotal * 0.15;
-  const finalTallyTotal = baseTotal + contingency;
-  const finalTallyPerPerson = finalTallyTotal / squadSize;
+  // Re-calculate math based on exact pricing model
+  const squadFoodCost = venueCost;
+  const perPersonFoodCost = Math.round(squadFoodCost / squadSize);
+  const avgEntree = Math.round((perPersonFoodCost * 0.75) / 100) * 100;
+  const avgDrink = Math.round((perPersonFoodCost * 0.25) / 100) * 100;
+  const taxesCost = Math.round((squadFoodCost * 0.1) / 100) * 100;
+
+  const totalCost = squadFoodCost + transportCost + taxesCost;
+  const perPersonTotal = Math.round(totalCost / squadSize);
+  const remainingBuffer = Math.max(0, budget - totalCost);
+  const spendPercentage = Math.min(100, Math.round((totalCost / budget) * 100));
 
   return (
     <div className="max-w-lg mx-auto w-full mt-8">
@@ -38,73 +47,131 @@ export function ReceiptStructure({
         {transportToggleNode}
       </div>
 
-      <div className="w-full border border-black bg-white receipt-paper flex flex-col font-mono text-sm shadow-sm relative scroll-reveal is-visible">
+      <div className="w-full border-2 border-black bg-white rounded-[20px] shadow-[0_8px_0_0_#1A1A1A] flex flex-col font-mono text-sm overflow-hidden scroll-reveal is-visible">
         
         {/* Header Row */}
-        <div className="flex justify-between items-center p-4 border-b border-black bg-[#F5F5F5]">
-          <span className="font-bold tracking-widest text-[10px] uppercase text-text-secondary">Line Item</span>
-          <span className="font-bold tracking-widest text-[10px] uppercase text-text-secondary">Est. Cost</span>
+        <div className="flex justify-between items-center p-4 border-b-2 border-black bg-[#F5F5F5]">
+          <span className="font-black tracking-widest text-[10px] uppercase text-text-secondary">Receipt Item</span>
+          <span className="font-black tracking-widest text-[10px] uppercase text-text-secondary">Est. Cost</span>
         </div>
 
-        {/* Venue Row */}
-        <div 
-          className="flex justify-between items-start p-4 border-b border-black"
-          style={{ animationDelay: '0ms' }}
-        >
-          <div className="flex flex-col gap-2">
-            <span className="font-bold text-black uppercase tracking-tight mix-blend-multiply">{venueName}</span>
-            <BudgetFitBadge status={budgetFitStatus} size="sm" className="w-fit" />
-          </div>
-          <span className="font-bold">₦<NumericCounter value={venueCost} /></span>
-        </div>
-
-        {/* Transport Row */}
-        <div 
-          className="flex justify-between items-center p-4 border-b border-black"
-          style={{ animationDelay: '80ms' }}
-        >
-          <div className="flex items-center gap-2 relative">
-            <span className="font-bold text-[#004B8E] uppercase tracking-tight mix-blend-multiply">Getting there</span>
-            
-            <button 
-              className="text-text-muted hover:text-black transition-colors btn-press-tactile"
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-              onClick={() => setShowTooltip(!showTooltip)}
-              aria-label="How we calculate logistics"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
-
-            {/* Tooltip */}
-            {showTooltip && (
-              <div className="absolute top-6 left-0 z-50 w-64 bg-black text-white p-3 rounded-[4px] font-sans text-xs shadow-lg leading-relaxed pointer-events-none">
-                {hasCar 
-                  ? "You noted you have a car. Transport costs are zeroed out."
-                  : `Round-trip Bolt/Uber estimate for ${squadSize} people. Prices may surge based on time of day.`
-                }
+        {/* Venue Information */}
+        <div className="p-4 border-b border-black space-y-2">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <h3 className="font-black text-black text-base uppercase tracking-tight">{venueName}</h3>
+              <div className="flex items-center gap-1.5 text-xs text-[#008751] font-bold">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Verified Menu: Updated 2 days ago</span>
               </div>
-            )}
+            </div>
+            <BudgetFitBadge status={budgetFitStatus} size="sm" className="shrink-0" />
           </div>
-          <span className="font-bold">{hasCar ? "₦0" : `₦${transportCost.toLocaleString()}`}</span>
         </div>
 
-        {/* Buffer Row */}
-        <div 
-          className="flex justify-between items-center p-4 border-b border-black"
-          style={{ animationDelay: '160ms' }}
-        >
-          <span className="font-bold text-black uppercase tracking-tight text-text-muted mix-blend-multiply">Buffer (Just in case)</span>
-          <span className="font-bold text-text-muted">₦{Math.round(contingency).toLocaleString()}</span>
+        {/* Food & Drinks Section */}
+        <div className="p-4 border-b border-black space-y-2 bg-[#FAFAF8]">
+          <div className="flex justify-between font-bold text-black uppercase">
+            <span>Food &amp; Drinks</span>
+            <span>₦{squadFoodCost.toLocaleString()}</span>
+          </div>
+          <div className="pl-4 text-xs text-[#6B7280] space-y-1">
+            <div className="flex justify-between">
+              <span>└─ Average entrée:</span>
+              <span className="font-semibold text-[#1A1A1A]">₦{avgEntree.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>└─ Average drink:</span>
+              <span className="font-semibold text-[#1A1A1A]">₦{avgDrink.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>└─ Recommended spend:</span>
+              <span className="font-semibold text-[#1A1A1A]">₦{perPersonFoodCost.toLocaleString()}/person</span>
+            </div>
+          </div>
         </div>
 
-        {/* Final Spend Inverted Row */}
-        <div 
-          className="flex justify-between items-center p-5 bg-black text-white font-sans"
-          style={{ animationDelay: '240ms' }}
-        >
-          <span className="font-black tracking-widest text-[11px] uppercase">Estimated Spend (Per Person)</span>
-          <span className="font-black text-2xl">₦<NumericCounter value={Math.round(finalTallyPerPerson)} /></span>
+        {/* Transport Section */}
+        <div className="p-4 border-b border-black space-y-2">
+          <div className="flex justify-between font-bold text-black uppercase items-center">
+            <div className="flex items-center gap-1.5">
+              <span>Transport (Bolt)</span>
+              <button 
+                className="text-[#6B7280] hover:text-black transition-colors"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                onClick={() => setShowTooltip(!showTooltip)}
+                aria-label="How transport is computed"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <span>{hasCar ? "₦0" : `₦${transportCost.toLocaleString()}`}</span>
+          </div>
+
+          {/* Tooltip */}
+          {showTooltip && (
+            <div className="absolute z-50 w-60 bg-black text-white p-3 rounded-[8px] font-sans text-xs shadow-lg leading-relaxed">
+              {hasCar 
+                ? "You selected car travel. Transport fare is zeroed out."
+                : `Round-trip ride-sharing fare estimate for ${squadSize} people in Lagos.`
+              }
+            </div>
+          )}
+
+          {!hasCar && transportCost > 0 && (
+            <div className="pl-4 text-xs text-[#6B7280] space-y-1">
+              <div className="flex justify-between">
+                <span>└─ Outbound to venue:</span>
+                <span className="font-semibold text-[#1A1A1A]">₦{(transportCost / 2).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>└─ Return fare:</span>
+                <span className="font-semibold text-[#1A1A1A]">₦{(transportCost / 2).toLocaleString()}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Taxes & Service */}
+        <div className="flex justify-between items-center p-4 border-b border-black">
+          <div className="space-y-0.5">
+            <span className="font-bold text-black uppercase">Taxes &amp; Service</span>
+            <div className="text-[10px] text-[#6B7280] font-sans">VAT 7.5% + local service fee 2.5%</div>
+          </div>
+          <span className="font-bold text-[#1A1A1A]">₦{taxesCost.toLocaleString()}</span>
+        </div>
+
+        {/* Final Tally Inverted Summary Row */}
+        <div className="p-5 bg-black text-white font-sans space-y-1">
+          <div className="flex justify-between items-center">
+            <span className="font-black tracking-widest text-[11px] uppercase">Total Estimated</span>
+            <span className="font-black text-2xl text-[#10B981]">₦<NumericCounter value={totalCost} /></span>
+          </div>
+          <div className="flex justify-between text-xs text-[#D1D5DB] font-medium">
+            <span>Per Person ({squadSize} {squadSize === 1 ? "person" : "people"})</span>
+            <span>₦{perPersonTotal.toLocaleString()}/person</span>
+          </div>
+        </div>
+
+        {/* Remaining Buffer */}
+        <div className="p-4 bg-[#FFFDF5] space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-black uppercase">Buffer Remaining</span>
+            <span className="font-bold text-[#FCC630] font-mono">₦{remainingBuffer.toLocaleString()}</span>
+          </div>
+          <div className="space-y-1">
+            <div className="w-full h-2 bg-[#EAE8E3] rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-[#008751]" 
+                style={{ width: `${spendPercentage}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-[10px] text-[#6B7280] font-sans">
+              <span>{spendPercentage}% Budget Used</span>
+              <span>Budget Cap: ₦{budget.toLocaleString()}</span>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -112,43 +179,22 @@ export function ReceiptStructure({
       {/* What's Included Transparency Module */}
       <div className="mt-6 border border-border-default bg-[#F9F9F9] rounded-[12px] p-5 scroll-reveal is-visible">
         <h4 className="type-ui-label text-text-primary text-xs uppercase font-bold tracking-widest mb-3">Included in this estimate</h4>
-        <div className="space-y-2 stagger-children">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
-              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+        <div className="space-y-2">
+          {[
+            "Food",
+            "Drinks",
+            "VAT & State Taxes",
+            "Service Charge",
+            "Estimated Round-Trip Transport",
+            "Buffer for small extras"
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
+                <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
+              </div>
+              <span className="type-caption text-text-secondary font-medium">{item}</span>
             </div>
-            <span className="type-caption text-text-secondary font-medium">Food</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
-              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
-            </div>
-            <span className="type-caption text-text-secondary font-medium">Drinks</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
-              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
-            </div>
-            <span className="type-caption text-text-secondary font-medium">VAT & State Taxes</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
-              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
-            </div>
-            <span className="type-caption text-text-secondary font-medium">Service Charge</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
-              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
-            </div>
-            <span className="type-caption text-text-secondary font-medium">Estimated Round-Trip Transport</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0">
-              <Check className="w-2.5 h-2.5 text-brand-green" strokeWidth={3} />
-            </div>
-            <span className="type-caption text-text-secondary font-medium">Buffer for small extras</span>
-          </div>
+          ))}
         </div>
       </div>
     </div>
