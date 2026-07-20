@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FAQItem {
   id: string;
@@ -53,15 +54,9 @@ const FAQ_ITEMS: FAQItem[] = [
 
 export default function FAQSection() {
   const [activeFaq, setActiveFaq] = useState<string>("accuracy");
-  const answersRef = useRef<HTMLDivElement>(null);
 
   const handleFaqClick = (id: string) => {
-    setActiveFaq(id);
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      setTimeout(() => {
-        answersRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }, 50);
-    }
+    setActiveFaq((prev) => (prev === id ? "" : id));
   };
 
   return (
@@ -72,7 +67,8 @@ export default function FAQSection() {
           <p>Here are the answers.</p>
         </div>
 
-        <div className="faq-content">
+        {/* ── DESKTOP VIEW (≥768px) ── */}
+        <div className="hidden md:grid faq-content">
           {/* Left Column: Questions */}
           <div className="faq-questions" role="tablist" aria-label="Frequently Asked Questions">
             {FAQ_ITEMS.map((item) => {
@@ -86,7 +82,7 @@ export default function FAQSection() {
                   aria-expanded={isActive}
                   aria-controls={`faq-answer-${item.id}`}
                   className={`faq-item ${isActive ? "active" : ""}`}
-                  onClick={() => handleFaqClick(item.id)}
+                  onClick={() => setActiveFaq(item.id)}
                 >
                   <span className="faq-icon" aria-hidden="true">✓</span>
                   {item.question}
@@ -96,7 +92,7 @@ export default function FAQSection() {
           </div>
 
           {/* Right Column: Answers */}
-          <div className="faq-answers" ref={answersRef}>
+          <div className="faq-answers">
             {FAQ_ITEMS.map((item) => {
               const isActive = activeFaq === item.id;
               return (
@@ -108,7 +104,6 @@ export default function FAQSection() {
                   aria-live="polite"
                   className={`faq-answer ${isActive ? "active" : ""}`}
                 >
-                  {/* Verified icon at the top of active answer card with AA contrast checked green */}
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-[#10B981] font-bold text-lg" aria-hidden="true">✓</span>
                     <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">
@@ -122,6 +117,59 @@ export default function FAQSection() {
               );
             })}
           </div>
+        </div>
+
+        {/* ── MOBILE VIEW (<768px) ── */}
+        <div className="block md:hidden space-y-3">
+          {FAQ_ITEMS.map((item) => {
+            const isActive = activeFaq === item.id;
+            return (
+              <div
+                key={item.id}
+                className="border border-[#E5E7EB] rounded-xl overflow-hidden bg-white"
+              >
+                <button
+                  onClick={() => handleFaqClick(item.id)}
+                  aria-expanded={isActive}
+                  aria-controls={`faq-mob-answer-${item.id}`}
+                  className="w-full flex items-center justify-between p-4 text-left font-semibold text-sm text-[#1A1A1A] bg-[#F3F4F6] hover:bg-[#E5E7EB] active:bg-[#D1D5DB] transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-[#008751] font-bold" aria-hidden="true">✓</span>
+                    <span>{item.question}</span>
+                  </div>
+                  <span className="text-xs transition-transform duration-200 font-bold ml-2">
+                    {isActive ? "−" : "+"}
+                  </span>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isActive && (
+                    <motion.div
+                      id={`faq-mob-answer-${item.id}`}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <div className="p-4 bg-[#FFF4D6] border-t border-[#E5E7EB]">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[#10B981] font-bold text-base" aria-hidden="true">✓</span>
+                          <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                            Verified Answer
+                          </span>
+                        </div>
+                        <p className="text-[#1A1A1A] text-sm font-medium leading-relaxed">
+                          {item.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

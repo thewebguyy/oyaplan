@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#010528] text-[#FAFAF8]">
+    <footer className="w-full bg-[#010528] text-[#FAFAF8] rounded-t-[28px] sm:rounded-t-[40px] overflow-hidden">
       {/* ── CTA Banner ── */}
       <div className="border-b border-white/10">
         <div className="max-w-4xl mx-auto px-4 py-16 sm:py-20 flex flex-col sm:flex-row items-center justify-between gap-8">
@@ -37,7 +37,7 @@ export default function Footer() {
                 alt="OyaPlan"
                 width={610}
                 height={143}
-                className="h-8 w-auto grayscale brightness-200 opacity-80 hover:grayscale-0 hover:brightness-100 hover:opacity-100 transition-all duration-300"
+                className="h-8 w-auto transition-all duration-300 hover:opacity-80"
               />
             </Link>
             <p className="text-sm text-white/60 leading-relaxed max-w-xs">
