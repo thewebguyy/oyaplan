@@ -97,12 +97,12 @@ export default function SavedPage() {
               <circle cx="48" cy="30" r="6" fill="#1A1A1A"/>
             </svg>
           </div>
-          <h2 className="type-heading text-text-primary text-xl">Your pocket is empty, but outside is calling.</h2>
+          <h2 className="type-heading text-text-primary text-xl">Sapa is sapa-ing, but outside is loud.</h2>
           <p className="type-body text-text-muted max-w-md mx-auto">
-            Discover verified spots in zones like Lekki or Yaba to start building your next squad outing.
+            Cop verified spots in Lekki or Yaba to lock in your next squad linkup without tears.
           </p>
           <Link href="/explore" className="type-label text-atlantic-blue hover:text-midnight-lagoon transition-colors inline-block">
-            Explore Lagos spots &rarr;
+            See active spots &rarr;
           </Link>
         </div>
       )}
