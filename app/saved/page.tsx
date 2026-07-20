@@ -97,9 +97,9 @@ export default function SavedPage() {
               <circle cx="48" cy="30" r="6" fill="#1A1A1A"/>
             </svg>
           </div>
-          <h2 className="type-heading text-text-primary text-xl">Sapa is sapa-ing, but outside is loud.</h2>
+          <h2 className="type-heading text-text-primary text-xl">Lagos outside is calling, but we're planning smart.</h2>
           <p className="type-body text-text-muted max-w-md mx-auto">
-            Cop verified spots in Lekki or Yaba to lock in your next squad linkup without tears.
+            Find verified spots in Yaba or Lekki to lock in your next squad hangout with zero surprise bills.
           </p>
           <Link href="/explore" className="type-label text-atlantic-blue hover:text-midnight-lagoon transition-colors inline-block">
             See active spots &rarr;
