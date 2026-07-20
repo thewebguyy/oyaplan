@@ -236,7 +236,7 @@ export default function VerificationReceiptLoader({
                   Verification Progress
                 </span>
                 <h2 className="text-xl sm:text-2xl font-black text-[#1A1A1A]">
-                  Vetting the vibe damage...
+                  Letting the vibes cook...
                 </h2>
               </div>
 
