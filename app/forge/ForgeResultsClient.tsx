@@ -12,6 +12,7 @@ import { RefreshCw, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import DossierDropWrapper from "@/components/DossierDropWrapper";
+import VerificationReceiptLoader from "@/components/VerificationReceiptLoader";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -42,31 +43,7 @@ export default function ForgeResultsClient({
 }: ForgeResultsClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [revealStep, setRevealStep] = useState(0);
   const [isRevealed, setIsRevealed] = useState(evaluations.length === 0);
-
-  // Client-side simulated audit reveal sequence
-  useEffect(() => {
-    if (evaluations.length === 0) {
-      return;
-    }
-
-    const timer1 = setTimeout(() => setRevealStep(1), 700);   // checking transport -> transport estimated
-    const timer2 = setTimeout(() => setRevealStep(2), 1400);  // checking venue pricing -> venue pricing verified
-    const timer3 = setTimeout(() => setRevealStep(3), 2100);  // adding buffer -> buffer included
-    const timer4 = setTimeout(() => setRevealStep(4), 2800);  // Confidence Summary checks reveal
-    const timer5 = setTimeout(() => setRevealStep(5), 4600);  // Done checks
-    const timer6 = setTimeout(() => setIsRevealed(true), 5000); // Reveal recommendation cards
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-      clearTimeout(timer5);
-      clearTimeout(timer6);
-    };
-  }, [evaluations.length]);
 
   // Save to localStorage post-hydration
   useEffect(() => {
@@ -218,72 +195,11 @@ export default function ForgeResultsClient({
 
   if (!isRevealed && evaluations.length > 0) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center max-w-md mx-auto px-6 py-12 space-y-12">
-        {revealStep < 4 ? (
-          <div className="w-full space-y-6 animate-in fade-in duration-300">
-            <div className="space-y-2 text-center">
-              <span className="text-[11px] font-black uppercase tracking-[0.15em] text-text-muted">Vibe Check</span>
-              <h2 className="type-display-product text-midnight-lagoon text-2xl font-black">Vetting the vibe damage...</h2>
-            </div>
-            
-            <div className="space-y-4 font-mono text-sm border border-border-default/50 rounded-[20px] p-6 bg-[#FAFAF8] shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted">Calculating transport damage…</span>
-                <span className={revealStep >= 1 ? "text-[#008751] font-bold" : "text-text-muted animate-pulse"}>
-                  {revealStep >= 1 ? "✓ Transit sorted (Bolt)" : "Calculating..."}
-                </span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted">Checking menu prices…</span>
-                <span className={revealStep >= 2 ? "text-[#008751] font-bold" : revealStep >= 1 ? "text-text-muted animate-pulse" : "text-text-muted/40"}>
-                  {revealStep >= 2 ? "✓ Menus vetted (no cap)" : revealStep >= 1 ? "Vetting..." : "Pending"}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted">Baking in VAT + service buffer…</span>
-                <span className={revealStep >= 3 ? "text-[#008751] font-bold" : revealStep >= 2 ? "text-text-muted animate-pulse" : "text-text-muted/40"}>
-                  {revealStep >= 3 ? "✓ Buffers added" : revealStep >= 2 ? "Baking..." : "Pending"}
-                </span>
-              </div>
-
-              {revealStep >= 3 && (
-                <div className="pt-4 border-t border-border-default/50 text-center animate-in fade-in zoom-in-95 duration-300">
-                  <p className="type-label text-[#008751] text-base font-black">Gbedu Ready.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="w-full space-y-6 animate-in fade-in duration-400">
-            <div className="space-y-2 text-center">
-              <span className="text-[11px] font-black uppercase tracking-[0.15em] text-text-muted font-bold font-mono">Outing Scorecard</span>
-              <h2 className="type-display-product text-midnight-lagoon text-2xl font-black">Squad checks</h2>
-            </div>
-
-            <div className="space-y-4 font-sans text-sm border border-border-default/50 rounded-[20px] p-6 bg-[#FAFAF8] shadow-sm">
-              {[
-                { label: "Budget Fit", val: "✓ Clean" },
-                { label: "Transit Time", val: "✓ Nearby" },
-                { label: "Squad Size", val: "✓ Sorted" },
-                { label: "Vibe Match", val: "✓ Hits" }
-              ].map((item, idx) => (
-                <div key={item.label} className={`flex items-center justify-between transition-all duration-300 ${
-                  revealStep >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-                }`} style={{ transitionDelay: `${idx * 150}ms` }}>
-                  <span className="text-text-secondary font-medium">{item.label}</span>
-                  <span className="text-[#008751] font-bold">{item.val}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="pt-4 text-center animate-in fade-in duration-300 delay-700">
-              <p className="type-label text-[#008751] text-base font-black">Active Outing Ready</p>
-            </div>
-          </div>
-        )}
-      </div>
+      <VerificationReceiptLoader
+        forgeInput={forgeInput}
+        spot={evaluations[0]?.plan?.spot || null}
+        onComplete={() => setIsRevealed(true)}
+      />
     );
   }
 
