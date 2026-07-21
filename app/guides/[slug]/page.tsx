@@ -89,10 +89,14 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
         </div>
 
         <div className="pt-6 border-t border-border-default/30">
-          <Link href={`/forge${guide.forgeParams}&fresh=true`}>
+          <Link href={`/${guide.forgeParams}&preset=true`}>
             <Button className="w-full bg-lasgidi-yellow text-midnight-lagoon font-[900] h-12 rounded-[12px] shadow-none flex items-center justify-center gap-2 hover:bg-[#E2B63B] transition-colors" style={{ transitionDuration: 'var(--duration-hover)' }}>
               <Play className="w-4 h-4 fill-white" />
-              Start Planning with this Guide
+              {guide.slug === "lagos-island-date-night" && "💕 PLAN A VI DATE NIGHT"}
+              {guide.slug === "ikeja-group-hangout" && "🎉 PLAN AN IKEJA HANGOUT"}
+              {guide.slug === "lekki-brunch-spots" && "🥐 PLAN A LEKKI BRUNCH"}
+              {guide.slug === "budget-friendly-foodies" && "🎯 PLAN A BUDGET OUTING"}
+              {!["lagos-island-date-night", "ikeja-group-hangout", "lekki-brunch-spots", "budget-friendly-foodies"].includes(guide.slug) && "⚡ START PLANNING WITH THIS GUIDE"}
             </Button>
           </Link>
         </div>

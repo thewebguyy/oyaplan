@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import LivePreviewCard from "./LivePreviewCard";
+import { LocationService, Location, UserLocation } from "@/lib/services/LocationService";
+import { useTransportCost } from "@/hooks/useTransportCost";
 
 import { Spot } from "@/lib/types";
 
@@ -16,6 +18,7 @@ interface PlannerWidgetProps {
   vibe: string | null;
   setVibe: (val: string | null) => void;
   recommendedSpot: Spot | null;
+  prefilledLocation?: string;
 }
 
 const PRIMARY_VIBES = [
@@ -47,10 +50,51 @@ export default function PlannerWidget({
   vibe,
   setVibe,
   recommendedSpot,
+  prefilledLocation,
 }: PlannerWidgetProps) {
   const router = useRouter();
   const [showMoreVibes, setShowMoreVibes] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  // NEW LOCATION STATE & PREFERENCES
+  const [selectedArea, setSelectedArea] = useState<Location | null>(null);
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [locationSearch, setLocationSearch] = useState<string>("");
+
+  // Initialize saved location or prefilled location on mount
+  useEffect(() => {
+    if (prefilledLocation) {
+      const matched = LocationService.getVerifiedAreas().find(
+        (a) => a.id === prefilledLocation || a.name.toLowerCase() === prefilledLocation.toLowerCase()
+      );
+      if (matched) {
+        setSelectedArea(matched);
+      }
+    } else {
+      const saved = LocationService.getUserLocation();
+      if (saved) {
+        setUserLocation(saved);
+        const nearest = LocationService.getNearestArea(saved);
+        setSelectedArea(nearest);
+      }
+    }
+  }, [prefilledLocation]);
+
+  // Dynamic transport estimate using Location-Aware Hook
+  const { estimate: transportEstimate } = useTransportCost({
+    userLocation: userLocation || (selectedArea ? {
+      id: selectedArea.id,
+      name: selectedArea.name,
+      coordinates: selectedArea.coordinates,
+      type: "saved",
+    } : null),
+    venueLocation: recommendedSpot?.coordinates ? {
+      lat: (recommendedSpot.coordinates as { lat: number; lng: number }).lat,
+      lng: (recommendedSpot.coordinates as { lat: number; lng: number }).lng,
+    } : undefined,
+    squadSize,
+    roundTrip: true,
+  });
 
   // Format currency for labels
   const formatCurrency = (val: number) => {
@@ -66,6 +110,16 @@ export default function PlannerWidget({
   const squadPct = ((squadSize - 1) / 7) * 100;
   const budgetPct = ((budget - 10000) / 90000) * 100;
 
+  const handleUseCurrentLocation = async () => {
+    const current = await LocationService.getCurrentLocation();
+    if (current) {
+      setUserLocation(current);
+      LocationService.saveUserLocation(current);
+      const nearest = LocationService.getNearestArea(current);
+      setSelectedArea(nearest);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!vibe) {
@@ -76,10 +130,13 @@ export default function PlannerWidget({
 
     const params = new URLSearchParams();
     const urlVibe = VIBE_TO_URL_MAP[vibe] || vibe;
-    
+
     params.append("vibe", urlVibe);
     params.append("squad", String(squadSize));
     params.append("budget", String(budget));
+    if (selectedArea) {
+      params.append("area", selectedArea.id);
+    }
     params.append("fresh", "true");
 
     // Track analytics using local service
@@ -90,6 +147,7 @@ export default function PlannerWidget({
         source: "redesigned_hero_planner",
         budget: Number(budget),
         squad_size: Number(squadSize),
+        area: selectedArea?.id ?? "unselected",
         version: "1.0",
       },
     });
@@ -102,6 +160,8 @@ export default function PlannerWidget({
     setValidationError(null);
   };
 
+  const filteredAreas = LocationService.searchAreas(locationSearch);
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -110,6 +170,45 @@ export default function PlannerWidget({
     >
       <fieldset className="flex flex-col gap-6 p-0 m-0 border-none">
         <legend className="sr-only">Configure your outing constraints</legend>
+
+        {/* NEW INPUT STEP: Location Selector Layer */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280]">
+              📍 Starting Location
+            </label>
+            <button
+              type="button"
+              onClick={handleUseCurrentLocation}
+              className="text-xs font-bold text-[#008751] hover:underline cursor-pointer"
+            >
+              Use My Location
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {LocationService.getVerifiedAreas().slice(0, 4).map((area) => {
+              const isSelected = selectedArea?.id === area.id;
+              return (
+                <button
+                  key={area.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedArea(area);
+                    setLocationSearch("");
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                    isSelected
+                      ? "bg-[#008751] text-white"
+                      : "bg-[#F3F4F6] text-[#1A1A1A] hover:bg-[#D1E7DB]"
+                  }`}
+                >
+                  {area.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* INPUT: Squad Size Slider */}
         <div className="flex flex-col gap-3">

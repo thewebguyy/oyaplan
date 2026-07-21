@@ -33,6 +33,10 @@ export type Spot = {
   trending_score?: number;
   verified_by?: string;
   zone?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
   computed_confidence_score?: number;
   confidence_reasons?: string[];
 };
