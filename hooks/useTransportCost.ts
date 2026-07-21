@@ -84,8 +84,14 @@ export function useTransportCost(options: UseTransportCostOptions) {
 function estimateTransportFallback(distanceKm: number, _squadSize: number): number {
   const baseRate = 150;
   const minimumRate = 500;
-  const costPerKm = Math.max(distanceKm * baseRate, minimumRate);
-  return costPerKm;
+  
+  // Lagos peak traffic multiplier (7-9 AM & 5-8 PM West Africa Time)
+  const currentHour = new Date().getHours();
+  const isPeakHour = (currentHour >= 7 && currentHour <= 9) || (currentHour >= 17 && currentHour <= 20);
+  const multiplier = isPeakHour ? 1.3 : 1.0;
+
+  const costPerKm = Math.max(distanceKm * baseRate * multiplier, minimumRate);
+  return Math.ceil(costPerKm);
 }
 
 async function getBoltEstimate(_options: {
