@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
@@ -57,31 +57,24 @@ export default function PlannerWidget({
   const [validationError, setValidationError] = useState<string | null>(null);
 
   // NEW LOCATION STATE & PREFERENCES
-  const [selectedArea, setSelectedArea] = useState<Location | null>(null);
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [locationSearch, setLocationSearch] = useState<string>("");
-
-  // Initialize saved location or prefilled location on mount
-  useEffect(() => {
+  const [selectedArea, setSelectedArea] = useState<Location | null>(() => {
     if (prefilledLocation) {
-      const matched = LocationService.getVerifiedAreas().find(
-        (a) => a.id === prefilledLocation || a.name.toLowerCase() === prefilledLocation.toLowerCase()
+      return (
+        LocationService.getVerifiedAreas().find(
+          (a) => a.id === prefilledLocation || a.name.toLowerCase() === prefilledLocation.toLowerCase()
+        ) || null
       );
-      if (matched) {
-        setSelectedArea(matched);
-      }
-    } else {
-      const saved = LocationService.getUserLocation();
-      if (saved) {
-        setUserLocation(saved);
-        const nearest = LocationService.getNearestArea(saved);
-        setSelectedArea(nearest);
-      }
     }
-  }, [prefilledLocation]);
+    const saved = LocationService.getUserLocation();
+    return saved ? LocationService.getNearestArea(saved) : null;
+  });
+
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(() => {
+    return LocationService.getUserLocation();
+  });
 
   // Dynamic transport estimate using Location-Aware Hook
-  const { estimate: transportEstimate } = useTransportCost({
+  useTransportCost({
     userLocation: userLocation || (selectedArea ? {
       id: selectedArea.id,
       name: selectedArea.name,
@@ -160,8 +153,6 @@ export default function PlannerWidget({
     setValidationError(null);
   };
 
-  const filteredAreas = LocationService.searchAreas(locationSearch);
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -195,7 +186,6 @@ export default function PlannerWidget({
                   type="button"
                   onClick={() => {
                     setSelectedArea(area);
-                    setLocationSearch("");
                   }}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                     isSelected
@@ -214,7 +204,7 @@ export default function PlannerWidget({
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="squad-size-input" className="text-sm font-semibold text-[#6B7280]">
-              Who's going?
+              Who&apos;s going?
             </label>
             <span className="text-base font-bold text-[#1A1A1A]">
               {squadSize === 1 ? "Just me" : squadSize === 8 ? "8+ people" : `${squadSize} people`}
