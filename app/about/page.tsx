@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Sparkles, ShieldCheck, DollarSign, Compass, HeartHandshake, HelpCircle } from "lucide-react";
+import { ArrowLeft, Sparkles, ShieldCheck, Compass } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
