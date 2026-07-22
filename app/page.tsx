@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import ErrorBanner from "@/components/ErrorBanner";
 import ExperienceCollections from "@/components/ExperienceCollections";
 import RecentlyVerified from "@/components/RecentlyVerified";
