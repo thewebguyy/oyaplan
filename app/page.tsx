@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import ErrorBanner from "@/components/ErrorBanner";
 import ExperienceCollections from "@/components/ExperienceCollections";
 import RecentlyVerified from "@/components/RecentlyVerified";
-import TrustSection from "@/components/TrustSection";
 import HeroSection from "@/components/HeroSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
@@ -31,10 +30,7 @@ export default async function LandingPage() {
       {/* Redesigned Hero Section (incorporates sequential narrative panels and interactive sliders) */}
       <HeroSection spots={spots} />
 
-      {/* Redesigned Trust Section (position #2 in layout) */}
-      <TrustSection />
-
-      {/* Founder Story Narrative Section (position #3 in layout: post-planner, pre-how-it-works) */}
+      {/* Founder Story Narrative Section (position #2 in layout: post-planner, pre-how-it-works) */}
       <FounderStorySection />
 
       {/* How OyaPlan Works Section */}
