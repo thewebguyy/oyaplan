@@ -128,7 +128,7 @@ ${url}`;
 
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col gap-2 w-full px-4 sm:px-0">
       <Button 
         onClick={handleAction}
         disabled={sharing}

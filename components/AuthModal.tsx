@@ -79,35 +79,40 @@ export default function AuthModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="sm:max-w-md bg-white border-none shadow-[0px_24px_48px_rgba(0,0,0,0.15)] rounded-[24px]">
-        <DialogHeader className="space-y-3">
-          <DialogTitle className="type-subheading text-text-primary text-center">
-            {modalReason || 'Sign in to continue'}
+      <DialogContent className="sm:max-w-md bg-white border-none shadow-[0px_24px_48px_rgba(0,0,0,0.15)] rounded-[28px] p-6 sm:p-8">
+        <DialogHeader className="space-y-2 text-center">
+          <div className="flex justify-center mb-1">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#008751]/10 text-[#008751]">
+              ✨ OyaPlan Account
+            </span>
+          </div>
+          <DialogTitle className="text-xl sm:text-2xl font-black text-[#1A1A1A] text-center tracking-tight">
+            {modalReason || "Lock in your plan & save for later"}
           </DialogTitle>
-          <DialogDescription className="type-body text-text-muted text-center">
-            Authentication protects your plans and unlocks advanced features like saving and earning Scout reputation.
+          <DialogDescription className="text-xs sm:text-sm text-[#6B7280] text-center font-medium">
+            No passwords to remember. Access your plans anywhere.
           </DialogDescription>
         </DialogHeader>
 
         {success ? (
           <div className="py-6 text-center space-y-4">
-            <div className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-brand-green/10 text-brand-green mx-auto">
+            <div className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-[#008751]/10 text-[#008751] mx-auto">
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <p className="type-body text-text-primary font-medium">Check your email</p>
-            <p className="type-caption text-text-muted">
-              We sent a magic link to {email}. Click it to sign in instantly.
+            <p className="text-base font-bold text-[#1A1A1A]">Check your inbox</p>
+            <p className="text-xs text-[#6B7280]">
+              We sent a magic link to <strong className="text-[#1A1A1A]">{email}</strong>. Click it to log in instantly.
             </p>
           </div>
         ) : (
-          <div className="space-y-6 pt-4">
+          <div className="space-y-5 pt-2">
             <Button
               type="button"
               variant="outline"
               onClick={handleGoogle}
-              className="w-full h-12 rounded-[12px] border-border-default type-label text-text-primary hover:bg-surface-grey transition-colors flex items-center justify-center gap-3"
+              className="w-full h-12 rounded-xl border border-gray-200 text-sm font-bold text-[#1A1A1A] hover:bg-gray-50 transition-all flex items-center justify-center gap-3 shadow-sm cursor-pointer"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -120,33 +125,39 @@ export default function AuthModal() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border-default"></div>
+                <div className="w-full border-t border-gray-200"></div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-text-muted">Or magic link</span>
+              <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+                <span className="bg-white px-3 text-[#6B7280] font-bold">or sign in with email</span>
               </div>
             </div>
 
-            <form onSubmit={handleMagicLink} className="space-y-4">
-              <div className="space-y-2">
+            <form onSubmit={handleMagicLink} className="space-y-3.5">
+              <div className="space-y-1.5">
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 rounded-[12px] bg-surface-grey border-transparent focus-visible:border-brand-green focus-visible:ring-1 focus-visible:ring-brand-green type-body px-4"
+                  className="h-12 rounded-xl bg-gray-50 border border-gray-200 focus-visible:border-[#008751] focus-visible:ring-1 focus-visible:ring-[#008751] text-sm text-[#1A1A1A] font-medium px-4"
                   required
                 />
               </div>
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-[12px] bg-brand-green hover:bg-brand-green-70 text-white type-label transition-colors"
+                className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#006b41] text-white font-bold text-sm tracking-wide transition-all shadow-md cursor-pointer"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Send Magic Link"}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Send Instant Magic Link 🚀"}
               </Button>
             </form>
+
+            <div className="pt-2 text-center">
+              <span className="text-[11px] font-bold text-[#6B7280]">
+                🔒 100% Free • One-tap instant access
+              </span>
+            </div>
           </div>
         )}
       </DialogContent>

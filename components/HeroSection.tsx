@@ -25,12 +25,11 @@ const DEFAULT_FALLBACK_SPOT: Spot = {
 };
 
 const PHRASES = [
+  "Date night?",
+  "Squad linkup?",
+  "Solo trip?",
+  "Birthday turn up?",
   "Right place • Right price • Right occasion",
-  "No endless scrolling. No budget surprises.",
-  "Heading out solo?",
-  "A date night?",
-  "Gathering the squad?",
-  "Checking verified pricing?",
 ];
 
 export default function HeroSection({ spots }: HeroSectionProps) {
@@ -143,8 +142,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
             Decide where to go in Lagos with{" "}
             <span className="highlight-green">budget confidence.</span>
           </h1>
-          <p className="text-lg leading-relaxed text-[#6B7280] font-medium max-w-[600px] mt-3">
-            Know what you&apos;ll spend before you leave home. Plan your next Lagos outing with verified venue prices, transport estimates, and zero surprise costs.
+          <p className="text-base sm:text-lg leading-relaxed text-[#6B7280] font-semibold max-w-[600px] mt-2">
+            Real venue prices. Transport estimated. Zero surprise costs.
           </p>
           <div className="relative flex items-center gap-1.5 text-sm md:text-base text-[#6B7280] font-semibold mt-3 h-[24px] overflow-hidden w-full">
             <span>Planning:</span>
