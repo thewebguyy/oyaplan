@@ -147,34 +147,7 @@ export default function NavBar() {
               Sign In
             </Button>
           )}
-
-        {/* Mobile CTA */}
-        <div className="md:hidden ml-4">
-          {pathname !== "/" && (
-            <Link href={(() => {
-              const params = new URLSearchParams();
-              const budget = searchParams.get("budget");
-              const squad = searchParams.get("squad") || searchParams.get("squadSize");
-              const vibe = searchParams.get("vibe");
-              const area = searchParams.get("area") || searchParams.get("startArea");
-              const pinned = searchParams.get("pinned") || searchParams.get("pinnedSpotId");
-
-              if (budget) params.set("budget", budget);
-              if (squad) params.set("squad", squad);
-              if (vibe) params.set("vibe", vibe);
-              if (area) params.set("area", area);
-              if (pinned) params.set("pinned", pinned);
-
-              const qs = params.toString();
-              return qs ? `/?${qs}` : "/";
-            })()}>
-              <Button className="bg-brand-green text-white font-[900] rounded-full type-label h-10 px-5 tap-feedback border-none hover:bg-brand-green-70">
-                Start Planning
-              </Button>
-            </Link>
-          )}
         </div>
-      </div>
-    </nav>
-  );
-}
+      </nav>
+    );
+  }
