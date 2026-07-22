@@ -24,6 +24,8 @@ const DEFAULT_FALLBACK_SPOT: Spot = {
 };
 
 const PHRASES = [
+  "Right place • Right price • Right occasion",
+  "No endless scrolling. No budget surprises.",
   "Heading out solo?",
   "A date night?",
   "Gathering the squad?",

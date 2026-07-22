@@ -3,8 +3,8 @@ import { ArrowLeft, Sparkles, ShieldCheck, Compass } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Why OyaPlan Exists — Our Origin Story",
-  description: "The story behind OyaPlan: Built by Lagos planners who were tired of menu price shocks and influencer fantasy budgets.",
+  title: "Why OyaPlan Exists — Right Place, Right Price, Right Occasion",
+  description: "I got tired of spending hours scrolling through Instagram and TikTok just to figure out where to go. That's why we built OyaPlan.",
 };
 
 export default function AboutPage() {
@@ -20,42 +20,34 @@ export default function AboutPage() {
         {/* Hero Title */}
         <div className="space-y-3">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#008751]/10 text-[#008751]">
-            <Sparkles className="w-3.5 h-3.5" /> Our Origin Story
+            <Sparkles className="w-3.5 h-3.5" /> Why OyaPlan Exists
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#1A1A1A] tracking-tight leading-tight">
-            I Was Tired of Getting Shocked at Lagos Venues.
+            I got tired of spending hours scrolling through social media just to figure out where to go.
           </h1>
           <p className="text-[#6B7280] text-base sm:text-lg leading-relaxed">
-            The story behind OyaPlan: why we built a budget confidence engine for Lagos squads.
+            Just the right place, at the right price, for the right occasion.
           </p>
         </div>
 
         {/* Story Content Block */}
         <div className="bg-white border border-[#E5E7EB] rounded-[24px] p-6 sm:p-10 space-y-6 shadow-sm">
           <div className="space-y-4 text-base text-[#374151] leading-relaxed">
-            <h2 className="text-xl font-bold text-[#1A1A1A] pt-2">The Moment</h2>
             <p>
-              It was a Saturday. I wanted to go out with friends. I opened Instagram, scrolling through venue aesthetics—pretty pictures, zero pricing info. Opened TikTok for a &ldquo;viral&rdquo; brunch spot, only to find comments warning it was overcrowded and wildly overpriced.
-            </p>
-            <p>
-              I called my squad: <em>&ldquo;Where should we go?&rdquo;</em> ... <em>&ldquo;I don&apos;t know, what&apos;s your budget?&rdquo;</em> ... <em>&ldquo;Around ₦50k per person.&rdquo;</em> ... <em>&ldquo;Cool, but how much is transport to the island?&rdquo;</em> ... <em>&ldquo;No idea.&rdquo;</em>
-            </p>
-
-            <h2 className="text-xl font-bold text-[#1A1A1A] pt-4">The Shock</h2>
-            <p>
-              We finally picked a venue and showed up. The menu was nothing like what influencers posted. Prices were <strong>nearly double</strong> what we expected, service charge and VAT were added on top, and Bolt rides from home cost an unbudgeted ₦6,000.
+              I got tired of spending hours scrolling through Instagram and TikTok just to figure out where to go.
             </p>
             <p>
-              We were stuck with three bad options: spend way more than planned, leave awkwardly and waste the night, or compromise on the entire experience.
+              I&apos;d finally find a place that looked nice, only to get there and realize it wasn&apos;t what I expected. The food was more expensive than I planned for, transport cost more than I thought, or the vibe just wasn&apos;t right.
             </p>
-
-            <h2 className="text-xl font-bold text-[#1A1A1A] pt-4 border-t border-[#E5E7EB] pt-6">The Solution</h2>
-            <p className="font-semibold text-[#1A1A1A]">
-              That&apos;s when I thought: What if there was an app where I could just input my location, tell it my vibe and my budget, and it would actually give me accurate recommendations that fit?
+            <h2 className="text-xl font-bold text-[#1A1A1A] pt-4">That&apos;s when I asked myself:</h2>
+            <p className="font-semibold text-[#1A1A1A] bg-[#FAFAF8] p-4 rounded-xl border border-[#E5E7EB] italic">
+              &ldquo;Why isn&apos;t there an app where I can simply enter my location, budget, and vibe, and instantly get recommendations that actually fit?&rdquo;
             </p>
-            <p>
-              No influencer fantasy menus. No hidden fees. No transport cost shocks. <strong>Just real numbers before you leave home.</strong>
-            </p>
+            <h2 className="text-xl font-bold text-[#1A1A1A] pt-4">That&apos;s why we built OyaPlan.</h2>
+            <div className="p-5 rounded-2xl bg-[#008751]/5 border border-[#008751]/15 space-y-2 text-[#008751] font-bold text-lg">
+              <p>No endless scrolling. No guessing. No budget surprises.</p>
+              <p className="text-[#1A1A1A]">Just the right place, at the right price, for the right occasion.</p>
+            </div>
           </div>
 
           {/* Core Values / Features Tie-In */}
