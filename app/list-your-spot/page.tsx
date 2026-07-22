@@ -1,6 +1,5 @@
-"use client";
-
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { submitOperatorInquiry } from "@/lib/actions/submitOperatorInquiry";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle2, Loader2, Star, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Loader2, Star, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 const LAGOS_AREAS = [
@@ -57,7 +56,11 @@ const BUDGET_OPTIONS = [
   "Over ₦500k"
 ];
 
-export default function ListYourSpotPage() {
+function ListYourSpotContent() {
+  const searchParams = useSearchParams();
+  const intent = searchParams.get("intent");
+  const isClaim = intent === "claim";
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,8 +76,17 @@ export default function ListYourSpotPage() {
     listingTier: "Featured",
     monthlyBudget: "",
     howHeard: "",
-    notes: ""
+    notes: isClaim ? "Claiming existing venue profile" : ""
   });
+
+  useEffect(() => {
+    if (isClaim) {
+      setFormData((prev) => ({
+        ...prev,
+        notes: prev.notes || "Claiming existing venue profile",
+      }));
+    }
+  }, [isClaim]);
 
   const scrollToForm = (tier: string) => {
     setFormData(prev => ({ ...prev, listingTier: tier }));
@@ -137,11 +149,20 @@ export default function ListYourSpotPage() {
           </Link>
 
           <div className="max-w-3xl space-y-6">
+            {isClaim && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/10 text-intent-yellow border border-intent-yellow/20">
+                <Sparkles className="w-3.5 h-3.5" /> Claim Venue Ownership
+              </span>
+            )}
             <h1 className="type-display text-white">
-              Get in front of Lagos squads ready to spend
+              {isClaim 
+                ? "Claim your venue profile & verify your pricing" 
+                : "Get in front of Lagos squads ready to spend"}
             </h1>
             <p className="type-body text-white/80 max-w-2xl">
-              OyaPlan recommends outing plans for budget-conscious Lagos groups. When your spot is featured, you appear first for searches that fit your area and vibe.
+              {isClaim
+                ? "Your venue may already be listed on OyaPlan. Claim your profile to update menu items, ensure 100% price accuracy, and get featured for Lagos squads actively planning outings."
+                : "OyaPlan recommends outing plans for budget-conscious Lagos groups. When your spot is featured, you appear first for searches that fit your area and vibe."}
             </p>
           </div>
 
@@ -230,8 +251,14 @@ export default function ListYourSpotPage() {
       <section ref={formRef} className="max-w-3xl mx-auto px-6 pb-32">
         <div className="bg-surface-grey rounded-[32px] p-8 md:p-16 border border-border-default space-y-12">
           <div className="space-y-3">
-            <h2 className="type-display text-text-primary">List My Spot</h2>
-            <p className="type-body text-text-muted">Complete the form below and we&apos;ll get you started.</p>
+            <h2 className="type-display text-text-primary">
+              {isClaim ? "Claim My Venue Profile" : "List My Spot"}
+            </h2>
+            <p className="type-body text-text-muted">
+              {isClaim 
+                ? "Complete the form below to verify ownership and take control of your listing."
+                : "Complete the form below and we'll get you started."}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -408,5 +435,13 @@ export default function ListYourSpotPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function ListYourSpotPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <ListYourSpotContent />
+    </Suspense>
   );
 }

@@ -104,13 +104,18 @@ export default function Footer() {
             <h3 className="font-semibold text-white tracking-wide mb-6">For Venues</h3>
             <ul className="flex flex-col gap-4">
               <li>
-                <Link href="/list-your-spot" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
-                  List your spot
+                <Link href="/list-your-spot?intent=new" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                  List a new venue
                 </Link>
               </li>
               <li>
-                <Link href="/list-your-spot" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
-                  Claim your venue
+                <Link href="/list-your-spot?intent=claim" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                  Claim existing profile
+                </Link>
+              </li>
+              <li>
+                <Link href="/suggest-a-spot" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                  Suggest a hidden gem
                 </Link>
               </li>
             </ul>
