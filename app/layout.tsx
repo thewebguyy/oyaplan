@@ -46,6 +46,7 @@ export const viewport = {
 
 import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 export default function RootLayout({
   children,
@@ -65,9 +66,12 @@ export default function RootLayout({
             }>
               <NavBar />
             </Suspense>
-            <div className="pt-14">
+            <div className="pt-14 pb-16 md:pb-0">
               {children}
             </div>
+            <Suspense fallback={null}>
+              <MobileBottomNav />
+            </Suspense>
             <AuthModal />
             <Toaster richColors position="bottom-right" />
           </AuthProvider>

@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PlannerWidget from "./PlannerWidget";
 import LivePreviewCard from "./LivePreviewCard";
+import MobileLivePreviewBar from "./MobileLivePreviewBar";
 import { Spot } from "@/lib/types";
 
 interface HeroSectionProps {
@@ -194,6 +195,14 @@ export default function HeroSection({ spots }: HeroSectionProps) {
           </div>
         </div>
       </div>
+
+      {/* Mobile Sticky Live Recommendation Bar & Bottom Sheet */}
+      <MobileLivePreviewBar
+        squadSize={squadSize}
+        budget={budget}
+        vibe={vibe}
+        recommendedSpot={recommendedSpot}
+      />
     </motion.section>
   );
 }
