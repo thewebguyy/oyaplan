@@ -9,6 +9,8 @@ import { TrustFooter } from "./editorial/TrustFooter";
 import { ChangeSummary } from "./editorial/ChangeSummary";
 import { ExclusionList } from "./editorial/ExclusionList";
 import { formatConfidenceEvidence } from "@/lib/utils/editorialFormatter";
+import { getVibeConfig } from "@/lib/constants/vibes";
+import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 import { Shield, Check } from "lucide-react";
 
 interface EditorialPlanProps {
@@ -115,14 +117,14 @@ export default function EditorialPlan({
               <span className="text-palm-green font-bold select-none">•</span>
               <span>
                 {input.startArea && input.startArea !== "anywhere"
-                  ? `Bolt rides are under 20 mins from ${input.startArea}`
+                  ? calculateTransportTime(input.startArea, plan.spot.coordinates).displayCopy
                   : "Bolt transport costs are factored into standard Lagos routes"
                 }
               </span>
             </li>
             <li className="flex items-start gap-2.5 text-sm text-text-secondary">
               <span className="text-palm-green font-bold select-none">•</span>
-              <span>Hits your chosen {input.vibe.toLowerCase()} vibe</span>
+              <span>{getVibeConfig(input.vibe).receiptFull}</span>
             </li>
             <li className="flex items-start gap-2.5 text-sm text-text-secondary">
               <span className="text-palm-green font-bold select-none">•</span>

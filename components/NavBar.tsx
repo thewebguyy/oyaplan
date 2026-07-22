@@ -142,7 +142,7 @@ export default function NavBar() {
             <Button 
               onClick={() => openModal()}
               variant="outline" 
-              className="h-10 rounded-full type-label px-5 border-border-default hover:bg-surface-grey"
+              className="h-9 md:h-10 rounded-full type-label px-3.5 md:px-5 border-border-default hover:bg-surface-grey text-xs md:text-sm font-bold"
             >
               Sign In
             </Button>
