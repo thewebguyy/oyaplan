@@ -7,7 +7,7 @@ import HeroSection from "@/components/HeroSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import HowItWorksSection from "@/components/HowItWorksSection";
-import OriginStorySection from "@/components/OriginStorySection";
+import { FounderStorySection } from "@/components/home/FounderStorySection";
 import { getForgeSpots } from "@/lib/queries/spots";
 import { Spot } from "@/lib/types";
 
@@ -31,14 +31,14 @@ export default async function LandingPage() {
       {/* Redesigned Hero Section (incorporates sequential narrative panels and interactive sliders) */}
       <HeroSection spots={spots} />
 
-      {/* Redesigned Trust Section (moved to position #2 in layout) */}
+      {/* Redesigned Trust Section (position #2 in layout) */}
       <TrustSection />
+
+      {/* Founder Story Narrative Section (position #3 in layout: post-planner, pre-how-it-works) */}
+      <FounderStorySection />
 
       {/* How OyaPlan Works Section */}
       <HowItWorksSection />
-
-      {/* Origin Story Narrative Section */}
-      <OriginStorySection />
 
       {/* ── CHAPTER 2: Collections — full-bleed ── */}
       <section className="section-exciting w-full py-16 sm:py-20">

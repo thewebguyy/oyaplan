@@ -171,7 +171,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
         {/* Content Area: Side-by-side on desktop, vertical stack on mobile */}
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 lg:gap-8">
           {/* Left Column: Planner Widget (62% width on desktop) */}
-          <div className="w-full md:w-[62%]">
+          <div id="planner-widget" className="w-full md:w-[62%]">
             <PlannerWidget
               squadSize={squadSize}
               setSquadSize={setSquadSize}
