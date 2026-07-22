@@ -9,6 +9,7 @@ import HeroSection from "@/components/HeroSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import HowItWorksSection from "@/components/HowItWorksSection";
+import OriginStorySection from "@/components/OriginStorySection";
 import { getForgeSpots } from "@/lib/queries/spots";
 import { Spot } from "@/lib/types";
 
@@ -37,6 +38,9 @@ export default async function LandingPage() {
 
       {/* How OyaPlan Works Section */}
       <HowItWorksSection />
+
+      {/* Origin Story Narrative Section */}
+      <OriginStorySection />
 
       {/* ── CHAPTER 2: Collections — full-bleed ── */}
       <section className="section-exciting w-full py-16 sm:py-20">
