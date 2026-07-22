@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect, Suspense } from "react";
+"use client";
+
+import { useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { submitOperatorInquiry } from "@/lib/actions/submitOperatorInquiry";
 import { Button } from "@/components/ui/button";
@@ -78,15 +80,6 @@ function ListYourSpotContent() {
     howHeard: "",
     notes: isClaim ? "Claiming existing venue profile" : ""
   });
-
-  useEffect(() => {
-    if (isClaim) {
-      setFormData((prev) => ({
-        ...prev,
-        notes: prev.notes || "Claiming existing venue profile",
-      }));
-    }
-  }, [isClaim]);
 
   const scrollToForm = (tier: string) => {
     setFormData(prev => ({ ...prev, listingTier: tier }));

@@ -10,6 +10,9 @@ import { useTransportCost } from "@/hooks/useTransportCost";
 
 import { Spot } from "@/lib/types";
 
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+
 interface PlannerWidgetProps {
   squadSize: number;
   setSquadSize: (val: number) => void;
@@ -19,6 +22,8 @@ interface PlannerWidgetProps {
   setVibe: (val: string | null) => void;
   recommendedSpot: Spot | null;
   prefilledLocation?: string;
+  selectedArea?: Location | null;
+  setSelectedArea?: (area: Location | null) => void;
 }
 
 const PRIMARY_VIBES = [
@@ -51,13 +56,16 @@ export default function PlannerWidget({
   setVibe,
   recommendedSpot,
   prefilledLocation,
+  selectedArea: controlledArea,
+  setSelectedArea: setControlledArea,
 }: PlannerWidgetProps) {
   const router = useRouter();
   const [showMoreVibes, setShowMoreVibes] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
 
   // NEW LOCATION STATE & PREFERENCES
-  const [selectedArea, setSelectedArea] = useState<Location | null>(() => {
+  const [internalArea, setInternalArea] = useState<Location | null>(() => {
     if (prefilledLocation) {
       return (
         LocationService.getVerifiedAreas().find(
@@ -66,8 +74,16 @@ export default function PlannerWidget({
       );
     }
     const saved = LocationService.getUserLocation();
-    return saved ? LocationService.getNearestArea(saved) : null;
+    return saved ? LocationService.getNearestArea(saved) : LocationService.getVerifiedAreas()[0];
   });
+
+  const selectedArea = controlledArea !== undefined ? controlledArea : internalArea;
+  const updateArea = (area: Location | null) => {
+    if (setControlledArea) {
+      setControlledArea(area);
+    }
+    setInternalArea(area);
+  };
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(() => {
     return LocationService.getUserLocation();
@@ -104,12 +120,22 @@ export default function PlannerWidget({
   const budgetPct = ((budget - 10000) / 90000) * 100;
 
   const handleUseCurrentLocation = async () => {
-    const current = await LocationService.getCurrentLocation();
-    if (current) {
-      setUserLocation(current);
-      LocationService.saveUserLocation(current);
-      const nearest = LocationService.getNearestArea(current);
-      setSelectedArea(nearest);
+    setIsLocating(true);
+    try {
+      const current = await LocationService.getCurrentLocation();
+      if (current) {
+        setUserLocation(current);
+        LocationService.saveUserLocation(current);
+        const nearest = LocationService.getNearestArea(current);
+        updateArea(nearest);
+        toast.success(`Location set to ${nearest.name}`);
+      } else {
+        toast.error("Could not access location. Please pick an area below.");
+      }
+    } catch {
+      toast.error("Could not access current location.");
+    } finally {
+      setIsLocating(false);
     }
   };
 
@@ -171,9 +197,17 @@ export default function PlannerWidget({
             <button
               type="button"
               onClick={handleUseCurrentLocation}
-              className="text-xs font-bold text-[#008751] hover:underline cursor-pointer"
+              disabled={isLocating}
+              className="text-xs font-bold text-[#008751] hover:underline cursor-pointer flex items-center gap-1.5"
             >
-              Use My Location
+              {isLocating ? (
+                <>
+                  <Loader2 className="w-3 h-3 animate-spin text-[#008751]" />
+                  <span>Locating...</span>
+                </>
+              ) : (
+                "Use My Location"
+              )}
             </button>
           </div>
 
@@ -185,7 +219,7 @@ export default function PlannerWidget({
                   key={area.id}
                   type="button"
                   onClick={() => {
-                    setSelectedArea(area);
+                    updateArea(area);
                   }}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                     isSelected

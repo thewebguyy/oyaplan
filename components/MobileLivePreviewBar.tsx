@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, MapPin, ChevronUp, X, Check, ShieldCheck } from "lucide-react";
+import { MapPin, ChevronUp, X, Check, ShieldCheck } from "lucide-react";
 import { Spot } from "@/lib/types";
 import Link from "next/link";
 

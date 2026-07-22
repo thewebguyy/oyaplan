@@ -32,11 +32,17 @@ const PHRASES = [
   "Right place • Right price • Right occasion",
 ];
 
+import { LocationService, Location } from "@/lib/services/LocationService";
+
 export default function HeroSection({ spots }: HeroSectionProps) {
   // Shared state coordinated between inputs and live preview
   const [squadSize, setSquadSize] = useState<number>(3);
   const [budget, setBudget] = useState<number>(50000);
   const [vibe, setVibe] = useState<string | null>(null);
+  const [selectedArea, setSelectedArea] = useState<Location | null>(() => {
+    const saved = LocationService.getUserLocation();
+    return saved ? LocationService.getNearestArea(saved) : LocationService.getVerifiedAreas()[0];
+  });
 
   const [phraseIndex, setPhraseIndex] = useState(0);
 
@@ -62,6 +68,15 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     let bestScore = -Infinity;
 
     activeSpots.forEach((spot) => {
+      // Score 0: Location Match Boost
+      let areaScore = 0;
+      if (selectedArea) {
+        const areaId = selectedArea.id.toLowerCase();
+        const spotArea = (spot.area_id || spot.address_slug || spot.address || "").toLowerCase();
+        if (spotArea.includes(areaId) || areaId.includes(spotArea)) {
+          areaScore = 150;
+        }
+      }
       const foodCost = spot.price_per_person * squadSize;
       const taxCost = foodCost * 0.1;
       const totalCost = foodCost + transportEstimate + taxCost;
@@ -113,7 +128,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
         budgetScore = -200 * ((totalCost - budget) / budget);
       }
 
-      const totalScore = vibeScore + budgetScore;
+      const totalScore = areaScore + vibeScore + budgetScore;
       if (totalScore > bestScore) {
         bestScore = totalScore;
         bestSpot = spot;
@@ -121,7 +136,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     });
 
     return bestSpot;
-  }, [spots, squadSize, budget, vibe]);
+  }, [spots, squadSize, budget, vibe, selectedArea]);
 
   return (
     <motion.section
@@ -180,6 +195,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
               vibe={vibe}
               setVibe={setVibe}
               recommendedSpot={recommendedSpot}
+              selectedArea={selectedArea}
+              setSelectedArea={setSelectedArea}
             />
           </div>
 
