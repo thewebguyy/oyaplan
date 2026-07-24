@@ -218,6 +218,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
         budget={budget}
         vibe={vibe}
         recommendedSpot={recommendedSpot}
+        startAreaId={selectedArea?.id ?? null}
       />
     </motion.section>
   );

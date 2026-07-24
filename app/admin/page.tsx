@@ -9,6 +9,7 @@ import {
   getDataHealthKPIs,
   getPendingEvidence,
 } from "@/lib/queries/admin";
+import { getSpendAccuracyStats } from "@/lib/queries/actualSpend";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 import { redirect } from "next/navigation";
 import PageError from "@/components/PageError";
@@ -41,6 +42,11 @@ export default async function AdminDashboard() {
   let staleSpots: Array<{ id: string; name: string; price_updated_at: string; verified_by: string | null; active: boolean }> = [];
   let pendingEvidence: PendingEvidenceItem[] = [];
   let dataHealth: { confidence_histogram: { high: number; medium: number; low: number }; freshness_distribution: Record<string, number>; moderation_backlog: number; receipts_this_week: number; avg_confidence: number; error_p50: number; error_p90: number; total_venues: number; total_evidence: number } | null = null;
+  let spendAccuracy: Awaited<ReturnType<typeof getSpendAccuracyStats>> = {
+    submissionsThisWeek: 0,
+    medianAccuracyPct: 0,
+    highVarianceSpots: [],
+  };
 
   try {
     const [
@@ -73,7 +79,12 @@ export default async function AdminDashboard() {
       staleSpots = (staleSpotsResult.data || []) as typeof staleSpots;
       if (dataHealthResult.data) dataHealth = dataHealthResult.data;
 
-      const { data: pendingEvidenceData } = await getPendingEvidence(serverClient);
+      const [pendingEvidenceResult, spendAccuracyResult] = await Promise.all([
+        getPendingEvidence(serverClient),
+        getSpendAccuracyStats(serverClient),
+      ]);
+      const { data: pendingEvidenceData } = pendingEvidenceResult;
+      spendAccuracy = spendAccuracyResult;
 
       pendingEvidence = (pendingEvidenceData || []).map(item => {
         const venueObj = Array.isArray(item.venues) 
@@ -189,7 +200,59 @@ export default async function AdminDashboard() {
           ))}
         </div>
 
-        {/* Price Freshness Monitoring */}
+        {/* Spend Accuracy — Flywheel Health */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-gray-900">Spend Accuracy Flywheel</h2>
+            <span className="px-3 py-1 text-xs font-black uppercase rounded-full bg-green-100 text-green-700">
+              {spendAccuracy.submissionsThisWeek} submissions this week
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-5 bg-white border border-gray-200 rounded-2xl">
+              <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Submissions This Week</p>
+              <p className="text-2xl font-black text-[#008751]">{spendAccuracy.submissionsThisWeek}</p>
+            </div>
+            <div className="p-5 bg-white border border-gray-200 rounded-2xl">
+              <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Median Accuracy</p>
+              <p className="text-2xl font-black text-[#008751]">
+                {spendAccuracy.medianAccuracyPct > 0 ? `${spendAccuracy.medianAccuracyPct}%` : "—"}
+              </p>
+            </div>
+            <div className="p-5 bg-white border border-gray-200 rounded-2xl">
+              <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">High-Variance Spots</p>
+              <p className="text-2xl font-black text-amber-600">{spendAccuracy.highVarianceSpots.length}</p>
+            </div>
+          </div>
+          {spendAccuracy.highVarianceSpots.length > 0 && (
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                    <th className="px-6 py-3">Spot ID</th>
+                    <th className="px-6 py-3">Reports</th>
+                    <th className="px-6 py-3 text-right">Avg Variance</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {spendAccuracy.highVarianceSpots.map((s, i) => (
+                    <tr key={i} className="text-sm font-medium">
+                      <td className="px-6 py-3 font-mono text-xs text-gray-500">{s.spot_id?.slice(0, 8) ?? "unknown"}…</td>
+                      <td className="px-6 py-3">{s.count}</td>
+                      <td className="px-6 py-3 text-right">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                          s.variance_pct > 25 ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-600"
+                        }`}>
+                          ±{s.variance_pct}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black text-gray-900">Price Freshness Monitoring</h2>

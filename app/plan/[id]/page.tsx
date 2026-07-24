@@ -1,6 +1,7 @@
 import { captureServerException } from "@/lib/sentry";
 import { getSharedPlanWithSpot } from "@/lib/queries/plans";
 import { getForgeSpots } from "@/lib/queries/spots";
+import { getSpendSummaryForSpot } from "@/lib/queries/actualSpend";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -19,11 +20,13 @@ import { AREAS } from "@/lib/config/areas";
 import { TrustStatus } from "@/components/ui/trust-badge";
 import { BudgetFitStatus } from "@/components/ui/budget-fit-badge";
 import { SharedPlanRow } from "@/lib/types";
+import { TrendingUp } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 interface PlanPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ feedback?: string }>;
 }
 
 export async function generateMetadata({ params }: PlanPageProps): Promise<Metadata> {
@@ -54,8 +57,10 @@ export async function generateMetadata({ params }: PlanPageProps): Promise<Metad
   }
 }
 
-export default async function PlanPage({ params }: PlanPageProps) {
+export default async function PlanPage({ params, searchParams }: PlanPageProps) {
   const { id } = await params;
+  const { feedback } = await searchParams;
+  const isFeedbackFlow = feedback === "true";
 
   let plan: SharedPlanRow | undefined;
   let planFetchError = false;
@@ -74,10 +79,17 @@ export default async function PlanPage({ params }: PlanPageProps) {
     planFetchError = true;
   }
 
-  let spots: any[] = [];
+  let spots: Awaited<ReturnType<typeof getForgeSpots>>["data"] = [];
+  let spendSummary: Awaited<ReturnType<typeof getSpendSummaryForSpot>> = null;
   try {
-    const spotsResult = await getForgeSpots();
+    const [spotsResult] = await Promise.all([
+      getForgeSpots(),
+    ]);
     spots = spotsResult.data || [];
+    // Fetch spend summary if we have a spot ID
+    if (plan?.spot?.id) {
+      spendSummary = await getSpendSummaryForSpot(plan.spot.id);
+    }
   } catch (e) {
     captureServerException(e);
   }
@@ -190,8 +202,35 @@ export default async function PlanPage({ params }: PlanPageProps) {
         <WhyWePickedThis plan={plan!} />
         <BeforeYouGo />
 
+        {/* Spend Accuracy Badge — only when we have 5+ reports */}
+        {spendSummary && spendSummary.count >= 5 && (
+          <div className="w-full flex items-center gap-3 bg-[#F0FBF5] border border-[#008751]/20 rounded-2xl px-5 py-4">
+            <TrendingUp className="w-5 h-5 text-[#008751] shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-black text-[#008751] uppercase tracking-wider">Community Accuracy</p>
+              <p className="text-sm font-semibold text-[#1A1A1A] leading-snug">
+                Based on {spendSummary.count} squads: ₦{spendSummary.medianActual.toLocaleString()} median spend
+                {spendSummary.variancePct <= 10 && " — highly accurate"}
+                {spendSummary.variancePct > 10 && spendSummary.variancePct <= 20 && " — good estimate"}
+                {spendSummary.variancePct > 20 && ` — ±${spendSummary.variancePct}% variance`}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Utility / Feedback block */}
-        <div className="pt-16 pb-8 space-y-6">
+        <div className="pt-16 pb-8 space-y-6" id="spend-feedback">
+          {isFeedbackFlow && (
+            <div className="w-full bg-[#FCC630]/10 border border-[#FCC630]/40 rounded-2xl px-5 py-4 flex items-start gap-3">
+              <span className="text-xl">👋</span>
+              <div>
+                <p className="text-sm font-black text-[#1A1A1A]">You&apos;re back!</p>
+                <p className="text-sm text-[#4B5563] leading-snug">
+                  Tell us what you actually spent — it takes 10 seconds and helps future squads get better estimates.
+                </p>
+              </div>
+            </div>
+          )}
           <ActualSpendCapture
             sharedPlanId={plan?.id || id}
             spotId={plan?.spot?.id ?? null}

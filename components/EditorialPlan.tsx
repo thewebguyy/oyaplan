@@ -12,6 +12,8 @@ import { formatConfidenceEvidence } from "@/lib/utils/editorialFormatter";
 import { getVibeConfig } from "@/lib/constants/vibes";
 import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 import { Shield, Check } from "lucide-react";
+import RouteCard from "./dossier/RouteCard";
+import { LocationService } from "@/lib/services/LocationService";
 
 interface EditorialPlanProps {
   evaluation: PlanEvaluation;
@@ -132,6 +134,26 @@ export default function EditorialPlan({
             </li>
           </ul>
         </div>
+
+        {/* Route Card — only when we have a start area and venue coordinates */}
+        {input.startArea && input.startArea !== "anywhere" && plan.spot.coordinates && (() => {
+          const startArea = LocationService.getVerifiedAreas().find(
+            (a) => a.id === input.startArea
+          );
+          if (!startArea) return null;
+          const transport = calculateTransportTime(input.startArea, plan.spot.coordinates);
+          return (
+            <RouteCard
+              startAreaName={startArea.name}
+              startAreaSlug={input.startArea}
+              venueName={plan.spot.name}
+              venueAddress={plan.spot.address}
+              venueCoords={plan.spot.coordinates}
+              transportCost={plan.transportCost}
+              distanceKm={transport.distanceKm}
+            />
+          );
+        })()}
 
         <ChangeSummary changes={evaluation.changes} />
 

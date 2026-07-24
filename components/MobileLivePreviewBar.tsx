@@ -5,12 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, ChevronUp, X, Check, ShieldCheck } from "lucide-react";
 import { Spot } from "@/lib/types";
 import Link from "next/link";
+import RouteCard from "./dossier/RouteCard";
+import { LocationService } from "@/lib/services/LocationService";
+import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 
 interface MobileLivePreviewBarProps {
   squadSize: number;
   budget: number;
   vibe: string | null;
   recommendedSpot: Spot | null;
+  startAreaId?: string | null;
 }
 
 export default function MobileLivePreviewBar({
@@ -18,6 +22,7 @@ export default function MobileLivePreviewBar({
   budget,
   vibe,
   recommendedSpot,
+  startAreaId,
 }: MobileLivePreviewBarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -171,6 +176,24 @@ export default function MobileLivePreviewBar({
                   </Link>
                 </div>
               </div>
+
+              {/* Route Card — only when venue has coordinates and user has a start area */}
+              {recommendedSpot.coordinates && startAreaId && (() => {
+                const startArea = LocationService.getVerifiedAreas().find((a) => a.id === startAreaId);
+                if (!startArea) return null;
+                const transport = calculateTransportTime(startAreaId, recommendedSpot.coordinates);
+                return (
+                  <RouteCard
+                    startAreaName={startArea.name}
+                    startAreaSlug={startAreaId}
+                    venueName={recommendedSpot.name}
+                    venueAddress={recommendedSpot.address || ""}
+                    venueCoords={recommendedSpot.coordinates}
+                    transportCost={transportCost}
+                    distanceKm={transport.distanceKm}
+                  />
+                );
+              })()}
             </motion.div>
           </div>
         )}
