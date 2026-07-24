@@ -32,8 +32,9 @@ describe("Chain Planner Service", () => {
           transport_matrix: {},
           is_featured: false,
           active: true,
+          vibe_tags: [],
           coordinates: { lat: 6.5095, lng: 3.3711 }, // Medium distance
-        },
+        } as Spot,
         {
           id: "spot-lekki",
           name: "Lekki Spot",
@@ -43,8 +44,9 @@ describe("Chain Planner Service", () => {
           transport_matrix: {},
           is_featured: false,
           active: true,
+          vibe_tags: [],
           coordinates: { lat: 6.4480, lng: 3.4730 }, // Very close to start
-        },
+        } as Spot,
       ];
 
       const ordered = sequenceStopsGeographically(spots, startCoords);

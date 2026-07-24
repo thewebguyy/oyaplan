@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Spot, Location } from "@/lib/services/LocationService";
+import { Location } from "@/lib/services/LocationService";
+import { Spot } from "@/lib/types";
 import { generateChainPlan, ChainPlanResult } from "@/lib/services/chainPlanner";
 import { CHAIN_VIBE_SEQS } from "@/lib/config/chainVibes";
 import { MapPin, Sparkles, Navigation, AlertCircle, Plus, Trash2, ArrowRight } from "lucide-react";
