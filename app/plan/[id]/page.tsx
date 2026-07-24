@@ -7,6 +7,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
 import ActualSpendCapture from "@/components/ActualSpendCapture";
+import PlanVoting from "@/components/PlanVoting";
 import PlanViewTracker from "@/components/PlanViewTracker";
 import Image from "next/image";
 
@@ -19,7 +20,7 @@ import { WhyWePickedThis } from "@/components/dossier/WhyWePickedThis";
 import { AREAS } from "@/lib/config/areas";
 import { TrustStatus } from "@/components/ui/trust-badge";
 import { BudgetFitStatus } from "@/components/ui/budget-fit-badge";
-import { SharedPlanRow } from "@/lib/types";
+import { SharedPlanRow, Spot } from "@/lib/types";
 import { TrendingUp } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -187,6 +188,16 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           foodCost={plan?.food_cost || 0}
           transportCost={plan?.transport_cost || 0}
           totalCost={plan?.total_cost || 0}
+        />
+
+        {/* Squad Voting Consensus builder */}
+        <PlanVoting
+          planId={plan?.id || id}
+          originalBudget={plan?.budget || plan?.total_cost || 0}
+          squadSize={plan?.squad_size || 1}
+          currentSpot={plan?.spot as Spot}
+          startArea={plan?.start_area || "lekki"}
+          spotsList={spots || []}
         />
 
         {/* Create My Own Plan CTA for viewers */}
