@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, Tag, FileText, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
+import { Clock, Tag, FileText, CheckCircle2, Loader2 } from "lucide-react";
 import { submitVenueEditRequest } from "@/lib/queries/operator";
+import { Venue } from "@/lib/types";
 
 interface MenuItem {
   id: string;
@@ -14,7 +15,7 @@ interface MenuItem {
 
 interface ManageVenueClientProps {
   userId: string;
-  venue: any;
+  venue: Venue;
   initialMenuItems: MenuItem[];
 }
 
@@ -23,7 +24,7 @@ export default function ManageVenueClient({
   venue,
   initialMenuItems,
 }: ManageVenueClientProps) {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
+  const menuItems = initialMenuItems;
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [newPrice, setNewPrice] = useState("");
   const [loading, setLoading] = useState(false);

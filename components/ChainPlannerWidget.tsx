@@ -5,10 +5,10 @@ import { Location } from "@/lib/services/LocationService";
 import { Spot } from "@/lib/types";
 import { generateChainPlan, ChainPlanResult } from "@/lib/services/chainPlanner";
 import { CHAIN_VIBE_SEQS } from "@/lib/config/chainVibes";
-import { MapPin, Sparkles, Navigation, AlertCircle, Plus, Trash2, ArrowRight } from "lucide-react";
+import { Sparkles, Navigation, AlertCircle, Plus, Trash2 } from "lucide-react";
 
 interface ChainPlannerWidgetProps {
-  spots: any[];
+  spots: Spot[];
   areas: Location[];
 }
 
@@ -47,7 +47,7 @@ export default function ChainPlannerWidget({
 
     const spotsObjects = currentSpots
       .map((id) => spots.find((s) => s.id === id))
-      .filter(Boolean);
+      .filter(Boolean) as Spot[];
 
     const result = generateChainPlan(
       startArea,
@@ -143,7 +143,7 @@ export default function ChainPlannerWidget({
                   // Trigger update with new config
                   const spotsObjects = selectedSpots
                     .map((id) => spots.find((s) => s.id === id))
-                    .filter(Boolean);
+                    .filter(Boolean) as Spot[];
                   const result = generateChainPlan(
                     startArea,
                     budget,
