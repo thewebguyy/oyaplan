@@ -20,6 +20,7 @@ interface EditorialPlanProps {
   input: ForgeInput;
   planId?: string;
   isTopPick?: boolean;
+  alternativeIndex?: number;
   originalBudget?: number;
   onAdjustBudget?: (delta: number) => void;
   isAdjusting?: boolean;
@@ -30,6 +31,7 @@ export default function EditorialPlan({
   input, 
   planId: initialPlanId, 
   isTopPick = false, 
+  alternativeIndex = 0,
   originalBudget, 
   onAdjustBudget, 
   isAdjusting = false 
@@ -42,18 +44,26 @@ export default function EditorialPlan({
     return words[size - 1] || size.toString();
   };
 
+  const getCardClasses = () => {
+    if (isTopPick) {
+      return "border-none shadow-[0px_28px_56px_-10px_rgba(1,5,40,0.15),0px_4px_0px_0px_rgba(0,135,81,0.9)] rounded-[32px] bg-white";
+    }
+    // Alternative 1: Yellow style
+    if (alternativeIndex === 0) {
+      return "bg-[#FEFCE8] border-2 border-[#FCC630] shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
+    }
+    // Alternative 2: Purple style
+    return "bg-[#FAF5FF] border-2 border-[#A855F7]/40 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
+  };
+
   return (
-    <div className={`w-full bg-white transition-[colors,box-shadow,transform] overflow-hidden ${
-      isTopPick 
-        ? "border-none shadow-[0px_28px_56px_-10px_rgba(1,5,40,0.15),0px_4px_0px_0px_rgba(0,135,81,0.9)] rounded-[32px]" 
-        : "border border-border-default/60 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]"
-    }`} style={{ transitionDuration: 'var(--duration-editorial)' }}>
+    <div className={`w-full transition-[colors,box-shadow,transform] overflow-hidden ${getCardClasses()}`} style={{ transitionDuration: 'var(--duration-editorial)' }}>
       
-      <PlanHeader input={input} plan={plan} isTopPick={isTopPick} />
+      <PlanHeader input={input} plan={plan} isTopPick={isTopPick} alternativeIndex={alternativeIndex} />
 
       <div className="w-full h-px bg-border-default/50" />
 
-      <div className={`${isTopPick ? 'px-6 sm:px-10 py-10' : 'px-6 sm:px-10 py-8'} bg-white space-y-6`}>
+      <div className={`${isTopPick ? 'px-6 sm:px-10 py-10 bg-white' : 'px-6 sm:px-10 py-8 bg-transparent'} space-y-6`}>
         {/* Decision Summary Callout */}
         {plan.decisionSummary && (
           <div className="bg-[#FAFAF8] border border-border-default/50 rounded-[20px] p-6 shadow-xs relative overflow-hidden flex items-start gap-4">
@@ -174,6 +184,7 @@ export default function EditorialPlan({
       <TrustFooter 
         plan={plan} 
         actions={<PlanActions plan={plan} input={input} initialPlanId={initialPlanId} />} 
+        isTopPick={isTopPick}
       />
     </div>
   );

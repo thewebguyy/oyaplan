@@ -8,12 +8,14 @@ import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { formatRecoverySuggestion } from "@/lib/utils/editorialFormatter";
 import EditorialPlan from "@/components/EditorialPlan";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ArrowLeft, AlertCircle } from "lucide-react";
+import { RefreshCw, ArrowLeft, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import DossierDropWrapper from "@/components/DossierDropWrapper";
 import VerificationReceiptLoader from "@/components/VerificationReceiptLoader";
 import { Input } from "@/components/ui/input";
+import { Sliders, Check, X } from "lucide-react";
+import { LocationService, Location } from "@/lib/services/LocationService";
 import {
   Select,
   SelectContent,
@@ -44,6 +46,11 @@ export default function ForgeResultsClient({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isRevealed, setIsRevealed] = useState(evaluations.length === 0);
+  const [isAdjustingInline, setIsAdjustingInline] = useState(false);
+  const [tempBudget, setTempBudget] = useState(forgeInput.budget);
+  const [tempSquadSize, setTempSquadSize] = useState(forgeInput.squadSize);
+  const [tempVibe, setTempVibe] = useState(forgeInput.vibe);
+  const [tempArea, setTempArea] = useState(forgeInput.startArea || "anywhere");
 
   // Save to localStorage post-hydration
   useEffect(() => {
@@ -127,6 +134,35 @@ export default function ForgeResultsClient({
 
     startTransition(() => {
       router.push(`/forge?${params.toString()}`, { scroll: false });
+    });
+  };
+
+  const handleApplyInlineAdjust = () => {
+    // Map vibe tag back to URL tag
+    const VIBE_TO_URL_MAP: Record<string, string> = {
+      "Dinner": "date-night",
+      "Chill": "chill",
+      "Foodie": "foodie",
+      "Party": "party",
+      "Quick": "quick-link",
+      "Brunch": "brunch"
+    };
+    const urlVibe = VIBE_TO_URL_MAP[tempVibe] || tempVibe;
+
+    const params = new URLSearchParams();
+    params.set("vibe", urlVibe);
+    params.set("squad", tempSquadSize.toString());
+    params.set("budget", tempBudget.toString());
+    if (tempArea && tempArea !== "anywhere") {
+      params.set("area", tempArea);
+    }
+    if (forgeInput.pinnedSpotId) {
+      params.set("pinned", forgeInput.pinnedSpotId);
+    }
+
+    startTransition(() => {
+      router.push(`/forge?${params.toString()}`, { scroll: false });
+      setIsAdjustingInline(false);
     });
   };
 
@@ -216,12 +252,15 @@ export default function ForgeResultsClient({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href={adjustUrl}>
-            <button className="type-label text-text-secondary hover:text-midnight-lagoon transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-[10px]">
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Adjust plan
-            </button>
-          </Link>
+          <button
+            onClick={() => setIsAdjustingInline(!isAdjustingInline)}
+            className={`type-label text-text-secondary transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-[10px] ${
+              isAdjustingInline ? "bg-[#008751]/10 text-[#008751]" : "hover:text-midnight-lagoon"
+            }`}
+          >
+            <Sliders className="w-3.5 h-3.5" />
+            Adjust parameters
+          </button>
           <button 
             className="bg-midnight-lagoon hover:bg-charcoal text-white type-label h-[44px] px-6 rounded-[10px] tap-feedback btn-spring flex items-center gap-2 border-none shadow-none transition-colors duration-[250ms]"
             onClick={() => router.refresh()}
@@ -231,6 +270,86 @@ export default function ForgeResultsClient({
           </button>
         </div>
       </div>
+
+      {/* Inline Adjuster Panel */}
+      {isAdjustingInline && (
+        <div className="bg-white border border-border-default rounded-2xl p-6 shadow-lagoon animate-in slide-in-from-top duration-200 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+            <h3 className="text-sm font-black text-midnight-lagoon uppercase tracking-wider">Adjust Outing Parameters</h3>
+            <button onClick={() => setIsAdjustingInline(false)} className="text-text-muted hover:text-black">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Budget (₦)</label>
+              <input
+                type="text"
+                value={tempBudget}
+                onChange={(e) => setTempBudget(parseInt(e.target.value.replace(/[^0-9]/g, "")) || 0)}
+                className="w-full h-10 px-3 bg-surface-grey border border-border-default rounded-[8px] text-xs font-bold focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Squad Size</label>
+              <input
+                type="number"
+                min="1"
+                max="20"
+                value={tempSquadSize}
+                onChange={(e) => setTempSquadSize(parseInt(e.target.value) || 1)}
+                className="w-full h-10 px-3 bg-surface-grey border border-border-default rounded-[8px] text-xs focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Vibe</label>
+              <select
+                value={tempVibe}
+                onChange={(e) => setTempVibe(e.target.value)}
+                className="w-full h-10 px-2 bg-surface-grey border border-border-default rounded-[8px] text-xs focus:outline-none"
+              >
+                <option value="Dinner">Date Night</option>
+                <option value="Chill">Chill Vibe</option>
+                <option value="Foodie">Serious Chop</option>
+                <option value="Party">Turn Up</option>
+                <option value="Quick">Quick Linkup</option>
+                <option value="Brunch">Brunch Vibe</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Area</label>
+              <select
+                value={tempArea}
+                onChange={(e) => setTempArea(e.target.value)}
+                className="w-full h-10 px-2 bg-surface-grey border border-border-default rounded-[8px] text-xs focus:outline-none"
+              >
+                <option value="anywhere">Anywhere</option>
+                {LocationService.getVerifiedAreas().map((a: Location) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              onClick={() => setIsAdjustingInline(false)}
+              className="px-4 h-9 border border-border-default text-text-primary text-xs font-bold uppercase rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleApplyInlineAdjust}
+              disabled={isPending}
+              className="px-5 h-9 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase rounded-lg flex items-center gap-1 transition-colors"
+            >
+              {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              <span>Update Plan</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {evaluations.length > 0 ? (
         <DossierDropWrapper className="space-y-12 dossier-grid">
@@ -269,6 +388,7 @@ export default function ForgeResultsClient({
                     key={`other-${evaluation.plan.spot.id}`}
                     evaluation={evaluation} 
                     isTopPick={false} 
+                    alternativeIndex={index}
                     input={forgeInput} 
                     originalBudget={forgeInput.budget}
                     onAdjustBudget={handleAdjustBudget}

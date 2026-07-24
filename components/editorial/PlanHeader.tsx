@@ -4,7 +4,17 @@ import { ForgeInput, Plan } from "@/lib/types";
 import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 
-export function PlanHeader({ input, plan, isTopPick = false }: { input: ForgeInput; plan: Plan; isTopPick?: boolean }) {
+export function PlanHeader({
+  input,
+  plan,
+  isTopPick = false,
+  alternativeIndex = 0
+}: {
+  input: ForgeInput;
+  plan: Plan;
+  isTopPick?: boolean;
+  alternativeIndex?: number;
+}) {
   const getHeadline = () => {
     const v = input.vibe?.toLowerCase() || '';
     const dp = input.daypart?.toLowerCase() || '';
@@ -21,8 +31,13 @@ export function PlanHeader({ input, plan, isTopPick = false }: { input: ForgeInp
     return 'CHILL HANGOUT';
   };
 
+  const getHeaderBg = () => {
+    if (isTopPick) return "bg-surface-grey/50";
+    return "bg-transparent";
+  };
+
   return (
-    <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${isTopPick ? 'bg-surface-grey/50' : 'bg-white'}`}>
+    <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
       {isTopPick && (
         <div className="mb-6 flex items-center gap-2 bg-[#F6C642]/12 border border-[#F6C642]/30 text-[#7A5D00] px-4 py-1.5 rounded-full">
           <span className="text-[11px] font-black uppercase tracking-[0.12em]">★ Our top pick</span>
@@ -62,7 +77,7 @@ export function PlanHeader({ input, plan, isTopPick = false }: { input: ForgeInp
       <h2 className="type-display-product text-midnight-lagoon uppercase tracking-tight text-xl sm:text-2xl font-black mb-2">
         {plan.title || getHeadline()}
       </h2>
-      <div className="flex flex-col sm:flex-row items-center gap-2 justify-center">
+      <div className={`flex items-center gap-2 justify-center ${isTopPick ? "flex-col sm:flex-row" : "flex-col"}`}>
         <p className="type-tagline text-text-muted text-lg font-medium">
           {plan.subtitle || `at ${plan.spot.name}`}
         </p>

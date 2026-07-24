@@ -6,10 +6,12 @@ import { ReactNode } from "react";
 
 export function TrustFooter({
   plan,
-  actions
+  actions,
+  isTopPick = true
 }: {
   plan: Plan;
   actions?: ReactNode;
+  isTopPick?: boolean;
 }) {
   const isPricingVerified = !!plan.spot.price_updated_at || (plan.spot.computed_confidence_score && plan.spot.computed_confidence_score > 60);
   const isTransportEstimated = plan.transportCost > 0;
@@ -17,7 +19,9 @@ export function TrustFooter({
   const isAvailabilityVerified = false; // Always pending/unverified since no real-time API booking is available
 
   return (
-    <div className="px-6 sm:px-10 py-8 bg-surface-grey/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div className={`px-6 sm:px-10 py-8 bg-surface-grey/30 flex flex-col gap-6 ${
+      isTopPick ? "lg:flex-row lg:items-center justify-between" : "w-full"
+    }`}>
       <div className="space-y-4">
         <div>
           <p className="type-caption text-text-muted uppercase tracking-wider font-[700] mb-2">Outing Check</p>
@@ -65,7 +69,7 @@ export function TrustFooter({
       </div>
 
       {actions && (
-        <div className="w-full md:w-auto">
+        <div className={`w-full ${isTopPick ? "lg:w-auto" : ""}`}>
           {actions}
         </div>
       )}

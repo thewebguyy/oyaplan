@@ -19,7 +19,7 @@ export default function NavBar() {
   const centerLinks = [
     { name: "Plan", href: "/" },
     { name: "Explore", href: "/explore" },
-    { name: "Saved Ideas", href: "/saved" },
+    { name: "Saved Plans", href: "/saved" },
   ];
 
   return (

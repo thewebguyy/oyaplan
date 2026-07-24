@@ -12,7 +12,7 @@ export default function SavedPage() {
   if (!isLoaded) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <p className="type-body text-text-muted">Loading saved ideas...</p>
+        <p className="type-body text-text-muted">Loading saved plans...</p>
       </div>
     );
   }
@@ -27,10 +27,10 @@ export default function SavedPage() {
           </button>
         </Link>
         <h1 className="type-display-product text-3xl sm:text-4xl font-black">
-          Saved Ideas
+          Saved Plans
         </h1>
         <p className="type-body text-text-muted max-w-xl">
-          Your saved outing spots. You can pre-fill the planner directly from any of these spots when you're ready to go.
+          Your saved outing spots. You can pre-fill the planner directly from any of these spots when you&apos;re ready to go.
         </p>
       </div>
 
@@ -54,9 +54,9 @@ export default function SavedPage() {
                   <div className="absolute top-3 right-3 z-40">
                     <button
                       onClick={() => removeSpot(spot.id)}
-                      aria-label={`Remove ${spot.name} from Saved Ideas`}
+                      aria-label={`Remove ${spot.name} from Saved Plans`}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-full border border-border-default text-red-500 hover:bg-red-50 transition-all tap-feedback"
-                      title="Remove from Saved Ideas"
+                      title="Remove from Saved Plans"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
