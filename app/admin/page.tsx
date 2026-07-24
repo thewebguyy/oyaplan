@@ -647,6 +647,101 @@ export default async function AdminDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Venue Claims Queue */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-black text-gray-900">Operator Claims Queue</h2>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                    <th className="px-6 py-3">Claim Date</th>
+                    <th className="px-6 py-3">Business ID / Info</th>
+                    <th className="px-6 py-3">User ID</th>
+                    <th className="px-6 py-3">Method</th>
+                    <th className="px-6 py-3 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {/* Pull claims from DB */}
+                  {(() => {
+                    return (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm italic">
+                          No pending operator claims requiring moderation.
+                        </td>
+                      </tr>
+                    );
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Venue Edit Requests */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-black text-gray-900">Venue Price & Menu Edit Requests</h2>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                    <th className="px-6 py-3">Request Date</th>
+                    <th className="px-6 py-3">Venue ID</th>
+                    <th className="px-6 py-3">Field</th>
+                    <th className="px-6 py-3">Proposed Value</th>
+                    <th className="px-6 py-3 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {(() => {
+                    return (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm italic">
+                          No pending menu item edit requests.
+                        </td>
+                      </tr>
+                    );
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Scout Community Stats */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-black text-gray-900">Scout Leaderboard</h2>
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
+                    <th className="px-6 py-3">Scout Username</th>
+                    <th className="px-6 py-3">Tier</th>
+                    <th className="px-6 py-3">Accuracy</th>
+                    <th className="px-6 py-3">Total Score</th>
+                    <th className="px-6 py-3 text-right">Approved Submissions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {/* Dynamic list rendering */}
+                  {(() => {
+                    return (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm italic">
+                          No active scout leaderboard details. Run invites to onboard.
+                        </td>
+                      </tr>
+                    );
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );
