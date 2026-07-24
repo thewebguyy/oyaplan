@@ -13,7 +13,7 @@ const FAQ_ITEMS: FAQItem[] = [
   {
     id: "accuracy",
     question: "How accurate is the pricing?",
-    answer: "We verify every menu and check real Bolt fares daily. Pricing is exact to the naira. No markup, no hidden fees. What you see is what you'll pay.",
+    answer: "We verify every menu and check real Uber fares daily. Pricing is exact to the naira. No markup, no hidden fees. What you see is what you'll pay.",
   },
   {
     id: "modify",

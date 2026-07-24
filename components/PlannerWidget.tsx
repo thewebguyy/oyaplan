@@ -83,6 +83,18 @@ export default function PlannerWidget({
       setControlledArea(area);
     }
     setInternalArea(area);
+    if (area) {
+      const areaUserLoc: UserLocation = {
+        id: area.id,
+        name: area.name,
+        coordinates: area.coordinates,
+        type: "saved",
+      };
+      setUserLocation(areaUserLoc);
+      LocationService.saveUserLocation(areaUserLoc);
+    } else {
+      setUserLocation(null);
+    }
   };
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(() => {
@@ -393,7 +405,7 @@ export default function PlannerWidget({
         className="w-full h-14 bg-[#008751] text-white font-bold text-lg rounded-[12px] flex items-center justify-center cursor-pointer shadow-sm hover:brightness-90 active:scale-[0.98] active:shadow-md transition-all duration-150 outline-none focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#008751] focus-visible:outline-offset-2"
         aria-label="Submit criteria and view plan"
       >
-        See My Plan
+        Start Planning
       </button>
     </form>
   );

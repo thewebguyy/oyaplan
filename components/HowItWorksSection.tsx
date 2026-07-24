@@ -4,6 +4,13 @@ import RevealOnScroll from "@/components/motion/RevealOnScroll";
 import { Wallet, MapPin, Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
 
 export default function HowItWorksSection() {
+  const scrollToPlanner = () => {
+    const el = document.getElementById("planner-widget");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   const steps = [
     {
       step: 1,
@@ -55,7 +62,7 @@ export default function HowItWorksSection() {
       icon: ShieldCheck,
       emoji: "🛡️",
       title: "Get verified plan",
-      description: "Venue, Bolt transport, taxes, and service buffer calculated to the last naira.",
+      description: "Venue, Uber transport, taxes, and service buffer calculated to the last naira.",
       badge: "100% Verified",
       cardBg: "bg-[#008751]",
       borderColor: "border-[#008751]",
@@ -93,9 +100,11 @@ export default function HowItWorksSection() {
           {steps.map((s) => {
             const Icon = s.icon;
             return (
-              <div
+              <button
                 key={s.step}
-                className={`${s.cardBg} border-2 ${s.borderColor} rounded-[28px] p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.1)] hover:-translate-y-1.5 hover:rotate-[0.5deg] active:scale-98 transition-all duration-300 group relative overflow-hidden`}
+                type="button"
+                onClick={scrollToPlanner}
+                className={`${s.cardBg} border-2 ${s.borderColor} rounded-[28px] p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.1)] hover:-translate-y-1.5 hover:rotate-[0.5deg] active:scale-98 transition-all duration-300 group relative overflow-hidden text-left cursor-pointer w-full h-full`}
               >
                 <div>
                   {/* Step Sticker Badge & Icon */}
@@ -116,7 +125,7 @@ export default function HowItWorksSection() {
                   </p>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-black/10 flex items-center justify-between">
+                <div className="w-full mt-8 pt-4 border-t border-black/10 flex items-center justify-between">
                   <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md ${s.badgeStyle}`}>
                     {s.badge}
                   </span>
@@ -124,7 +133,7 @@ export default function HowItWorksSection() {
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 </div>
-              </div>
+              </button>
             );
           })}
         </RevealOnScroll>

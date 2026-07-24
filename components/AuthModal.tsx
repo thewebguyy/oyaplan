@@ -36,6 +36,10 @@ export default function AuthModal() {
     const redirectUrl = new URL(window.location.origin + '/api/auth/callback');
     if (returnToPath) {
       redirectUrl.searchParams.set('next', returnToPath);
+      const planMatch = returnToPath.match(/\/plan\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+      if (planMatch) {
+        redirectUrl.searchParams.set('save_plan', planMatch[1]);
+      }
     }
 
     const { error } = await supabaseBrowser.auth.signInWithOtp({
@@ -67,6 +71,10 @@ export default function AuthModal() {
     const redirectUrl = new URL(window.location.origin + '/api/auth/callback');
     if (returnToPath) {
       redirectUrl.searchParams.set('next', returnToPath);
+      const planMatch = returnToPath.match(/\/plan\/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+      if (planMatch) {
+        redirectUrl.searchParams.set('save_plan', planMatch[1]);
+      }
     }
 
     await supabaseBrowser.auth.signInWithOAuth({

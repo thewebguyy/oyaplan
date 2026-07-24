@@ -95,7 +95,7 @@ export function ReceiptStructure({
         <div className="p-4 border-b border-black space-y-2">
           <div className="flex justify-between font-bold text-black uppercase items-center">
             <div className="flex items-center gap-1.5">
-              <span>Transport (Bolt)</span>
+              <span>Transport (Uber)</span>
               <button 
                 className="text-[#6B7280] hover:text-black transition-colors"
                 onMouseEnter={() => setShowTooltip(true)}

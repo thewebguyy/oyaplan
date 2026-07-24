@@ -6,7 +6,7 @@ import { LocationService, UserLocation } from "@/lib/services/LocationService";
 export interface TransportEstimate {
   distanceKm: number;
   estimatedCost: number; // ₦ amount per person
-  provider: "bolt";
+  provider: "uber";
   squadSize: number;
   roundTrip: boolean;
 }
@@ -40,7 +40,7 @@ export function useTransportCost(options: UseTransportCostOptions) {
     return {
       distanceKm,
       estimatedCost: costPerPerson,
-      provider: "bolt",
+      provider: "uber",
       squadSize,
       roundTrip,
     };

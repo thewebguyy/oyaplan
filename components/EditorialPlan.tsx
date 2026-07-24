@@ -118,7 +118,7 @@ export default function EditorialPlan({
               <span>
                 {input.startArea && input.startArea !== "anywhere"
                   ? calculateTransportTime(input.startArea, plan.spot.coordinates).displayCopy
-                  : "Bolt transport costs are factored into standard Lagos routes"
+                  : "Uber transport costs are factored into standard Lagos routes"
                 }
               </span>
             </li>

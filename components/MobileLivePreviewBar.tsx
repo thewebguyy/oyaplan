@@ -21,7 +21,7 @@ export default function MobileLivePreviewBar({
 }: MobileLivePreviewBarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!recommendedSpot) return null;
+  if (!recommendedSpot || !vibe) return null;
 
   // Transport calculation: Solo -> ₦0; 2-4 -> ₦5k; 5+ -> ₦10k
   const transportCost = squadSize === 1 ? 0 : squadSize > 4 ? 10000 : 5000;
@@ -125,7 +125,7 @@ export default function MobileLivePreviewBar({
               </div>
 
               {/* Cost Line Item Breakdown */}
-              <div className="space-y-2.5 text-xs sm:text-sm">
+              <div className="border border-[#E5E7EB] bg-[#FAFAF8]/40 p-4 rounded-2xl space-y-2.5 text-xs sm:text-sm">
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-600 font-medium">
                     Food & Drinks ({squadSize}x)
@@ -136,7 +136,7 @@ export default function MobileLivePreviewBar({
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-600 font-medium flex items-center gap-1">
-                    Estimated Bolt Transport
+                    Estimated Uber Transport
                   </span>
                   <span className="font-bold text-[#1A1A1A]">
                     ₦{transportCost.toLocaleString()}
@@ -150,7 +150,7 @@ export default function MobileLivePreviewBar({
                     ₦{taxCost.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between items-center pt-2">
+                <div className="flex justify-between items-center pt-2 pb-2">
                   <span className="font-black text-[#1A1A1A] text-sm">
                     TOTAL SQUAD COST
                   </span>
@@ -158,18 +158,18 @@ export default function MobileLivePreviewBar({
                     ₦{totalCost.toLocaleString()}
                   </span>
                 </div>
-              </div>
 
-              {/* Action Button */}
-              <div className="pt-2">
-                <Link
-                  href={`/plan/${recommendedSpot.id}?squad=${squadSize}&budget=${budget}`}
-                  onClick={() => setIsOpen(false)}
-                  className="w-full h-12 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-sm uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg"
-                >
-                  <span>Explore Full Plan</span>
-                  <Check className="w-4 h-4 stroke-[3]" />
-                </Link>
+                {/* Action Button inside the breakdown card */}
+                <div className="pt-2 border-t border-gray-100">
+                  <Link
+                    href={`/plan/${recommendedSpot.id}?squad=${squadSize}&budget=${budget}`}
+                    onClick={() => setIsOpen(false)}
+                    className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
+                  >
+                    <span>Explore Full Plan</span>
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  </Link>
+                </div>
               </div>
             </motion.div>
           </div>

@@ -9,7 +9,7 @@ export function BeforeYouGo() {
         </li>
         <li className="flex items-start gap-3">
           <span className="text-xl leading-none" aria-hidden="true">🚗</span>
-          <span className="type-body text-sm text-text-secondary">Bolt prices usually surge after 9 PM.</span>
+          <span className="type-body text-sm text-text-secondary">Uber prices usually surge after 9 PM.</span>
         </li>
         <li className="flex items-start gap-3">
           <span className="text-xl leading-none" aria-hidden="true">👟</span>

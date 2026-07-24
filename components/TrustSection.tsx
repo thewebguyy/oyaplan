@@ -28,7 +28,7 @@ export default function TrustSection() {
         <div className="trust-card card-transport">
           <div className="trust-icon" aria-hidden="true">✓</div>
           <h3>Transport Included</h3>
-          <p>Bolt rates for your squad size. No surprises. Ever.</p>
+          <p>Uber rates for your squad size. No surprises. Ever.</p>
         </div>
       </RevealOnScroll>
     </section>

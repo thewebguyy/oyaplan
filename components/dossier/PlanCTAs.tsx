@@ -89,7 +89,7 @@ Planned our linkup at ${venueName} using OyaPlan.
 
 Here's the full breakdown:
 🍽️ Food & Drinks: ₦${foodCost.toLocaleString()}
-🚗 Transport (Bolt): ₦${transportCost.toLocaleString()}
+🚗 Transport (Uber): ₦${transportCost.toLocaleString()}
 💸 Taxes & Fees: ₦${taxesCost.toLocaleString()}
 
 See the verified breakdown:
