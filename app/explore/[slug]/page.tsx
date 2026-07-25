@@ -274,19 +274,20 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
       >
         {spots.length > 0 ? (
           spots.map((spot) => {
-            const prefillParams = new URLSearchParams();
-            prefillParams.append("startArea", slug);
-            prefillParams.append("pinnedSpotId", spot.id);
-            if (budget) prefillParams.append("budget", budget.toString());
-            if (vibe) prefillParams.append("vibe", vibe);
-            prefillParams.append("squad", squadCount.toString());
+            const forgeParams = new URLSearchParams();
+            forgeParams.append("area", slug);
+            forgeParams.append("pinned", spot.id);
+            forgeParams.append("vibe", vibe || "chill");
+            forgeParams.append("budget", budget ? budget.toString() : "50000");
+            forgeParams.append("squad", squadCount.toString());
+            forgeParams.append("fresh", "true");
 
             return (
-              <div 
-                key={spot.id} 
+              <div
+                key={spot.id}
                 className={`bg-white border rounded-[20px] flex flex-col overflow-hidden dossier-card h-full transition-all duration-200 ${
-                  spot.fitsBudget 
-                    ? "border-border-default hover:border-black" 
+                  spot.fitsBudget
+                    ? "border-border-default hover:border-black"
                     : "border-border-default opacity-50"
                 }`}
               >
@@ -321,7 +322,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
                       <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider mt-0.5">/ person</span>
                     </div>
                     
-                    <Link href={`/?${prefillParams.toString()}`}>
+                    <Link href={`/forge?${forgeParams.toString()}`}>
                       <Button className="bg-[#0A0A0A] text-white type-ui-label text-xs uppercase font-extrabold px-5 py-2.5 rounded-[8px] btn-intent-snaps cursor-pointer">
                         Forge Plan
                       </Button>
