@@ -174,6 +174,35 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   // Process spots with budget and vibe filters resolved server-side
   const squadCount = urlParams.squad ? parseInt(urlParams.squad) : 2;
+
+  function getFreshnessText(updatedAt: string | undefined): string {
+    if (!updatedAt) return "not yet dated";
+    const daysAgo = Math.floor(
+      (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (daysAgo === 0) return "verified today";
+    if (daysAgo === 1) return "yesterday";
+    if (daysAgo < 7) return `${daysAgo}d ago`;
+    if (daysAgo < 30) return `${Math.floor(daysAgo / 7)}w ago`;
+    if (daysAgo < 365) return `${Math.floor(daysAgo / 30)}mo ago`;
+    return "over a year ago";
+  }
+
+  function deriveTrustStatus(spot: FilteredSpot): import("@/components/ui/trust-badge").TrustStatus {
+    if (spot.verified_by && spot.price_updated_at) {
+      const daysAgo = Math.floor(
+        (Date.now() - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (daysAgo <= 90) return "verified";
+      return "estimated";
+    }
+    if (spot.computed_confidence_score !== undefined) {
+      if (spot.computed_confidence_score >= 75) return "verified";
+      if (spot.computed_confidence_score >= 40) return "estimated";
+    }
+    return "pending";
+  }
+
   const spots: FilteredSpot[] = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
     const estimatedTotal = spot.price_per_person * squadCount * 1.1;
     const fitsBudget = budget ? estimatedTotal <= budget : true;
@@ -263,7 +292,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
               >
                 {/* Scrubbable Photo Container */}
                 <div className="w-full aspect-[4/3] relative border-b border-border-default bg-surface-grey">
-                  <ScrubbablePhotos venueName={spot.name} />
+                <ScrubbablePhotos venueName={spot.name} imageUrl={spot.image_url} />
                   
                   {/* Category overlay */}
                   <div className="absolute top-3 inset-x-3 flex justify-between items-start z-40 pointer-events-none">
@@ -272,7 +301,11 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
                     </span>
                     <div className="pointer-events-auto flex items-center gap-2">
                       <SaveForLater spot={spot} />
-                      <TrustBadge status="verified" freshnessText="today" />
+                      <TrustBadge
+                        status={deriveTrustStatus(spot)}
+                        freshnessText={getFreshnessText(spot.price_updated_at)}
+                        size="sm"
+                      />
                     </div>
                   </div>
                 </div>

@@ -50,7 +50,7 @@ export default function SavedPage() {
                 className="bg-white border border-border-default/60 rounded-[28px] flex flex-col overflow-hidden card-lift shadow-lagoon hover:shadow-lift-lagoon h-full transition-all duration-[350ms]"
               >
                 <div className="w-full aspect-[4/3] relative border-b border-border-default/30 bg-surface-grey img-zoom-container">
-                  <ScrubbablePhotos venueName={spot.name} />
+                  <ScrubbablePhotos venueName={spot.name} imageUrl={spot.image_url} />
                   <div className="absolute top-3 right-3 z-40">
                     <button
                       onClick={() => removeSpot(spot.id)}
