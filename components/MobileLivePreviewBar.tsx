@@ -13,7 +13,7 @@ interface MobileLivePreviewBarProps {
   squadSize: number;
   budget: number;
   vibe: string | null;
-  recommendedSpot: Spot | null;
+  recommendedSpots: Spot[];
   startAreaId?: string | null;
 }
 
@@ -21,16 +21,19 @@ export default function MobileLivePreviewBar({
   squadSize,
   budget,
   vibe,
-  recommendedSpot,
+  recommendedSpots,
   startAreaId,
 }: MobileLivePreviewBarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!recommendedSpot || !vibe) return null;
+  if (!recommendedSpots || recommendedSpots.length === 0 || !vibe) return null;
+  
+  const topSpot = recommendedSpots[0];
+  const spotsToUse = recommendedSpots.slice(0, 3);
 
   // Transport calculation: Solo -> ₦0; 2-4 -> ₦5k; 5+ -> ₦10k
   const transportCost = squadSize === 1 ? 0 : squadSize > 4 ? 10000 : 5000;
-  const foodCost = (recommendedSpot.price_per_person || 12000) * squadSize;
+  const foodCost = (topSpot.price_per_person || 12000) * squadSize;
   const taxCost = Math.round(foodCost * 0.1);
   const totalCost = foodCost + transportCost + taxCost;
   const perPersonCost = Math.ceil(totalCost / squadSize);
@@ -50,15 +53,15 @@ export default function MobileLivePreviewBar({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FCC630] uppercase tracking-wider">
-                <span>Top Match</span>
+                <span>Top {spotsToUse.length} Matches</span>
                 <span>•</span>
                 <span className="truncate">{vibe || "Outing"}</span>
               </div>
               <p className="text-sm font-bold text-white truncate leading-tight">
-                {recommendedSpot.name}
+                {topSpot.name} & {spotsToUse.length - 1} more
               </p>
               <p className="text-[11px] text-white/70">
-                <strong className="text-white font-bold">₦{perPersonCost.toLocaleString()}</strong> / person
+                <strong className="text-white font-bold">~₦{perPersonCost.toLocaleString()}</strong> / person
               </p>
             </div>
           </div>
@@ -110,90 +113,103 @@ export default function MobileLivePreviewBar({
                 </button>
               </div>
 
-              {/* Spot Title Card */}
-              <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-2xl p-4 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#008751]/10 text-[#008751]">
-                    <ShieldCheck className="w-3 h-3" /> 100% Verified Menu
-                  </span>
-                  <span className="text-xs font-bold text-[#6B7280]">
-                    Squad of {squadSize}
-                  </span>
-                </div>
-                <h4 className="text-xl font-black text-[#1A1A1A]">
-                  {recommendedSpot.name}
-                </h4>
-                <p className="text-xs text-[#6B7280] flex items-center gap-1 font-medium">
-                  <MapPin className="w-3.5 h-3.5 text-[#008751]" />
-                  {recommendedSpot.address || recommendedSpot.address_slug}
-                </p>
+              {/* Render each spot */}
+              <div className="space-y-6">
+                {spotsToUse.map((spot, idx) => {
+                  const sFoodCost = (spot.price_per_person || 12000) * squadSize;
+                  const sTaxCost = Math.round(sFoodCost * 0.1);
+                  const sTotalCost = sFoodCost + transportCost + sTaxCost;
+                  
+                  return (
+                    <div key={spot.id || idx} className="space-y-3 pb-6 border-b border-gray-200 last:border-b-0 last:pb-0">
+                      {/* Spot Title Card */}
+                      <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-2xl p-4 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#008751]/10 text-[#008751]">
+                            <ShieldCheck className="w-3 h-3" /> {idx === 0 ? "Top Match" : "Great Alternative"}
+                          </span>
+                          <span className="text-xs font-bold text-[#6B7280]">
+                            Squad of {squadSize}
+                          </span>
+                        </div>
+                        <h4 className="text-xl font-black text-[#1A1A1A]">
+                          {spot.name}
+                        </h4>
+                        <p className="text-xs text-[#6B7280] flex items-center gap-1 font-medium">
+                          <MapPin className="w-3.5 h-3.5 text-[#008751]" />
+                          {spot.address || spot.address_slug}
+                        </p>
+                      </div>
+
+                      {/* Cost Line Item Breakdown */}
+                      <div className="border border-[#E5E7EB] bg-[#FAFAF8]/40 p-4 rounded-2xl space-y-2.5 text-xs sm:text-sm">
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">
+                            Food & Drinks ({squadSize}x)
+                          </span>
+                          <span className="font-bold text-[#1A1A1A]">
+                            ₦{sFoodCost.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium flex items-center gap-1">
+                            Estimated Uber Transport
+                          </span>
+                          <span className="font-bold text-[#1A1A1A]">
+                            ₦{transportCost.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span className="text-gray-600 font-medium">
+                            Taxes & Service Charge
+                          </span>
+                          <span className="font-bold text-[#1A1A1A]">
+                            ₦{sTaxCost.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center pt-2 pb-2">
+                          <span className="font-black text-[#1A1A1A] text-sm">
+                            TOTAL SQUAD COST
+                          </span>
+                          <span className="text-lg font-black text-[#008751]">
+                            ₦{sTotalCost.toLocaleString()}
+                          </span>
+                        </div>
+
+                        {/* Action Button inside the breakdown card */}
+                        <div className="pt-2 border-t border-gray-100">
+                          <Link
+                            href={`/forge?pinned=${spot.id}&area=${startAreaId || 'anywhere'}&squad=${squadSize}&budget=${budget}&vibe=${vibe}&fresh=true`}
+                            onClick={() => setIsOpen(false)}
+                            className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
+                          >
+                            <span>Explore Full Plan</span>
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          </Link>
+                        </div>
+                      </div>
+
+                      {/* Route Card — only when venue has coordinates and user has a start area */}
+                      {spot.coordinates && startAreaId && (() => {
+                        const startArea = LocationService.getVerifiedAreas().find((a) => a.id === startAreaId);
+                        if (!startArea) return null;
+                        const transport = calculateTransportTime(startAreaId, spot.coordinates);
+                        return (
+                          <RouteCard
+                            startAreaName={startArea.name}
+                            startAreaSlug={startAreaId}
+                            venueName={spot.name}
+                            venueAddress={spot.address || ""}
+                            venueCoords={spot.coordinates}
+                            transportCost={transportCost}
+                            distanceKm={transport.distanceKm}
+                          />
+                        );
+                      })()}
+                    </div>
+                  );
+                })}
               </div>
-
-              {/* Cost Line Item Breakdown */}
-              <div className="border border-[#E5E7EB] bg-[#FAFAF8]/40 p-4 rounded-2xl space-y-2.5 text-xs sm:text-sm">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-gray-600 font-medium">
-                    Food & Drinks ({squadSize}x)
-                  </span>
-                  <span className="font-bold text-[#1A1A1A]">
-                    ₦{foodCost.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-gray-600 font-medium flex items-center gap-1">
-                    Estimated Uber Transport
-                  </span>
-                  <span className="font-bold text-[#1A1A1A]">
-                    ₦{transportCost.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-gray-600 font-medium">
-                    Taxes & Service Charge
-                  </span>
-                  <span className="font-bold text-[#1A1A1A]">
-                    ₦{taxCost.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center pt-2 pb-2">
-                  <span className="font-black text-[#1A1A1A] text-sm">
-                    TOTAL SQUAD COST
-                  </span>
-                  <span className="text-lg font-black text-[#008751]">
-                    ₦{totalCost.toLocaleString()}
-                  </span>
-                </div>
-
-                {/* Action Button inside the breakdown card */}
-                <div className="pt-2 border-t border-gray-100">
-                  <Link
-                    href={`/plan/${recommendedSpot.id}?squad=${squadSize}&budget=${budget}`}
-                    onClick={() => setIsOpen(false)}
-                    className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
-                  >
-                    <span>Explore Full Plan</span>
-                    <Check className="w-3.5 h-3.5 stroke-[3]" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Route Card — only when venue has coordinates and user has a start area */}
-              {recommendedSpot.coordinates && startAreaId && (() => {
-                const startArea = LocationService.getVerifiedAreas().find((a) => a.id === startAreaId);
-                if (!startArea) return null;
-                const transport = calculateTransportTime(startAreaId, recommendedSpot.coordinates);
-                return (
-                  <RouteCard
-                    startAreaName={startArea.name}
-                    startAreaSlug={startAreaId}
-                    venueName={recommendedSpot.name}
-                    venueAddress={recommendedSpot.address || ""}
-                    venueCoords={recommendedSpot.coordinates}
-                    transportCost={transportCost}
-                    distanceKm={transport.distanceKm}
-                  />
-                );
-              })()}
             </motion.div>
           </div>
         )}

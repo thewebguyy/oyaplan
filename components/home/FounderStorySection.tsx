@@ -39,27 +39,24 @@ export function FounderStorySection() {
             {/* Paragraphs */}
             <div className="space-y-4 text-[#6B7280] text-base sm:text-lg leading-relaxed font-medium">
               <p>
-                I got tired of spending hours scrolling through Instagram and TikTok just to figure out where to go.
+                I got tired of spending hours, scrolling through Instagram and TikTok, just to look for a nice hangout spot to visit.
               </p>
               <p>
-                I&apos;d finally find a place that looked nice, only to get there and realize it wasn&apos;t what I expected. The food was more expensive than I planned for, transport cost more than I thought, or the vibe just wasn&apos;t right.
+                I finally found a place that looked nice, only to arrive there and realise that it wasn&apos;t what I expected. The food was way above my budget, the cost of transportation was more than I calculated before leaving home, and the vibe? It wasn&apos;t just my style.
               </p>
             </div>
 
             {/* Emphasis Block with Yellow Accent Border */}
             <div className="border-l-4 border-[#FCC630] pl-4 py-1.5 my-6 bg-white/60 rounded-r-xl border border-y-transparent border-r-transparent">
-              <p className="text-xs font-bold uppercase tracking-wider text-[#6B7280] mb-1">
-                That&apos;s when I asked myself:
-              </p>
               <p className="text-base sm:text-lg font-bold text-[#1A1A1A] italic leading-snug">
-                &ldquo;Why isn&apos;t there an app where I can simply enter my location, budget, and vibe, and instantly get recommendations that actually fit?&rdquo;
+                &ldquo;That was when I asked myself, &lsquo;Why isn&apos;t there an app where I can just input my location, budget, and vibe, and instantly get recommendations that actually fit?&rsquo;&rdquo;
               </p>
             </div>
 
             {/* Solution & Value Props */}
             <div className="space-y-3 pt-2">
               <p className="text-base sm:text-lg font-bold text-[#1A1A1A]">
-                That&apos;s why we built <span className="text-[#008751]">OyaPlan</span>.
+                The answer to this question is the birth of <span className="text-[#008751]">OyaPlan</span>.
               </p>
 
               <ul className="space-y-2 py-1">

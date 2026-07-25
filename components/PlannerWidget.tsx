@@ -20,7 +20,7 @@ interface PlannerWidgetProps {
   setBudget: (val: number) => void;
   vibe: string | null;
   setVibe: (val: string | null) => void;
-  recommendedSpot: Spot | null;
+  recommendedSpots: Spot[];
   prefilledLocation?: string;
   selectedArea?: Location | null;
   setSelectedArea?: (area: Location | null) => void;
@@ -54,7 +54,7 @@ export default function PlannerWidget({
   setBudget,
   vibe,
   setVibe,
-  recommendedSpot,
+  recommendedSpots,
   prefilledLocation,
   selectedArea: controlledArea,
   setSelectedArea: setControlledArea,
@@ -109,9 +109,9 @@ export default function PlannerWidget({
       coordinates: selectedArea.coordinates,
       type: "saved",
     } : null),
-    venueLocation: recommendedSpot?.coordinates ? {
-      lat: (recommendedSpot.coordinates as { lat: number; lng: number }).lat,
-      lng: (recommendedSpot.coordinates as { lat: number; lng: number }).lng,
+    venueLocation: recommendedSpots?.[0]?.coordinates ? {
+      lat: (recommendedSpots[0].coordinates as { lat: number; lng: number }).lat,
+      lng: (recommendedSpots[0].coordinates as { lat: number; lng: number }).lng,
     } : undefined,
     squadSize,
     roundTrip: true,
@@ -396,7 +396,7 @@ export default function PlannerWidget({
 
       {/* Live Preview Card (Mobile Only: inline before submit CTA) */}
       <div className="block md:hidden w-full">
-        <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} recommendedSpot={recommendedSpot} />
+        <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} recommendedSpots={recommendedSpots} />
       </div>
 
       {/* Primary CTA Submit Button */}

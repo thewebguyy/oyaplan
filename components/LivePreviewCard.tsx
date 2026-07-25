@@ -1,13 +1,14 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import { useState } from "react";
+import { motion, Variants, AnimatePresence } from "framer-motion";
 import { Spot } from "@/lib/types";
 
 interface LivePreviewCardProps {
   squadSize: number;
   budget: number;
   vibe: string | null;
-  recommendedSpot: Spot | null;
+  recommendedSpots: Spot[];
 }
 
 const containerVariants: Variants = {
@@ -51,9 +52,15 @@ export default function LivePreviewCard({
   squadSize,
   budget,
   vibe,
-  recommendedSpot,
+  recommendedSpots,
 }: LivePreviewCardProps) {
-  const spot = recommendedSpot || DEFAULT_FALLBACK_SPOT;
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Fallback if empty array
+  const spotsToUse = recommendedSpots && recommendedSpots.length > 0 ? recommendedSpots : [DEFAULT_FALLBACK_SPOT];
+  // Ensure index is within bounds
+  const currentSpotIndex = activeIndex >= spotsToUse.length ? 0 : activeIndex;
+  const spot = spotsToUse[currentSpotIndex];
 
   // Format numbers to standard Naira format
   const formatCurrency = (val: number) => {
@@ -106,18 +113,35 @@ export default function LivePreviewCard({
         animate="visible"
         className="space-y-4"
       >
-        {/* Recommended Venue Header */}
-        <motion.div variants={itemVariants} className="space-y-0.5">
-          <div className="text-[10px] uppercase tracking-wider text-[#6B7280] font-bold font-sans">
-            Recommended Spot
-          </div>
-          <h2 className="text-base font-extrabold text-[#1A1A1A] leading-tight truncate">
-            {spot.name}
-          </h2>
-          <div className="text-[11px] text-[#6B7280] font-semibold">
-            📍 {spot.address || "Lekki, Lagos"} {vibe ? `• ${vibe}` : ""}
-          </div>
-        </motion.div>
+        {/* Recommended Venue Header & Navigation */}
+        <div className="flex items-start justify-between">
+          <motion.div variants={itemVariants} className="space-y-0.5 max-w-[75%]">
+            <div className="text-[10px] uppercase tracking-wider text-[#6B7280] font-bold font-sans">
+              Top Matches
+            </div>
+            <h2 className="text-base font-extrabold text-[#1A1A1A] leading-tight truncate">
+              {spot.name}
+            </h2>
+            <div className="text-[11px] text-[#6B7280] font-semibold">
+              📍 {spot.address || "Lekki, Lagos"} {vibe ? `• ${vibe}` : ""}
+            </div>
+          </motion.div>
+
+          {spotsToUse.length > 1 && (
+            <motion.div variants={itemVariants} className="flex gap-1">
+              {spotsToUse.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveIndex(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    idx === currentSpotIndex ? "bg-[#008751] w-4" : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                  aria-label={`View recommendation ${idx + 1}`}
+                />
+              ))}
+            </motion.div>
+          )}
+        </div>
 
         {/* Why it Fits Explanations */}
         <motion.div variants={itemVariants} className="space-y-1.5 border-t border-b border-[#F3F4F6] py-3.5 font-sans">

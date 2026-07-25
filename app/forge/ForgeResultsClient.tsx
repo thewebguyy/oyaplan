@@ -510,9 +510,6 @@ export default function ForgeResultsClient({
       {/* Redesigned Footer */}
       {evaluations.length > 0 && (
         <div className="text-center pt-16 space-y-4 pb-32 md:pb-12">
-          <p className="type-body text-text-muted">
-            You can comfortably do any of these tonight.
-          </p>
         </div>
       )}
 

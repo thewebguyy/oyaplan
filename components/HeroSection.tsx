@@ -11,7 +11,7 @@ interface HeroSectionProps {
   spots: Spot[];
 }
 
-const DEFAULT_FALLBACK_SPOT: Spot = {
+export const DEFAULT_FALLBACK_SPOT: Spot = {
   id: "fallback-grill",
   name: "Lekki Grill",
   address: "Lekki Phase 1",
@@ -54,20 +54,17 @@ export default function HeroSection({ spots }: HeroSectionProps) {
   }, []);
 
   // Client-side deterministic recommendation matching engine
-  const recommendedSpot = useMemo(() => {
+  const recommendedSpots = useMemo(() => {
     const activeSpots = (spots && spots.length > 0)
       ? spots.filter((s) => s.active)
       : [DEFAULT_FALLBACK_SPOT];
 
-    if (activeSpots.length === 0) return DEFAULT_FALLBACK_SPOT;
+    if (activeSpots.length === 0) return [DEFAULT_FALLBACK_SPOT];
 
     // Transport cost rules: Solo planning -> 0; Groups 2-4 -> ₦5k; Groups 5+ -> ₦10k
     const transportEstimate = squadSize === 1 ? 0 : squadSize > 4 ? 10000 : 5000;
 
-    let bestSpot: Spot = DEFAULT_FALLBACK_SPOT;
-    let bestScore = -Infinity;
-
-    activeSpots.forEach((spot) => {
+    const scoredSpots = activeSpots.map((spot) => {
       // Score 0: Location Match Boost
       let areaScore = 0;
       if (selectedArea) {
@@ -77,7 +74,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
           areaScore = 150;
         }
       }
-      const foodCost = spot.price_per_person * squadSize;
+      const foodCost = (spot.price_per_person || 12000) * squadSize;
       const taxCost = foodCost * 0.1;
       const totalCost = foodCost + transportEstimate + taxCost;
 
@@ -89,22 +86,22 @@ export default function HeroSection({ spots }: HeroSectionProps) {
 
         if (
           vibeLower === "dinner" &&
-          (matchTags.includes("dinner") || matchTags.includes("romantic") || matchTags.includes("date"))
+          (matchTags.includes("dinner") || matchTags.includes("romantic") || matchTags.includes("date") || matchTags.includes("fine dining"))
         ) {
           vibeScore = 50;
         } else if (
           vibeLower === "chill" &&
-          (matchTags.includes("chill") || matchTags.includes("group") || matchTags.includes("squad") || matchTags.includes("linkup"))
+          (matchTags.includes("chill") || matchTags.includes("group") || matchTags.includes("squad") || matchTags.includes("linkup") || matchTags.includes("lounge"))
         ) {
           vibeScore = 50;
         } else if (
           vibeLower === "party" &&
-          (matchTags.includes("party") || matchTags.includes("celebration") || matchTags.includes("turn up"))
+          (matchTags.includes("party") || matchTags.includes("celebration") || matchTags.includes("turn up") || matchTags.includes("club"))
         ) {
           vibeScore = 50;
         } else if (
           vibeLower === "quick" &&
-          (matchTags.includes("quick") || matchTags.includes("bites") || matchTags.includes("cafe") || matchTags.includes("express"))
+          (matchTags.includes("quick") || matchTags.includes("bites") || matchTags.includes("cafe") || matchTags.includes("express") || matchTags.includes("brunch"))
         ) {
           vibeScore = 50;
         } else if (
@@ -114,7 +111,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
           vibeScore = 50;
         } else if (
           vibeLower === "brunch" &&
-          (matchTags.includes("brunch") || matchTags.includes("garden"))
+          (matchTags.includes("brunch") || matchTags.includes("garden") || matchTags.includes("nature"))
         ) {
           vibeScore = 50;
         }
@@ -129,13 +126,14 @@ export default function HeroSection({ spots }: HeroSectionProps) {
       }
 
       const totalScore = areaScore + vibeScore + budgetScore;
-      if (totalScore > bestScore) {
-        bestScore = totalScore;
-        bestSpot = spot;
-      }
+      return { spot, score: totalScore };
     });
 
-    return bestSpot;
+    // Sort by score descending and take top 3
+    scoredSpots.sort((a, b) => b.score - a.score);
+    const top3 = scoredSpots.slice(0, 3).map(s => s.spot);
+    
+    return top3.length > 0 ? top3 : [DEFAULT_FALLBACK_SPOT];
   }, [spots, squadSize, budget, vibe, selectedArea]);
 
   return (
@@ -194,7 +192,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
               setBudget={setBudget}
               vibe={vibe}
               setVibe={setVibe}
-              recommendedSpot={recommendedSpot}
+              recommendedSpots={recommendedSpots}
               selectedArea={selectedArea}
               setSelectedArea={setSelectedArea}
             />
@@ -206,7 +204,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
               squadSize={squadSize}
               budget={budget}
               vibe={vibe}
-              recommendedSpot={recommendedSpot}
+              recommendedSpots={recommendedSpots}
             />
           </div>
         </div>
@@ -217,7 +215,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
         squadSize={squadSize}
         budget={budget}
         vibe={vibe}
-        recommendedSpot={recommendedSpot}
+        recommendedSpots={recommendedSpots}
         startAreaId={selectedArea?.id ?? null}
       />
     </motion.section>
