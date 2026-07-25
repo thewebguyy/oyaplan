@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
-import LivePreviewCard from "./LivePreviewCard";
+
 import { LocationService, Location, UserLocation } from "@/lib/services/LocationService";
 import { useTransportCost } from "@/hooks/useTransportCost";
 
@@ -393,11 +393,6 @@ export default function PlannerWidget({
           </motion.p>
         )}
       </AnimatePresence>
-
-      {/* Live Preview Card (Mobile Only: inline before submit CTA) */}
-      <div className="block md:hidden w-full">
-        <LivePreviewCard squadSize={squadSize} budget={budget} vibe={vibe} recommendedSpots={recommendedSpots} />
-      </div>
 
       {/* Primary CTA Submit Button */}
       <button
