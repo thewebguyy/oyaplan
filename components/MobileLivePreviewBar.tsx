@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, ChevronUp, X, Check, ShieldCheck } from "lucide-react";
 import { Spot } from "@/lib/types";
@@ -25,6 +25,17 @@ export default function MobileLivePreviewBar({
   startAreaId,
 }: MobileLivePreviewBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   if (!recommendedSpots || recommendedSpots.length === 0 || !vibe) return null;
   
@@ -53,12 +64,12 @@ export default function MobileLivePreviewBar({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FCC630] uppercase tracking-wider">
-                <span>Top {spotsToUse.length} Matches</span>
+                <span>{spotsToUse.length > 1 ? `Top ${spotsToUse.length} Matches` : "Top Match"}</span>
                 <span>•</span>
                 <span className="truncate">{vibe || "Outing"}</span>
               </div>
               <p className="text-sm font-bold text-white truncate leading-tight">
-                {topSpot.name} & {spotsToUse.length - 1} more
+                {topSpot.name} {spotsToUse.length > 1 ? `& ${spotsToUse.length - 1} more` : ""}
               </p>
               <p className="text-[11px] text-white/70">
                 <strong className="text-white font-bold">~₦{perPersonCost.toLocaleString()}</strong> / person
@@ -179,7 +190,14 @@ export default function MobileLivePreviewBar({
                         {/* Action Button inside the breakdown card */}
                         <div className="pt-2 border-t border-gray-100">
                           <Link
-                            href={`/forge?pinned=${spot.id}&area=${startAreaId || 'anywhere'}&squad=${squadSize}&budget=${budget}&vibe=${vibe}&fresh=true`}
+                            href={`/forge?pinned=${spot.id}&area=${startAreaId || 'anywhere'}&squad=${squadSize}&budget=${budget}&vibe=${
+                              vibe === "Dinner" ? "date-night" :
+                              vibe === "Chill" ? "chill" :
+                              vibe === "Foodie" ? "foodie" :
+                              vibe === "Party" ? "party" :
+                              vibe === "Quick" ? "quick-link" :
+                              vibe === "Brunch" ? "brunch" : vibe
+                            }&fresh=true`}
                             onClick={() => setIsOpen(false)}
                             className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
                           >
