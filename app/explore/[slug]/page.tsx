@@ -2,16 +2,12 @@ import { captureServerException } from "@/lib/sentry";
 import { getZoneBySlug, getZoneNameBySlug } from "@/lib/queries/zones";
 import { getAreasByZone, getAreaWithSpots, getAreaNameBySlug } from "@/lib/queries/areas";
 import Link from "next/link";
-import { ArrowLeft, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
-import AreaLayout from "@/components/explore/AreaLayout";
-import ScrubbablePhotos from "@/components/explore/ScrubbablePhotos";
-import { TrustBadge } from "@/components/ui/trust-badge";
 import { Spot } from "@/lib/types";
-import SaveForLater from "@/components/SaveForLater";
+import { VenueCardStack } from "@/components/explore/VenueCardStack";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +49,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   const urlParams = await searchParams;
   const budget = urlParams.budget ? parseInt(urlParams.budget) : null;
   const vibe = urlParams.vibe || null;
+  const squadCount = urlParams.squad ? parseInt(urlParams.squad) : 2;
 
   // 1. Try Zone View
   let zoneData: { id: string; name: string; slug: string; description: string } | null = null;
@@ -90,28 +87,17 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     }
 
     return (
-      <main className="min-h-screen bg-white text-text-primary pb-20 antialiased">
-        {budget && vibe && (
-          <div className="bg-brand-green text-white py-3 px-4">
-            <div className="max-w-4xl mx-auto flex items-center justify-between">
-              <p className="type-label">Showing spots for your ₦{budget.toLocaleString('en-NG')} {vibe} outing</p>
-              <Link href={`/explore/${slug}`} className="type-label text-white/80 hover:text-white underline">Clear</Link>
-            </div>
-          </div>
-        )}
-
-        <div className="bg-surface-grey border-b border-border-default py-12 px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-6 tap-feedback">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Zones
-            </Link>
-            <h1 className="type-display text-text-primary capitalize">{zoneData.name}</h1>
-            <p className="type-body text-text-muted mt-2">{zoneData.description}</p>
-          </div>
+      <main className="min-h-screen bg-[#FAFAF8] text-text-primary pb-20 antialiased pt-8">
+        <div className="max-w-4xl mx-auto px-6">
+          <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-6 tap-feedback">
+            <ArrowLeft className="w-4 h-4" />
+            Back to All Zones
+          </Link>
+          <h1 className="text-4xl md:text-5xl font-black text-midnight-lagoon tracking-tight mb-3 capitalize">{zoneData.name}</h1>
+          <p className="text-lg text-text-muted">{zoneData.description}</p>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 mt-12">
+        <div className="max-w-4xl mx-auto px-6 mt-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {areas?.map((area) => {
               const areaParams = new URLSearchParams();
@@ -123,7 +109,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
                 <Link 
                   key={area.id} 
                   href={href}
-                  className="group p-8 bg-white border border-border-default rounded-[20px] hover:border-brand-green hover:shadow-[0px_8px_24px_rgba(0,135,81,0.08)] transition-all text-left tap-feedback"
+                  className="group p-8 bg-white border border-border-default rounded-[20px] hover:border-brand-green hover:shadow-[0px_8px_24px_rgba(0,135,81,0.08)] transition-all text-left tap-feedback block"
                 >
                   <h3 className="type-heading text-text-primary group-hover:text-brand-green transition-colors lowercase first-letter:uppercase">{area.name}</h3>
                   <p className="type-caption text-text-muted mt-2">{area.activeSpotCount} spots to discover</p>
@@ -140,11 +126,6 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
               </div>
             )}
           </div>
-        </div>
-        <div className="max-w-4xl mx-auto px-4 mt-20 pt-12 border-t border-border-default text-center">
-          <Link href="/suggest-a-spot" className="type-label text-text-muted hover:text-text-secondary hover:underline transition-all">
-            Know a spot that should be here? Suggest it &rarr;
-          </Link>
         </div>
       </main>
     );
@@ -172,179 +153,55 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   if (!area) notFound();
 
-  // Process spots with budget and vibe filters resolved server-side
-  const squadCount = urlParams.squad ? parseInt(urlParams.squad) : 2;
-
-  function getFreshnessText(updatedAt: string | undefined): string {
-    if (!updatedAt) return "not yet dated";
-    const daysAgo = Math.floor(
-      (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (daysAgo === 0) return "verified today";
-    if (daysAgo === 1) return "yesterday";
-    if (daysAgo < 7) return `${daysAgo}d ago`;
-    if (daysAgo < 30) return `${Math.floor(daysAgo / 7)}w ago`;
-    if (daysAgo < 365) return `${Math.floor(daysAgo / 30)}mo ago`;
-    return "over a year ago";
-  }
-
-  function deriveTrustStatus(spot: FilteredSpot): import("@/components/ui/trust-badge").TrustStatus {
-    if (spot.verified_by && spot.price_updated_at) {
-      const daysAgo = Math.floor(
-        (Date.now() - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (daysAgo <= 90) return "verified";
-      return "estimated";
-    }
-    if (spot.computed_confidence_score !== undefined) {
-      if (spot.computed_confidence_score >= 75) return "verified";
-      if (spot.computed_confidence_score >= 40) return "estimated";
-    }
-    return "pending";
-  }
-
-  const spots: FilteredSpot[] = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
-    const estimatedTotal = spot.price_per_person * squadCount * 1.1;
+  // Process spots with budget and vibe filters
+  let filteredSpots: FilteredSpot[] = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
+    const estimatedTotal = spot.price_per_person * squadCount * 1.1; // adding buffer
     const fitsBudget = budget ? estimatedTotal <= budget : true;
+    const fitsVibe = vibe && spot.vibe_tags ? spot.vibe_tags.includes(vibe) : true;
     
-    // Vibe filter logic
-    let fitsVibe = true;
-    if (vibe) {
-      const cat = (spot.category || "").toLowerCase();
-      const tags = Array.isArray(spot.vibe_tags) ? spot.vibe_tags.map((t: string) => t.toLowerCase()) : [];
-      const vibeLower = vibe.toLowerCase();
-      
-      fitsVibe = cat.includes(vibeLower) || 
-                 tags.includes(vibeLower) ||
-                 (vibeLower === "date-night" && (cat.includes("restaurant") || cat.includes("lounge"))) ||
-                 (vibeLower === "brunch" && (cat.includes("cafe") || cat.includes("restaurant"))) ||
-                 (vibeLower === "party" && (cat.includes("nightclub") || cat.includes("bar") || cat.includes("lounge")));
-    }
-
-    return { ...spot, fitsBudget, fitsVibe };
-  }).filter((s) => s.fitsVibe).sort((a, b) => {
-    if (a.fitsBudget && !b.fitsBudget) return -1;
-    if (!a.fitsBudget && b.fitsBudget) return 1;
-    return 0;
+    return {
+      ...spot,
+      fitsBudget,
+      fitsVibe
+    };
   });
 
+  // Filter out spots that don't match (unlike before where we just grayed them out, 
+  // in a Tinder stack we want to only show valid options)
+  filteredSpots = filteredSpots.filter(s => s.fitsBudget && s.fitsVibe);
+  
+  // Shuffle or sort based on trending score
+  filteredSpots.sort((a, b) => (b.trending_score || 0) - (a.trending_score || 0));
+
   return (
-    <main className="min-h-screen bg-white text-text-primary pb-20 antialiased">
-      {/* Header Context Banner */}
-      {budget && vibe && (
-        <div className="bg-brand-green text-white py-3 px-4">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <p className="type-label">
-              Showing spots in <span className="lowercase first-letter:uppercase">{area.name}</span> for a squad of {squadCount} &bull; ₦{budget.toLocaleString('en-NG')} max budget
-            </p>
-            <Link href={`/explore/${slug}`} className="type-label text-white/80 hover:text-white underline">Clear filters</Link>
-          </div>
+    <div className="min-h-screen bg-[#FAFAF8] pt-8 flex flex-col relative overflow-hidden">
+      <div className="w-full max-w-lg mx-auto px-6 mb-6 flex flex-col z-10 relative pointer-events-none">
+        <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-2 w-fit pointer-events-auto tap-feedback">
+          <ArrowLeft className="w-4 h-4" />
+          All Areas
+        </Link>
+        <div className="flex items-end justify-between">
+          <h1 className="text-3xl font-black text-midnight-lagoon capitalize">{area.name}</h1>
+          <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{filteredSpots.length} venues</span>
         </div>
-      )}
+      </div>
 
-      <AreaLayout
-        slug={slug}
-        areaName={area.name}
-        description={`Verified outing venues and experiences across ${area.name}, Lagos.`}
-        characterProfile={
-          slug === 'yaba' ? "Fast-moving. Creative. Builders. Dense tech district." :
-          slug === 'lekki-phase-1' ? "Weekend energy. Waterfront. Lounges. Coastal breeze." :
-          slug === 'ikoyi' ? "Quiet confidence. Refined. Slow evenings. Spacious estates." :
-          slug === 'vi' ? "Business. Rooftops. After-work. Premium energy." :
-          slug === 'surulere' ? "Mainland soul. Sports. Local culture. Rich history." :
-          "Lagos local outing district."
-        }
-        whatPeopleComeHereFor={
-          slug === 'yaba' ? "Deep tech community, campus hangouts, and affordable spots with fast wifi." :
-          slug === 'lekki-phase-1' ? "Premium brunches, beach clubs, and upscale lounges." :
-          slug === 'ikoyi' ? "Quiet luxury, high-end fine dining, and exclusive members clubs." :
-          slug === 'vi' ? "Corporate after-work drinks, rooftop views, and the best of Lagos nightlife." :
-          slug === 'surulere' ? "Authentic mainland energy, street food, and sports viewing centers." :
-          "Good food and great vibes."
-        }
-        typicalSpend={
-          slug === 'yaba' ? "₦12k – ₦25k" :
-          slug === 'lekki-phase-1' ? "₦35k – ₦75k" :
-          slug === 'ikoyi' ? "₦40k – ₦90k" :
-          slug === 'vi' ? "₦30k – ₦80k" :
-          slug === 'surulere' ? "₦10k – ₦30k" :
-          "₦15k – ₦45k"
-        }
-        spotsCount={spots.length}
-      >
-        {spots.length > 0 ? (
-          spots.map((spot) => {
-            const forgeParams = new URLSearchParams();
-            forgeParams.append("area", slug);
-            forgeParams.append("pinned", spot.id);
-            forgeParams.append("vibe", vibe || "chill");
-            forgeParams.append("budget", budget ? budget.toString() : "50000");
-            forgeParams.append("squad", squadCount.toString());
-            forgeParams.append("fresh", "true");
-
-            return (
-              <div
-                key={spot.id}
-                className={`bg-white border rounded-[20px] flex flex-col overflow-hidden dossier-card h-full transition-all duration-200 ${
-                  spot.fitsBudget
-                    ? "border-border-default hover:border-black"
-                    : "border-border-default opacity-50"
-                }`}
-              >
-                {/* Scrubbable Photo Container */}
-                <div className="w-full aspect-[4/3] relative border-b border-border-default bg-surface-grey">
-                <ScrubbablePhotos venueName={spot.name} imageUrl={spot.image_url} />
-                  
-                  {/* Category overlay */}
-                  <div className="absolute top-3 inset-x-3 flex justify-between items-start z-40 pointer-events-none">
-                    <span className="bg-black text-white text-[9px] font-extrabold tracking-widest uppercase px-2 py-1 rounded-[4px] shadow-sm select-none">
-                      {spot.category}
-                    </span>
-                    <div className="pointer-events-auto flex items-center gap-2">
-                      <SaveForLater spot={spot} />
-                      <TrustBadge
-                        status={deriveTrustStatus(spot)}
-                        freshnessText={getFreshnessText(spot.price_updated_at)}
-                        size="sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Listing information */}
-                <div className="p-6 flex flex-col flex-grow text-left">
-                  <h3 className="type-heading text-text-primary mb-2 uppercase leading-tight font-black">{spot.name}</h3>
-                  <p className="type-caption text-text-muted mb-4 line-clamp-1">{spot.address}</p>
-
-                  <div className="mt-auto pt-4 border-t border-border-default flex justify-between items-center">
-                    <div className="flex flex-col">
-                      <span className="font-sans font-black text-text-primary text-lg">₦{spot.price_per_person.toLocaleString('en-NG')}</span>
-                      <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider mt-0.5">/ person</span>
-                    </div>
-                    
-                    <Link href={`/forge?${forgeParams.toString()}`}>
-                      <Button className="bg-[#0A0A0A] text-white type-ui-label text-xs uppercase font-extrabold px-5 py-2.5 rounded-[8px] btn-intent-snaps cursor-pointer">
-                        Forge Plan
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="col-span-full text-center py-20 px-6 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
-            <p className="type-body text-text-muted">
-              {budget 
-                ? `To protect your budget, we've filtered out spots that exceed your ₦${budget.toLocaleString('en-NG')} limit. We only show venues with verified pricing so your squad never gets stranded.`
-                : "No spots match your active vibe or budget filters."}
-            </p>
-            <Link href={`/explore/${slug}`} className="type-label text-brand-green hover:underline inline-block mt-2">
-              Clear filters and view all verified spots &rarr;
-            </Link>
-          </div>
-        )}
-      </AreaLayout>
-    </main>
+      <div className="flex-1 w-full flex items-center justify-center pb-12 z-10">
+        <VenueCardStack 
+          spots={filteredSpots} 
+          slug={slug} 
+          budget={budget || undefined} 
+          vibe={vibe || undefined} 
+          squadCount={squadCount} 
+        />
+      </div>
+      
+      {/* Background decoration to replace map feel */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{
+        backgroundImage: 'radial-gradient(circle at 50% 50%, #008751 0%, transparent 60%)',
+        backgroundSize: '100% 100%',
+        backgroundPosition: 'center',
+      }} />
+    </div>
   );
 }
