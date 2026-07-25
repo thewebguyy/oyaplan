@@ -24,12 +24,14 @@ export class SavedPlanService {
       const supabase = await createServerClient();
       const { error } = await supabase
         .from('user_saved_plans')
-        .upsert({
+        .insert({
           user_id: identity.profile.id,
           shared_plan_id: sharedPlanId
-        }, { onConflict: 'user_id, shared_plan_id' });
+        });
 
-      if (error) {
+      // 23505 = unique_violation: this plan is already saved by this user.
+      // Treat as success — saving a plan is idempotent, no UPDATE needed.
+      if (error && error.code !== '23505') {
         throw error;
       }
 
