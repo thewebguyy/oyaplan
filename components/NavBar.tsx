@@ -19,7 +19,7 @@ export default function NavBar() {
   const centerLinks = [
     { name: "Plan", href: "/" },
     { name: "Explore", href: "/explore" },
-    { name: "Saved Plans", href: "/saved" },
+    { name: "Saved Spots", href: "/saved" },
   ];
 
   return (
@@ -125,7 +125,7 @@ export default function NavBar() {
               >
                 <Link href="/dashboard" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
                   <Bookmark className="w-4 h-4 text-text-muted" />
-                  Saved Plans
+                  My Plans
                 </Link>
                 <div className="h-[1px] bg-border-default my-2"></div>
                 <button

@@ -27,7 +27,7 @@ export default function SavedPage() {
           </button>
         </Link>
         <h1 className="type-display-product text-3xl sm:text-4xl font-black">
-          Saved Plans
+          Saved Spots
         </h1>
         <p className="type-body text-text-muted max-w-xl">
           Your saved outing spots. You can pre-fill the planner directly from any of these spots when you&apos;re ready to go.
@@ -37,11 +37,23 @@ export default function SavedPage() {
       {savedSpots.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {savedSpots.map((spot) => {
+            const VIBE_TO_URL_MAP: Record<string, string> = {
+              "Dinner": "date-night",
+              "Chill": "chill",
+              "Foodie": "foodie",
+              "Party": "party",
+              "Quick": "quick-link",
+              "Brunch": "brunch"
+            };
+            const firstVibe = spot.vibe_tags?.[0] || "Chill";
+            const urlVibe = VIBE_TO_URL_MAP[firstVibe] || "chill";
+
             const prefillParams = new URLSearchParams({
-              startArea: spot.areas?.slug || "anywhere",
-              pinnedSpotId: spot.id,
+              area: spot.areas?.slug || "anywhere",
+              pinned: spot.id,
               squad: "2",
-              budget: (spot.price_per_person * 2 * 1.1).toString()
+              budget: Math.round(spot.price_per_person * 2 * 1.1).toString(),
+              vibe: urlVibe
             });
 
             return (
@@ -54,9 +66,9 @@ export default function SavedPage() {
                   <div className="absolute top-3 right-3 z-40">
                     <button
                       onClick={() => removeSpot(spot.id)}
-                      aria-label={`Remove ${spot.name} from Saved Plans`}
+                      aria-label={`Remove ${spot.name} from Saved Spots`}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-full border border-border-default text-red-500 hover:bg-red-50 transition-all tap-feedback"
-                      title="Remove from Saved Plans"
+                      title="Remove from Saved Spots"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
