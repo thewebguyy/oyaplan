@@ -1,10 +1,12 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { createServerClient } from "@/lib/supabase-server";
 import { captureServerException } from "@/lib/sentry";
 
 export async function togglePlanTransport(planId: string, hasCar: boolean) {
   try {
+    const supabase = await createServerClient();
+
     // 1. Fetch the existing plan
     const { data: existingPlan, error: fetchError } = await supabase
       .from("shared_plans")
@@ -75,6 +77,8 @@ export async function switchPlanSpot(
   newSpotPrice: number
 ) {
   try {
+    const supabase = await createServerClient();
+
     // 1. Fetch the existing plan
     const { data: existingPlan, error: fetchError } = await supabase
       .from("shared_plans")

@@ -1,4 +1,4 @@
-import { supabase } from '../../supabase';
+import { createServerClient } from '../../supabase-server';
 import { AnalyticsService } from '../analytics/analyticsService';
 import { captureServerException } from '../../sentry';
 
@@ -11,6 +11,11 @@ export class IdentityMergeService {
     try {
       // 1. Merge Analytics (raw_product_events)
       await AnalyticsService.alias(userId, anonymousSessionId);
+
+      // Use the server client so writes execute under the authenticated user's
+      // session — plan_requests and attribution_sessions have RLS that gates
+      // UPDATE to auth.uid() = user_id, which the anon client cannot satisfy.
+      const supabase = await createServerClient();
 
       // 2. Merge Plan Requests (Analytics/Usage)
       await supabase
@@ -28,7 +33,7 @@ export class IdentityMergeService {
 
       // Note: Future merges (Scout Submissions, Reputation) will be added here
       // as those features are developed to accept anonymous inputs that are later claimed.
-      
+
     } catch (error) {
       console.error('Identity Merge Failed:', error);
       // We do not throw here to prevent blocking the login callback.
@@ -40,11 +45,19 @@ export class IdentityMergeService {
    * Processes post-authentication intent (e.g., user logged in specifically to save a plan).
    */
   static async linkSavedPlan(userId: string, sharedPlanId: string): Promise<void> {
-    await supabase
+    // Must use the authenticated server client — user_saved_plans RLS requires
+    // auth.uid() = user_id. The anon client has no session so auth.uid() is
+    // null and the upsert silently fails.
+    const supabase = await createServerClient();
+    const { error } = await supabase
       .from('user_saved_plans')
       .upsert({
         user_id: userId,
         shared_plan_id: sharedPlanId
       }, { onConflict: 'user_id, shared_plan_id' });
+
+    if (error) {
+      captureServerException(new Error(`linkSavedPlan upsert failed: ${error.message}`));
+    }
   }
 }
