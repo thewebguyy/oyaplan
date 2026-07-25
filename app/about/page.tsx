@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[#FAFAF8] text-[#1A1A1A] py-12 px-4 sm:px-6 antialiased">
+    <main className="min-h-[100dvh] bg-[#FAFAF8] text-[#1A1A1A] py-12 px-4 sm:px-6 antialiased">
       <div className="max-w-3xl mx-auto space-y-10">
         
         {/* Back Link */}

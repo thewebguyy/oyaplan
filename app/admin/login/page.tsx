@@ -8,7 +8,7 @@ export default async function AdminLoginPage({
   const { error } = await searchParams;
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50">
+    <main className="min-h-[100dvh] flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm p-8 bg-white border border-gray-200 rounded-2xl shadow-sm space-y-6">
         <div>
           <h1 className="text-xl font-black text-gray-900 tracking-tight">

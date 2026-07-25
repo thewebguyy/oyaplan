@@ -20,7 +20,7 @@ export default async function ScoutPage() {
   const tasks = await getPendingVerificationTasks();
 
   return (
-    <main className="min-h-screen bg-[#FAFAF8] antialiased pb-24">
+    <main className="min-h-[100dvh] bg-[#FAFAF8] antialiased pb-24">
       {/* Nav */}
       <div className="w-full bg-white border-b border-border-default py-4 px-6 flex items-center justify-between">
         <Link href="/" className="inline-block tap-feedback">

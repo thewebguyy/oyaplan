@@ -77,7 +77,7 @@ export default function FeedbackForm({ areas }: FeedbackFormProps) {
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+      <main className="min-h-[100dvh] bg-white flex flex-col items-center justify-center p-6 text-center">
         <CheckCircle2 className="w-20 h-20 text-[#008751] mb-6" />
         <h1 className="text-3xl font-black text-gray-900 mb-2">
           Thank you, {formData.testerName}.

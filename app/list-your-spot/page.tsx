@@ -114,7 +114,7 @@ function ListYourSpotContent() {
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center antialiased">
+      <main className="min-h-[100dvh] bg-white flex flex-col items-center justify-center p-6 text-center antialiased">
         <CheckCircle2 className="w-20 h-20 text-brand-green mb-8" />
         <h1 className="type-display text-text-primary mb-4">Thanks {formData.ownerName}.</h1>
         <p className="type-body text-text-muted mb-12 max-w-sm mx-auto">
@@ -130,7 +130,7 @@ function ListYourSpotContent() {
   }
 
   return (
-    <main className="min-h-screen bg-white antialiased">
+    <main className="min-h-[100dvh] bg-white antialiased">
       {/* Header Section */}
       <section className="bg-brand-green text-white pt-12 pb-24 px-6">
         <div className="max-w-6xl mx-auto space-y-16">
@@ -433,7 +433,7 @@ function ListYourSpotContent() {
 
 export default function ListYourSpotPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<div className="min-h-[100dvh] bg-white" />}>
       <ListYourSpotContent />
     </Suspense>
   );

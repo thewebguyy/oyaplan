@@ -12,7 +12,7 @@ export default function PageError({
   linkLabel = "Go back home",
 }: PageErrorProps) {
   return (
-    <main className="min-h-screen bg-surface-grey flex items-center justify-center px-4">
+    <main className="min-h-[100dvh] bg-surface-grey flex items-center justify-center px-4">
       <div className="max-w-sm w-full text-center space-y-6">
         <div role="alert" className="p-8 bg-white border border-border-default rounded-2xl space-y-4">
           <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center mx-auto">

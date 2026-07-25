@@ -104,7 +104,7 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
         return (
           <motion.div
             key={spot.id}
-            className="absolute inset-0 origin-bottom"
+            className="absolute inset-0 origin-bottom will-change-transform"
             style={{
               zIndex: spots.length - index,
               // Only apply drag transforms to the top card

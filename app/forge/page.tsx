@@ -99,7 +99,7 @@ export default async function ForgePage({
   const headersList = await headers();
   const userAgent = headersList.get("user-agent");
   if (isBotRequest(userAgent)) {
-    return <div className="min-h-screen bg-white" />;
+    return <div className="min-h-[100dvh] bg-white" />;
   }
 
   // Zod Param Validation
@@ -193,7 +193,7 @@ export default async function ForgePage({
 
   return (
     <main
-      className="min-h-screen pt-24 pb-16 px-4"
+      className="min-h-[100dvh] pt-24 pb-16 px-4"
       style={{ background: 'linear-gradient(to bottom, #FAFAF8 0px, #FFFFFF 120px)' }}
     >
       <ForgeResultsClient

@@ -42,7 +42,7 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
   const area = searchParams.get("area")?.replace("-", " ");
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12 space-y-12 bg-white-sand section-editorial min-h-screen">
+    <div className="max-w-2xl mx-auto px-4 py-12 space-y-12 bg-white-sand section-editorial min-h-[100dvh]">
       <div className="space-y-4">
         <Link href="/guides">
           <button className="type-label text-text-secondary hover:text-midnight-lagoon transition-colors flex items-center gap-2 tap-feedback py-2 hover:underline decoration-lasgidi-yellow underline-offset-4">

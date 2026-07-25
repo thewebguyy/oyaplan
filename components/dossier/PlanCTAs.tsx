@@ -130,7 +130,7 @@ Are you in? 👇`;
   return (
     <div className="w-full">
       {/* Sticky Bottom Actions on Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border-default/80 p-4 md:hidden flex gap-3 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border-default/80 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:hidden flex gap-3 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
         <button
           onClick={() => setIsShareModalOpen(true)}
           className="flex-1 bg-[#008751] hover:bg-[#007043] text-white font-black uppercase text-xs h-12 rounded-[12px] flex items-center justify-center gap-2 tap-feedback border-none outline-none"

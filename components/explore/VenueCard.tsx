@@ -153,7 +153,8 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
               e.preventDefault();
               onSaveToggle(spot);
             }}
-            className={`p-3 rounded-xl border-2 flex items-center justify-center transition-all ${
+            aria-label={isSaved ? "Remove from saved" : "Save this spot"}
+            className={`p-3 min-w-[44px] min-h-[44px] rounded-xl border-2 flex items-center justify-center transition-all ${
               isSaved 
                 ? "bg-brand-green/10 border-brand-green text-brand-green" 
                 : "bg-surface-grey border-transparent text-text-muted hover:text-text-primary hover:bg-black/5"

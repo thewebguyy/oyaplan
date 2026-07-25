@@ -22,7 +22,7 @@ export default async function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white-sand text-text-primary antialiased">
+    <main className="min-h-[100dvh] bg-white-sand text-text-primary antialiased">
       <Suspense fallback={null}>
         <ErrorBanner />
       </Suspense>

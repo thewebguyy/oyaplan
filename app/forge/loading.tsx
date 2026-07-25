@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ForgeLoading() {
   return (
-    <main className="min-h-screen bg-white-sand py-8 px-4 animate-hold-up">
+    <main className="min-h-[100dvh] bg-white-sand py-8 px-4 animate-hold-up">
       <div className="max-w-4xl mx-auto space-y-12 pb-20">
         {/* Recommendations Header Skeleton */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">

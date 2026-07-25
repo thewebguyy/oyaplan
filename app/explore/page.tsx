@@ -28,7 +28,7 @@ export default async function ExploreIndex() {
   const validAreas = (areas || []).filter(a => a.activeSpotCount > 0);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] pt-24 pb-20 px-6">
+    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10">
           <span className="text-[10px] font-black uppercase text-[#008751] bg-[#008751]/10 px-3 py-1.5 rounded-full w-fit block mb-4">

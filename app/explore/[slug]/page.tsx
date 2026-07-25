@@ -87,7 +87,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     }
 
     return (
-      <main className="min-h-screen bg-[#FAFAF8] text-text-primary pb-20 antialiased pt-8">
+      <main className="min-h-[100dvh] bg-[#FAFAF8] text-text-primary pb-20 antialiased pt-8">
         <div className="max-w-4xl mx-auto px-6">
           <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-6 tap-feedback">
             <ArrowLeft className="w-4 h-4" />
@@ -174,7 +174,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   filteredSpots.sort((a, b) => (b.trending_score || 0) - (a.trending_score || 0));
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] pt-8 flex flex-col relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-8 flex flex-col relative overflow-hidden">
       <div className="w-full max-w-lg mx-auto px-6 mb-6 flex flex-col z-10 relative pointer-events-none">
         <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-2 w-fit pointer-events-auto tap-feedback">
           <ArrowLeft className="w-4 h-4" />

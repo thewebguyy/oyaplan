@@ -38,7 +38,7 @@ export default function SuggestSpotPage() {
 
   if (success) {
     return (
-      <main className="min-h-screen bg-surface-grey flex items-center justify-center p-6">
+      <main className="min-h-[100dvh] bg-surface-grey flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white border border-border-default rounded-[32px] p-10 text-center space-y-6 shadow-sm">
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-brand-green-5 rounded-full flex items-center justify-center">
@@ -64,7 +64,7 @@ export default function SuggestSpotPage() {
   }
 
   return (
-    <main className="min-h-screen bg-surface-grey p-6 md:p-12 lg:p-24 flex flex-col items-center">
+    <main className="min-h-[100dvh] bg-surface-grey p-6 md:p-12 lg:p-24 flex flex-col items-center">
       <div className="w-full max-w-2xl">
         <Link href="/" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-brand-green mb-8 transition-colors group">
           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />

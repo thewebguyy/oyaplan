@@ -13,7 +13,7 @@ export default function GuidesPage() {
   const [featured, ...rest] = PLANNING_GUIDES;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12 space-y-12 section-guides min-h-screen">
+    <div className="max-w-5xl mx-auto px-4 py-12 space-y-12 section-guides min-h-[100dvh]">
       <div className="space-y-4">
         <Link href="/">
           <button className="type-label text-text-secondary hover:text-midnight-lagoon transition-colors flex items-center gap-2 tap-feedback py-2">

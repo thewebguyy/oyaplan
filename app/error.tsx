@@ -15,7 +15,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center antialiased">
+    <main className="min-h-[100dvh] bg-white flex flex-col items-center justify-center p-6 text-center antialiased">
       <div className="space-y-8 max-w-md">
         <span className="text-2xl font-[900] tracking-tighter">
           <span className="text-brand-green">Oya</span>

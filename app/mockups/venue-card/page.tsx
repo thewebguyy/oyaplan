@@ -1,6 +1,6 @@
 export default function VenueCardMockup() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8 font-body">
+    <div className="min-h-[100dvh] bg-gray-50 flex items-center justify-center p-8 font-body">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
         {/* Photo Section (Framed, no bleed, clean edges) */}
         <div className="p-2 pb-0 relative">

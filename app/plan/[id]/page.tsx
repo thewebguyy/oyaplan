@@ -120,7 +120,7 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
   else if (diff < 0) budgetFitStatus = "over";
 
   return (
-    <main className="min-h-screen bg-white-sand flex flex-col antialiased">
+    <main className="min-h-[100dvh] bg-white-sand flex flex-col antialiased">
       {/* Clean Top Nav */}
       <div className="w-full bg-white-sand border-b border-border-default py-4 px-6 flex items-center justify-between">
         <Link href="/" className="inline-block tap-feedback">

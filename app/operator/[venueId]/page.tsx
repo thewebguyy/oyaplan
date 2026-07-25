@@ -43,7 +43,7 @@ export default async function ManageVenuePage({ params }: ManageVenueProps) {
     .order("category");
 
   return (
-    <main className="min-h-screen bg-[#FAFAF8] antialiased pb-24">
+    <main className="min-h-[100dvh] bg-[#FAFAF8] antialiased pb-24">
       {/* Nav */}
       <div className="w-full bg-white border-b border-border-default py-4 px-6 flex items-center justify-between">
         <Link href="/operator" className="inline-flex items-center gap-1.5 text-sm font-bold text-text-secondary hover:text-black">

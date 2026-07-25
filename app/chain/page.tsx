@@ -10,7 +10,7 @@ export default async function ChainPage() {
   const areas = LocationService.getVerifiedAreas();
 
   return (
-    <main className="min-h-screen bg-[#FAFAF8] antialiased pb-24">
+    <main className="min-h-[100dvh] bg-[#FAFAF8] antialiased pb-24">
       {/* Navigation */}
       <div className="w-full bg-white border-b border-border-default py-4 px-6 flex items-center justify-between">
         <Link href="/" className="inline-block tap-feedback">

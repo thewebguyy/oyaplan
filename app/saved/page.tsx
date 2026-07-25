@@ -18,7 +18,7 @@ export default function SavedPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 bg-white-sand min-h-screen text-text-primary">
+    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 bg-white-sand min-h-[100dvh] text-text-primary">
       <div className="space-y-4">
         <Link href="/">
           <button className="type-label text-text-secondary hover:text-brand-green transition-colors flex items-center gap-2 tap-feedback py-2">

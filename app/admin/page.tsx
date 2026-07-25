@@ -169,7 +169,7 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8 font-sans text-gray-900">
+    <main className="min-h-[100dvh] bg-gray-50 p-8 font-sans text-gray-900">
       <div className="max-w-6xl mx-auto space-y-10">
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-black tracking-tighter text-[#008751]">
