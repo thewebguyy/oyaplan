@@ -33,44 +33,48 @@ export function PlanActions({
     
     setIsSaving(true);
     try {
+      // 1. Immediately save to localStorage (anonymous-first invariant)
+      try {
+        const savedSpots = JSON.parse(localStorage.getItem("oyaplan_saved_ideas") || "[]");
+        if (!savedSpots.some((s: { id: string }) => s.id === plan.spot.id)) {
+          localStorage.setItem("oyaplan_saved_ideas", JSON.stringify([...savedSpots, plan.spot]));
+        }
+      } catch { /* ignore localStorage issues */ }
+
+      setIsSaved(true);
+      toast.success("Plan saved to your Saved Plans!");
+
+      // 2. Silently attempt server-side share/save sync if possible
       let currentPlanId = planId;
-      
-      // If we don't have an ID yet, create the shareable plan first
       if (!currentPlanId) {
         const { createShareablePlan } = await import('@/lib/actions/sharePlan');
         const shareRes = await createShareablePlan(plan, input);
         if (shareRes.success && shareRes.id) {
           currentPlanId = shareRes.id;
           setPlanId(currentPlanId);
-        } else {
-          toast.error("Couldn't save this plan. Please try again.");
-          setIsSaving(false);
-          return;
         }
       }
 
-      const res = await savePlan(currentPlanId);
-      if (res.success) {
-        setIsSaved(true);
-        toast.success("Plan saved to your Saved Plans.");
-        AnalyticsService.track('plan_saved', {
-          session_id: '00000000-0000-0000-0000-000000000000',
-          properties: {
-            category: 'Engagement',
-            shared_plan_id: currentPlanId,
-            spot_id: plan.spot.id,
-            total_cost: plan.totalCost,
-            version: '1.0'
-          }
-        });
-      } else if (res.error === 'unauthorized') {
-        openModal("Sign in to save plans", `/plan/${currentPlanId || 'new'}`);
-      } else {
-        toast.error("Couldn't save this plan. Please try again.");
+      if (currentPlanId) {
+        const res = await savePlan(currentPlanId);
+        if (res.success) {
+          AnalyticsService.track('plan_saved', {
+            session_id: '00000000-0000-0000-0000-000000000000',
+            properties: {
+              category: 'Engagement',
+              shared_plan_id: currentPlanId,
+              spot_id: plan.spot.id,
+              total_cost: plan.totalCost,
+              version: '1.0'
+            }
+          });
+        }
       }
     } catch (e) {
       console.error(e);
-      toast.error("Couldn't save this plan. Please try again.");
+      // Fallback: still treat as saved locally
+      setIsSaved(true);
+      toast.success("Plan saved to your device!");
     } finally {
       setIsSaving(false);
     }

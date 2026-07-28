@@ -184,16 +184,29 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
     );
 
     // Check if any local candidates fit the budget & transport constraints
-    const validLocalCandidates = localVibeSpots.filter(spot => {
+    const validLocalVibeCandidates = localVibeSpots.filter(spot => {
       const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
-      const transportCost = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      const rawTransport = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      const transportCost = Math.max(1500, rawTransport);
       const totalCost = activityCost + transportCost;
       return totalCost <= budget && transportCost <= budget * BudgetPolicy.maxTransportBudgetRatio;
     });
 
-    if (validLocalCandidates.length > 0) {
+    const validLocalCandidates = localSpots.filter(spot => {
+      const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
+      const rawTransport = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      const transportCost = Math.max(1500, rawTransport);
+      const totalCost = activityCost + transportCost;
+      return totalCost <= budget && transportCost <= budget * BudgetPolicy.maxTransportBudgetRatio;
+    });
+
+    if (validLocalVibeCandidates.length > 0) {
       candidates = localVibeSpots;
+    } else if (validLocalCandidates.length > 0) {
+      candidates = localSpots;
+      isFallback = true;
     } else if (localSpots.length > 0) {
+      // If local spots exist in the requested area, keep candidates local rather than jumping out of area
       candidates = localSpots;
       isFallback = true;
     } else {
@@ -214,16 +227,11 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
 
   const scoredSpots = candidates
     .map((spot) => {
-      // COST CALCULATION
-      // price_per_person = derived_typical_cost (via spots VIEW).
-      // Phase 2 pricingEngine already applies VAT + service charge.
-      // No buffer multiplier here — that was double-counting tax.
       const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
 
-      // Transport: matrix override takes precedence over zone formula
-      const transportCost =
-        spot.transport_matrix?.[startArea] ??
-        calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      // Transport: matrix override takes precedence over zone formula, minimum 1500 NGN
+      const rawTransport = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      const transportCost = Math.max(1500, rawTransport);
 
       const totalCost = activityCost + transportCost;
 
