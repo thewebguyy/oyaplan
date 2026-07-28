@@ -97,7 +97,7 @@ export default function MobileBottomNav() {
             if (!session) {
               openModal();
             } else {
-              window.location.href = "/dashboard";
+              window.location.href = "/account";
             }
           }}
           className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback ${

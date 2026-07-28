@@ -64,10 +64,9 @@ export class SavedPlanService {
             squad_size,
             vibe,
             created_at,
-            spot:spots (
+            spot:spots!spot_id (
               name,
               category,
-              zone,
               address
             )
           )
@@ -77,7 +76,7 @@ export class SavedPlanService {
 
       if (error) throw error;
 
-      return { success: true, data };
+      return { success: true, data, error: null };
     } catch (error) {
       captureServerException(error);
       return { success: false, data: null, error: 'fetch_failed' };

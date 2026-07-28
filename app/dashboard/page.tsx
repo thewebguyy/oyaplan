@@ -18,7 +18,7 @@ interface SavedPlanEntry {
 }
 
 export default async function DashboardPage() {
-  const { data: savedPlans, success } = await SavedPlanService.getSavedPlans();
+  const { data: savedPlans, success, error } = await SavedPlanService.getSavedPlans();
 
   return (
     <div className="space-y-8">
@@ -30,7 +30,22 @@ export default async function DashboardPage() {
       <div className="space-y-4">
         <h2 className="type-subheading text-text-primary">Saved Plans</h2>
         
-        {!success ? (
+        {error === 'unauthorized' ? (
+          <div className="bg-white border border-border-default rounded-[20px] p-12 text-center space-y-4">
+            <div className="w-16 h-16 bg-brand-green/5 text-brand-green rounded-full flex items-center justify-center mx-auto mb-6">
+              <Calendar className="w-8 h-8" />
+            </div>
+            <h3 className="type-heading text-text-primary">Sign in to view your Saved Plans</h3>
+            <p className="type-body text-text-muted max-w-sm mx-auto">
+              Save your favourite Lagos outing plans and access them anytime across devices.
+            </p>
+            <Link href="/" className="inline-block mt-4">
+              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-12 px-8 shadow-none border-none">
+                Go to Home
+              </Button>
+            </Link>
+          </div>
+        ) : !success ? (
           <div className="bg-white border border-border-default rounded-[20px] p-12 text-center space-y-4">
             <div className="w-16 h-16 bg-red-50 text-error rounded-full flex items-center justify-center mx-auto mb-6">
               <span className="text-2xl">⚠️</span>

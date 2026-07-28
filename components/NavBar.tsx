@@ -123,6 +123,10 @@ export default function NavBar() {
                 role="menu" 
                 className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible translate-y-2 scale-95 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:scale-100 transition-all duration-200 ease-out py-2"
               >
+                <Link href="/account" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
+                  <User className="w-4 h-4 text-text-muted" />
+                  Account Profile
+                </Link>
                 <Link href="/dashboard" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
                   <Bookmark className="w-4 h-4 text-text-muted" />
                   My Plans

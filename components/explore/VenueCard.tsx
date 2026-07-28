@@ -44,10 +44,11 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
     return "pending";
   }
 
+  const spotAreaSlug = spot.areas?.slug || spot.address_slug || spot.zone || slug;
   const forgeParams = new URLSearchParams();
-  forgeParams.append("area", slug);
+  forgeParams.append("area", spotAreaSlug);
   forgeParams.append("pinned", spot.id);
-  forgeParams.append("vibe", vibe || "chill");
+  forgeParams.append("vibe", vibe || (spot.vibe_tags?.[0] ? spot.vibe_tags[0].toLowerCase().replace(/\s+/g, "-") : "chill"));
   forgeParams.append("budget", budget ? budget.toString() : "50000");
   forgeParams.append("squad", squadCount.toString());
   forgeParams.append("fresh", "true");
