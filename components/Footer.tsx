@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="max-w-4xl mx-auto px-4 py-16 sm:py-20 flex flex-col sm:flex-row items-center justify-between gap-8">
           <div className="text-center sm:text-left">
             <h2 className="text-3xl font-bold tracking-tight mb-2">
-              Know what you'll spend. No surprises.
+              Know what you&apos;ll spend. No surprises.
             </h2>
             <p className="text-white/70 text-lg">
               Start planning your next Lagos outing with confidence.
@@ -41,7 +41,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-sm text-white/60 leading-relaxed max-w-xs">
-              Lagos' verified pricing engine for outings and hangouts.
+              Lagos&apos; verified pricing engine for outings and hangouts.
             </p>
           </div>
 

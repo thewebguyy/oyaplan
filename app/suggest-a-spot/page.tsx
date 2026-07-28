@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Sparkles, MapPin, Loader2, Award, Flame, Wallet, UserCheck } from "lucide-react";
+import { ArrowLeft, MapPin, Loader2, Award, Flame, Wallet, UserCheck } from "lucide-react";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 
 export default function SuggestSpotPage() {

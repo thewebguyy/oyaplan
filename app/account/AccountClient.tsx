@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { 
   User, 
@@ -53,28 +53,33 @@ export default function AccountClient({
   const { signOut, openModal } = useAuth();
   const [copied, setCopied] = useState(false);
 
-  // Preference States (Loaded from LocalStorage)
-  const [budget, setBudget] = useState<number>(50000);
-  const [squadSize, setSquadSize] = useState<number>(2);
-  const [favoriteVibe, setFavoriteVibe] = useState<string>("squad-linkup");
-  const [scoutCount, setScoutCount] = useState<number>(0);
+  // Preference States (loaded from localStorage using lazy initializers)
+  const [budget, setBudget] = useState<number>(() => {
+    if (typeof window === "undefined") return 50000;
+    const saved = localStorage.getItem("oyaplan_pref_budget");
+    return saved ? parseInt(saved, 10) : 50000;
+  });
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedBudget = localStorage.getItem("oyaplan_pref_budget");
-      const savedSquad = localStorage.getItem("oyaplan_pref_squad");
-      const savedVibe = localStorage.getItem("oyaplan_pref_vibe");
+  const [squadSize, setSquadSize] = useState<number>(() => {
+    if (typeof window === "undefined") return 2;
+    const saved = localStorage.getItem("oyaplan_pref_squad");
+    return saved ? parseInt(saved, 10) : 2;
+  });
 
-      if (savedBudget) setBudget(parseInt(savedBudget));
-      if (savedSquad) setSquadSize(parseInt(savedSquad));
-      if (savedVibe) setFavoriteVibe(savedVibe);
+  const [favoriteVibe, setFavoriteVibe] = useState<string>(() => {
+    if (typeof window === "undefined") return "squad-linkup";
+    return localStorage.getItem("oyaplan_pref_vibe") || "squad-linkup";
+  });
 
-      try {
-        const subs = JSON.parse(localStorage.getItem("oyaplan_scout_submissions") || "[]");
-        setScoutCount(subs.length);
-      } catch { /* ignore */ }
+  const [scoutCount] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    try {
+      const subs = JSON.parse(localStorage.getItem("oyaplan_scout_submissions") || "[]");
+      return Array.isArray(subs) ? subs.length : 0;
+    } catch {
+      return 0;
     }
-  }, []);
+  });
 
   const handleSavePreferences = () => {
     localStorage.setItem("oyaplan_pref_budget", budget.toString());
