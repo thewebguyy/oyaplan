@@ -213,20 +213,12 @@ export default function AccountClient({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div className="pt-1">
             <a
-              href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Support%2C%20I%20need%20help%20with%20my%20outing%20plan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3.5 bg-[#25D366]/10 border border-[#25D366]/30 text-[#075E54] rounded-xl type-label text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#25D366]/20 transition-colors"
+              href="mailto:hello.oyaplan@gmail.com?subject=OyaPlan%20Support%20Request"
+              className="p-3.5 bg-brand-green/10 border border-brand-green/30 text-brand-green rounded-xl type-label text-sm font-bold flex items-center justify-center gap-2 hover:bg-brand-green/20 transition-colors w-full"
             >
-              <span>💬</span> Chat Support on WhatsApp
-            </a>
-            <a
-              href="mailto:support@oyaplan.app?subject=OyaPlan%20Support%20Request"
-              className="p-3.5 bg-surface-grey border border-border-default text-text-primary rounded-xl type-label text-xs font-bold flex items-center justify-center gap-2 hover:bg-black/5 transition-colors"
-            >
-              <Mail className="w-4 h-4 text-text-muted" /> Email Support Team
+              <Mail className="w-4 h-4" /> Email Support (hello.oyaplan@gmail.com)
             </a>
           </div>
         </div>
