@@ -6,7 +6,6 @@ import { Bookmark, Loader2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Plan, ForgeInput } from "@/lib/types";
-import { useAuth } from "../providers/AuthProvider";
 import { savePlan } from "@/lib/actions/savePlan";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import WhatsAppCopyButton from "../WhatsAppCopyButton";
@@ -23,7 +22,6 @@ export function PlanActions({
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [planId, setPlanId] = useState<string | undefined>(initialPlanId);
-  const { openModal } = useAuth();
 
   const handleSavePlan = async (e: React.MouseEvent) => {
     e.preventDefault();
