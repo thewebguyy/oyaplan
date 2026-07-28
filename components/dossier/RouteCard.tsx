@@ -190,9 +190,9 @@ export default function RouteCard({
             </span>
           )}
           <span className="text-sm font-black text-[#1A1A1A] leading-tight">
-            ₦{transportCost.toLocaleString()}
+            ₦{Math.max(1500, Math.round((transportCost * 0.85) / 500) * 500).toLocaleString()} – ₦{Math.round((transportCost * 1.15) / 500) * 500}.toLocaleString()
           </span>
-          <span className="text-[9px] text-[#6B7280] font-medium">Est. Transport (Uber/Bolt)</span>
+          <span className="text-[9px] text-[#6B7280] font-medium font-mono">Est. Fare Range (Uber/Bolt)</span>
         </div>
 
         {/* From/To label */}

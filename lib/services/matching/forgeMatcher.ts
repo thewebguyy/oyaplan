@@ -76,7 +76,32 @@ export function isSpotInArea(spot: Spot, targetArea: string): boolean {
   const areaSlug = spot.areas?.slug?.toLowerCase().trim();
   const addressSlug = spot.address_slug?.toLowerCase().trim();
   const areaId = spot.area_id?.toLowerCase().trim();
-  return areaSlug === target || addressSlug === target || areaId === target;
+  const addressText = spot.address?.toLowerCase().trim() || "";
+  const areaName = spot.areas?.name?.toLowerCase().trim() || "";
+  const spotName = spot.name?.toLowerCase().trim() || "";
+
+  // Exact slug/ID matches
+  if (areaSlug === target || addressSlug === target || areaId === target) return true;
+  if (areaName === target || addressText.includes(target) || spotName.includes(target)) return true;
+
+  // Landmark aliases mapping
+  if (target === "yaba" || target === "33333333-3333-3333-3333-333333333333") {
+    if (addressText.includes("yaba") || addressText.includes("sabo") || addressText.includes("akoka") || addressText.includes("unilag")) return true;
+  }
+  if (target === "lekki-phase-1" || target === "lekki") {
+    if (addressText.includes("lekki") || addressText.includes("admiralty") || addressText.includes("freedom way") || addressText.includes("oniru")) return true;
+  }
+  if (target === "vi" || target === "victoria island") {
+    if (addressText.includes("victoria island") || addressText.includes("vi ") || addressText.includes("landmark")) return true;
+  }
+  if (target === "ikeja") {
+    if (addressText.includes("ikeja") || addressText.includes("allen") || addressText.includes("isaac john") || addressText.includes("gra")) return true;
+  }
+  if (target === "surulere") {
+    if (addressText.includes("surulere") || addressText.includes("adeniran") || addressText.includes("bode thomas")) return true;
+  }
+
+  return false;
 }
 
 const CATEGORY_MAP: Record<string, string[]> = {

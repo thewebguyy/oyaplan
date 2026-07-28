@@ -360,11 +360,11 @@ export default function ForgeResultsClient({
                 <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
               </div>
               <div className="space-y-1">
-                <h3 className="type-label text-amber-900 font-bold">
-                  No venues in <span className="capitalize">{startAreaLabel}</span> fit your ₦{forgeInput.budget.toLocaleString()} budget.
+                <h3 className="type-label text-amber-900 font-bold text-base">
+                  No venues in <span className="capitalize">{startAreaLabel}</span> within your ₦{forgeInput.budget.toLocaleString()} budget.
                 </h3>
-                <p className="type-caption text-amber-800 font-medium">
-                  Here are top options in nearby areas that match your budget and squad vibe.
+                <p className="type-caption text-amber-800 font-semibold">
+                  Here are nearby alternatives.
                 </p>
               </div>
             </div>
