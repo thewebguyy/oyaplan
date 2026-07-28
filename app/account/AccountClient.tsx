@@ -15,7 +15,12 @@ import {
   Share2, 
   Users, 
   Wallet, 
-  Smile 
+  Smile,
+  Headphones,
+  Mail,
+  Lock,
+  Star,
+  Quote
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -176,7 +181,57 @@ export default function AccountClient({
           </div>
         </div>
 
-        {/* 2. Planning Preferences */}
+        {/* 2. Social Proof & Verification Trust Card */}
+        <div className="bg-gradient-to-br from-midnight-lagoon to-[#001D12] text-white rounded-[24px] p-6 space-y-4 shadow-md relative overflow-hidden">
+          <div className="flex items-center gap-2 text-brand-green type-caption uppercase font-extrabold tracking-widest">
+            <Star className="w-4 h-4 fill-brand-green" /> Verified Community Proof
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-xl font-black">50+ Lagos Squad Outings Planned This Week</h3>
+            <p className="text-white/70 text-xs">
+              Prices verified by 120+ community scouts across Lekki Phase 1, Yaba, Victoria Island & Ikeja.
+            </p>
+          </div>
+          <div className="p-3.5 bg-white/10 backdrop-blur-md rounded-xl text-xs space-y-1.5 border border-white/10">
+            <div className="flex items-center gap-1.5 font-bold text-white">
+              <Quote className="w-3.5 h-3.5 text-brand-green shrink-0" />
+              <span>&quot;Planned a ₦35k Date Night in Lekki — didn&apos;t spend a single Naira extra.&quot;</span>
+            </div>
+            <p className="text-white/60 pl-5 text-[11px]"> — Tunde & Squad, Yaba</p>
+          </div>
+        </div>
+
+        {/* 3. Help & Direct Support Safety Net */}
+        <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Headphones className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="type-heading text-text-primary">Planner Support & Safety Net</h2>
+              <p className="type-caption text-text-muted">Need help with a plan or found a price error? We respond within 24 hours.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <a
+              href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Support%2C%20I%20need%20help%20with%20my%20outing%20plan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3.5 bg-[#25D366]/10 border border-[#25D366]/30 text-[#075E54] rounded-xl type-label text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#25D366]/20 transition-colors"
+            >
+              <span>💬</span> Chat Support on WhatsApp
+            </a>
+            <a
+              href="mailto:support@oyaplan.app?subject=OyaPlan%20Support%20Request"
+              className="p-3.5 bg-surface-grey border border-border-default text-text-primary rounded-xl type-label text-xs font-bold flex items-center justify-center gap-2 hover:bg-black/5 transition-colors"
+            >
+              <Mail className="w-4 h-4 text-text-muted" /> Email Support Team
+            </a>
+          </div>
+        </div>
+
+        {/* 4. Planning Preferences */}
         <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-6 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center">
@@ -268,7 +323,7 @@ export default function AccountClient({
           </div>
         </div>
 
-        {/* 3. Referral Link & Squad Rewards */}
+        {/* 5. Referral Link & Squad Rewards */}
         <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-5 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
@@ -308,7 +363,17 @@ export default function AccountClient({
           )}
         </div>
 
-        {/* 4. Quick Nav Links */}
+        {/* 6. Data Privacy & Security Statement */}
+        <div className="p-5 bg-surface-grey border border-border-default rounded-[20px] space-y-2">
+          <div className="flex items-center gap-2 text-text-primary font-bold type-label">
+            <Lock className="w-4 h-4 text-brand-green" /> Data Privacy & Transparency Guarantee
+          </div>
+          <p className="type-caption text-text-muted leading-relaxed">
+            Your email and saved plans are strictly private. We never share your contact details or personal saved itineraries with third parties or venues.
+          </p>
+        </div>
+
+        {/* 7. Quick Nav Links */}
         <div className="bg-white border border-border-default rounded-[24px] overflow-hidden shadow-sm divide-y divide-border-default">
           <Link href="/dashboard" className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group">
             <div className="flex items-center gap-3">
@@ -337,7 +402,7 @@ export default function AccountClient({
           </Link>
         </div>
 
-        {/* 5. Sign Out Section */}
+        {/* 8. Sign Out Section */}
         <div className="bg-white border border-border-default rounded-[24px] p-6 shadow-sm flex items-center justify-between">
           <div>
             <h3 className="type-label text-text-primary">Sign Out</h3>
