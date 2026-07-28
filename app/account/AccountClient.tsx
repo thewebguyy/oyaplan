@@ -57,6 +57,7 @@ export default function AccountClient({
   const [budget, setBudget] = useState<number>(50000);
   const [squadSize, setSquadSize] = useState<number>(2);
   const [favoriteVibe, setFavoriteVibe] = useState<string>("squad-linkup");
+  const [scoutCount, setScoutCount] = useState<number>(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -67,6 +68,11 @@ export default function AccountClient({
       if (savedBudget) setBudget(parseInt(savedBudget));
       if (savedSquad) setSquadSize(parseInt(savedSquad));
       if (savedVibe) setFavoriteVibe(savedVibe);
+
+      try {
+        const subs = JSON.parse(localStorage.getItem("oyaplan_scout_submissions") || "[]");
+        setScoutCount(subs.length);
+      } catch { /* ignore */ }
     }
   }, []);
 
@@ -181,7 +187,38 @@ export default function AccountClient({
           </div>
         </div>
 
-        {/* 2. Social Proof & Verification Trust Card */}
+        {/* 2. Scout Badge & Community Contribution Card */}
+        <div className="bg-amber-50 border border-amber-200 rounded-[24px] p-6 space-y-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-300 text-amber-800 flex items-center justify-center text-xl font-bold shrink-0">
+                🏅
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="type-heading text-amber-950 font-black text-base">OyaPlan Scout Program</h3>
+                  {scoutCount > 0 && (
+                    <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded-full text-[10px] font-black uppercase tracking-wider">
+                      Active Scout
+                    </span>
+                  )}
+                </div>
+                <p className="type-caption text-amber-800 font-semibold mt-0.5">
+                  {scoutCount > 0 
+                    ? `You're an Official Scout! ${scoutCount} spot suggestion${scoutCount > 1 ? 's' : ''} logged.`
+                    : "Help map Lagos spots & earn your Official Scout Badge."}
+                </p>
+              </div>
+            </div>
+            <Link href="/suggest-a-spot" className="w-full sm:w-auto">
+              <Button className="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white rounded-xl type-label text-xs h-10 px-5 font-extrabold shadow-sm border-none">
+                {scoutCount > 0 ? "Suggest Another Spot 🏅" : "Earn Scout Badge 🏅"}
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* 3. Social Proof & Verification Trust Card */}
         <div className="bg-gradient-to-br from-midnight-lagoon to-[#001D12] text-white rounded-[24px] p-6 space-y-4 shadow-md relative overflow-hidden">
           <div className="flex items-center gap-2 text-brand-green type-caption uppercase font-extrabold tracking-widest">
             <Star className="w-4 h-4 fill-brand-green" /> Verified Community Proof

@@ -99,23 +99,23 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: For Venues */}
+          {/* Column 4: Community */}
           <div>
-            <h3 className="font-semibold text-white tracking-wide mb-6">For Venues</h3>
+            <h3 className="font-semibold text-white tracking-wide mb-6">Community</h3>
             <ul className="flex flex-col gap-4">
               <li>
-                <Link href="/list-your-spot?intent=new" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
-                  List a new venue
+                <Link href="/suggest-a-spot" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                  <span>Suggest a Spot 🏅</span>
                 </Link>
               </li>
               <li>
-                <Link href="/list-your-spot?intent=claim" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
-                  Claim existing profile
+                <Link href="/explore" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                  Lagos Spot Catalog
                 </Link>
               </li>
               <li>
-                <Link href="/suggest-a-spot" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
-                  Suggest a hidden gem
+                <Link href="/feedback" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                  Give Beta Feedback
                 </Link>
               </li>
             </ul>
