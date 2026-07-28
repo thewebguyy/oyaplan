@@ -70,6 +70,15 @@ export function calculateZoneFare(origin: string, destination: string): number {
   return Math.round(roundTrip / 500) * 500;
 }
 
+export function isSpotInArea(spot: Spot, targetArea: string): boolean {
+  if (!targetArea || targetArea === "Anywhere" || targetArea === "anywhere") return true;
+  const target = targetArea.toLowerCase().trim();
+  const areaSlug = spot.areas?.slug?.toLowerCase().trim();
+  const addressSlug = spot.address_slug?.toLowerCase().trim();
+  const areaId = spot.area_id?.toLowerCase().trim();
+  return areaSlug === target || addressSlug === target || areaId === target;
+}
+
 const CATEGORY_MAP: Record<string, string[]> = {
   "Eat and drink": ["restaurant", "bar", "cafe"],
   "Activity and fun": ["activity", "entertainment", "experience"],
@@ -161,15 +170,46 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       return true;
     });
 
-  let isFallback = false;
-  let candidates = baseFilteredSpots.filter(spot => 
-    spot.id === pinnedSpotId || spot.vibe_tags.includes(vibe)
-  );
+  const hasSpecificArea = Boolean(startArea && startArea !== "Anywhere" && startArea !== "anywhere");
 
-  // If no exact matches exist, fallback to all baseFilteredSpots
-  if (candidates.length === 0) {
-    isFallback = true;
-    candidates = baseFilteredSpots;
+  let isFallback = false;
+  let isLocationFallback = false;
+
+  let candidates = baseFilteredSpots;
+
+  if (hasSpecificArea) {
+    const localSpots = baseFilteredSpots.filter(spot => isSpotInArea(spot, startArea));
+    const localVibeSpots = localSpots.filter(spot => 
+      spot.id === pinnedSpotId || spot.vibe_tags.includes(vibe)
+    );
+
+    // Check if any local candidates fit the budget & transport constraints
+    const validLocalCandidates = localVibeSpots.filter(spot => {
+      const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
+      const transportCost = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      const totalCost = activityCost + transportCost;
+      return totalCost <= budget && transportCost <= budget * BudgetPolicy.maxTransportBudgetRatio;
+    });
+
+    if (validLocalCandidates.length > 0) {
+      candidates = localVibeSpots;
+    } else if (localSpots.length > 0) {
+      candidates = localSpots;
+      isFallback = true;
+    } else {
+      isLocationFallback = true;
+    }
+  }
+
+  if (!hasSpecificArea || isLocationFallback) {
+    let vibeCandidates = baseFilteredSpots.filter(spot => 
+      spot.id === pinnedSpotId || spot.vibe_tags.includes(vibe)
+    );
+    if (vibeCandidates.length === 0) {
+      isFallback = true;
+      vibeCandidates = baseFilteredSpots;
+    }
+    candidates = vibeCandidates;
   }
 
   const scoredSpots = candidates
@@ -254,7 +294,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
           : 'Estimated from historical data',
         confidence: isFallback ? "low" : `${Math.round(confidenceScore)}% data confidence`,
         tax_transparency: buildTaxLabel(spot),
-        reason: isFallback ? "semantic_classification_missing" : undefined,
+        reason: isLocationFallback ? "location_fallback" : isFallback ? "semantic_classification_missing" : undefined,
       };
 
       // Attach source label to explanation so PlanCard can render it

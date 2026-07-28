@@ -354,6 +354,22 @@ export default function ForgeResultsClient({
       {evaluations.length > 0 ? (
         <DossierDropWrapper className="space-y-12 dossier-grid">
           {/* Fallback Banner */}
+          {evaluations[0].plan.explanation?.reason === "location_fallback" && (
+            <div className="bg-amber-50 border border-amber-300 text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4 shadow-sm">
+              <div className="mt-0.5">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="type-label text-amber-900 font-bold">
+                  No venues in <span className="capitalize">{startAreaLabel}</span> fit your ₦{forgeInput.budget.toLocaleString()} budget.
+                </h3>
+                <p className="type-caption text-amber-800 font-medium">
+                  Here are top options in nearby areas that match your budget and squad vibe.
+                </p>
+              </div>
+            </div>
+          )}
+
           {evaluations[0].plan.explanation?.reason === "semantic_classification_missing" && (
             <div className="bg-trust-warning-15 border border-trust-warning text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
               <div className="mt-0.5">

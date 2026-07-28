@@ -69,7 +69,7 @@ function makeSpot(overrides: Partial<Spot> & { id: string }): Spot {
 const SPOT_A = makeSpot({
   id: 'a1b2c3d4-0000-0000-0000-000000000001',
   name: 'Spot A',
-  address_slug: 'lekki-phase-1',
+  address_slug: 'ikeja',
   vibe_tags: ['Chill'],
   price_per_person: 5000,
   is_featured: false,
@@ -82,7 +82,7 @@ const SPOT_A = makeSpot({
 const SPOT_FEATURED = makeSpot({
   id: 'b2c3d4e5-0000-0000-0000-000000000002',
   name: 'Featured Spot',
-  address_slug: 'lekki-phase-1',
+  address_slug: 'ikeja',
   vibe_tags: ['Chill'],
   price_per_person: 5000,
   is_featured: true,
@@ -1162,5 +1162,52 @@ describe('Phase 3A — explanation fields', () => {
     );
     expect(results[0].explanation?.confidence_score).toBe(77);
     expect(results[0].explanation?.confidence).toBe('77% data confidence');
+  });
+
+  it('should prioritize spots in requested startArea over featured spots in another area', () => {
+    const localSpot = makeSpot({
+      id: 'e1f2a3b4-0000-0000-0000-000000000001',
+      name: 'Local Yaba Spot',
+      address_slug: 'yaba',
+      price_per_person: 5000,
+      vibe_tags: ['Chill'],
+      is_featured: false,
+    });
+    const outsideFeaturedSpot = makeSpot({
+      id: 'f2a3b4c5-0000-0000-0000-000000000002',
+      name: 'Featured Lekki Spot',
+      address_slug: 'lekki-phase-1',
+      price_per_person: 5000,
+      vibe_tags: ['Chill'],
+      is_featured: true,
+    });
+
+    const results = forgePlans(
+      { startArea: 'yaba', squadSize: 2, budget: 30000, vibe: 'Chill' },
+      [outsideFeaturedSpot, localSpot]
+    );
+
+    expect(results).toHaveLength(1);
+    expect(results[0].spot.name).toBe('Local Yaba Spot');
+    expect(results[0].explanation?.reason).toBeUndefined();
+  });
+
+  it('should set reason to location_fallback when 0 spots exist in the requested startArea within budget', () => {
+    const outsideSpot = makeSpot({
+      id: 'a3b4c5d6-0000-0000-0000-000000000003',
+      name: 'Ikoyi Spot',
+      address_slug: 'ikoyi',
+      price_per_person: 5000,
+      vibe_tags: ['Chill'],
+    });
+
+    const results = forgePlans(
+      { startArea: 'lekki-phase-1', squadSize: 2, budget: 30000, vibe: 'Chill' },
+      [outsideSpot]
+    );
+
+    expect(results).toHaveLength(1);
+    expect(results[0].spot.name).toBe('Ikoyi Spot');
+    expect(results[0].explanation?.reason).toBe('location_fallback');
   });
 });

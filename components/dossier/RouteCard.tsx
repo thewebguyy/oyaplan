@@ -192,7 +192,7 @@ export default function RouteCard({
           <span className="text-sm font-black text-[#1A1A1A] leading-tight">
             ₦{transportCost.toLocaleString()}
           </span>
-          <span className="text-[9px] text-[#6B7280] font-medium">Uber est.</span>
+          <span className="text-[9px] text-[#6B7280] font-medium">Est. Transport (Uber/Bolt)</span>
         </div>
 
         {/* From/To label */}

@@ -37,6 +37,21 @@ const BUDGET_OPTIONS = [
   { value: "250000", label: "₦250k+" },
 ];
 
+const AREA_DESCRIPTORS: Record<string, string> = {
+  "lekki-phase-1": "Admiralty, Freedom Way",
+  "vi": "Adeola Odeku, Akin Adesola",
+  "ikeja": "GRA, Allen, Isaac John",
+  "yaba": "Akoka, Sabo, Commercial Ave",
+  "surulere": "Adeniran Ogunsanya, Bode Thomas",
+  "ikoyi": "Bourdillon, Alexander",
+  "gbagada": "Phase 1, Soluyi",
+  "ogudu": "Ogudu GRA",
+  "maryland": "Ikorodu Rd, Mende",
+  "agege": "Pen Cinema",
+  "ebute-metta": "Costain, Oyingbo",
+  "apapa": "Wharf Rd, GRA"
+};
+
 type StepId = 'vibe' | 'squad' | 'budget' | 'area';
 
 interface Step {
@@ -104,9 +119,18 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(getInitialStep);
   const [loading, setLoading] = useState(false);
 
-  // Sync component state when URL search parameters change (Back/Forward, Explore redirection)
+  // Sync component state when URL search parameters change + pre-fill primary area from localStorage
   useEffect(() => {
     const nextState = getInitialState();
+    try {
+      const stored = localStorage.getItem("oyaplan_user_profile");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.primaryArea && !nextState.startArea) {
+          nextState.startArea = parsed.primaryArea;
+        }
+      }
+    } catch { /* ignore */ }
     setFormData(nextState);
   }, [searchParams]);
 
@@ -143,6 +167,16 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
           nextState.vibe = '';
         }
       } else if (field === 'startArea') {
+        if (value && value !== 'Anywhere') {
+          try {
+            const existing = JSON.parse(localStorage.getItem("oyaplan_user_profile") || "{}");
+            localStorage.setItem("oyaplan_user_profile", JSON.stringify({
+              ...existing,
+              primaryArea: value,
+              lastUpdated: Date.now()
+            }));
+          } catch { /* ignore */ }
+        }
         if (nextState.squadSize && currentViability.squadSizes[nextState.squadSize]?.status === 'unavailable') {
           nextState.squadSize = '';
         }
@@ -374,7 +408,14 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
                       : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
                   }`}
                 >
-                  <span className="type-body font-semibold">{a.name}</span>
+                  <div className="flex flex-col">
+                    <span className="type-body font-semibold">{a.name}</span>
+                    {AREA_DESCRIPTORS[a.slug] && (
+                      <span className={`text-xs mt-0.5 ${isSelected ? "text-white/80" : "text-text-muted"}`}>
+                        {AREA_DESCRIPTORS[a.slug]}
+                      </span>
+                    )}
+                  </div>
                   {isPossible && (
                     <span className="text-xs text-amber-600 font-semibold flex items-center gap-1">
                       ⚠️ {aStatus.reason || "Might exceed budget"}
