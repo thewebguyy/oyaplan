@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -12,6 +13,12 @@ export default function NavBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { session, isLoading, openModal, signOut } = useAuth();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Hide on feedback and list-your-spot pages (if standalone)
   if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
@@ -105,7 +112,7 @@ export default function NavBar() {
 
 
 
-          {isLoading ? (
+          {!mounted || isLoading ? (
             <div className="w-10 h-10 rounded-full bg-surface-grey animate-pulse"></div>
           ) : session ? (
             <div className="relative group">
