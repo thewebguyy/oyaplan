@@ -70,38 +70,28 @@ export function calculateZoneFare(origin: string, destination: string): number {
   return Math.round(roundTrip / 500) * 500;
 }
 
+export function normalizeAreaSlug(input: string): string {
+  if (!input) return "";
+  const s = input.toLowerCase().trim();
+  if (s === "lekki" || s === "lekki 1" || s === "lekki-phase-1" || s === "77777777-7777-7777-7777-777777777777") return "lekki-phase-1";
+  if (s === "vi" || s === "victoria island" || s === "victoria-island" || s === "88888888-8888-8888-8888-888888888888") return "vi";
+  if (s === "yaba" || s === "33333333-3333-3333-3333-333333333333") return "yaba";
+  if (s === "ikeja" || s === "11111111-1111-1111-1111-111111111111") return "ikeja";
+  if (s === "surulere" || s === "44444444-4444-4444-4444-444444444444") return "surulere";
+  if (s === "ikoyi" || s === "99999999-9999-9999-9999-999911111111") return "ikoyi";
+  if (s === "gbagada" || s === "22222222-2222-2222-2222-222222222222") return "gbagada";
+  if (s === "agege" || s === "66666666-6666-6666-6666-666666666666") return "agege";
+  if (s === "ogudu" || s === "55555555-5555-5555-5555-555555555555") return "ogudu";
+  return s;
+}
+
 export function isSpotInArea(spot: Spot, targetArea: string): boolean {
   if (!targetArea || targetArea === "Anywhere" || targetArea === "anywhere") return true;
-  const target = targetArea.toLowerCase().trim();
-  const areaSlug = spot.areas?.slug?.toLowerCase().trim();
-  const addressSlug = spot.address_slug?.toLowerCase().trim();
-  const areaId = spot.area_id?.toLowerCase().trim();
-  const addressText = spot.address?.toLowerCase().trim() || "";
-  const areaName = spot.areas?.name?.toLowerCase().trim() || "";
-  const spotName = spot.name?.toLowerCase().trim() || "";
+  
+  const normalizedTarget = normalizeAreaSlug(targetArea);
+  const spotAreaSlug = normalizeAreaSlug(spot.areas?.slug || spot.address_slug || spot.area_id || "");
 
-  // Exact slug/ID matches
-  if (areaSlug === target || addressSlug === target || areaId === target) return true;
-  if (areaName === target || addressText.includes(target) || spotName.includes(target)) return true;
-
-  // Landmark aliases mapping
-  if (target === "yaba" || target === "33333333-3333-3333-3333-333333333333") {
-    if (addressText.includes("yaba") || addressText.includes("sabo") || addressText.includes("akoka") || addressText.includes("unilag")) return true;
-  }
-  if (target === "lekki-phase-1" || target === "lekki") {
-    if (addressText.includes("lekki") || addressText.includes("admiralty") || addressText.includes("freedom way") || addressText.includes("oniru")) return true;
-  }
-  if (target === "vi" || target === "victoria island") {
-    if (addressText.includes("victoria island") || addressText.includes("vi ") || addressText.includes("landmark")) return true;
-  }
-  if (target === "ikeja") {
-    if (addressText.includes("ikeja") || addressText.includes("allen") || addressText.includes("isaac john") || addressText.includes("gra")) return true;
-  }
-  if (target === "surulere") {
-    if (addressText.includes("surulere") || addressText.includes("adeniran") || addressText.includes("bode thomas")) return true;
-  }
-
-  return false;
+  return spotAreaSlug === normalizedTarget;
 }
 
 const CATEGORY_MAP: Record<string, string[]> = {
