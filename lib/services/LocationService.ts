@@ -192,9 +192,16 @@ export class LocationService {
     return nearest;
   }
 
-  // 6. Validate area exists in verified list
+  // 6. Validate area exists in verified list by ID, name, or alias
   static isValidArea(areaId: string): boolean {
-    return this.getVerifiedAreas().some((a) => a.id === areaId);
+    if (!areaId) return false;
+    const normalized = areaId.trim().toLowerCase();
+    return this.getVerifiedAreas().some(
+      (a) =>
+        a.id.toLowerCase() === normalized ||
+        a.name.toLowerCase() === normalized ||
+        a.alias.some((al) => al.toLowerCase() === normalized)
+    );
   }
 
   // 7. Save user's favorite location

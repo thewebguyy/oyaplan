@@ -20,30 +20,33 @@ describe("LocationService", () => {
     });
   });
 
-  it("getVerifiedAreas returns list of 6 verified areas", () => {
+  it("getVerifiedAreas returns list of 9 verified areas", () => {
     const areas = LocationService.getVerifiedAreas();
-    expect(areas).toHaveLength(6);
+    expect(areas).toHaveLength(9);
     expect(areas.map((a) => a.id)).toEqual([
-      "lekki",
+      "lekki-phase-1",
       "yaba",
       "ikeja",
       "vi",
       "ikoyi",
       "surulere",
+      "gbagada",
+      "agege",
+      "ogudu",
     ]);
   });
 
   it("searchAreas filters areas correctly by name and alias", () => {
-    const lekkiMatch = LocationService.searchAreas("Phase 1");
+    const lekkiMatch = LocationService.searchAreas("Lekki Phase 1");
     expect(lekkiMatch).toHaveLength(1);
-    expect(lekkiMatch[0].id).toBe("lekki");
+    expect(lekkiMatch[0].id).toBe("lekki-phase-1");
 
     const yabaMatch = LocationService.searchAreas("yaba");
     expect(yabaMatch).toHaveLength(1);
     expect(yabaMatch[0].id).toBe("yaba");
 
     const emptyMatch = LocationService.searchAreas("");
-    expect(emptyMatch).toHaveLength(6);
+    expect(emptyMatch).toHaveLength(9);
   });
 
   it("calculateDistance calculates Haversine distance in km", () => {
@@ -67,6 +70,7 @@ describe("LocationService", () => {
   });
 
   it("isValidArea validates existing and non-existing area IDs", () => {
+    expect(LocationService.isValidArea("lekki-phase-1")).toBe(true);
     expect(LocationService.isValidArea("lekki")).toBe(true);
     expect(LocationService.isValidArea("yaba")).toBe(true);
     expect(LocationService.isValidArea("unknown_area")).toBe(false);
