@@ -133,6 +133,7 @@ export default function PlannerWidget({
 
   const handleUseCurrentLocation = async () => {
     setIsLocating(true);
+    setValidationError(null);
     try {
       const current = await LocationService.getCurrentLocation();
       if (current) {
@@ -140,12 +141,11 @@ export default function PlannerWidget({
         LocationService.saveUserLocation(current);
         const nearest = LocationService.getNearestArea(current);
         updateArea(nearest);
-        toast.success(`Location set to ${nearest.name}`);
       } else {
-        toast.error("Could not access location. Please pick an area below.");
+        setValidationError("Could not access location. Please pick an area below.");
       }
     } catch {
-      toast.error("Could not access current location.");
+      setValidationError("Could not access current location.");
     } finally {
       setIsLocating(false);
     }
@@ -200,11 +200,11 @@ export default function PlannerWidget({
       <fieldset className="flex flex-col gap-6 p-0 m-0 border-none">
         <legend className="sr-only">Configure your outing constraints</legend>
 
-        {/* NEW INPUT STEP: Location Selector Layer */}
+        {/* LOCATION SELECTOR LAYER */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280]">
-              📍 Starting Location
+              📍 Starting Location {selectedArea && <span className="text-[#008751] font-bold ml-1">({selectedArea.name})</span>}
             </label>
             <button
               type="button"
@@ -223,8 +223,8 @@ export default function PlannerWidget({
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {LocationService.getVerifiedAreas().slice(0, 4).map((area) => {
+          <div className="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto pr-1">
+            {LocationService.getVerifiedAreas().map((area) => {
               const isSelected = selectedArea?.id === area.id;
               return (
                 <button
@@ -233,13 +233,14 @@ export default function PlannerWidget({
                   onClick={() => {
                     updateArea(area);
                   }}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                     isSelected
-                      ? "bg-[#008751] text-white"
+                      ? "bg-[#008751] text-white shadow-xs"
                       : "bg-[#F3F4F6] text-[#1A1A1A] hover:bg-[#D1E7DB]"
                   }`}
                 >
-                  {area.name}
+                  {isSelected && <span className="text-[10px]">✓</span>}
+                  <span>{area.name}</span>
                 </button>
               );
             })}
