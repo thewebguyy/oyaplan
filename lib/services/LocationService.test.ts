@@ -20,33 +20,30 @@ describe("LocationService", () => {
     });
   });
 
-  it("getVerifiedAreas returns list of 9 verified areas", () => {
+  it("getVerifiedAreas returns list of 6 verified areas", () => {
     const areas = LocationService.getVerifiedAreas();
-    expect(areas).toHaveLength(9);
+    expect(areas).toHaveLength(6);
     expect(areas.map((a) => a.id)).toEqual([
-      "lekki-phase-1",
+      "lekki",
       "yaba",
       "ikeja",
       "vi",
       "ikoyi",
       "surulere",
-      "gbagada",
-      "agege",
-      "ogudu",
     ]);
   });
 
   it("searchAreas filters areas correctly by name and alias", () => {
-    const lekkiMatch = LocationService.searchAreas("Lekki Phase 1");
+    const lekkiMatch = LocationService.searchAreas("Phase 1");
     expect(lekkiMatch).toHaveLength(1);
-    expect(lekkiMatch[0].id).toBe("lekki-phase-1");
+    expect(lekkiMatch[0].id).toBe("lekki");
 
     const yabaMatch = LocationService.searchAreas("yaba");
     expect(yabaMatch).toHaveLength(1);
     expect(yabaMatch[0].id).toBe("yaba");
 
     const emptyMatch = LocationService.searchAreas("");
-    expect(emptyMatch).toHaveLength(9);
+    expect(emptyMatch).toHaveLength(6);
   });
 
   it("calculateDistance calculates Haversine distance in km", () => {

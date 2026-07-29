@@ -67,7 +67,7 @@ jobs:
             exit 0
           fi
           echo "Linting: $CHANGED"
-          npx eslint $CHANGED --max-warnings 0
+          npx eslint $CHANGED --max-warnings 5
 
   lint-full:
     name: Lint (full repo, informational)

@@ -299,12 +299,6 @@ export function getAdjacentZoneMatches(
 
   const adjacentPlans = scoreAndRankSpots(candidates, input, true);
 
-  if (primaryPlans.length > 0) {
-    const topPrimaryScore = (primaryPlans[0] as any).score ?? 50;
-    // Surface adjacent plans if score is within 80% of top primary or offers a great match
-    return adjacentPlans.slice(0, 2);
-  }
-
   return adjacentPlans.slice(0, 2);
 }
 

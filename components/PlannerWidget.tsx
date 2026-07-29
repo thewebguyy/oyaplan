@@ -10,7 +10,6 @@ import { useTransportCost } from "@/hooks/useTransportCost";
 
 import { Spot } from "@/lib/types";
 
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 interface PlannerWidgetProps {

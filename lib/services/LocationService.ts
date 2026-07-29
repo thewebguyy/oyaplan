@@ -39,86 +39,79 @@ export interface AreaDistance {
 
 const STORAGE_KEY = "oyaplan_user_location";
 
+const VERIFIED_AREAS: Location[] = [
+  {
+    id: "lekki",
+    name: "Lekki",
+    area: "Lekki",
+    coordinates: { lat: 6.4474, lng: 3.4723 },
+    alias: ["lekki phase 1", "lekki-phase-1", "phase 1", "admiralty", "lekki 1"],
+  },
+  {
+    id: "yaba",
+    name: "Yaba",
+    area: "Yaba",
+    coordinates: { lat: 6.5095, lng: 3.3711 },
+    alias: ["yaba", "sabo", "akoka", "unilag"],
+  },
+  {
+    id: "ikeja",
+    name: "Ikeja",
+    area: "Ikeja",
+    coordinates: { lat: 6.6018, lng: 3.3515 },
+    alias: ["ikeja", "allen", "gra ikeja", "alausa"],
+  },
+  {
+    id: "vi",
+    name: "Victoria Island",
+    area: "Victoria Island",
+    coordinates: { lat: 6.4281, lng: 3.4219 },
+    alias: ["vi", "victoria island"],
+  },
+  {
+    id: "ikoyi",
+    name: "Ikoyi",
+    area: "Ikoyi",
+    coordinates: { lat: 6.4549, lng: 3.4347 },
+    alias: ["ikoyi", "banana island", "falomo"],
+  },
+  {
+    id: "surulere",
+    name: "Surulere",
+    area: "Surulere",
+    coordinates: { lat: 6.4969, lng: 3.354 },
+    alias: ["surulere", "ojuelegba", "bode thomas"],
+  },
+];
+
 export class LocationService {
-  // 1. Get all verified areas
+  // 1. Get all verified canonical areas (6 areas)
   static getVerifiedAreas(): Location[] {
-    return [
-      {
-        id: "lekki-phase-1",
-        name: "Lekki Phase 1",
-        area: "Lekki Phase 1",
-        coordinates: { lat: 6.4474, lng: 3.4723 },
-        alias: ["Lekki", "Lekki Phase 1", "Lekki 1", "Admiralty"],
-      },
-      {
-        id: "yaba",
-        name: "Yaba",
-        area: "Yaba",
-        coordinates: { lat: 6.5095, lng: 3.3711 },
-        alias: ["Yaba", "Sabo", "Akoka", "Unilag"],
-      },
-      {
-        id: "ikeja",
-        name: "Ikeja",
-        area: "Ikeja",
-        coordinates: { lat: 6.6018, lng: 3.3515 },
-        alias: ["Ikeja", "Allen", "GRA Ikeja", "Alausa"],
-      },
-      {
-        id: "vi",
-        name: "Victoria Island",
-        area: "Victoria Island",
-        coordinates: { lat: 6.4281, lng: 3.4219 },
-        alias: ["VI", "Victoria Island"],
-      },
-      {
-        id: "ikoyi",
-        name: "Ikoyi",
-        area: "Ikoyi",
-        coordinates: { lat: 6.4549, lng: 3.4347 },
-        alias: ["Ikoyi", "Banana Island", "Falomo"],
-      },
-      {
-        id: "surulere",
-        name: "Surulere",
-        area: "Surulere",
-        coordinates: { lat: 6.4969, lng: 3.354 },
-        alias: ["Surulere", "Ojuelegba", "Bode Thomas"],
-      },
-      {
-        id: "gbagada",
-        name: "Gbagada",
-        area: "Gbagada",
-        coordinates: { lat: 6.5539, lng: 3.3878 },
-        alias: ["Gbagada", "Gbagada Phase 1", "Gbagada Phase 2"],
-      },
-      {
-        id: "agege",
-        name: "Agege",
-        area: "Agege",
-        coordinates: { lat: 6.618, lng: 3.3209 },
-        alias: ["Agege", "Pen Cinema"],
-      },
-      {
-        id: "ogudu",
-        name: "Ogudu",
-        area: "Ogudu",
-        coordinates: { lat: 6.5744, lng: 3.3853 },
-        alias: ["Ogudu", "Ojota", "Ketu"],
-      },
-    ];
+    return VERIFIED_AREAS.map((a) => ({ ...a, alias: [...a.alias] }));
   }
 
-  // 2. Search areas by name or alias
+  // 2. Search areas by name or alias and deduplicate by canonical id
   static searchAreas(query: string): Location[] {
-    if (!query || query.trim() === "") return this.getVerifiedAreas();
-    const normalized = query.trim().toLowerCase();
-    return this.getVerifiedAreas().filter(
-      (loc) =>
-        loc.name.toLowerCase().includes(normalized) ||
-        loc.area.toLowerCase().includes(normalized) ||
-        loc.alias.some((a) => a.toLowerCase().includes(normalized))
-    );
+    const q = (query || "").trim().toLowerCase();
+    if (!q) return this.getVerifiedAreas();
+
+    const matchedIds = new Set<string>();
+    const results: Location[] = [];
+
+    for (const area of VERIFIED_AREAS) {
+      const nameMatch = area.name.toLowerCase().includes(q);
+      const idMatch = area.id.toLowerCase().includes(q);
+      const aliasMatch = area.alias.some((a) => a.toLowerCase().includes(q));
+
+      if (nameMatch || idMatch || aliasMatch) {
+        if (!matchedIds.has(area.id)) {
+          matchedIds.add(area.id);
+          results.push(area);
+        }
+      }
+    }
+
+    return results;
   }
 
   // 3. Get user's current location via geolocation API
@@ -192,11 +185,11 @@ export class LocationService {
     return nearest;
   }
 
-  // 6. Validate area exists in verified list by ID, name, or alias
+  // 6. Validate area exists in verified list by canonical ID, name, or alias
   static isValidArea(areaId: string): boolean {
     if (!areaId) return false;
     const normalized = areaId.trim().toLowerCase();
-    return this.getVerifiedAreas().some(
+    return VERIFIED_AREAS.some(
       (a) =>
         a.id.toLowerCase() === normalized ||
         a.name.toLowerCase() === normalized ||
