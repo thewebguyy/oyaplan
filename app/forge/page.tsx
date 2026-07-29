@@ -3,10 +3,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getForgeSpots } from "@/lib/queries/spots";
-import { getAllowedCategories, forgePlans, generateRecoverySuggestions } from "@/lib/services/matching/forgeMatcher";
+import { getAllowedCategories, forgePlans, getPrimaryAreaMatches, getAdjacentZoneMatches, generateRecoverySuggestions } from "@/lib/services/matching/forgeMatcher";
 import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { captureServerException } from "@/lib/sentry";
-import { ForgeInput, Spot, RecoverySuggestion } from "@/lib/types";
+import { ForgeInput, Spot, Plan, RecoverySuggestion } from "@/lib/types";
 import ForgeResultsClient from "./ForgeResultsClient";
 
 export const dynamic = "force-dynamic";
@@ -152,11 +152,11 @@ export default async function ForgePage({
     pinnedSpotId: validatedPinnedId,
   };
 
-  // Run Matching/Pricing Engine
-  const generatedPlans = forgePlans(input, allSpots);
+  // Run Matching/Pricing Engine: 2-Pass Matching
+  const generatedPlans = getPrimaryAreaMatches(input, allSpots);
   
-  // Run Trust Evaluation Engine
-  const evaluations = generatedPlans.map(plan => evaluatePlan({
+  // Run Trust Evaluation Engine on Primary Plans
+  const evaluations = generatedPlans.map((plan: Plan) => evaluatePlan({
     currentPlan: plan,
     candidatePlans: generatedPlans,
     input: input
@@ -191,6 +191,19 @@ export default async function ForgePage({
       .slice(0, 3);
   }
 
+  // Pass 2: Adjacent Zone Matches (Enhancement Section or Location Recovery)
+  const hasLocationRecovery = recoverySuggestions.some(r => r.type === "SwitchArea");
+  const shouldFetchAdjacent = generatedPlans.length > 0 || hasLocationRecovery;
+  const adjacentPlans = shouldFetchAdjacent 
+    ? getAdjacentZoneMatches(input, allSpots, generatedPlans) 
+    : [];
+
+  const adjacentEvaluations = adjacentPlans.map((plan: Plan) => evaluatePlan({
+    currentPlan: plan,
+    candidatePlans: adjacentPlans,
+    input: input
+  }));
+
   return (
     <main
       className="min-h-[100dvh] pt-24 pb-16 px-4"
@@ -198,6 +211,7 @@ export default async function ForgePage({
     >
       <ForgeResultsClient
         evaluations={evaluations}
+        adjacentEvaluations={adjacentEvaluations}
         vibeMetrics={vibeMetrics}
         nearbySpots={nearbySpots}
         targetAreaName={targetAreaName}

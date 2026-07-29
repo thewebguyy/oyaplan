@@ -95,6 +95,20 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
 
   return (
     <div className="relative w-full max-w-[420px] mx-auto h-[600px] max-h-[75vh] flex items-center justify-center">
+      {/* Swipe Affordance */}
+      {activeSpots.length > 0 && currentIndex === 0 && (
+        <motion.div 
+          className="absolute -bottom-10 left-0 right-0 flex justify-center items-center gap-4 text-text-muted text-xs font-black uppercase tracking-widest z-10 pointer-events-none"
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.5 }}
+        >
+          <span className="flex items-center gap-1 opacity-70"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> PASS</span>
+          <span className="w-1 h-1 rounded-full bg-border-default"></span>
+          <span className="flex items-center gap-1 opacity-70">SAVE <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></span>
+        </motion.div>
+      )}
+
       {activeSpots.map((spot, index) => {
         const isTop = index === 0;
         

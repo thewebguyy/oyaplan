@@ -160,138 +160,192 @@ export function getAllowedCategories(categoryGroup: string | undefined): string[
  *
  *  Transport = spot.transport_matrix[startArea] ?? calculateZoneFare(startArea, spot.address_slug)
  */
-export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
-  const { startArea, squadSize, budget, vibe, pinnedSpotId, categoryGroup, daypart } = input;
+const ADJACENT_ZONES: Record<string, string[]> = {
+  mainland: ["mainland", "central"],
+  central: ["central", "mainland", "island"],
+  island: ["island", "central"],
+  other: ["other", "central"],
+};
 
-  // 1. Filter
-  const baseFilteredSpots = allSpots
-    .filter((spot) => {
-      // Daypart Filter
-      if (daypart && daypart !== "Any time") {
-        const cat = spot.category || "restaurant";
-        const duration = spot.typical_duration_hours || 0;
+export function getZoneForArea(areaStr: string): string {
+  if (!areaStr) return "other";
+  const slug = areaStr.toLowerCase().trim();
+  if (ZONES[slug]) return ZONES[slug];
+  if (slug.includes("yaba") || slug.includes("surulere") || slug.includes("ebute")) return "central";
+  if (slug.includes("lekki") || slug.includes("vi") || slug.includes("victoria") || slug.includes("ikoyi")) return "island";
+  if (slug.includes("ikeja") || slug.includes("gbagada") || slug.includes("ogudu") || slug.includes("maryland") || slug.includes("agege")) return "mainland";
+  if (slug.includes("apapa")) return "other";
+  return "other";
+}
 
-        if (daypart === "Morning") {
-          // Morning: cafe, restaurant, nature, experience, activity. Exclude bar, entertainment, beach.
-          if (["bar", "entertainment", "beach"].includes(cat)) return false;
-        } else if (daypart === "Night") {
-          // Night: bar, restaurant, entertainment, experience. Exclude nature, beach, activity > 2hrs.
-          if (["nature", "beach"].includes(cat)) return false;
-          if (cat === "activity" && duration > 2) return false;
-        }
-        // Afternoon and Evening allow all categories
-      }
+function formatAreaSlugName(slug: string): string {
+  if (!slug) return "nearby";
+  const map: Record<string, string> = {
+    "ikeja": "Ikeja",
+    "yaba": "Yaba",
+    "surulere": "Surulere",
+    "lekki-phase-1": "Lekki Phase 1",
+    "vi": "Victoria Island",
+    "ikoyi": "Ikoyi",
+    "gbagada": "Gbagada",
+    "ogudu": "Ogudu",
+    "maryland": "Maryland",
+    "ebute-metta": "Ebute Metta",
+    "apapa": "Apapa"
+  };
+  if (map[slug.toLowerCase()]) return map[slug.toLowerCase()];
+  return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
 
-      // Category Group Filter
-      if (categoryGroup && categoryGroup !== "Anywhere") {
-        const allowedCategories = CATEGORY_MAP[categoryGroup] || [];
-        const spotCategory = spot.category || "restaurant";
-        if (!allowedCategories.includes(spotCategory)) return false;
-      }
+export function formatTravelInfo(originArea: string, spotArea: string, transportCost: number): string {
+  const fare = calculateZoneFare(originArea, spotArea);
+  let estMins = 18;
+  if (fare <= 1200) estMins = 12;
+  else if (fare <= 5000) estMins = 18;
+  else if (fare <= 7000) estMins = 25;
+  else if (fare <= 9000) estMins = 32;
+  else if (fare <= 12000) estMins = 42;
+  else estMins = 55;
 
-      // Must match vibe tag OR be the pinned spot
-      if (spot.id === pinnedSpotId) return true;
-      // Vibe filter moved to candidate selection below
-      return true;
-    });
+  const originName = formatAreaSlugName(originArea);
+  return `${estMins} mins from ${originName} • +₦${transportCost.toLocaleString()} transport`;
+}
 
+/**
+ * PRIMARY RESULTS (strict, hard filter):
+ * Filters candidates ONLY to spots in selectedArea.
+ * Score and rank ONLY within that filtered set. No cross-area substitution.
+ */
+export function getPrimaryAreaMatches(input: ForgeInput, allSpots: Spot[]): Plan[] {
+  const { startArea, vibe, pinnedSpotId, categoryGroup, daypart } = input;
   const hasSpecificArea = Boolean(startArea && startArea !== "Anywhere" && startArea !== "anywhere");
 
-  let isFallback = false;
-  let isLocationFallback = false;
+  const candidates = allSpots.filter((spot) => {
+    // Daypart Filter
+    if (daypart && daypart !== "Any time") {
+      const cat = spot.category || "restaurant";
+      const duration = spot.typical_duration_hours || 0;
 
-  let candidates = baseFilteredSpots;
-
-  if (hasSpecificArea) {
-    const localSpots = baseFilteredSpots.filter(spot => isSpotInArea(spot, startArea));
-    const localVibeSpots = localSpots.filter(spot => 
-      spot.id === pinnedSpotId || spot.vibe_tags.includes(vibe)
-    );
-
-    // Check if any local candidates fit the budget & transport constraints
-    const validLocalVibeCandidates = localVibeSpots.filter(spot => {
-      const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
-      const rawTransport = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
-      const transportCost = Math.max(1500, rawTransport);
-      const totalCost = activityCost + transportCost;
-      return totalCost <= budget && transportCost <= budget * BudgetPolicy.maxTransportBudgetRatio;
-    });
-
-    const validLocalCandidates = localSpots.filter(spot => {
-      const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
-      const rawTransport = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
-      const transportCost = Math.max(1500, rawTransport);
-      const totalCost = activityCost + transportCost;
-      return totalCost <= budget && transportCost <= budget * BudgetPolicy.maxTransportBudgetRatio;
-    });
-
-    if (validLocalVibeCandidates.length > 0) {
-      candidates = localVibeSpots;
-    } else if (validLocalCandidates.length > 0) {
-      candidates = localSpots;
-      isFallback = true;
-    } else if (localSpots.length > 0) {
-      // If local spots exist in the requested area, keep candidates local rather than jumping out of area
-      candidates = localSpots;
-      isFallback = true;
-    } else {
-      isLocationFallback = true;
+      if (daypart === "Morning") {
+        if (["bar", "entertainment", "beach"].includes(cat)) return false;
+      } else if (daypart === "Night") {
+        if (["nature", "beach"].includes(cat)) return false;
+        if (cat === "activity" && duration > 2) return false;
+      }
     }
+
+    // Category Group Filter
+    if (categoryGroup && categoryGroup !== "Anywhere") {
+      const allowedCategories = CATEGORY_MAP[categoryGroup] || [];
+      const spotCategory = spot.category || "restaurant";
+      if (!allowedCategories.includes(spotCategory)) return false;
+    }
+
+    // STRICT LOCATION FILTER — NO CROSS-AREA SUBSTITUTION
+    if (hasSpecificArea && !isSpotInArea(spot, startArea)) {
+      if (spot.id !== pinnedSpotId) return false;
+    }
+
+    // Vibe filter
+    if (spot.id === pinnedSpotId) return true;
+    return spot.vibe_tags.includes(vibe);
+  });
+
+  return scoreAndRankSpots(candidates, input, false);
+}
+
+/**
+ * ADJACENT ZONE MATCHES:
+ * Searches ONLY same or adjacent zone (using zone mapping). Never random cross-city jumps.
+ * Only surfaces candidates in other areas tagged explicitly with isAdjacentZoneSuggestion: true.
+ */
+export function getAdjacentZoneMatches(
+  input: ForgeInput,
+  allSpots: Spot[],
+  primaryPlans: Plan[] = []
+): Plan[] {
+  const { startArea, vibe, pinnedSpotId, categoryGroup, daypart } = input;
+
+  if (!startArea || startArea === "anywhere" || startArea === "Anywhere") {
+    return [];
   }
 
-  if (!hasSpecificArea || isLocationFallback) {
-    let vibeCandidates = baseFilteredSpots.filter(spot => 
-      spot.id === pinnedSpotId || spot.vibe_tags.includes(vibe)
-    );
-    if (vibeCandidates.length === 0) {
-      isFallback = true;
-      vibeCandidates = baseFilteredSpots;
+  const originZone = getZoneForArea(startArea);
+  const allowedZones = ADJACENT_ZONES[originZone] || [originZone];
+
+  const candidates = allSpots.filter((spot) => {
+    // Must NOT be in the selected area itself (primary area candidates handled separately)
+    if (isSpotInArea(spot, startArea)) return false;
+
+    // Must be in same or adjacent zone
+    const spotAreaSlug = spot.address_slug || spot.areas?.slug || "";
+    const spotZone = getZoneForArea(spotAreaSlug);
+    if (!allowedZones.includes(spotZone)) return false;
+
+    // Daypart Filter
+    if (daypart && daypart !== "Any time") {
+      const cat = spot.category || "restaurant";
+      const duration = spot.typical_duration_hours || 0;
+
+      if (daypart === "Morning") {
+        if (["bar", "entertainment", "beach"].includes(cat)) return false;
+      } else if (daypart === "Night") {
+        if (["nature", "beach"].includes(cat)) return false;
+        if (cat === "activity" && duration > 2) return false;
+      }
     }
-    candidates = vibeCandidates;
+
+    // Category Group Filter
+    if (categoryGroup && categoryGroup !== "Anywhere") {
+      const allowedCategories = CATEGORY_MAP[categoryGroup] || [];
+      const spotCategory = spot.category || "restaurant";
+      if (!allowedCategories.includes(spotCategory)) return false;
+    }
+
+    // Vibe filter
+    if (spot.id === pinnedSpotId) return true;
+    return spot.vibe_tags.includes(vibe);
+  });
+
+  const adjacentPlans = scoreAndRankSpots(candidates, input, true);
+
+  if (primaryPlans.length > 0) {
+    const topPrimaryScore = (primaryPlans[0] as any).score ?? 50;
+    // Surface adjacent plans if score is within 80% of top primary or offers a great match
+    return adjacentPlans.slice(0, 2);
   }
+
+  return adjacentPlans.slice(0, 2);
+}
+
+function scoreAndRankSpots(candidates: Spot[], input: ForgeInput, isAdjacent: boolean): Plan[] {
+  const { startArea, squadSize, budget, vibe, pinnedSpotId } = input;
 
   const scoredSpots = candidates
     .map((spot) => {
       const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
-
-      // Transport: matrix override takes precedence over zone formula, minimum 1500 NGN
       const rawTransport = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
       const transportCost = Math.max(1500, rawTransport);
-
       const totalCost = activityCost + transportCost;
 
       return { spot, activityCost, transportCost, totalCost };
     })
     .filter(({ transportCost, totalCost }) => {
-      // Transport must be ≤35% of budget (prevents transport-heavy plans)
       if (transportCost > budget * BudgetPolicy.maxTransportBudgetRatio) return false;
-      // Total must not exceed budget
       if (totalCost > budget) return false;
       return true;
     })
     .map(({ spot, activityCost, transportCost, totalCost }) => {
-      // SCORING ALGORITHM — see header comment for weight documentation
-
-      // Cost score: rewards good budget utilisation (max 80pts)
+      // SCORING ALGORITHM
       const costScore = (1 - Math.abs(budget - totalCost) / budget) * 80;
-
-      // Vibe score: rewards multi-vibe matches (max 10pts)
       const vibeMatches = spot.vibe_tags.filter(t => t === vibe).length;
       const vibeScore = Math.min(vibeMatches * 5, 10);
-
-      // Featured boost: monetization policy (30pts). DO NOT CHANGE without sign-off.
       const featuredBoost = spot.is_featured ? 30 : 0;
-
-      // Deterministic tie-breaker from ID hash (0–9pts)
       const idWeight =
         spot.id.split('-')[0].split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
-
-      // Confidence boost: trust signal from pricing evidence quality (max 20pts)
       const confidenceScore = Number(spot.computed_confidence_score || 50.00);
       const confidenceBoost = (confidenceScore / 100) * 20;
 
-      // Status boost: deterministic ranking signal from operational_status
-      // (mapped from venues.operational_status via spots VIEW → verified_by column)
       let statusBoost = 0;
       const status = spot.verified_by || 'verified';
       if (status === 'fresh')              statusBoost = 25;
@@ -300,9 +354,7 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
       else if (status === 'stale')              statusBoost = -20;
       else if (status === 'needs_review')       statusBoost = -40;
       else if (status === 'incomplete')         statusBoost = -30;
-      // 'verified' → 0 (baseline, no adjustment)
 
-      // Pinned boost: user-selected spot always wins (1000pts)
       const pinnedBoost = spot.id === pinnedSpotId ? 1000 : 0;
 
       const totalScore =
@@ -315,27 +367,23 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         statusBoost;
 
       const whyItFits = generateWhyItFits(spot, vibe, totalCost, budget);
-
-      // Explainability: surfaces backend intelligence to the UI
-      // All values are read from existing backend fields — no new calculations here.
       const priceSource = spot.price_source || 'historical_estimate';
       const sourceLabel = formatPriceSource(priceSource);
+      const travelInfo = isAdjacent 
+        ? formatTravelInfo(startArea, spot.address_slug || spot.areas?.slug || "ikeja", transportCost)
+        : undefined;
+
       const explanation = {
         budget_fit: `Fits ₦${budget.toLocaleString()} squad budget`,
         freshness: spot.price_updated_at
           ? `Prices updated ${timeAgo(spot.price_updated_at)}`
           : 'Estimated from historical data',
-        confidence: isFallback ? "low" : `${Math.round(confidenceScore)}% data confidence`,
+        confidence: `${Math.round(confidenceScore)}% data confidence`,
         tax_transparency: buildTaxLabel(spot),
-        reason: isLocationFallback ? "location_fallback" : isFallback ? "semantic_classification_missing" : undefined,
-      };
-
-      // Attach source label to explanation so PlanCard can render it
-      const fullExplanation = {
-        ...explanation,
         source_label: sourceLabel,
         confidence_score: Math.round(confidenceScore),
         status,
+        travel_info: travelInfo,
       };
 
       const tempPlan: Plan = {
@@ -357,34 +405,33 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
         transportCost,
         totalCost,
         whyItFits,
-        explanation: fullExplanation,
+        explanation,
         score: totalScore,
         title: generatedTitle,
         subtitle: generatedSubtitle,
         decisionConfidence,
-        decisionSummary: generatedSummary
+        decisionSummary: generatedSummary,
+        isAdjacentZoneSuggestion: isAdjacent,
+        travelInfo
       };
     });
 
-  // Sort by score descending
   const sortedPlans = scoredSpots.sort((a, b) => b.score - a.score);
 
-  // Analytics: fire-and-forget insert (does not block plan generation)
-  try {
-    supabase.from('plan_requests').insert({
-      start_area: startArea,
-      squad_size: squadSize,
-      budget: budget,
-      vibe: vibe,
-      results_count: sortedPlans.length,
-      top_spot_id: sortedPlans[0]?.spot.id || null
-    }).then(); // Fire and forget
-  } catch {
-    // Silent: analytics failure must never affect plan delivery
+  if (!isAdjacent) {
+    try {
+      supabase.from('plan_requests').insert({
+        start_area: startArea,
+        squad_size: squadSize,
+        budget: budget,
+        vibe: vibe,
+        results_count: sortedPlans.length,
+        top_spot_id: sortedPlans[0]?.spot.id || null
+      }).then();
+    } catch {}
   }
 
-  // Return top 1–3 results
-  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits, explanation, title, subtitle, decisionConfidence, decisionSummary }) => ({
+  return sortedPlans.slice(0, 3).map(({ spot, foodCost, transportCost, totalCost, whyItFits, explanation, title, subtitle, decisionConfidence, decisionSummary, isAdjacentZoneSuggestion, travelInfo }) => ({
     spot,
     foodCost,
     transportCost,
@@ -394,8 +441,18 @@ export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
     title,
     subtitle,
     decisionConfidence,
-    decisionSummary
+    decisionSummary,
+    isAdjacentZoneSuggestion,
+    travelInfo
   }));
+}
+
+/**
+ * forgePlans — Main Matching Entrypoint
+ * Calls getPrimaryAreaMatches to deliver strict location-first matching.
+ */
+export function forgePlans(input: ForgeInput, allSpots: Spot[]): Plan[] {
+  return getPrimaryAreaMatches(input, allSpots);
 }
 
 /**

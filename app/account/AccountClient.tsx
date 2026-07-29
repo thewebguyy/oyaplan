@@ -158,21 +158,14 @@ export default function AccountClient({
         </div>
 
         {/* 1. User Profile Header */}
-        <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-midnight-lagoon text-white rounded-full flex items-center justify-center font-black text-xl">
-                {profile.display_name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div>
-                <h2 className="type-heading text-text-primary">{profile.display_name || 'OyaPlan Planner'}</h2>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="px-2.5 py-0.5 bg-brand-green/10 text-brand-green rounded-md type-caption font-extrabold uppercase tracking-wider">
-                    {profile.role}
-                  </span>
-                  <span className="type-caption text-text-muted">ID: {profile.id.slice(0, 8)}...</span>
-                </div>
-              </div>
+        <div className="bg-white border border-border-default rounded-[24px] p-8 space-y-6 shadow-sm text-center">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <h2 className="text-4xl font-black text-text-primary">{profile.display_name || 'OyaPlan Planner'}</h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="px-3 py-1 bg-brand-green/10 text-brand-green rounded-full type-caption font-extrabold uppercase tracking-wider">
+                {profile.role}
+              </span>
+              <span className="type-caption text-text-muted">ID: {profile.id.slice(0, 8)}...</span>
             </div>
           </div>
 
@@ -224,138 +217,37 @@ export default function AccountClient({
         </div>
 
         {/* 3. Social Proof & Verification Trust Card */}
-        <div className="bg-gradient-to-br from-midnight-lagoon to-[#001D12] text-white rounded-[24px] p-6 space-y-4 shadow-md relative overflow-hidden">
-          <div className="flex items-center gap-2 text-brand-green type-caption uppercase font-extrabold tracking-widest">
-            <Star className="w-4 h-4 fill-brand-green" /> Verified Community Proof
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-xl font-black">50+ Lagos Squad Outings Planned This Week</h3>
-            <p className="text-white/70 text-xs">
-              Prices verified by 120+ community scouts across Lekki Phase 1, Yaba, Victoria Island & Ikeja.
-            </p>
-          </div>
-          <div className="p-3.5 bg-white/10 backdrop-blur-md rounded-xl text-xs space-y-1.5 border border-white/10">
-            <div className="flex items-center gap-1.5 font-bold text-white">
-              <Quote className="w-3.5 h-3.5 text-brand-green shrink-0" />
-              <span>&quot;Planned a ₦35k Date Night in Lekki — didn&apos;t spend a single Naira extra.&quot;</span>
+        <div className="bg-gradient-to-br from-midnight-lagoon to-[#001D12] text-white rounded-[20px] p-5 shadow-sm flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-brand-green type-caption uppercase font-extrabold tracking-widest mb-1">
+              <Star className="w-3.5 h-3.5 fill-brand-green" /> Community Proof
             </div>
-            <p className="text-white/60 pl-5 text-[11px]"> — Tunde & Squad, Yaba</p>
+            <h3 className="text-sm font-bold">50+ Lagos Outings Planned This Week</h3>
           </div>
+          <p className="text-white/60 text-xs text-right max-w-[150px]">
+            Verified prices across Lagos.
+          </p>
         </div>
 
         {/* 3. Help & Direct Support Safety Net */}
-        <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-4 shadow-sm">
+        <div className="bg-white border border-border-default rounded-[20px] p-5 shadow-sm flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Headphones className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Headphones className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="type-heading text-text-primary">Planner Support & Safety Net</h2>
-              <p className="type-caption text-text-muted">Need help with a plan or found a price error? We respond within 24 hours.</p>
+              <h2 className="type-label text-text-primary">Support & Safety Net</h2>
             </div>
           </div>
-
-          <div className="pt-1">
-            <a
-              href="mailto:hello.oyaplan@gmail.com?subject=OyaPlan%20Support%20Request"
-              className="p-3.5 bg-brand-green/10 border border-brand-green/30 text-brand-green rounded-xl type-label text-sm font-bold flex items-center justify-center gap-2 hover:bg-brand-green/20 transition-colors w-full"
-            >
-              <Mail className="w-4 h-4" /> Email Support (hello.oyaplan@gmail.com)
-            </a>
-          </div>
+          <a
+            href="mailto:hello.oyaplan@gmail.com?subject=OyaPlan%20Support%20Request"
+            className="px-4 py-2 bg-brand-green/10 border border-brand-green/30 text-brand-green rounded-lg type-caption font-bold flex items-center gap-2 hover:bg-brand-green/20 transition-colors"
+          >
+            <Mail className="w-3.5 h-3.5" /> Email Support
+          </a>
         </div>
 
-        {/* 4. Planning Preferences */}
-        <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-6 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center">
-              <Sliders className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="type-heading text-text-primary">Default Outing Preferences</h2>
-              <p className="type-caption text-text-muted">Set your default budget & squad size for faster planning</p>
-            </div>
-          </div>
 
-          <div className="space-y-5 pt-2">
-            {/* Default Budget */}
-            <div>
-              <label className="type-label text-text-primary flex items-center gap-2 mb-2">
-                <Wallet className="w-4 h-4 text-brand-green" /> Default Budget
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {BUDGET_OPTIONS.map((amount) => (
-                  <button
-                    key={amount}
-                    type="button"
-                    onClick={() => setBudget(amount)}
-                    className={`py-2.5 px-3 rounded-xl type-label text-sm transition-all border ${
-                      budget === amount
-                        ? "bg-brand-green text-white border-brand-green font-black shadow-sm"
-                        : "bg-surface-grey text-text-primary border-transparent hover:bg-black/5"
-                    }`}
-                  >
-                    ₦{(amount / 1000).toFixed(0)}k
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Default Squad Size */}
-            <div>
-              <label className="type-label text-text-primary flex items-center gap-2 mb-2">
-                <Users className="w-4 h-4 text-brand-green" /> Default Squad Size
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {SQUAD_OPTIONS.map((size) => (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => setSquadSize(size)}
-                    className={`py-2.5 px-3 rounded-xl type-label text-sm transition-all border ${
-                      squadSize === size
-                        ? "bg-brand-green text-white border-brand-green font-black shadow-sm"
-                        : "bg-surface-grey text-text-primary border-transparent hover:bg-black/5"
-                    }`}
-                  >
-                    {size} {size === 1 ? "person" : "people"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Favorite Vibe */}
-            <div>
-              <label className="type-label text-text-primary flex items-center gap-2 mb-2">
-                <Smile className="w-4 h-4 text-brand-green" /> Favorite Vibe
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {VIBE_OPTIONS.map((v) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => setFavoriteVibe(v.id)}
-                    className={`py-2.5 px-4 rounded-xl type-label text-sm transition-all border flex items-center gap-2.5 text-left ${
-                      favoriteVibe === v.id
-                        ? "bg-brand-green/10 text-brand-green border-brand-green font-bold"
-                        : "bg-surface-grey text-text-primary border-transparent hover:bg-black/5"
-                    }`}
-                  >
-                    <span>{v.emoji}</span>
-                    <span>{v.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              onClick={handleSavePreferences}
-              className="w-full bg-[#0A0A0A] hover:bg-black/80 text-white rounded-xl type-label h-12 mt-2 shadow-none border-none"
-            >
-              Save Preferences
-            </Button>
-          </div>
-        </div>
 
         {/* 5. Referral Link & Squad Rewards */}
         <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-5 shadow-sm">

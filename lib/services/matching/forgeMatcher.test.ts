@@ -24,7 +24,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { forgePlans, calculateZoneFare } from './forgeMatcher';
+import { forgePlans, getPrimaryAreaMatches, getAdjacentZoneMatches, generateRecoverySuggestions, calculateZoneFare } from './forgeMatcher';
 import type { Spot, ForgeInput } from '../../types';
 
 // ─── Supabase mock ────────────────────────────────────────────────────────────
@@ -603,7 +603,7 @@ describe('forgePlans — cost calculation', () => {
       id: 'f6a7b8c9-0000-0000-0000-000000000084',
       price_per_person: 3000,
       transport_matrix: { ikeja: 2500 }, // specific override
-      address_slug: 'lekki-phase-1',    // zone formula would give 16000
+      address_slug: 'ikeja',
       vibe_tags: ['Chill'],
     });
     const results = forgePlans({ ...BASE_INPUT, startArea: 'ikeja', budget: 30000 }, [matrixSpot]);
@@ -616,12 +616,12 @@ describe('forgePlans — cost calculation', () => {
       id: 'a7b8c9d0-0000-0000-0000-000000000085',
       price_per_person: 3000,
       transport_matrix: {},              // no entry for ikeja
-      address_slug: 'gbagada',          // same zone as ikeja → ₦5,000
+      address_slug: 'ikeja',
       vibe_tags: ['Chill'],
     });
     const results = forgePlans({ ...BASE_INPUT, startArea: 'ikeja', budget: 30000 }, [spot]);
     expect(results).toHaveLength(1);
-    expect(results[0].transportCost).toBe(5000);
+    expect(results[0].transportCost).toBe(1500);
   });
 
   it('totalCost equals foodCost + transportCost', () => {
@@ -868,15 +868,13 @@ describe('forgePlans — result count', () => {
     expect(results).toHaveLength(0);
   });
 
-  it('returns fallback plans with semantic_classification_missing when all spots fail vibe filter', () => {
+  it('returns empty array when all spots fail vibe filter under strict primary matching', () => {
     const wrongVibeSpot = makeSpot({
       id: 'd2e3f4a5-0000-0000-0000-0000000000c0',
       vibe_tags: ['Party'],
     });
     const results = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [wrongVibeSpot]);
-    expect(results).toHaveLength(1);
-    expect(results[0].spot.id).toBe(wrongVibeSpot.id);
-    expect(results[0].explanation?.reason).toBe('semantic_classification_missing');
+    expect(results).toHaveLength(0);
   });
 
   it('returns empty array when all spots exceed budget', () => {
@@ -1066,6 +1064,7 @@ describe('Phase 3A — trust-based ranking', () => {
   const FRESH_SPOT = makeSpot({
     id: 'e5f6a7b8-0000-0000-0000-000000000001',
     name: 'Fresh Verified',
+    address_slug: 'yaba',
     price_per_person: 10000,
     transport_matrix: { yaba: 2000 },
     vibe_tags: ['Chill'],
@@ -1076,6 +1075,7 @@ describe('Phase 3A — trust-based ranking', () => {
   const STALE_SPOT = makeSpot({
     id: 'f6a7b8c9-0000-0000-0000-000000000001',
     name: 'Stale Data',
+    address_slug: 'yaba',
     price_per_person: 10000,
     transport_matrix: { yaba: 2000 },
     vibe_tags: ['Chill'],
@@ -1086,6 +1086,7 @@ describe('Phase 3A — trust-based ranking', () => {
   const NEEDS_REVIEW_SPOT = makeSpot({
     id: 'a7b8c9d0-0000-0000-0000-000000000001',
     name: 'Needs Review',
+    address_slug: 'yaba',
     price_per_person: 10000,
     transport_matrix: { yaba: 2000 },
     vibe_tags: ['Chill'],
@@ -1136,6 +1137,7 @@ describe('Phase 3A — explanation fields', () => {
   it('should include source_label in explanation', () => {
     const spot = makeSpot({
       id: 'c9d0e1f2-0000-0000-0000-000000000001',
+      address_slug: 'yaba',
       price_per_person: 8000,
       transport_matrix: { yaba: 2000 },
       vibe_tags: ['Chill'],
@@ -1151,6 +1153,7 @@ describe('Phase 3A — explanation fields', () => {
   it('should include confidence_score as a number in explanation', () => {
     const spot = makeSpot({
       id: 'd0e1f2a3-0000-0000-0000-000000000001',
+      address_slug: 'yaba',
       price_per_person: 8000,
       transport_matrix: { yaba: 2000 },
       vibe_tags: ['Chill'],
@@ -1192,7 +1195,7 @@ describe('Phase 3A — explanation fields', () => {
     expect(results[0].explanation?.reason).toBeUndefined();
   });
 
-  it('should set reason to location_fallback when 0 spots exist in the requested startArea within budget', () => {
+  it('strict matching returns 0 primary matches when 0 spots exist in requested area', () => {
     const outsideSpot = makeSpot({
       id: 'a3b4c5d6-0000-0000-0000-000000000003',
       name: 'Ikoyi Spot',
@@ -1201,13 +1204,93 @@ describe('Phase 3A — explanation fields', () => {
       vibe_tags: ['Chill'],
     });
 
-    const results = forgePlans(
+    const results = getPrimaryAreaMatches(
       { startArea: 'lekki-phase-1', squadSize: 2, budget: 30000, vibe: 'Chill' },
       [outsideSpot]
     );
 
-    expect(results).toHaveLength(1);
-    expect(results[0].spot.name).toBe('Ikoyi Spot');
-    expect(results[0].explanation?.reason).toBe('location_fallback');
+    expect(results).toHaveLength(0);
+  });
+});
+
+describe('Strict Location-First & Adjacent Zone Split Matching', () => {
+  it('Requirement 1: Ikeja + ₦100k + Chill returns ONLY Ikeja venues in primary results', () => {
+    const ikejaSpot = makeSpot({
+      id: '11111111-1111-1111-1111-111111111111',
+      name: 'Ikeja Bistro',
+      address_slug: 'ikeja',
+      price_per_person: 10000,
+      vibe_tags: ['Chill'],
+    });
+    const viSpot = makeSpot({
+      id: '22222222-2222-2222-2222-222222222222',
+      name: 'VI Lounge',
+      address_slug: 'vi',
+      price_per_person: 12000,
+      vibe_tags: ['Chill'],
+    });
+
+    const primary = getPrimaryAreaMatches(
+      { startArea: 'ikeja', squadSize: 2, budget: 100000, vibe: 'Chill' },
+      [ikejaSpot, viSpot]
+    );
+
+    expect(primary).toHaveLength(1);
+    expect(primary[0].spot.name).toBe('Ikeja Bistro');
+  });
+
+  it('Requirement 2: Better VI venue appears ONLY in adjacent zone matches, never merged into primary', () => {
+    const ikejaSpot = makeSpot({
+      id: '11111111-1111-1111-1111-111111111111',
+      name: 'Standard Ikeja Spot',
+      address_slug: 'ikeja',
+      price_per_person: 8000,
+      vibe_tags: ['Chill'],
+    });
+    const yabaSpot = makeSpot({
+      id: '33333333-3333-3333-3333-333333333333',
+      name: 'Amazing Yaba Spot',
+      address_slug: 'yaba',
+      price_per_person: 7000,
+      vibe_tags: ['Chill'],
+      is_featured: true,
+    });
+
+    const primary = getPrimaryAreaMatches(
+      { startArea: 'ikeja', squadSize: 2, budget: 50000, vibe: 'Chill' },
+      [ikejaSpot, yabaSpot]
+    );
+    const adjacent = getAdjacentZoneMatches(
+      { startArea: 'ikeja', squadSize: 2, budget: 50000, vibe: 'Chill' },
+      [ikejaSpot, yabaSpot],
+      primary
+    );
+
+    // Primary has ONLY Ikeja
+    expect(primary).toHaveLength(1);
+    expect(primary[0].spot.name).toBe('Standard Ikeja Spot');
+
+    // Adjacent has Yaba (same/adjacent mainland-central zone)
+    expect(adjacent).toHaveLength(1);
+    expect(adjacent[0].spot.name).toBe('Amazing Yaba Spot');
+    expect(adjacent[0].isAdjacentZoneSuggestion).toBe(true);
+    expect(adjacent[0].travelInfo).toContain('mins from Ikeja');
+  });
+
+  it('Requirement 3: Area with 0 matches triggers recovery suggestions and zero primary results', () => {
+    const yabaSpot = makeSpot({
+      id: '33333333-3333-3333-3333-333333333333',
+      name: 'Yaba Bistro',
+      address_slug: 'yaba',
+      price_per_person: 15000,
+      vibe_tags: ['Chill'],
+    });
+
+    const input: ForgeInput = { startArea: 'gbagada', squadSize: 2, budget: 10000, vibe: 'Chill' };
+    const primary = getPrimaryAreaMatches(input, [yabaSpot]);
+    const suggestions = generateRecoverySuggestions(input, [yabaSpot]);
+
+    expect(primary).toHaveLength(0);
+    expect(suggestions.length).toBeGreaterThan(0);
   });
 });

@@ -62,6 +62,7 @@ export interface PlanExplanation {
   status?: string;             // Operational status string (fresh | stale | needs_review | verified | community_verified)
   has_car?: boolean;
   reason?: string;
+  travel_info?: string;
 }
 
 export type TrustSignal = string;
@@ -116,6 +117,8 @@ export type Plan = {
   subtitle?: string;
   decisionConfidence?: DecisionConfidence;
   decisionSummary?: string;
+  isAdjacentZoneSuggestion?: boolean;
+  travelInfo?: string;
 };
 
 export interface PlanEvaluation {

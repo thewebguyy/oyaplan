@@ -8,7 +8,7 @@ import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { formatRecoverySuggestion } from "@/lib/utils/editorialFormatter";
 import EditorialPlan from "@/components/EditorialPlan";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ArrowLeft, AlertCircle, Loader2 } from "lucide-react";
+import { RefreshCw, ArrowLeft, AlertCircle, Loader2, ChevronDown, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import DossierDropWrapper from "@/components/DossierDropWrapper";
@@ -26,6 +26,7 @@ import {
 
 interface ForgeResultsClientProps {
   evaluations: PlanEvaluation[];
+  adjacentEvaluations?: PlanEvaluation[];
   vibeMetrics: { min: number; median: number; max: number } | null;
   nearbySpots: Spot[];
   targetAreaName: string;
@@ -36,6 +37,7 @@ interface ForgeResultsClientProps {
 
 export default function ForgeResultsClient({
   evaluations,
+  adjacentEvaluations = [],
   vibeMetrics,
   nearbySpots,
   targetAreaName,
@@ -47,6 +49,7 @@ export default function ForgeResultsClient({
   const [isPending, startTransition] = useTransition();
   const [isRevealed, setIsRevealed] = useState(evaluations.length === 0);
   const [isAdjustingInline, setIsAdjustingInline] = useState(false);
+  const [isAdjacentExpanded, setIsAdjacentExpanded] = useState(false);
   const [tempBudget, setTempBudget] = useState(forgeInput.budget);
   const [tempSquadSize, setTempSquadSize] = useState(forgeInput.squadSize);
   const [tempVibe, setTempVibe] = useState(forgeInput.vibe);
@@ -523,9 +526,91 @@ export default function ForgeResultsClient({
         </div>
       )}
 
+      {/* Separate Section: Check Out Other Locations */}
+      {adjacentEvaluations && adjacentEvaluations.length > 0 && (
+        <div className="pt-8 border-t border-border-default space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-white border border-border-default rounded-[20px] shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center font-bold text-lg shrink-0">
+                🚗
+              </div>
+              <div>
+                <h3 className="type-label text-midnight-lagoon font-black text-base">Check Out Other Locations</h3>
+                <p className="type-caption text-text-muted">
+                  {adjacentEvaluations.length} option{adjacentEvaluations.length > 1 ? "s" : ""} in nearby areas with matching vibe & budget fit
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsAdjacentExpanded(!isAdjacentExpanded)}
+              className="w-full sm:w-auto px-5 py-2.5 bg-surface-grey hover:bg-black/5 border border-border-default rounded-xl type-caption font-extrabold text-midnight-lagoon flex items-center justify-center gap-2 transition-all cursor-pointer"
+            >
+              <span>{isAdjacentExpanded ? "Hide Other Locations" : `See ${adjacentEvaluations.length} Option${adjacentEvaluations.length > 1 ? "s" : ""}`}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isAdjacentExpanded ? "rotate-180" : ""}`} />
+            </button>
+          </div>
+
+          {isAdjacentExpanded && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+              {adjacentEvaluations.map((evalItem) => {
+                const plan = evalItem.plan;
+                const spot = plan.spot;
+                const travelLabel = plan.travelInfo || `${plan.explanation?.travel_info || `Near ${startAreaLabel}`}`;
+                const areaName = spot.areas?.name || (spot.address_slug ? spot.address_slug.toUpperCase().replace("-", " ") : "Lagos");
+
+                return (
+                  <div 
+                    key={spot.id} 
+                    className="bg-white border border-border-default hover:border-brand-green rounded-[20px] p-6 shadow-sm space-y-4 transition-all flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <span className="inline-block px-2.5 py-0.5 bg-brand-green/10 text-brand-green rounded-md type-caption font-black uppercase text-[10px] tracking-wider mb-1.5">
+                            {spot.category} • {areaName}
+                          </span>
+                          <h4 className="type-subheading text-text-primary text-lg font-bold">{spot.name}</h4>
+                          <p className="type-caption text-text-muted mt-0.5">{spot.address}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="type-label text-brand-green font-black text-lg block">
+                            ₦{plan.totalCost.toLocaleString()}
+                          </span>
+                          <span className="type-caption text-text-muted text-[11px] block">total budget</span>
+                        </div>
+                      </div>
+
+                      {/* Travel Info Badge */}
+                      <div className="p-3 bg-[#FAFAF8] border border-border-default rounded-xl flex items-center gap-2 type-caption text-text-secondary font-semibold">
+                        <MapPin className="w-4 h-4 text-brand-green shrink-0" />
+                        <span>{travelLabel}</span>
+                      </div>
+                    </div>
+
+                    {/* Cost Breakdown & CTA */}
+                    <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2 type-caption text-text-muted">
+                      <div className="text-[11px] font-medium">
+                        <span>Venue: ₦{plan.foodCost.toLocaleString()}</span>
+                        <span className="mx-1">•</span>
+                        <span>Transport: ₦{plan.transportCost.toLocaleString()}</span>
+                      </div>
+                      <Link href={`/plan/${spot.id}?area=${spot.address_slug}`}>
+                        <Button size="sm" variant="outline" className="h-8 px-3 text-xs font-bold rounded-lg border-brand-green text-brand-green hover:bg-brand-green/10">
+                          View &rarr;
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Redesigned Footer */}
       {evaluations.length > 0 && (
-        <div className="text-center pt-16 space-y-4 pb-32 md:pb-12">
+        <div className="text-center pt-8 space-y-4 pb-32 md:pb-12">
         </div>
       )}
 
