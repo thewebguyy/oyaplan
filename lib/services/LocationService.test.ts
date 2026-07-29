@@ -24,7 +24,7 @@ describe("LocationService", () => {
     const areas = LocationService.getVerifiedAreas();
     expect(areas).toHaveLength(6);
     expect(areas.map((a) => a.id)).toEqual([
-      "lekki",
+      "lekki-phase-1",
       "yaba",
       "ikeja",
       "vi",
@@ -36,7 +36,7 @@ describe("LocationService", () => {
   it("searchAreas filters areas correctly by name and alias", () => {
     const lekkiMatch = LocationService.searchAreas("Phase 1");
     expect(lekkiMatch).toHaveLength(1);
-    expect(lekkiMatch[0].id).toBe("lekki");
+    expect(lekkiMatch[0].id).toBe("lekki-phase-1");
 
     const yabaMatch = LocationService.searchAreas("yaba");
     expect(yabaMatch).toHaveLength(1);

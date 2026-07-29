@@ -41,11 +41,11 @@ const STORAGE_KEY = "oyaplan_user_location";
 
 const VERIFIED_AREAS: Location[] = [
   {
-    id: "lekki",
-    name: "Lekki",
-    area: "Lekki",
+    id: "lekki-phase-1",
+    name: "Lekki Phase 1",
+    area: "Lekki Phase 1",
     coordinates: { lat: 6.4474, lng: 3.4723 },
-    alias: ["lekki phase 1", "lekki-phase-1", "phase 1", "admiralty", "lekki 1"],
+    alias: ["lekki", "lekki phase 1", "lekki 1", "admiralty"],
   },
   {
     id: "yaba",
