@@ -28,7 +28,10 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
     try {
       const result = await createShareablePlan(plan, input);
       if (result.success && result.id) {
-        let url = `https://oyaplan.com/plan/${result.id}`;
+        const origin = typeof window !== 'undefined' 
+          ? window.location.origin 
+          : (process.env.NEXT_PUBLIC_APP_URL || 'https://oyaplan.app');
+        let url = `${origin}/plan/${result.id}`;
         
         // Append referral code if authenticated
         const refCode = await getReferralCode();
@@ -128,7 +131,7 @@ ${url}`;
 
 
   return (
-    <div className="flex flex-col gap-2 w-full px-4 sm:px-0">
+    <div className="flex flex-col gap-2 w-full">
       <Button 
         onClick={handleAction}
         disabled={sharing}

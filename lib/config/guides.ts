@@ -11,7 +11,7 @@ export const PLANNING_GUIDES: PlanningGuide[] = [
     slug: "lagos-island-date-night",
     title: "Lagos Island Date Night under ₦50k",
     description: "The best romantic spots on the island that won't break the bank.",
-    forgeParams: "?vibe=date-night&budget=50000&area=victoria-island&squad=2"
+    forgeParams: "?vibe=date-night&budget=50000&area=vi&squad=2"
   },
   {
     slug: "ikeja-group-hangout",
@@ -23,7 +23,7 @@ export const PLANNING_GUIDES: PlanningGuide[] = [
     slug: "lekki-brunch-spots",
     title: "Lekki Sunday Brunch",
     description: "Top brunch spots in Lekki with the best aesthetics and food.",
-    forgeParams: "?vibe=brunch&budget=30000&area=lekki&squad=3"
+    forgeParams: "?vibe=brunch&budget=30000&area=lekki-phase-1&squad=3"
   },
   {
     slug: "budget-friendly-foodies",

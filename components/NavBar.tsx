@@ -7,18 +7,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
 import { ChevronLeft, User, LogOut, Bookmark } from "lucide-react";
 import { useAuth } from "./providers/AuthProvider";
+import ClientOnly from "./ClientOnly";
 
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { session, isLoading, openModal, signOut } = useAuth();
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Hide on feedback and list-your-spot pages (if standalone)
   if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
@@ -112,52 +107,52 @@ export default function NavBar() {
 
 
 
-          {!mounted || isLoading ? (
-            <div className="w-10 h-10 rounded-full bg-surface-grey animate-pulse"></div>
-          ) : session ? (
-            <div className="relative group">
-              <button
-                type="button"
-                aria-label="User profile dropdown"
-                aria-haspopup="menu"
-                className="w-10 h-10 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center tap-feedback"
-              >
-                <User className="w-5 h-5" />
-              </button>
-
-              {/* Dropdown menu — with slide and fade transition */}
-              <div 
-                role="menu" 
-                className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible translate-y-2 scale-95 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:scale-100 transition-all duration-200 ease-out py-2"
-              >
-                <Link href="/account" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
-                  <User className="w-4 h-4 text-text-muted" />
-                  Account Profile
-                </Link>
-                <Link href="/dashboard" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
-                  <Bookmark className="w-4 h-4 text-text-muted" />
-                  My Plans
-                </Link>
-                <div className="h-[1px] bg-border-default my-2"></div>
+          <ClientOnly fallback={<div className="w-10 h-10 rounded-full bg-surface-grey animate-pulse"></div>}>
+            {session ? (
+              <div className="relative group">
                 <button
-                  role="menuitem"
-                  onClick={() => signOut()}
-                  className="w-full text-left px-4 py-2 type-body text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  type="button"
+                  aria-label="User profile dropdown"
+                  aria-haspopup="menu"
+                  className="w-10 h-10 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center tap-feedback"
                 >
-                  <LogOut className="w-4 h-4" />
-                  Sign out
+                  <User className="w-5 h-5" />
                 </button>
+
+                {/* Dropdown menu — with slide and fade transition */}
+                <div 
+                  role="menu" 
+                  className="absolute right-0 top-full mt-2 w-48 bg-white border border-border-default rounded-[12px] shadow-lg opacity-0 invisible translate-y-2 scale-95 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:scale-100 transition-all duration-200 ease-out py-2"
+                >
+                  <Link href="/account" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
+                    <User className="w-4 h-4 text-text-muted" />
+                    Account Profile
+                  </Link>
+                  <Link href="/dashboard" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
+                    <Bookmark className="w-4 h-4 text-text-muted" />
+                    My Plans
+                  </Link>
+                  <div className="h-[1px] bg-border-default my-2"></div>
+                  <button
+                    role="menuitem"
+                    onClick={() => signOut()}
+                    className="w-full text-left px-4 py-2 type-body text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign out
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <Button 
-              onClick={() => openModal()}
-              variant="outline" 
-              className="h-9 md:h-10 rounded-full type-label px-3.5 md:px-5 border-border-default hover:bg-surface-grey text-xs md:text-sm font-bold"
-            >
-              Sign In
-            </Button>
-          )}
+            ) : (
+              <Button 
+                onClick={() => openModal()}
+                variant="outline" 
+                className="h-9 md:h-10 rounded-full type-label px-3.5 md:px-5 border-border-default hover:bg-surface-grey text-xs md:text-sm font-bold"
+              >
+                Sign In
+              </Button>
+            )}
+          </ClientOnly>
         </div>
       </nav>
     );

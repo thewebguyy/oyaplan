@@ -232,7 +232,7 @@ export function getPrimaryAreaMatches(input: ForgeInput, allSpots: Spot[]): Plan
     }
 
     // STRICT LOCATION FILTER — NO CROSS-AREA SUBSTITUTION
-    if (hasSpecificArea && !isSpotInArea(spot, startArea)) {
+    if (hasSpecificArea && startArea && !isSpotInArea(spot, startArea)) {
       if (spot.id !== pinnedSpotId) return false;
     }
 
@@ -304,11 +304,12 @@ export function getAdjacentZoneMatches(
 
 function scoreAndRankSpots(candidates: Spot[], input: ForgeInput, isAdjacent: boolean): Plan[] {
   const { startArea, squadSize, budget, vibe, pinnedSpotId } = input;
+  const areaKey = startArea || "ikeja";
 
   const scoredSpots = candidates
     .map((spot) => {
       const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
-      const rawTransport = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+      const rawTransport = spot.transport_matrix?.[areaKey] ?? calculateZoneFare(areaKey, spot.address_slug || "ikeja");
       const transportCost = Math.max(1500, rawTransport);
       const totalCost = activityCost + transportCost;
 
@@ -354,7 +355,7 @@ function scoreAndRankSpots(candidates: Spot[], input: ForgeInput, isAdjacent: bo
       const priceSource = spot.price_source || 'historical_estimate';
       const sourceLabel = formatPriceSource(priceSource);
       const travelInfo = isAdjacent 
-        ? formatTravelInfo(startArea, spot.address_slug || spot.areas?.slug || "ikeja", transportCost)
+        ? formatTravelInfo(areaKey, spot.address_slug || spot.areas?.slug || "ikeja", transportCost)
         : undefined;
 
       const explanation = {

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getForgeSpots } from "@/lib/queries/spots";
-import { getAllowedCategories, forgePlans, getPrimaryAreaMatches, getAdjacentZoneMatches, generateRecoverySuggestions } from "@/lib/services/matching/forgeMatcher";
+import { getAllowedCategories, getPrimaryAreaMatches, getAdjacentZoneMatches, generateRecoverySuggestions } from "@/lib/services/matching/forgeMatcher";
 import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { captureServerException } from "@/lib/sentry";
 import { ForgeInput, Spot, Plan, RecoverySuggestion } from "@/lib/types";
@@ -24,7 +24,7 @@ const forgeParamsSchema = z.object({
   vibe: z.enum(["date-night", "chill", "foodie", "party", "quick-link", "brunch"]),
   squad: z.coerce.number().int().positive().min(1).max(50),
   budget: z.coerce.number().int().positive().min(5000).max(2000000),
-  area: z.string().optional().default("anywhere"),
+  area: z.string().optional(),
   pinned: z.string().optional(),
   fresh: z.string().optional(),
 });
@@ -117,12 +117,13 @@ export default async function ForgePage({
     const spotsPromise = getForgeSpots(allowedCategories ?? undefined);
     
     // Data-gated Hold-Up logic: only enforce the 900ms floor on fresh submissions
-    const promises: Promise<any>[] = [spotsPromise];
+    const promises: Promise<unknown>[] = [spotsPromise];
     if (isFreshSubmission) {
       promises.push(new Promise(resolve => setTimeout(resolve, 900)));
     }
     
-    const [spotsResult] = await Promise.all(promises);
+    const results = await Promise.all(promises);
+    const spotsResult = results[0] as { data: Spot[] | null; error: unknown };
     const { data, error } = spotsResult;
 
     if (error || !data || data.length === 0) {
@@ -152,8 +153,9 @@ export default async function ForgePage({
     pinnedSpotId: validatedPinnedId,
   };
 
-  // Run Matching/Pricing Engine: 2-Pass Matching
-  const generatedPlans = getPrimaryAreaMatches(input, allSpots);
+  // Run Matching/Pricing Engine: 2-Pass Matching (gated by area presence)
+  const hasArea = Boolean(input.startArea && input.startArea !== "anywhere");
+  const generatedPlans = hasArea ? getPrimaryAreaMatches(input, allSpots) : [];
   
   // Run Trust Evaluation Engine on Primary Plans
   const evaluations = generatedPlans.map((plan: Plan) => evaluatePlan({
@@ -168,7 +170,7 @@ export default async function ForgePage({
   let targetAreaName = "";
   let recoverySuggestions: RecoverySuggestion[] = [];
 
-  if (evaluations.length === 0) {
+  if (hasArea && evaluations.length === 0) {
     recoverySuggestions = generateRecoverySuggestions(input, allSpots);
     
     const vibeSpots = allSpots.filter(s => s.vibe_tags.includes(input.vibe));
@@ -193,7 +195,7 @@ export default async function ForgePage({
 
   // Pass 2: Adjacent Zone Matches (Enhancement Section or Location Recovery)
   const hasLocationRecovery = recoverySuggestions.some(r => r.type === "SwitchArea");
-  const shouldFetchAdjacent = generatedPlans.length > 0 || hasLocationRecovery;
+  const shouldFetchAdjacent = hasArea && (generatedPlans.length > 0 || hasLocationRecovery);
   const adjacentPlans = shouldFetchAdjacent 
     ? getAdjacentZoneMatches(input, allSpots, generatedPlans) 
     : [];

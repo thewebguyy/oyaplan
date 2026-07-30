@@ -40,9 +40,16 @@ export default function HeroSection({ spots }: HeroSectionProps) {
   const [budget, setBudget] = useState<number>(50000);
   const [vibe, setVibe] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState<Location | null>(() => {
-    const saved = LocationService.getUserLocation();
-    return saved ? LocationService.getNearestArea(saved) : LocationService.getVerifiedAreas()[0];
+    // SSR-safe default
+    return LocationService.getVerifiedAreas()[0];
   });
+
+  useEffect(() => {
+    const saved = LocationService.getUserLocation();
+    if (saved) {
+      setSelectedArea(LocationService.getNearestArea(saved));
+    }
+  }, []);
 
   const [phraseIndex, setPhraseIndex] = useState(0);
 

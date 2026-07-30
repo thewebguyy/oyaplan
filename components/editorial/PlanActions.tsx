@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Plan, ForgeInput } from "@/lib/types";
 import { savePlan } from "@/lib/actions/savePlan";
+import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import WhatsAppCopyButton from "../WhatsAppCopyButton";
 
@@ -45,7 +46,6 @@ export function PlanActions({
       // 2. Silently attempt server-side share/save sync if possible
       let currentPlanId = planId;
       if (!currentPlanId) {
-        const { createShareablePlan } = await import('@/lib/actions/sharePlan');
         const shareRes = await createShareablePlan(plan, input);
         if (shareRes.success && shareRes.id) {
           currentPlanId = shareRes.id;
@@ -79,12 +79,12 @@ export function PlanActions({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
+    <div className="flex flex-col md:flex-row items-stretch md:items-start gap-3 w-full">
       <Button
         onClick={handleSavePlan}
         disabled={isSaving || isSaved}
         variant="outline"
-        className={`h-12 px-6 rounded-[12px] type-label flex-1 sm:flex-none transition-colors border-border-default text-text-primary hover:bg-surface-grey ${isSaved ? '!bg-brand-green/10 !text-brand-green !border-transparent' : ''}`}
+        className={`w-full md:w-auto h-12 px-6 rounded-[12px] type-label flex-1 md:flex-none transition-colors border-border-default text-text-primary hover:bg-surface-grey ${isSaved ? '!bg-brand-green/10 !text-brand-green !border-transparent' : ''}`}
       >
         {isSaving ? (
           <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -97,13 +97,13 @@ export function PlanActions({
       </Button>
 
       {planId ? (
-        <Link href={`/plan/${planId}`} className="flex-1 sm:flex-none">
+        <Link href={`/plan/${planId}`} className="w-full md:w-auto flex-1 md:flex-none">
           <Button className="w-full h-12 px-6 rounded-[12px] type-label bg-midnight-lagoon hover:bg-charcoal text-white border-none shadow-none flex items-center justify-center">
             View Plan <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </Link>
       ) : (
-        <div className="flex-1 sm:flex-none">
+        <div className="w-full md:w-auto flex-1 md:flex-none">
           <WhatsAppCopyButton plan={plan} input={input} variant="filled" />
         </div>
       )}

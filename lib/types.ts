@@ -42,7 +42,7 @@ export type Spot = {
 };
      
 export type ForgeInput = {
-  startArea: string;
+  startArea?: string;
   squadSize: number;
   budget: number;
   vibe: string;

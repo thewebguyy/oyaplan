@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Sparkles, Compass, Bookmark, User } from "lucide-react";
@@ -9,6 +10,11 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { session, openModal } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Hide on standalone forms / dedicated pages
   if (
@@ -18,6 +24,8 @@ export default function MobileBottomNav() {
   ) {
     return null;
   }
+
+  const showSessionState = mounted && !!session;
 
   // Preserve planning context parameters between Plan and Explore
   const buildPreservedHref = (href: string) => {
@@ -52,7 +60,7 @@ export default function MobileBottomNav() {
     },
     {
       name: "Saved",
-      href: session ? "/dashboard" : "/saved",
+      href: showSessionState ? "/dashboard" : "/saved",
       icon: Bookmark,
       isActive: pathname === "/saved" || pathname === "/dashboard",
     },
@@ -60,7 +68,7 @@ export default function MobileBottomNav() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#E5E7EB] md:hidden px-2 py-1.5 pb-safe shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
-      <nav className="flex items-center justify-around max-w-md mx-auto">
+      <nav className="flex items-center justify-around w-full max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const href = buildPreservedHref(item.href);
@@ -94,24 +102,24 @@ export default function MobileBottomNav() {
         {/* Account / Sign In Tab */}
         <button
           onClick={() => {
-            if (!session) {
+            if (!showSessionState) {
               openModal();
             } else {
               window.location.href = "/account";
             }
           }}
           className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback ${
-            session
+            pathname === "/account"
               ? "text-[#008751] font-bold"
               : "text-[#6B7280] hover:text-[#1A1A1A]"
           }`}
-          aria-label={session ? "Account profile" : "Sign in"}
+          aria-label={showSessionState ? "Account profile" : "Sign in"}
         >
           <div className="relative">
             <User className="w-5 h-5" />
           </div>
           <span className="text-[11px] mt-1 font-medium tracking-tight">
-            {session ? "Account" : "Sign In"}
+            {showSessionState ? "Account" : "Sign In"}
           </span>
         </button>
       </nav>

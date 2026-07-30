@@ -232,6 +232,126 @@ export default function ForgeResultsClient({
   if (forgeInput.pinnedSpotId) adjustParams.set("pinned", forgeInput.pinnedSpotId);
   const adjustUrl = `/?${adjustParams.toString()}`;
 
+  const [isLocating, setIsLocating] = useState(false);
+  const [locatingError, setLocatingError] = useState<string | null>(null);
+
+  const handleUseCurrentLocation = async () => {
+    setIsLocating(true);
+    setLocatingError(null);
+    try {
+      const current = await LocationService.getCurrentLocation();
+      if (current) {
+        const nearest = LocationService.getNearestArea(current);
+        applyAreaAndReload(nearest.id);
+      } else {
+        setLocatingError("Could not access location. Please pick an area below.");
+      }
+    } catch {
+      setLocatingError("Could not access current location.");
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  const applyAreaAndReload = (areaId: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("area", areaId);
+    params.set("fresh", "true");
+    startTransition(() => {
+      router.push(`/forge?${params.toString()}`);
+    });
+  };
+
+  const getVibeLabel = (v: string) => {
+    const map: Record<string, string> = {
+      "Dinner": "Date Night",
+      "Chill": "Squad Linkup",
+      "Party": "Birthday Turn Up",
+      "Quick": "Quick Bites",
+      "Foodie": "Serious Chop",
+      "Brunch": "Brunch Vibe"
+    };
+    return map[v] || v;
+  };
+
+  const hasArea = Boolean(forgeInput.startArea && forgeInput.startArea !== "anywhere");
+
+  if (!hasArea) {
+    return (
+      <div className="max-w-md mx-auto space-y-8 py-10 px-4 animate-slide-up">
+        <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 sm:p-8 shadow-lagoon text-center space-y-6">
+          <div className="w-16 h-16 bg-[#008751]/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
+            <MapPin className="w-8 h-8 text-[#008751]" />
+          </div>
+          
+          <div className="space-y-3">
+            <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon tracking-tight">
+              Where are you starting from?
+            </h2>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F3F4F6] rounded-full text-xs text-text-secondary font-bold">
+              <span>You picked:</span>
+              <span className="text-midnight-lagoon">{getVibeLabel(forgeInput.vibe)}</span>
+              <span className="text-gray-300">•</span>
+              <span className="text-[#008751]">₦{forgeInput.budget.toLocaleString()}</span>
+              <span className="text-gray-300">•</span>
+              <span className="text-midnight-lagoon">{forgeInput.squadSize === 1 ? "Just me" : `${forgeInput.squadSize} people`}</span>
+            </div>
+            <p className="text-xs text-text-secondary pt-1">
+              Select your starting area to calculate travel time, transport costs, and get accurate local recommendations.
+            </p>
+          </div>
+
+          {locatingError && (
+            <p className="text-xs font-semibold text-red-600 bg-red-50 p-2.5 rounded-lg">
+              {locatingError}
+            </p>
+          )}
+
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={handleUseCurrentLocation}
+              disabled={isLocating || isPending}
+              className="w-full h-12 bg-[#008751] hover:brightness-90 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm disabled:opacity-50"
+            >
+              {isLocating || isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Locating...</span>
+                </>
+              ) : (
+                <>
+                  <MapPin className="w-4 h-4" />
+                  <span>Use My Location</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="relative flex py-2 items-center">
+            <div className="flex-grow border-t border-gray-100"></div>
+            <span className="flex-shrink mx-4 text-xs text-text-muted font-bold uppercase tracking-wider">or pick an area</span>
+            <div className="flex-grow border-t border-gray-100"></div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2 max-h-[160px] overflow-y-auto pr-1">
+            {LocationService.getVerifiedAreas().map((area) => (
+              <button
+                key={area.id}
+                type="button"
+                onClick={() => applyAreaAndReload(area.id)}
+                disabled={isPending}
+                className="px-3.5 py-2 bg-[#F3F4F6] text-[#1A1A1A] hover:bg-[#D1E7DB] hover:text-[#008751] rounded-full text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+              >
+                {area.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!isRevealed && evaluations.length > 0) {
     return (
       <VerificationReceiptLoader

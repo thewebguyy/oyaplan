@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
@@ -72,8 +72,7 @@ export default function PlannerWidget({
         ) || null
       );
     }
-    const saved = LocationService.getUserLocation();
-    return saved ? LocationService.getNearestArea(saved) : LocationService.getVerifiedAreas()[0];
+    return null;
   });
 
   const selectedArea = controlledArea !== undefined ? controlledArea : internalArea;
@@ -96,9 +95,20 @@ export default function PlannerWidget({
     }
   };
 
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(() => {
-    return LocationService.getUserLocation();
-  });
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (!prefilledLocation) {
+      const saved = LocationService.getUserLocation();
+      if (saved) {
+        const nearest = LocationService.getNearestArea(saved);
+        setInternalArea(nearest);
+        setUserLocation(saved);
+      }
+    }
+  }, [prefilledLocation]);
 
   // Dynamic transport estimate using Location-Aware Hook
   useTransportCost({
@@ -203,7 +213,7 @@ export default function PlannerWidget({
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280]">
-              📍 Starting Location {selectedArea && <span className="text-[#008751] font-bold ml-1">({selectedArea.name})</span>}
+              📍 Starting Location{mounted && selectedArea ? ` (${selectedArea.name})` : ""}
             </label>
             <button
               type="button"
