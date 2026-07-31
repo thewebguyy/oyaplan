@@ -148,6 +148,20 @@ export default function AccountClient({
     );
   }
 
+  const getDisplayName = () => {
+    if (!profile?.display_name) return "OyaPlan Planner";
+    
+    if (profile.display_name.includes("@")) {
+      const partBeforeAt = profile.display_name.split("@")[0];
+      return partBeforeAt
+        .split(/[\._-]/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    }
+    
+    return profile.display_name;
+  };
+
   return (
     <main className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-16 px-4">
       <div className="max-w-2xl mx-auto space-y-8">
@@ -160,7 +174,9 @@ export default function AccountClient({
         {/* 1. User Profile Header */}
         <div className="bg-white border border-border-default rounded-[24px] p-8 space-y-6 shadow-sm text-center">
           <div className="flex flex-col items-center justify-center gap-4">
-            <h2 className="text-4xl font-black text-text-primary">{profile.display_name || 'OyaPlan Planner'}</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-text-primary break-all">
+              {getDisplayName()}
+            </h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="px-3 py-1 bg-brand-green/10 text-brand-green rounded-full type-caption font-extrabold uppercase tracking-wider">
                 {profile.role}

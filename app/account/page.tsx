@@ -9,10 +9,18 @@ export default async function AccountPage() {
   const identity = await SessionResolver.resolveIdentity();
   const isAuthenticated = identity.type === 'authenticated';
 
-  const savedPlansResult = isAuthenticated ? await SavedPlanService.getSavedPlans() : null;
-  const savedPlansCount = savedPlansResult?.success && savedPlansResult.data ? savedPlansResult.data.length : 0;
+  let savedPlansCount = 0;
+  let referralCode: string | null = null;
 
-  const referralCode = isAuthenticated ? await getReferralCode() : null;
+  if (isAuthenticated) {
+    const [savedPlansResult, referralCodeResult] = await Promise.all([
+      SavedPlanService.getSavedPlans(),
+      getReferralCode(identity.profile.id)
+    ]);
+
+    savedPlansCount = savedPlansResult?.success && savedPlansResult.data ? savedPlansResult.data.length : 0;
+    referralCode = referralCodeResult;
+  }
 
   return (
     <AccountClient

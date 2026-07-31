@@ -78,6 +78,7 @@ export class SavedPlanService {
 
       return { success: true, data, error: null };
     } catch (error) {
+      console.error("DEBUG getSavedPlans error:", error);
       captureServerException(error);
       return { success: false, data: null, error: 'fetch_failed' };
     }

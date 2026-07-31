@@ -105,12 +105,12 @@ export default function FAQSection() {
                   className={`faq-answer ${isActive ? "active" : ""}`}
                 >
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[#10B981] font-bold text-lg" aria-hidden="true">✓</span>
-                    <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">
+                    <span className="text-brand-green font-bold text-lg" aria-hidden="true">✓</span>
+                    <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
                       Verified Answer
                     </span>
                   </div>
-                  <p className="text-[#1A1A1A] font-medium leading-relaxed">
+                  <p className="text-text-secondary font-medium leading-relaxed">
                     {item.answer}
                   </p>
                 </div>
@@ -126,16 +126,16 @@ export default function FAQSection() {
             return (
               <div
                 key={item.id}
-                className="border border-[#E5E7EB] rounded-xl overflow-hidden bg-white"
+                className="border border-border-default rounded-xl overflow-hidden bg-white"
               >
                 <button
                   onClick={() => handleFaqClick(item.id)}
                   aria-expanded={isActive}
                   aria-controls={`faq-mob-answer-${item.id}`}
-                  className="w-full flex items-center justify-between p-4 text-left font-semibold text-sm text-[#1A1A1A] bg-[#F3F4F6] hover:bg-[#E5E7EB] active:bg-[#D1D5DB] transition-colors"
+                  className="w-full flex items-center justify-between p-4 text-left font-semibold text-sm text-text-secondary bg-surface-grey hover:bg-black/5 active:bg-black/10 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-[#008751] font-bold" aria-hidden="true">✓</span>
+                    <span className="text-brand-green font-bold" aria-hidden="true">✓</span>
                     <span>{item.question}</span>
                   </div>
                   <span className="text-xs transition-transform duration-200 font-bold ml-2">
@@ -153,14 +153,14 @@ export default function FAQSection() {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       style={{ overflow: "hidden" }}
                     >
-                      <div className="p-4 bg-[#FFF4D6] border-t border-[#E5E7EB]">
+                      <div className="p-4 bg-pastel-yellow border-t border-border-default">
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="text-[#10B981] font-bold text-base" aria-hidden="true">✓</span>
-                          <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                          <span className="text-brand-green font-bold text-base" aria-hidden="true">✓</span>
+                          <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
                             Verified Answer
                           </span>
                         </div>
-                        <p className="text-[#1A1A1A] text-sm font-medium leading-relaxed">
+                        <p className="text-text-secondary text-sm font-medium leading-relaxed">
                           {item.answer}
                         </p>
                       </div>

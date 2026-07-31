@@ -26,7 +26,7 @@ export default async function RecentlyVerified() {
           return (
             <Link
               key={spot.id}
-              href={`/plan/${spot.id}`}
+              href={`/forge?pinned=${spot.id}&fresh=true`}
               className="flex-none w-[280px] sm:w-[300px] bg-white border border-border-default/60 rounded-[28px] p-5 snap-start card-lift shadow-xs hover:shadow-lift-warm tap-feedback group"
             >
               <div className="flex justify-between items-start mb-2">
