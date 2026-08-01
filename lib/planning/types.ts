@@ -25,11 +25,14 @@ export interface RankingConfig {
   pinnedWeight: number;
 }
 
+import { Origin } from '../location/types';
+import { TravelEstimate } from '../travel/types';
+
 export interface PlanningContext {
   request: PlanningRequest;
   timestamp: number;
   rankingConfig: RankingConfig;
-  transportProvider: TransportProvider;
+  origin?: Origin;
 }
 
 // Stage 1: Filtered Spot (Spot + validation status check)
@@ -50,8 +53,13 @@ export interface RankedPlan extends CostedPlan {
   score: number;
 }
 
+// Stage 3.5: Travelled Plan (Optional travel/ETA data bound post-ranking)
+export interface TravelledPlan extends RankedPlan {
+  travelEstimate?: TravelEstimate;
+}
+
 // Stage 4: Explained Plan (Complete domain plan structure)
-export interface ExplainedPlan extends RankedPlan {
+export interface ExplainedPlan extends TravelledPlan {
   whyItFits: string;
   title: string;
   subtitle: string;
@@ -69,7 +77,7 @@ export interface CandidateEngine {
 }
 
 export interface CostEngine {
-  run(candidates: PlanningCandidate[], context: PlanningContext): CostedPlan[];
+  run(candidates: PlanningCandidate[], context: PlanningContext, transportProvider: TransportProvider): CostedPlan[];
 }
 
 export interface ConstraintEngine {
@@ -81,7 +89,7 @@ export interface RankingEngine {
 }
 
 export interface ExplainabilityEngine {
-  run(plans: RankedPlan[], context: PlanningContext, isAdjacent?: boolean): ExplainedPlan[];
+  run(plans: TravelledPlan[], context: PlanningContext, isAdjacent?: boolean): ExplainedPlan[];
 }
 
 export interface RecoveryEngine {

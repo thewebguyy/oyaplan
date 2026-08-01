@@ -8,8 +8,7 @@ import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
 import { Spot } from "@/lib/types";
 import { VenueCardStack } from "@/components/explore/VenueCardStack";
-import { createPlanningContext, PlanningEngineV1 } from "@/lib/planning/planningEngine";
-import { mapPlanToCardViewModel } from "@/lib/planning/presentation/decisionCardMapper";
+import { ExplorePageContent } from "@/components/explore/ExplorePageContent";
 
 export const dynamic = "force-dynamic";
 
@@ -151,47 +150,13 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   if (!area) notFound();
 
-  // Process spots with the shared Planning Engine V1
-  const request = {
-    startArea: slug,
-    squadSize: squadCount,
-    budget: budget || 10000000, // high fallback to prevent budget limits if not specified
-    vibe: vibe || ""
-  };
-  const context = createPlanningContext(request);
-  const domainPlans = PlanningEngineV1(context, area.spots, false);
-  const viewModels = domainPlans.map(mapPlanToCardViewModel);
-
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-8 flex flex-col relative overflow-hidden">
-      <div className="w-full max-w-lg mx-auto px-6 mb-6 flex flex-col z-10 relative pointer-events-none">
-        <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-2 w-fit pointer-events-auto tap-feedback">
-          <ArrowLeft className="w-4 h-4" />
-          All Areas
-        </Link>
-        <div className="flex items-end justify-between">
-          <h1 className="text-3xl font-black text-midnight-lagoon capitalize">{area.name}</h1>
-          <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{viewModels.length} venues</span>
-        </div>
-      </div>
-
-      <div className="flex-1 w-full flex items-center justify-center pb-12 z-10">
-        <VenueCardStack 
-          spots={viewModels} 
-          rawSpots={area.spots}
-          slug={slug} 
-          budget={budget || undefined} 
-          vibe={vibe || undefined} 
-          squadCount={squadCount} 
-        />
-      </div>
-      
-      {/* Background decoration to replace map feel */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{
-        backgroundImage: 'radial-gradient(circle at 50% 50%, #008751 0%, transparent 60%)',
-        backgroundSize: '100% 100%',
-        backgroundPosition: 'center',
-      }} />
-    </div>
+    <ExplorePageContent
+      initialSpots={area.spots}
+      slug={slug}
+      initialBudget={budget || undefined}
+      initialVibe={vibe || undefined}
+      squadCount={squadCount}
+    />
   );
 }

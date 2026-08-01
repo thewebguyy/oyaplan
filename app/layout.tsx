@@ -48,6 +48,7 @@ import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ClientOnly from "@/components/ClientOnly";
+import { OriginProvider } from "@/lib/location/OriginContext";
 
 export default function RootLayout({
   children,
@@ -59,24 +60,26 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <AnalyticsProvider>
           <AuthProvider>
-            <Suspense fallback={
-              <nav className="fixed top-0 left-0 right-0 h-[56px] bg-white border-b border-border-default z-50 flex items-center justify-between px-4 md:px-6">
-                <div className="w-24 h-7 bg-slate-100 animate-pulse rounded"></div>
-                <div className="w-10 h-10 rounded-full bg-slate-100 animate-pulse"></div>
-              </nav>
-            }>
-              <NavBar />
-            </Suspense>
-            <div className="pt-14 pb-16 md:pb-0">
-              {children}
-            </div>
-            <Suspense fallback={null}>
-              <ClientOnly>
-                <MobileBottomNav />
-              </ClientOnly>
-            </Suspense>
-            <AuthModal />
-            <Toaster richColors position="bottom-right" />
+            <OriginProvider>
+              <Suspense fallback={
+                <nav className="fixed top-0 left-0 right-0 h-[56px] bg-white border-b border-border-default z-50 flex items-center justify-between px-4 md:px-6">
+                  <div className="w-24 h-7 bg-slate-100 animate-pulse rounded"></div>
+                  <div className="w-10 h-10 rounded-full bg-slate-100 animate-pulse"></div>
+                </nav>
+              }>
+                <NavBar />
+              </Suspense>
+              <div className="pt-14 pb-16 md:pb-0">
+                {children}
+              </div>
+              <Suspense fallback={null}>
+                <ClientOnly>
+                  <MobileBottomNav />
+                </ClientOnly>
+              </Suspense>
+              <AuthModal />
+              <Toaster richColors position="bottom-right" />
+            </OriginProvider>
           </AuthProvider>
         </AnalyticsProvider>
       </body>

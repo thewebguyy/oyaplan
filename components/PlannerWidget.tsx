@@ -7,6 +7,9 @@ import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
 import { LocationService, Location, UserLocation } from "@/lib/services/LocationService";
 import { useTransportCost } from "@/hooks/useTransportCost";
+import { OriginStore } from "@/lib/storage/OriginStore";
+import { Origin } from "@/lib/location/types";
+import { useOrigin } from "@/lib/location/OriginContext";
 
 import { Spot } from "@/lib/types";
 
@@ -76,43 +79,30 @@ export default function PlannerWidget({
   });
 
   const selectedArea = controlledArea !== undefined ? controlledArea : internalArea;
-  const updateArea = (area: Location | null) => {
-    if (setControlledArea) {
-      setControlledArea(area);
-    }
-    setInternalArea(area);
-    if (area) {
-      const areaUserLoc: UserLocation = {
-        id: area.id,
-        name: area.name,
-        coordinates: area.coordinates,
-        type: "saved",
-      };
-      setUserLocation(areaUserLoc);
-      LocationService.saveUserLocation(areaUserLoc);
-    } else {
-      setUserLocation(null);
-    }
-  };
-
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const { origin, status, requestCurrentLocation, setManualOrigin } = useOrigin();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    if (!prefilledLocation) {
-      const saved = LocationService.getUserLocation();
-      if (saved) {
-        const nearest = LocationService.getNearestArea(saved);
+    if (!prefilledLocation && origin) {
+      const nearest = LocationService.getVerifiedAreas().find(a => a.id === origin.planningAreaSlug) || null;
+      if (nearest) {
         setInternalArea(nearest);
-        setUserLocation(saved);
+        if (setControlledArea) {
+          setControlledArea(nearest);
+        }
       }
     }
-  }, [prefilledLocation]);
+  }, [prefilledLocation, origin, setControlledArea]);
 
   // Dynamic transport estimate using Location-Aware Hook
   useTransportCost({
-    userLocation: userLocation || (selectedArea ? {
+    userLocation: origin ? {
+      id: origin.planningAreaSlug,
+      name: origin.resolvedName,
+      coordinates: origin.gpsCoordinates || selectedArea?.coordinates || { lat: 6.4474, lng: 3.4723 },
+      type: origin.source === "gps" ? "current" as const : "saved" as const
+    } : (selectedArea ? {
       id: selectedArea.id,
       name: selectedArea.name,
       coordinates: selectedArea.coordinates,
@@ -141,22 +131,11 @@ export default function PlannerWidget({
   const budgetPct = ((budget - 10000) / 90000) * 100;
 
   const handleUseCurrentLocation = async () => {
-    setIsLocating(true);
     setValidationError(null);
     try {
-      const current = await LocationService.getCurrentLocation();
-      if (current) {
-        setUserLocation(current);
-        LocationService.saveUserLocation(current);
-        const nearest = LocationService.getNearestArea(current);
-        updateArea(nearest);
-      } else {
-        setValidationError("Could not access location. Please pick an area below.");
-      }
+      await requestCurrentLocation();
     } catch {
       setValidationError("Could not access current location.");
-    } finally {
-      setIsLocating(false);
     }
   };
 
@@ -213,15 +192,17 @@ export default function PlannerWidget({
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280]">
-              📍 Starting Location{mounted && selectedArea ? ` (${selectedArea.name})` : ""}
+              {status === "gps" && selectedArea 
+                ? `📍 Near ${selectedArea.name}` 
+                : `📍 Starting Location${mounted && selectedArea ? ` (${selectedArea.name})` : ""}`}
             </label>
             <button
               type="button"
               onClick={handleUseCurrentLocation}
-              disabled={isLocating}
+              disabled={status === "locating"}
               className="text-xs font-bold text-[#008751] hover:underline cursor-pointer flex items-center gap-1.5"
             >
-              {isLocating ? (
+              {status === "locating" ? (
                 <>
                   <Loader2 className="w-3 h-3 animate-spin text-[#008751]" />
                   <span>Locating...</span>
@@ -240,7 +221,7 @@ export default function PlannerWidget({
                   key={area.id}
                   type="button"
                   onClick={() => {
-                    updateArea(area);
+                    setManualOrigin(area.id);
                   }}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                     isSelected

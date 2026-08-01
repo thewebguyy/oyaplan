@@ -33,23 +33,21 @@ const PHRASES = [
 ];
 
 import { LocationService, Location } from "@/lib/services/LocationService";
-import { PlanningEngineV1, createPlanningContext } from "@/lib/planning/planningEngine";
-import { PlanningRequest } from "@/lib/planning/types";
+import { useRecommendations } from "@/lib/planning/useRecommendations";
+import { useOrigin } from "@/lib/location/OriginContext";
 
 export default function HeroSection({ spots }: HeroSectionProps) {
   // Shared state coordinated between inputs and live preview
   const [squadSize, setSquadSize] = useState<number>(3);
   const [budget, setBudget] = useState<number>(50000);
   const [vibe, setVibe] = useState<string | null>(null);
-  const [selectedArea, setSelectedArea] = useState<Location | null>(() => {
-    if (typeof window !== "undefined") {
-      const saved = LocationService.getUserLocation();
-      if (saved) {
-        return LocationService.getNearestArea(saved);
-      }
-    }
-    return LocationService.getVerifiedAreas()[0];
-  });
+
+  const { origin } = useOrigin();
+
+  const selectedArea = useMemo(() => {
+    const slug = origin?.planningAreaSlug || "surulere";
+    return LocationService.getVerifiedAreas().find(a => a.id === slug) || LocationService.getVerifiedAreas()[0];
+  }, [origin]);
 
   const [phraseIndex, setPhraseIndex] = useState(0);
 
@@ -60,30 +58,25 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     return () => clearInterval(interval);
   }, []);
 
-  // Client-side recommendation using the unified Planning Engine
+  const request = useMemo(() => ({
+    squadSize,
+    budget,
+    vibe: vibe || "chill"
+  }), [squadSize, budget, vibe]);
+
+  const activeSpots = useMemo(() => {
+    return (spots && spots.length > 0) ? spots.filter((s) => s.active) : [];
+  }, [spots]);
+
+  const { plans } = useRecommendations({
+    spots: activeSpots,
+    request
+  });
+
   const recommendedSpots = useMemo(() => {
-    const activeSpots = (spots && spots.length > 0)
-      ? spots.filter((s) => s.active)
-      : [];
-
-    if (activeSpots.length === 0) return [DEFAULT_FALLBACK_SPOT];
-
-    const request: PlanningRequest = {
-      startArea: selectedArea?.id || "lekki-phase-1",
-      squadSize,
-      budget,
-      vibe: vibe || "chill",
-      pinnedSpotId: undefined,
-      categoryGroup: undefined,
-      daypart: undefined
-    };
-
-    const context = createPlanningContext(request);
-    const plans = PlanningEngineV1(context, activeSpots);
     const topSpots = plans.slice(0, 3).map((p) => p.spot);
-
     return topSpots.length > 0 ? topSpots : [DEFAULT_FALLBACK_SPOT];
-  }, [spots, squadSize, budget, vibe, selectedArea]);
+  }, [plans]);
 
   return (
     <motion.section
@@ -142,8 +135,6 @@ export default function HeroSection({ spots }: HeroSectionProps) {
               vibe={vibe}
               setVibe={setVibe}
               recommendedSpots={recommendedSpots}
-              selectedArea={selectedArea}
-              setSelectedArea={setSelectedArea}
             />
           </div>
 

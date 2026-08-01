@@ -1,5 +1,5 @@
 import { Spot, DecisionConfidence, PlanExplanation, ConfidenceEvidence } from '../types';
-import { RankedPlan, PlanningContext, ExplainedPlan, ExplainabilityEngine } from './types';
+import { RankedPlan, PlanningContext, ExplainedPlan, ExplainabilityEngine, TravelledPlan } from './types';
 import { calculateZoneFare } from './transport';
 import { timeAgo } from '../utils/timeAgo';
 import { formatPlanTitle, formatPlanSubtitle, formatDecisionSummary } from '../utils/editorialFormatter';
@@ -113,7 +113,7 @@ function evaluateDecisionConfidence(spot: Spot, transportCost: number): Decision
 }
 
 export class DefaultExplainabilityEngine implements ExplainabilityEngine {
-  run(plans: RankedPlan[], context: PlanningContext, isAdjacent: boolean = false): ExplainedPlan[] {
+  run(plans: TravelledPlan[], context: PlanningContext, isAdjacent: boolean = false): ExplainedPlan[] {
     const { vibe, budget, startArea } = context.request;
     const areaKey = startArea || "ikeja";
 

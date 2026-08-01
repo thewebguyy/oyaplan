@@ -1,7 +1,7 @@
-import { PlanningCandidate, PlanningContext, CostedPlan, CostEngine } from './types';
+import { PlanningCandidate, PlanningContext, CostedPlan, CostEngine, TransportProvider } from './types';
 
 export class DefaultCostEngine implements CostEngine {
-  run(candidates: PlanningCandidate[], context: PlanningContext): CostedPlan[] {
+  run(candidates: PlanningCandidate[], context: PlanningContext, transportProvider: TransportProvider): CostedPlan[] {
     const { startArea, squadSize } = context.request;
     const areaKey = startArea || "ikeja";
 
@@ -9,8 +9,8 @@ export class DefaultCostEngine implements CostEngine {
       // Scale activity cost linearly with squad size
       const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
       
-      // Estimate transport cost using the context's transport provider
-      const transportCost = context.transportProvider.estimate(
+      // Estimate transport cost using the provided transport provider
+      const transportCost = transportProvider.estimate(
         areaKey, 
         spot.address_slug || "ikeja", 
         spot.transport_matrix

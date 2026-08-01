@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { forgePlans, getAdjacentZoneMatches, generateRecoverySuggestions } from '../services/matching/forgeMatcher';
-import { PlanningEngineV1, createPlanningContext } from './planningEngine';
+import { PlanningEngine, createPlanningContext } from './planningEngine';
 import { DefaultRecoveryEngine } from './recoveryEngine';
+import { MatrixTransportProvider } from './transport';
+import { MatrixTravelEstimator } from '../travel/MatrixTravelEstimator';
 import type { Spot, ForgeInput } from '../types';
 import type { PlanningRequest } from './types';
 
@@ -38,6 +40,11 @@ describe('Planning Engine V1 Regression & Contract Tests', () => {
     makeSpot('55555555-5555-5555-5555-555555555555', { name: 'Ikoyi Spot 1', address_slug: 'ikoyi', vibe_tags: ['Dinner'], price_per_person: 40000, zone: 'island' }),
   ];
 
+  const deps = {
+    transportProvider: new MatrixTransportProvider(),
+    travelEstimator: new MatrixTravelEstimator()
+  };
+
   it('contracts exact primary matching results with old forgeMatcher', () => {
     const input: ForgeInput = {
       startArea: 'ikeja',
@@ -55,7 +62,7 @@ describe('Planning Engine V1 Regression & Contract Tests', () => {
       vibe: input.vibe
     };
     const context = createPlanningContext(request);
-    const newPlans = PlanningEngineV1(context, mockSpots);
+    const newPlans = PlanningEngine(context, deps, mockSpots);
 
     expect(newPlans.length).toBe(legacyPlans.length);
     for (let i = 0; i < legacyPlans.length; i++) {
@@ -86,7 +93,7 @@ describe('Planning Engine V1 Regression & Contract Tests', () => {
       isAdjacent: true
     };
     const context = createPlanningContext(request);
-    const newAdjacent = PlanningEngineV1(context, mockSpots, true);
+    const newAdjacent = PlanningEngine(context, deps, mockSpots, true);
 
     expect(newAdjacent.length).toBe(legacyAdjacent.length);
     for (let i = 0; i < legacyAdjacent.length; i++) {

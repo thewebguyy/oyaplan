@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { PlanningEngineV1, createPlanningContext } from './planningEngine';
+import { PlanningEngine, createPlanningContext } from './planningEngine';
+import { MatrixTransportProvider } from './transport';
+import { MatrixTravelEstimator } from '../travel/MatrixTravelEstimator';
 import type { Spot } from '../types';
 import type { PlanningRequest } from './types';
 
@@ -34,6 +36,10 @@ describe('Planning Engine Performance Benchmarks', () => {
     vibe: 'Chill'
   };
   const context = createPlanningContext(request);
+  const deps = {
+    transportProvider: new MatrixTransportProvider(),
+    travelEstimator: new MatrixTravelEstimator()
+  };
 
   const sizes = [50, 100, 500, 1000];
 
@@ -43,14 +49,14 @@ describe('Planning Engine Performance Benchmarks', () => {
       const spots: Spot[] = Array.from({ length: size }, (_, i) => makeMockSpot(i));
 
       // Warmup run
-      PlanningEngineV1(context, spots);
+      PlanningEngine(context, deps, spots);
 
       // 2. Measure actual runs
       const iterations = 50;
       const startTime = performance.now();
       
       for (let i = 0; i < iterations; i++) {
-        PlanningEngineV1(context, spots);
+        PlanningEngine(context, deps, spots);
       }
 
       const totalTime = performance.now() - startTime;

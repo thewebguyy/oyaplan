@@ -38,6 +38,19 @@ function getVerificationText(updatedAt: string | undefined): string {
 export function mapPlanToCardViewModel(plan: ExplainedPlan): DecisionCardViewModel {
   const confidenceScore = plan.explanation.confidence_score || 50;
 
+  let travelInfo = plan.travelInfo;
+  if (plan.travelEstimate) {
+    const est = plan.travelEstimate;
+    const distanceText = `${est.distanceKm.toFixed(1)}km`;
+    if (est.confidence === "high") {
+      travelInfo = `🚗 About ${est.estimatedMinutes} min (${distanceText}, very close)`;
+    } else if (est.confidence === "medium") {
+      travelInfo = `🚗 About ${est.estimatedMinutes} min (${distanceText})`;
+    } else {
+      travelInfo = `🚗 About ${est.estimatedMinutes}+ min (${distanceText}, plan for traffic)`;
+    }
+  }
+
   return {
     title: plan.title,
     heroImage: plan.spot.image_url,
@@ -57,7 +70,7 @@ export function mapPlanToCardViewModel(plan: ExplainedPlan): DecisionCardViewMod
     pricePerPerson: plan.spot.price_per_person,
     addressSlug: plan.spot.address_slug,
     areaSlug: plan.spot.areas?.slug || plan.spot.address_slug,
-    travelInfo: plan.travelInfo,
+    travelInfo: travelInfo,
     isAdjacent: plan.isAdjacentZoneSuggestion,
 
     budgetRemaining: plan.budgetRemaining ?? 0,

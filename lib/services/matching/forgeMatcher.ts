@@ -1,7 +1,7 @@
 import { Spot, ForgeInput, Plan, PlanAdjustment, RecoverySuggestion } from '../../types';
 import { supabase } from '../../supabase';
 import { BudgetPolicy } from './budgetPolicy';
-import { PlanningEngineV1, createPlanningContext } from '../../planning/planningEngine';
+import { PlanningEngine, createPlanningContext } from '../../planning/planningEngine';
 import { DefaultRecoveryEngine } from '../../planning/recoveryEngine';
 import { calculateZoneFare } from '../../planning/transport';
 
@@ -43,7 +43,7 @@ export function getPrimaryAreaMatches(input: ForgeInput, allSpots: Spot[]): Plan
   };
 
   const context = createPlanningContext(request);
-  const domainPlans = PlanningEngineV1(context, allSpots, false);
+  const domainPlans = PlanningEngine(context, undefined, allSpots, false);
 
   // Record plan requests in fire-and-forget Supabase call (Forge Analytics parity)
   const sortedPlans = domainPlans.map(p => ({
@@ -85,7 +85,7 @@ export function getAdjacentZoneMatches(
   };
 
   const context = createPlanningContext(request);
-  const domainPlans = PlanningEngineV1(context, allSpots, true);
+  const domainPlans = PlanningEngine(context, undefined, allSpots, true);
 
   return domainPlans.slice(0, 2).map(p => ({
     ...p,
