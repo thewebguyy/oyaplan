@@ -5,6 +5,7 @@ export interface UserProfile {
   id: string;
   role: 'planner' | 'scout' | 'venue_operator' | 'admin';
   display_name?: string;
+  email?: string;
 }
 
 export type IdentityState = 
@@ -62,7 +63,8 @@ export class SessionResolver {
       profile: {
         id: user.id,
         role: profile?.role || 'planner',
-        display_name: profile?.display_name
+        display_name: profile?.display_name,
+        email: user.email,
       }
     };
   }

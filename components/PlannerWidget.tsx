@@ -271,11 +271,10 @@ export default function PlannerWidget({
 
           {/* Planning area transparency notice — only shown when display location differs from planning area */}
           {status === "gps" && origin && origin.displayArea.slug !== origin.planningAreaSlug && (
-            <p className="text-[10px] text-text-muted leading-relaxed">
-              Recommendations are based on our current coverage area:{" "}
-              <span className="font-bold text-text-secondary">
+            <p className="text-xs text-text-muted mt-1">
+              Planning in <span className="font-bold text-text-secondary">
                 {LocationService.getVerifiedAreas().find((a) => a.id === origin.planningAreaSlug)?.name ?? origin.planningAreaSlug}
-              </span>.
+              </span>
             </p>
           )}
         </div>
