@@ -12,6 +12,9 @@ export interface OriginContextType {
   requestCurrentLocation(): Promise<void>;
   setManualOrigin(slug: string): void;
   clearOrigin(): void;
+  unsupportedAreaName: string | null;
+  unsupportedAreaSlug: string | null;
+  resetStatus(): void;
 }
 
 const OriginContext = createContext<OriginContextType | undefined>(undefined);
@@ -19,6 +22,8 @@ const OriginContext = createContext<OriginContextType | undefined>(undefined);
 export function OriginProvider({ children }: { children: React.ReactNode }) {
   const [origin, setOriginState] = useState<Origin | null>(null);
   const [status, setStatus] = useState<LocationStatus>("idle");
+  const [unsupportedAreaName, setUnsupportedAreaName] = useState<string | null>(null);
+  const [unsupportedAreaSlug, setUnsupportedAreaSlug] = useState<string | null>(null);
 
   useEffect(() => {
     const envelope = OriginStore.loadOrigin();
@@ -34,9 +39,18 @@ export function OriginProvider({ children }: { children: React.ReactNode }) {
 
   const requestCurrentLocation = async () => {
     setStatus("locating");
+    setUnsupportedAreaName(null);
+    setUnsupportedAreaSlug(null);
     try {
       const coords = await BrowserLocationService.getCurrentCoordinates();
       const gpsOrigin = OriginResolver.resolveGPSOrigin(coords);
+      if (!gpsOrigin) {
+        const closest = OriginResolver.getClosestArea(coords);
+        setUnsupportedAreaName(closest.name);
+        setUnsupportedAreaSlug(closest.id);
+        setStatus("unsupported");
+        return;
+      }
       OriginStore.saveOrigin(gpsOrigin);
       setOriginState(gpsOrigin);
       setStatus("gps");
@@ -55,12 +69,22 @@ export function OriginProvider({ children }: { children: React.ReactNode }) {
     OriginStore.saveOrigin(manualOrigin);
     setOriginState(manualOrigin);
     setStatus("manual");
+    setUnsupportedAreaName(null);
+    setUnsupportedAreaSlug(null);
   };
 
   const clearOrigin = () => {
     OriginStore.clearOrigin();
     setOriginState(null);
     setStatus("idle");
+    setUnsupportedAreaName(null);
+    setUnsupportedAreaSlug(null);
+  };
+
+  const resetStatus = () => {
+    setStatus("idle");
+    setUnsupportedAreaName(null);
+    setUnsupportedAreaSlug(null);
   };
 
   return (
@@ -71,6 +95,9 @@ export function OriginProvider({ children }: { children: React.ReactNode }) {
         requestCurrentLocation,
         setManualOrigin,
         clearOrigin,
+        unsupportedAreaName,
+        unsupportedAreaSlug,
+        resetStatus,
       }}
     >
       {children}

@@ -24,7 +24,7 @@ export class BrowserLocationService {
 }
 
 export class OriginResolver {
-  static resolveGPSOrigin(coordinates: Coordinates): Origin {
+  static resolveGPSOrigin(coordinates: Coordinates): Origin | null {
     const areas = LocationService.getVerifiedAreas();
     let nearest = areas[0];
     let minDistance = Infinity;
@@ -37,12 +37,32 @@ export class OriginResolver {
       }
     }
 
+    const MAX_SNAP_DISTANCE_KM = 10;
+    if (minDistance > MAX_SNAP_DISTANCE_KM) {
+      return null;
+    }
+
     return {
       source: "gps",
       gpsCoordinates: coordinates,
       planningAreaSlug: nearest.id,
       resolvedName: nearest.name
     };
+  }
+
+  static getClosestArea(coordinates: Coordinates) {
+    const areas = LocationService.getVerifiedAreas();
+    let nearest = areas[0];
+    let minDistance = Infinity;
+
+    for (const area of areas) {
+      const dist = LocationService.calculateDistance(coordinates, area.coordinates);
+      if (dist < minDistance) {
+        minDistance = dist;
+        nearest = area;
+      }
+    }
+    return nearest;
   }
 
   static resolveManualOrigin(areaSlug: string): Origin {

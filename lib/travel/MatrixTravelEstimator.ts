@@ -10,9 +10,9 @@ export class MatrixTravelEstimator implements TravelEstimator {
     const distanceKm = LocationService.calculateDistance(origin, destination);
 
     // 2. Resolve closest areas for transport cost lookup
-    const originArea = OriginResolver.resolveGPSOrigin(origin);
-    const destinationArea = OriginResolver.resolveGPSOrigin(destination);
-    const transportCost = calculateZoneFare(originArea.planningAreaSlug, destinationArea.planningAreaSlug);
+    const originArea = OriginResolver.getClosestArea(origin);
+    const destinationArea = OriginResolver.getClosestArea(destination);
+    const transportCost = calculateZoneFare(originArea.id, destinationArea.id);
 
     // 3. Compute ETA
     const now = new Date();

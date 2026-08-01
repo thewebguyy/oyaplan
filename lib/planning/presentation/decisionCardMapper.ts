@@ -1,7 +1,7 @@
 import { ExplainedPlan } from '../types';
 import { DecisionCardViewModel, TrustIndicator } from './types';
 
-function deriveTrustIndicator(confidenceScore: number): TrustIndicator {
+export function deriveTrustIndicator(confidenceScore: number): TrustIndicator {
   let level: "high" | "medium" | "low" = "low";
   let label = "Low confidence";
   let description = "Pricing details may be outdated or unconfirmed.";
@@ -23,7 +23,7 @@ function deriveTrustIndicator(confidenceScore: number): TrustIndicator {
   return { level, label, description };
 }
 
-function getVerificationText(updatedAt: string | undefined): string {
+export function getVerificationText(updatedAt: string | undefined): string {
   if (!updatedAt) return "Estimated price";
   const daysAgo = Math.floor(
     (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24)

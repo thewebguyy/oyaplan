@@ -79,7 +79,7 @@ export default function PlannerWidget({
   });
 
   const selectedArea = controlledArea !== undefined ? controlledArea : internalArea;
-  const { origin, status, requestCurrentLocation, setManualOrigin } = useOrigin();
+  const { origin, status, requestCurrentLocation, setManualOrigin, unsupportedAreaName, unsupportedAreaSlug, resetStatus } = useOrigin();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -182,9 +182,51 @@ export default function PlannerWidget({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-[16px] border border-[#E5E7EB] p-4 sm:p-6 md:p-8 shadow-[0_4px_16px_rgba(0,0,0,0.06)] w-full max-w-[500px] flex flex-col gap-6 sm:gap-8"
+      className="relative overflow-hidden bg-white rounded-[16px] border border-[#E5E7EB] p-4 sm:p-6 md:p-8 shadow-[0_4px_16px_rgba(0,0,0,0.06)] w-full max-w-[500px] flex flex-col gap-6 sm:gap-8"
       noValidate
     >
+      <AnimatePresence>
+        {status === "unsupported" && unsupportedAreaName && unsupportedAreaSlug && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="absolute inset-0 bg-white/98 backdrop-blur-xs rounded-[16px] z-20 flex flex-col items-center justify-center p-6 text-center gap-6"
+          >
+            <div className="flex flex-col gap-2">
+              <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">
+                ⚠️
+              </div>
+              <h3 className="text-lg font-black text-text-primary">
+                We don&apos;t support your area yet
+              </h3>
+              <p className="text-xs text-text-muted max-w-[280px] leading-relaxed">
+                OyaPlan currently covers active zones in Lagos. The nearest supported area to you is <strong className="text-text-primary">{unsupportedAreaName}</strong>.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2 w-full max-w-[240px]">
+              <button
+                type="button"
+                onClick={() => {
+                  setManualOrigin(unsupportedAreaSlug);
+                }}
+                className="w-full bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-xs cursor-pointer"
+              >
+                Plan from {unsupportedAreaName}
+              </button>
+              <button
+                type="button"
+                onClick={resetStatus}
+                className="w-full bg-surface-grey border border-border-default/80 hover:bg-[#E5E7EB] text-text-primary text-xs font-bold py-2.5 px-4 rounded-xl transition-all cursor-pointer"
+              >
+                Choose another area
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <fieldset className="flex flex-col gap-6 p-0 m-0 border-none">
         <legend className="sr-only">Configure your outing constraints</legend>
 

@@ -16,4 +16,5 @@ export type LocationStatus =
   | "gps"
   | "manual"
   | "permission-denied"
+  | "unsupported"
   | "error";

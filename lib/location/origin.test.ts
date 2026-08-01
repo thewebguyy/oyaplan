@@ -27,10 +27,18 @@ describe('Location Domain Tests', () => {
     const yabaCoords = { lat: 6.5095, lng: 3.3711 };
     const origin = OriginResolver.resolveGPSOrigin(yabaCoords);
 
-    expect(origin.source).toBe('gps');
-    expect(origin.planningAreaSlug).toBe('yaba');
-    expect(origin.resolvedName).toBe('Yaba');
-    expect(origin.gpsCoordinates).toEqual(yabaCoords);
+    expect(origin).not.toBeNull();
+    expect(origin!.source).toBe('gps');
+    expect(origin!.planningAreaSlug).toBe('yaba');
+    expect(origin!.resolvedName).toBe('Yaba');
+    expect(origin!.gpsCoordinates).toEqual(yabaCoords);
+  });
+
+  it('returns null if coordinates are too far away (unsupported)', () => {
+    // Epe coordinates: 6.5833, 3.9833 (very far from active areas)
+    const farCoords = { lat: 6.5833, lng: 3.9833 };
+    const origin = OriginResolver.resolveGPSOrigin(farCoords);
+    expect(origin).toBeNull();
   });
 
   it('resolves manual area slug into origin', () => {

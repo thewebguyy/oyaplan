@@ -8,7 +8,8 @@ import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
 import { Spot } from "@/lib/types";
 import { VenueCardStack } from "@/components/explore/VenueCardStack";
-import { ExplorePageContent } from "@/components/explore/ExplorePageContent";
+import { getVerificationText, deriveTrustIndicator } from "@/lib/planning/presentation/decisionCardMapper";
+import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     captureServerException(e);
   }
   return { title: "Explore — OyaPlan" };
+}
+
+function mapSpotToDiscoveryCard(spot: Spot, squadCount: number, budget: number | null): DecisionCardViewModel {
+  const confidenceScore = spot.computed_confidence_score || 50;
+  const venueCost = (spot.price_per_person || 0) * squadCount;
+  const transportCost = 0;
+  const totalCost = venueCost;
+  const budgetRemaining = budget ? (budget * squadCount) - totalCost : 0;
+
+  return {
+    title: spot.name,
+    heroImage: spot.image_url,
+    venueCost,
+    transportCost,
+    totalCost,
+    budgetFit: budget ? (totalCost <= budget * squadCount ? "Fits budget" : "Over budget") : "Discovery price",
+    verification: getVerificationText(spot.price_updated_at),
+    confidence: confidenceScore,
+    whyItFits: spot.vibe_tags?.join(" • ") || "Discovery spot",
+    planningSummary: spot.address,
+
+    spotId: spot.id,
+    spotName: spot.name,
+    category: spot.category || 'restaurant',
+    address: spot.address,
+    pricePerPerson: spot.price_per_person,
+    addressSlug: spot.address_slug,
+    areaSlug: spot.areas?.slug || spot.address_slug,
+    travelInfo: undefined,
+    isAdjacent: false,
+
+    budgetRemaining,
+    trustIndicator: deriveTrustIndicator(confidenceScore)
+  };
 }
 
 export default async function ExploreSlug({ params, searchParams }: Props) {
@@ -150,13 +185,39 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   if (!area) notFound();
 
+  // Map spots directly on the server to visual view models (Pure Discovery)
+  const viewModels = area.spots.map((spot) => mapSpotToDiscoveryCard(spot, squadCount, budget));
+
   return (
-    <ExplorePageContent
-      initialSpots={area.spots}
-      slug={slug}
-      initialBudget={budget || undefined}
-      initialVibe={vibe || undefined}
-      squadCount={squadCount}
-    />
+    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-8 flex flex-col relative overflow-hidden">
+      <div className="w-full max-w-lg mx-auto px-6 mb-6 flex flex-col z-10 relative pointer-events-none">
+        <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-2 w-fit pointer-events-auto tap-feedback">
+          <ArrowLeft className="w-4 h-4" />
+          All Areas
+        </Link>
+        <div className="flex items-end justify-between">
+          <h1 className="text-3xl font-black text-midnight-lagoon capitalize">{area.name}</h1>
+          <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{viewModels.length} venues</span>
+        </div>
+      </div>
+
+      <div className="flex-1 w-full flex items-center justify-center pb-12 z-10">
+        <VenueCardStack 
+          spots={viewModels} 
+          rawSpots={area.spots}
+          slug={slug} 
+          budget={budget || undefined} 
+          vibe={vibe || undefined} 
+          squadCount={squadCount} 
+        />
+      </div>
+      
+      {/* Background decoration to replace map feel */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{
+        backgroundImage: 'radial-gradient(circle at 50% 50%, #008751 0%, transparent 60%)',
+        backgroundSize: '100% 100%',
+        backgroundPosition: 'center',
+      }} />
+    </div>
   );
 }
