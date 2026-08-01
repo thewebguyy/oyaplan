@@ -1,11 +1,12 @@
 import { Spot } from "@/lib/types";
+import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import Image from "next/image";
 import Link from "next/link";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { TrustBadge, TrustStatus } from "@/components/ui/trust-badge";
 
 interface VenueCardProps {
-  spot: Spot;
+  card: DecisionCardViewModel;
   slug: string;
   isSaved: boolean;
   onSaveToggle: (spot: Spot) => void;
@@ -14,8 +15,9 @@ interface VenueCardProps {
   squadCount: number;
 }
 
-export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squadCount }: VenueCardProps) {
-  // Helpers replicated from previous explore page
+export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squadCount }: VenueCardProps) {
+  const { spot } = card;
+
   function getFreshnessText(updatedAt: string | undefined): string {
     if (!updatedAt) return "not yet dated";
     const daysAgo = Math.floor(
@@ -44,6 +46,11 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
     return "pending";
   }
 
+  const spotAreaSlug = card.areaSlug || slug;
+  const forgeParams = new URLSearchParams();
+  forgeParams.append("area", spotAreaSlug);
+  forgeParams.append("pinned", card.spotId);
+  
   // Maps internal vibe tags AND URL slugs → valid Forge URL slug (Zod-accepted)
   const VIBE_TO_URL: Record<string, string> = {
     "Dinner": "date-night",   "date-night": "date-night",
@@ -54,10 +61,6 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
     "Brunch": "brunch",       "brunch":      "brunch",
   };
 
-  const spotAreaSlug = spot.areas?.slug || spot.address_slug || spot.zone || slug;
-  const forgeParams = new URLSearchParams();
-  forgeParams.append("area", spotAreaSlug);
-  forgeParams.append("pinned", spot.id);
   forgeParams.append("vibe",
     VIBE_TO_URL[vibe ?? ""] ??
     VIBE_TO_URL[spot.vibe_tags?.[0] ?? ""] ??
@@ -66,7 +69,6 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
   forgeParams.append("budget", budget ? budget.toString() : "50000");
   forgeParams.append("squad", squadCount.toString());
   forgeParams.append("fresh", "true");
-
 
   // Vibe colors
   const vibeColors: Record<string, string> = {
@@ -83,7 +85,6 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
   };
 
   const vibeColor = (spot.vibe_tags && spot.vibe_tags[0] && vibeColors[spot.vibe_tags[0]]) || "#008751";
-
   const rating = spot.computed_confidence_score ? (spot.computed_confidence_score / 20).toFixed(1) : "4.5"; // Dummy conversion for now
 
   return (
@@ -93,7 +94,7 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
         {spot.image_url ? (
           <Image
             src={spot.image_url}
-            alt={spot.name}
+            alt={card.spotName}
             fill
             sizes="(max-width: 420px) 100vw, 420px"
             className="object-cover"
@@ -122,7 +123,7 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
             className="text-white text-[10px] font-extrabold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm"
             style={{ backgroundColor: vibeColor }}
           >
-            {spot.vibe_tags?.[0] || spot.category || 'Vibe'}
+            {spot.vibe_tags?.[0] || card.category || 'Vibe'}
           </span>
           <div className="pointer-events-auto">
             <TrustBadge
@@ -140,15 +141,15 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
         <div>
           <div className="flex justify-between items-start mb-2">
             <h2 className="text-2xl font-black text-text-primary uppercase leading-tight line-clamp-2">
-              {spot.name}
+              {card.spotName}
             </h2>
           </div>
           
-          <p className="text-sm text-text-muted mb-4 line-clamp-1">{spot.address}</p>
+          <p className="text-sm text-text-muted mb-4 line-clamp-1">{card.address}</p>
           
           <div className="flex items-center gap-3 text-sm text-text-muted font-medium mb-4">
             <div className="flex items-center gap-1 text-text-primary">
-              <span className="text-brand-green font-bold text-lg">₦{spot.price_per_person.toLocaleString('en-NG')}</span>
+              <span className="text-brand-green font-bold text-lg">₦{card.pricePerPerson.toLocaleString('en-NG')}</span>
               <span className="text-[10px] uppercase tracking-wider text-text-muted">/ person</span>
             </div>
             <span className="w-1 h-1 rounded-full bg-border-default" />

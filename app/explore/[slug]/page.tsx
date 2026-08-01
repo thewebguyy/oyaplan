@@ -8,13 +8,10 @@ import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
 import { Spot } from "@/lib/types";
 import { VenueCardStack } from "@/components/explore/VenueCardStack";
+import { createPlanningContext, PlanningEngineV1 } from "@/lib/planning/planningEngine";
+import { mapPlanToCardViewModel } from "@/lib/planning/presentation/decisionCardMapper";
 
 export const dynamic = "force-dynamic";
-
-interface FilteredSpot extends Spot {
-  fitsBudget?: boolean;
-  fitsVibe?: boolean;
-}
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -154,26 +151,16 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   if (!area) notFound();
 
-  // Process spots with budget and vibe filters
-  let filteredSpots: FilteredSpot[] = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
-    // No 1.1× buffer — derived_typical_cost already includes VAT (Phase 3A parity with Forge)
-    const estimatedTotal = spot.price_per_person * squadCount;
-    const fitsBudget = budget ? estimatedTotal <= budget : true;
-    const fitsVibe = vibe && spot.vibe_tags ? spot.vibe_tags.includes(vibe) : true;
-    
-    return {
-      ...spot,
-      fitsBudget,
-      fitsVibe
-    };
-  });
-
-  // Filter out spots that don't match (unlike before where we just grayed them out, 
-  // in a Tinder stack we want to only show valid options)
-  filteredSpots = filteredSpots.filter(s => s.fitsBudget && s.fitsVibe);
-  
-  // Shuffle or sort based on trending score
-  filteredSpots.sort((a, b) => (b.trending_score || 0) - (a.trending_score || 0));
+  // Process spots with the shared Planning Engine V1
+  const request = {
+    startArea: slug,
+    squadSize: squadCount,
+    budget: budget || 10000000, // high fallback to prevent budget limits if not specified
+    vibe: vibe || ""
+  };
+  const context = createPlanningContext(request);
+  const domainPlans = PlanningEngineV1(context, area.spots, false);
+  const viewModels = domainPlans.map(mapPlanToCardViewModel);
 
   return (
     <div className="min-h-[100dvh] bg-[#FAFAF8] pt-8 flex flex-col relative overflow-hidden">
@@ -184,13 +171,13 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
         </Link>
         <div className="flex items-end justify-between">
           <h1 className="text-3xl font-black text-midnight-lagoon capitalize">{area.name}</h1>
-          <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{filteredSpots.length} venues</span>
+          <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{viewModels.length} venues</span>
         </div>
       </div>
 
       <div className="flex-1 w-full flex items-center justify-center pb-12 z-10">
         <VenueCardStack 
-          spots={filteredSpots} 
+          spots={viewModels} 
           slug={slug} 
           budget={budget || undefined} 
           vibe={vibe || undefined} 

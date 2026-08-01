@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimation, PanInfo } from "framer-motion";
-import { Spot } from "@/lib/types";
+import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import { VenueCard } from "./VenueCard";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
 
 interface VenueCardStackProps {
-  spots: Spot[];
+  spots: DecisionCardViewModel[];
   slug: string;
   budget?: number;
   vibe?: string;
@@ -52,8 +52,8 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
     }
   };
 
-  const handleSwipeRight = (spot: Spot) => {
-    if (!isSaved(spot.id)) saveSpot(spot);
+  const handleSwipeRight = (card: DecisionCardViewModel) => {
+    if (!isSaved(card.spotId)) saveSpot(card.spot);
     nextCard();
   };
 
@@ -66,9 +66,15 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
     x.set(0); // reset motion value for the new top card
   };
 
-  const handleSaveToggle = (spot: Spot) => {
-    if (isSaved(spot.id)) removeSpot(spot.id);
-    else saveSpot(spot);
+  const handleSaveToggle = (card: DecisionCardViewModel) => {
+    if (isSaved(card.spotId)) removeSpot(card.spotId);
+    else saveSpot(card.spot);
+  };
+
+  const handleStartOver = () => {
+    x.set(0);
+    controls.set({ x: 0, opacity: 1 });
+    setCurrentIndex(0);
   };
 
   if (activeSpots.length === 0) {
@@ -84,7 +90,7 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
           There are no more venues matching your filters in this area. Try a different vibe or budget.
         </p>
         <button 
-          onClick={() => setCurrentIndex(0)}
+          onClick={handleStartOver}
           className="text-brand-green font-bold text-sm uppercase tracking-wider border-2 border-brand-green px-6 py-3 rounded-full hover:bg-brand-green/10 transition-colors"
         >
           Start Over
@@ -109,7 +115,7 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
         </motion.div>
       )}
 
-      {activeSpots.map((spot, index) => {
+      {activeSpots.map((card, index) => {
         const isTop = index === 0;
         
         // Only render the top 3 cards for performance
@@ -117,7 +123,7 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
 
         return (
           <motion.div
-            key={spot.id}
+            key={card.spotId}
             className="absolute inset-0 origin-bottom will-change-transform"
             style={{
               zIndex: spots.length - index,
@@ -160,10 +166,10 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
 
             <div className="w-full h-full pointer-events-none [&_button]:pointer-events-auto [&_a]:pointer-events-auto">
               <VenueCard 
-                spot={spot} 
+                card={card} 
                 slug={slug}
-                isSaved={isSaved(spot.id)}
-                onSaveToggle={handleSaveToggle}
+                isSaved={isSaved(card.spotId)}
+                onSaveToggle={() => handleSaveToggle(card)}
                 budget={budget}
                 vibe={vibe}
                 squadCount={squadCount}
