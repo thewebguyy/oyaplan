@@ -2,25 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { 
-  User, 
-  Bookmark, 
-  ArrowRight, 
-  ShieldCheck, 
-  Sparkles, 
-  Copy, 
-  Check, 
-  LogOut, 
-  Sliders, 
-  Share2, 
-  Users, 
-  Wallet, 
-  Smile,
+import {
+  User,
+  Bookmark,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  Copy,
+  Check,
+  LogOut,
+  Share2,
   Headphones,
   Mail,
   Lock,
   Star,
-  Quote
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -34,16 +29,6 @@ interface AccountClientProps {
   referralCode: string | null;
 }
 
-const BUDGET_OPTIONS = [20000, 35000, 50000, 100000];
-const SQUAD_OPTIONS = [2, 3, 4, 6];
-const VIBE_OPTIONS = [
-  { id: "date-night", label: "Date Night", emoji: "🍷" },
-  { id: "squad-linkup", label: "Squad Linkup", emoji: "🍻" },
-  { id: "brunch", label: "Sunday Brunch", emoji: "🥞" },
-  { id: "quick-bites", label: "Quick Bites", emoji: "🍔" },
-  { id: "nightlife", label: "Nightlife & Drinks", emoji: "🪩" }
-];
-
 export default function AccountClient({
   isAuthenticated,
   profile,
@@ -52,24 +37,6 @@ export default function AccountClient({
 }: AccountClientProps) {
   const { signOut, openModal } = useAuth();
   const [copied, setCopied] = useState(false);
-
-  // Preference States (loaded from localStorage using lazy initializers)
-  const [budget, setBudget] = useState<number>(() => {
-    if (typeof window === "undefined") return 50000;
-    const saved = localStorage.getItem("oyaplan_pref_budget");
-    return saved ? parseInt(saved, 10) : 50000;
-  });
-
-  const [squadSize, setSquadSize] = useState<number>(() => {
-    if (typeof window === "undefined") return 2;
-    const saved = localStorage.getItem("oyaplan_pref_squad");
-    return saved ? parseInt(saved, 10) : 2;
-  });
-
-  const [favoriteVibe, setFavoriteVibe] = useState<string>(() => {
-    if (typeof window === "undefined") return "squad-linkup";
-    return localStorage.getItem("oyaplan_pref_vibe") || "squad-linkup";
-  });
 
   const [scoutCount] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
@@ -81,12 +48,7 @@ export default function AccountClient({
     }
   });
 
-  const handleSavePreferences = () => {
-    localStorage.setItem("oyaplan_pref_budget", budget.toString());
-    localStorage.setItem("oyaplan_pref_squad", squadSize.toString());
-    localStorage.setItem("oyaplan_pref_vibe", favoriteVibe);
-    toast.success("Outing preferences saved! These will auto-fill on your next plan.");
-  };
+  const isScoutOrAdmin = profile?.role === 'scout' || profile?.role === 'admin';
 
   const inviteLink = typeof window !== "undefined" && referralCode 
     ? `${window.location.origin}/?ref=${referralCode}` 
@@ -330,18 +292,20 @@ export default function AccountClient({
             <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-brand-green transition-colors" />
           </Link>
 
-          <Link href="/scout" className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                <Sparkles className="w-5 h-5" />
+          {isScoutOrAdmin && (
+            <Link href="/scout" className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="type-label text-text-primary group-hover:text-purple-600 transition-colors">Scout Dashboard</h3>
+                  <p className="type-caption text-text-muted">Verify menu prices & earn OyaScore XP</p>
+                </div>
               </div>
-              <div>
-                <h3 className="type-label text-text-primary group-hover:text-purple-600 transition-colors">Scout Dashboard</h3>
-                <p className="type-caption text-text-muted">Verify menu prices & earn OyaScore XP</p>
-              </div>
-            </div>
-            <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-purple-600 transition-colors" />
-          </Link>
+              <ArrowRight className="w-5 h-5 text-text-muted group-hover:text-purple-600 transition-colors" />
+            </Link>
+          )}
         </div>
 
         {/* 8. Sign Out Section */}

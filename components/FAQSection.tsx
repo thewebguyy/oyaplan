@@ -7,48 +7,64 @@ interface FAQItem {
   id: string;
   question: string;
   answer: string;
+  color: string;
 }
+
+const PRODUCT_COLORS = [
+  "var(--pastel-cream)",
+  "var(--pastel-yellow)",
+  "var(--pastel-blue)",
+  "var(--pastel-pink)",
+];
 
 const FAQ_ITEMS: FAQItem[] = [
   {
     id: "accuracy",
     question: "How accurate is the pricing?",
     answer: "We verify every menu and check real Uber fares daily. Pricing is exact to the naira. No markup, no hidden fees. What you see is what you'll pay.",
+    color: PRODUCT_COLORS[0],
   },
   {
     id: "modify",
     question: "Can I modify a saved plan?",
     answer: "Yes. You can change squad size, vibe, and budget anytime. Your saved plans update instantly. No need to start over.",
+    color: PRODUCT_COLORS[1],
   },
   {
     id: "squad-size",
     question: "How many people can I plan for?",
     answer: "You can plan for 2–8+ people. The planner adjusts transport costs and venue recommendations based on group size.",
+    color: PRODUCT_COLORS[2],
   },
   {
     id: "venue-closes",
     question: "What if a venue closes or changes prices?",
     answer: "We monitor venue status in real-time. If a spot closes or changes prices, we alert you and suggest alternatives in your budget.",
+    color: PRODUCT_COLORS[3],
   },
   {
     id: "invite",
     question: "Can I invite friends to a saved plan?",
     answer: "Absolutely. Share your saved plan with friends via link. They can see the full breakdown and join in with one tap.",
+    color: PRODUCT_COLORS[0],
   },
   {
     id: "free",
     question: "Is OyaPlan free?",
     answer: "Planning is completely free. We make money later when you make reservations or book transport. For now, transparency is free.",
+    color: PRODUCT_COLORS[1],
   },
   {
     id: "coverage",
     question: "Which areas of Lagos do you cover?",
     answer: "We currently cover Ikeja, VI, Yaba, Lekki, Surulere, and Ikoyi. More areas coming soon. Check the Explore section to see what's available near you.",
+    color: PRODUCT_COLORS[2],
   },
   {
     id: "promos",
     question: "Do you include ladies' nights and promo prices?",
     answer: "Yes. We include verified ladies' nights, promo prices, and happy hour rates. Pricing updates daily so you always get the best deals.",
+    color: PRODUCT_COLORS[3],
   },
 ];
 
@@ -103,6 +119,7 @@ export default function FAQSection() {
                   aria-labelledby={`faq-tab-${item.id}`}
                   aria-live="polite"
                   className={`faq-answer ${isActive ? "active" : ""}`}
+                  style={{ backgroundColor: item.color }}
                 >
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-brand-green font-bold text-lg" aria-hidden="true">✓</span>
@@ -153,7 +170,7 @@ export default function FAQSection() {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       style={{ overflow: "hidden" }}
                     >
-                      <div className="p-4 bg-pastel-yellow border-t border-border-default">
+                      <div className="p-4 border-t border-border-default" style={{ backgroundColor: item.color }}>
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-brand-green font-bold text-base" aria-hidden="true">✓</span>
                           <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">

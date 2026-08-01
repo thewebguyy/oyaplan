@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 import ErrorBanner from "@/components/ErrorBanner";
-import ExperienceCollections from "@/components/ExperienceCollections";
-import RecentlyVerified from "@/components/RecentlyVerified";
 import HeroSection from "@/components/HeroSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
@@ -27,35 +25,19 @@ export default async function LandingPage() {
         <ErrorBanner />
       </Suspense>
 
-      {/* Redesigned Hero Section (incorporates sequential narrative panels and interactive sliders) */}
+      {/* Hero Section */}
       <HeroSection spots={spots} />
 
-      {/* Founder Story Narrative Section (position #2 in layout: post-planner, pre-how-it-works) */}
+      {/* Founder Story Narrative Section */}
       <FounderStorySection />
 
       {/* How OyaPlan Works Section */}
       <HowItWorksSection />
 
-      {/* ── CHAPTER 2: Collections — full-bleed ── */}
-      <section className="section-exciting w-full py-16 sm:py-20">
-        <div className="max-w-5xl mx-auto px-4">
-          <ExperienceCollections />
-        </div>
-      </section>
-
-      {/* ── CHAPTER 4: Recently Verified ── */}
-      <section className="section-trustworthy w-full py-16 sm:py-20">
-        <div className="max-w-4xl mx-auto px-4">
-          <Suspense fallback={null}>
-            <RecentlyVerified />
-          </Suspense>
-        </div>
-      </section>
-
       {/* FAQ Section */}
       <FAQSection />
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <Footer />
     </main>
   );
