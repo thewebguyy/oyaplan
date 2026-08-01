@@ -1,3 +1,5 @@
+import { PLANNING_AREAS } from "@/lib/location/data/lagos_locations";
+
 export interface Location {
   id: string;
   name: string;
@@ -39,50 +41,14 @@ export interface AreaDistance {
 
 const STORAGE_KEY = "oyaplan_user_location";
 
-const VERIFIED_AREAS: Location[] = [
-  {
-    id: "lekki-phase-1",
-    name: "Lekki Phase 1",
-    area: "Lekki Phase 1",
-    coordinates: { lat: 6.4474, lng: 3.4723 },
-    alias: ["lekki", "lekki phase 1", "lekki 1", "admiralty"],
-  },
-  {
-    id: "yaba",
-    name: "Yaba",
-    area: "Yaba",
-    coordinates: { lat: 6.5095, lng: 3.3711 },
-    alias: ["yaba", "sabo", "akoka", "unilag"],
-  },
-  {
-    id: "ikeja",
-    name: "Ikeja",
-    area: "Ikeja",
-    coordinates: { lat: 6.6018, lng: 3.3515 },
-    alias: ["ikeja", "allen", "gra ikeja", "alausa"],
-  },
-  {
-    id: "vi",
-    name: "Victoria Island",
-    area: "Victoria Island",
-    coordinates: { lat: 6.4281, lng: 3.4219 },
-    alias: ["vi", "victoria island"],
-  },
-  {
-    id: "ikoyi",
-    name: "Ikoyi",
-    area: "Ikoyi",
-    coordinates: { lat: 6.4549, lng: 3.4347 },
-    alias: ["ikoyi", "banana island", "falomo"],
-  },
-  {
-    id: "surulere",
-    name: "Surulere",
-    area: "Surulere",
-    coordinates: { lat: 6.4969, lng: 3.354 },
-    alias: ["surulere", "ojuelegba", "bode thomas"],
-  },
-];
+// Consumed from the canonical data file — do not duplicate coordinates here.
+const VERIFIED_AREAS: Location[] = PLANNING_AREAS.map((a) => ({
+  id: a.id,
+  name: a.name,
+  area: a.name,
+  coordinates: a.coordinates,
+  alias: a.alias,
+}));
 
 export class LocationService {
   // 1. Get all verified canonical areas (6 areas)

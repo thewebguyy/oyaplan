@@ -1,17 +1,17 @@
 import { Coordinates } from "../location/types";
 import { TravelEstimate, TravelEstimator } from "./types";
-import { LocationService } from "@/lib/services/LocationService";
+import { LocationService as LocationDataService } from "@/lib/services/LocationService";
 import { calculateZoneFare } from "@/lib/planning/transport";
-import { OriginResolver } from "../location/LocationService";
+import { LocationService } from "../location/LocationService";
 
 export class MatrixTravelEstimator implements TravelEstimator {
   estimateTravel(origin: Coordinates, destination: Coordinates): TravelEstimate {
     // 1. Calculate distance via Haversine
-    const distanceKm = LocationService.calculateDistance(origin, destination);
+    const distanceKm = LocationDataService.calculateDistance(origin, destination);
 
-    // 2. Resolve closest areas for transport cost lookup
-    const originArea = OriginResolver.getClosestArea(origin);
-    const destinationArea = OriginResolver.getClosestArea(destination);
+    // 2. Resolve closest planning areas for transport cost lookup
+    const originArea = LocationService.getClosestPlanningArea(origin);
+    const destinationArea = LocationService.getClosestPlanningArea(destination);
     const transportCost = calculateZoneFare(originArea.id, destinationArea.id);
 
     // 3. Compute ETA

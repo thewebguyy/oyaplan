@@ -79,7 +79,7 @@ export default function PlannerWidget({
   });
 
   const selectedArea = controlledArea !== undefined ? controlledArea : internalArea;
-  const { origin, status, requestCurrentLocation, setManualOrigin, unsupportedAreaName, unsupportedAreaSlug, resetStatus } = useOrigin();
+  const { origin, status, requestCurrentLocation, setManualOrigin, resetStatus } = useOrigin();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function PlannerWidget({
   useTransportCost({
     userLocation: origin ? {
       id: origin.planningAreaSlug,
-      name: origin.resolvedName,
+      name: origin.displayArea.name,
       coordinates: origin.gpsCoordinates || selectedArea?.coordinates || { lat: 6.4474, lng: 3.4723 },
       type: origin.source === "gps" ? "current" as const : "saved" as const
     } : (selectedArea ? {
@@ -186,7 +186,7 @@ export default function PlannerWidget({
       noValidate
     >
       <AnimatePresence>
-        {status === "unsupported" && unsupportedAreaName && unsupportedAreaSlug && (
+        {status === "unsupported" && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -201,26 +201,17 @@ export default function PlannerWidget({
                 We don&apos;t support your area yet
               </h3>
               <p className="text-xs text-text-muted max-w-[280px] leading-relaxed">
-                OyaPlan currently covers active zones in Lagos. The nearest supported area to you is <strong className="text-text-primary">{unsupportedAreaName}</strong>.
+                OyaPlan currently operates in Lagos. Select an area manually to start planning.
               </p>
             </div>
 
             <div className="flex flex-col gap-2 w-full max-w-[240px]">
               <button
                 type="button"
-                onClick={() => {
-                  setManualOrigin(unsupportedAreaSlug);
-                }}
+                onClick={resetStatus}
                 className="w-full bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-xs cursor-pointer"
               >
-                Plan from {unsupportedAreaName}
-              </button>
-              <button
-                type="button"
-                onClick={resetStatus}
-                className="w-full bg-surface-grey border border-border-default/80 hover:bg-[#E5E7EB] text-text-primary text-xs font-bold py-2.5 px-4 rounded-xl transition-all cursor-pointer"
-              >
-                Choose another area
+                Choose an area
               </button>
             </div>
           </motion.div>
@@ -234,8 +225,8 @@ export default function PlannerWidget({
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280]">
-              {status === "gps" && selectedArea 
-                ? `📍 Near ${selectedArea.name}` 
+              {status === "gps" && origin
+                ? `📍 Current location: ${origin.displayArea.name}`
                 : `📍 Starting Location${mounted && selectedArea ? ` (${selectedArea.name})` : ""}`}
             </label>
             <button
@@ -277,6 +268,16 @@ export default function PlannerWidget({
               );
             })}
           </div>
+
+          {/* Planning area transparency notice — only shown when display location differs from planning area */}
+          {status === "gps" && origin && origin.displayArea.slug !== origin.planningAreaSlug && (
+            <p className="text-[10px] text-text-muted leading-relaxed">
+              Recommendations are based on our current coverage area:{" "}
+              <span className="font-bold text-text-secondary">
+                {LocationService.getVerifiedAreas().find((a) => a.id === origin.planningAreaSlug)?.name ?? origin.planningAreaSlug}
+              </span>.
+            </p>
+          )}
         </div>
 
         {/* INPUT: Squad Size Slider */}

@@ -1,10 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Origin, LocationStatus, Coordinates } from "./types";
+import { Origin, LocationStatus } from "./types";
 import { OriginStore } from "../storage/OriginStore";
 import { OriginPolicy } from "./OriginPolicy";
-import { BrowserLocationService, OriginResolver } from "./LocationService";
+import { BrowserLocationService, LocationService } from "./LocationService";
 
 export interface OriginContextType {
   origin: Origin | null;
@@ -12,8 +12,6 @@ export interface OriginContextType {
   requestCurrentLocation(): Promise<void>;
   setManualOrigin(slug: string): void;
   clearOrigin(): void;
-  unsupportedAreaName: string | null;
-  unsupportedAreaSlug: string | null;
   resetStatus(): void;
 }
 
@@ -22,8 +20,6 @@ const OriginContext = createContext<OriginContextType | undefined>(undefined);
 export function OriginProvider({ children }: { children: React.ReactNode }) {
   const [origin, setOriginState] = useState<Origin | null>(null);
   const [status, setStatus] = useState<LocationStatus>("idle");
-  const [unsupportedAreaName, setUnsupportedAreaName] = useState<string | null>(null);
-  const [unsupportedAreaSlug, setUnsupportedAreaSlug] = useState<string | null>(null);
 
   useEffect(() => {
     const envelope = OriginStore.loadOrigin();
@@ -39,24 +35,22 @@ export function OriginProvider({ children }: { children: React.ReactNode }) {
 
   const requestCurrentLocation = async () => {
     setStatus("locating");
-    setUnsupportedAreaName(null);
-    setUnsupportedAreaSlug(null);
     try {
       const coords = await BrowserLocationService.getCurrentCoordinates();
-      const gpsOrigin = OriginResolver.resolveGPSOrigin(coords);
-      if (!gpsOrigin) {
-        const closest = OriginResolver.getClosestArea(coords);
-        setUnsupportedAreaName(closest.name);
-        setUnsupportedAreaSlug(closest.id);
+      const resolution = LocationService.resolve(coords);
+
+      if (resolution.status === "outside-service-area") {
         setStatus("unsupported");
         return;
       }
-      OriginStore.saveOrigin(gpsOrigin);
-      setOriginState(gpsOrigin);
+
+      OriginStore.saveOrigin(resolution.origin);
+      setOriginState(resolution.origin);
       setStatus("gps");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("GPS Request Failed:", err);
-      if (err?.code === 1 || err?.message?.toLowerCase().includes("denied")) {
+      const geolocationErr = err as GeolocationPositionError;
+      if (geolocationErr?.code === 1) {
         setStatus("permission-denied");
       } else {
         setStatus("error");
@@ -65,26 +59,20 @@ export function OriginProvider({ children }: { children: React.ReactNode }) {
   };
 
   const setManualOrigin = (slug: string) => {
-    const manualOrigin = OriginResolver.resolveManualOrigin(slug);
+    const manualOrigin = LocationService.resolveManualOrigin(slug);
     OriginStore.saveOrigin(manualOrigin);
     setOriginState(manualOrigin);
     setStatus("manual");
-    setUnsupportedAreaName(null);
-    setUnsupportedAreaSlug(null);
   };
 
   const clearOrigin = () => {
     OriginStore.clearOrigin();
     setOriginState(null);
     setStatus("idle");
-    setUnsupportedAreaName(null);
-    setUnsupportedAreaSlug(null);
   };
 
   const resetStatus = () => {
     setStatus("idle");
-    setUnsupportedAreaName(null);
-    setUnsupportedAreaSlug(null);
   };
 
   return (
@@ -95,8 +83,6 @@ export function OriginProvider({ children }: { children: React.ReactNode }) {
         requestCurrentLocation,
         setManualOrigin,
         clearOrigin,
-        unsupportedAreaName,
-        unsupportedAreaSlug,
         resetStatus,
       }}
     >
