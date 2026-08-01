@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { AREAS } from "@/lib/config/areas";
 
 type TimeOfDay = "morning" | "afternoon" | "golden-hour" | "night";
 
@@ -11,21 +10,18 @@ export default function LivingLagosScene() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("afternoon");
-  
+  const [timeOfDay] = useState<TimeOfDay>(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 11) return "morning";
+    if (hour >= 11 && hour < 16) return "afternoon";
+    if (hour >= 16 && hour < 19) return "golden-hour";
+    return "night";
+  });
+
   const zoneParam = searchParams.get("zone");
   const activeSlug = pathname === "/explore" 
     ? (zoneParam || null) 
     : pathname.replace("/explore/", "");
-
-  useEffect(() => {
-    // Living City System: Set temporal state based on local time
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 11) setTimeOfDay("morning");
-    else if (hour >= 11 && hour < 16) setTimeOfDay("afternoon");
-    else if (hour >= 16 && hour < 19) setTimeOfDay("golden-hour");
-    else setTimeOfDay("night");
-  }, []);
 
   const handleAreaClick = (slug: string, isActive: boolean) => {
     if (!isActive) return;

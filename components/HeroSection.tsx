@@ -33,6 +33,8 @@ const PHRASES = [
 ];
 
 import { LocationService, Location } from "@/lib/services/LocationService";
+import { PlanningEngineV1, createPlanningContext } from "@/lib/planning/planningEngine";
+import { PlanningRequest } from "@/lib/planning/types";
 
 export default function HeroSection({ spots }: HeroSectionProps) {
   // Shared state coordinated between inputs and live preview
@@ -40,16 +42,14 @@ export default function HeroSection({ spots }: HeroSectionProps) {
   const [budget, setBudget] = useState<number>(50000);
   const [vibe, setVibe] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState<Location | null>(() => {
-    // SSR-safe default
+    if (typeof window !== "undefined") {
+      const saved = LocationService.getUserLocation();
+      if (saved) {
+        return LocationService.getNearestArea(saved);
+      }
+    }
     return LocationService.getVerifiedAreas()[0];
   });
-
-  useEffect(() => {
-    const saved = LocationService.getUserLocation();
-    if (saved) {
-      setSelectedArea(LocationService.getNearestArea(saved));
-    }
-  }, []);
 
   const [phraseIndex, setPhraseIndex] = useState(0);
 
@@ -60,87 +60,29 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     return () => clearInterval(interval);
   }, []);
 
-  // Client-side deterministic recommendation matching engine
+  // Client-side recommendation using the unified Planning Engine
   const recommendedSpots = useMemo(() => {
     const activeSpots = (spots && spots.length > 0)
       ? spots.filter((s) => s.active)
-      : [DEFAULT_FALLBACK_SPOT];
+      : [];
 
     if (activeSpots.length === 0) return [DEFAULT_FALLBACK_SPOT];
 
-    // Transport cost rules: Solo planning -> 0; Groups 2-4 -> ₦5k; Groups 5+ -> ₦10k
-    const transportEstimate = squadSize === 1 ? 0 : squadSize > 4 ? 10000 : 5000;
+    const request: PlanningRequest = {
+      startArea: selectedArea?.id || "lekki-phase-1",
+      squadSize,
+      budget,
+      vibe: vibe || "chill",
+      pinnedSpotId: undefined,
+      categoryGroup: undefined,
+      daypart: undefined
+    };
 
-    const scoredSpots = activeSpots.map((spot) => {
-      // Score 0: Location Match Boost
-      let areaScore = 0;
-      if (selectedArea) {
-        const areaId = selectedArea.id.toLowerCase();
-        const spotArea = (spot.area_id || spot.address_slug || spot.address || "").toLowerCase();
-        if (spotArea.includes(areaId) || areaId.includes(spotArea)) {
-          areaScore = 150;
-        }
-      }
-      const foodCost = (spot.price_per_person || 12000) * squadSize;
-      const taxCost = foodCost * 0.1;
-      const totalCost = foodCost + transportEstimate + taxCost;
+    const context = createPlanningContext(request);
+    const plans = PlanningEngineV1(context, activeSpots);
+    const topSpots = plans.slice(0, 3).map((p) => p.spot);
 
-      // Score 1: Vibe Match
-      let vibeScore = 0;
-      if (vibe) {
-        const matchTags = (spot.vibe_tags || []).map((t) => t.toLowerCase());
-        const vibeLower = vibe.toLowerCase();
-
-        if (
-          vibeLower === "dinner" &&
-          (matchTags.includes("dinner") || matchTags.includes("romantic") || matchTags.includes("date") || matchTags.includes("fine dining"))
-        ) {
-          vibeScore = 50;
-        } else if (
-          vibeLower === "chill" &&
-          (matchTags.includes("chill") || matchTags.includes("group") || matchTags.includes("squad") || matchTags.includes("linkup") || matchTags.includes("lounge"))
-        ) {
-          vibeScore = 50;
-        } else if (
-          vibeLower === "party" &&
-          (matchTags.includes("party") || matchTags.includes("celebration") || matchTags.includes("turn up") || matchTags.includes("club"))
-        ) {
-          vibeScore = 50;
-        } else if (
-          vibeLower === "quick" &&
-          (matchTags.includes("quick") || matchTags.includes("bites") || matchTags.includes("cafe") || matchTags.includes("express") || matchTags.includes("brunch"))
-        ) {
-          vibeScore = 50;
-        } else if (
-          vibeLower === "foodie" &&
-          (matchTags.includes("foodie") || matchTags.includes("restaurant") || matchTags.includes("chop"))
-        ) {
-          vibeScore = 50;
-        } else if (
-          vibeLower === "brunch" &&
-          (matchTags.includes("brunch") || matchTags.includes("garden") || matchTags.includes("nature"))
-        ) {
-          vibeScore = 50;
-        }
-      }
-
-      // Score 2: Budget Fit (prefer close matches under budget, penalize overshoot)
-      let budgetScore = 0;
-      if (totalCost <= budget) {
-        budgetScore = 50 * (totalCost / budget);
-      } else {
-        budgetScore = -200 * ((totalCost - budget) / budget);
-      }
-
-      const totalScore = areaScore + vibeScore + budgetScore;
-      return { spot, score: totalScore };
-    });
-
-    // Sort by score descending and take top 3
-    scoredSpots.sort((a, b) => b.score - a.score);
-    const top3 = scoredSpots.slice(0, 3).map(s => s.spot);
-    
-    return top3.length > 0 ? top3 : [DEFAULT_FALLBACK_SPOT];
+    return topSpots.length > 0 ? topSpots : [DEFAULT_FALLBACK_SPOT];
   }, [spots, squadSize, budget, vibe, selectedArea]);
 
   return (

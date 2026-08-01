@@ -3,6 +3,7 @@ import { supabase } from '../../supabase';
 import { BudgetPolicy } from './budgetPolicy';
 import { PlanningEngineV1, createPlanningContext } from '../../planning/planningEngine';
 import { DefaultRecoveryEngine } from '../../planning/recoveryEngine';
+import { calculateZoneFare } from '../../planning/transport';
 
 // Re-export common utilities so existing files/tests don't break
 export { calculateZoneFare } from '../../planning/transport';
@@ -70,7 +71,7 @@ export function getPrimaryAreaMatches(input: ForgeInput, allSpots: Spot[]): Plan
 export function getAdjacentZoneMatches(
   input: ForgeInput,
   allSpots: Spot[],
-  primaryPlans: Plan[] = []
+  _primaryPlans: Plan[] = []
 ): Plan[] {
   const request = {
     startArea: input.startArea,
@@ -155,7 +156,6 @@ export function getAvailableOptions(
   };
 
   const maxRatio = BudgetPolicy.maxTransportBudgetRatio;
-  const { calculateZoneFare } = require('../../planning/transport');
 
   // 1. Evaluate Area recommendation based on budget
   if (budget !== undefined) {

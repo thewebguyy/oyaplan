@@ -1,5 +1,5 @@
 import { Spot } from '../types';
-import { PlanningContext, ExplainedPlan, CandidateEngine, CostEngine, ConstraintEngine, RankingEngine, ExplainabilityEngine } from './types';
+import { PlanningContext, ExplainedPlan, CandidateEngine, CostEngine, ConstraintEngine, RankingEngine, ExplainabilityEngine, PlanningRequest } from './types';
 import { DefaultCandidateEngine } from './candidateEngine';
 import { DefaultCostEngine } from './costEngine';
 import { DefaultConstraintEngine } from './constraintEngine';
@@ -34,7 +34,7 @@ export function PlanningEngineV1(
 }
 
 export function createPlanningContext(
-  request: any,
+  request: PlanningRequest,
   rankingConfig = DEFAULT_RANKING_CONFIG_V1,
   transportProvider = new MatrixTransportProvider()
 ): PlanningContext {

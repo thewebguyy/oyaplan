@@ -34,7 +34,7 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
 
   const activeSpots = spots.slice(currentIndex);
 
-  const handleDragEnd = async (e: any, info: PanInfo) => {
+  const handleDragEnd = async (e: unknown, info: PanInfo) => {
     const threshold = 100;
     const swipeVelocity = 500;
     
@@ -92,7 +92,7 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
         </div>
-        <h3 className="text-xl font-black text-text-primary mb-2">You've seen them all!</h3>
+        <h3 className="text-xl font-black text-text-primary mb-2">You&apos;ve seen them all!</h3>
         <p className="text-text-muted text-sm mb-6 max-w-[280px]">
           There are no more venues matching your filters in this area. Try a different vibe or budget.
         </p>
