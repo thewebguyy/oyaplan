@@ -178,6 +178,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
       <div className="flex-1 w-full flex items-center justify-center pb-12 z-10">
         <VenueCardStack 
           spots={viewModels} 
+          rawSpots={area.spots}
           slug={slug} 
           budget={budget || undefined} 
           vibe={vibe || undefined} 

@@ -158,6 +158,8 @@ export class DefaultExplainabilityEngine implements ExplainabilityEngine {
       const decisionSummary = formatDecisionSummary(mockPlan, { budget, squadSize: context.request.squadSize, vibe, daypart: context.request.daypart });
       const decisionConfidence = evaluateDecisionConfidence(spot, transportCost);
 
+      const budgetRemaining = budget - totalCost;
+
       return {
         ...plan,
         whyItFits,
@@ -167,7 +169,8 @@ export class DefaultExplainabilityEngine implements ExplainabilityEngine {
         decisionSummary,
         explanation,
         isAdjacentZoneSuggestion: isAdjacent,
-        travelInfo
+        travelInfo,
+        budgetRemaining
       };
     });
   }

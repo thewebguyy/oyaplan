@@ -1,4 +1,8 @@
-import { Spot } from "../../types";
+export interface TrustIndicator {
+  level: "high" | "medium" | "low";
+  label: string;
+  description: string;
+}
 
 export interface DecisionCardViewModel {
   title: string;
@@ -13,7 +17,6 @@ export interface DecisionCardViewModel {
   planningSummary: string;
   
   // Expose fields needed for card CTAs/badges:
-  spot: Spot;
   spotId: string;
   spotName: string;
   category: string;
@@ -23,4 +26,8 @@ export interface DecisionCardViewModel {
   areaSlug?: string;
   travelInfo?: string;
   isAdjacent?: boolean;
+
+  // Sprint 3A fields:
+  budgetRemaining: number;
+  trustIndicator: TrustIndicator;
 }

@@ -1,51 +1,20 @@
-import { Spot } from "@/lib/types";
 import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import Image from "next/image";
 import Link from "next/link";
 import { Bookmark, BookmarkCheck } from "lucide-react";
-import { TrustBadge, TrustStatus } from "@/components/ui/trust-badge";
+import { TrustBadge } from "@/components/ui/trust-badge";
 
 interface VenueCardProps {
   card: DecisionCardViewModel;
   slug: string;
   isSaved: boolean;
-  onSaveToggle: (spot: Spot) => void;
+  onSaveToggle: () => void;
   budget?: number;
   vibe?: string;
   squadCount: number;
 }
 
 export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squadCount }: VenueCardProps) {
-  const { spot } = card;
-
-  function getFreshnessText(updatedAt: string | undefined): string {
-    if (!updatedAt) return "not yet dated";
-    const daysAgo = Math.floor(
-      (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (daysAgo === 0) return "verified today";
-    if (daysAgo === 1) return "yesterday";
-    if (daysAgo < 7) return `${daysAgo}d ago`;
-    if (daysAgo < 30) return `${Math.floor(daysAgo / 7)}w ago`;
-    if (daysAgo < 365) return `${Math.floor(daysAgo / 30)}mo ago`;
-    return "over a year ago";
-  }
-
-  function deriveTrustStatus(spot: Spot): TrustStatus {
-    if (spot.verified_by && spot.price_updated_at) {
-      const daysAgo = Math.floor(
-        (Date.now() - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (daysAgo <= 90) return "verified";
-      return "estimated";
-    }
-    if (spot.computed_confidence_score !== undefined) {
-      if (spot.computed_confidence_score >= 75) return "verified";
-      if (spot.computed_confidence_score >= 40) return "estimated";
-    }
-    return "pending";
-  }
-
   const spotAreaSlug = card.areaSlug || slug;
   const forgeParams = new URLSearchParams();
   forgeParams.append("area", spotAreaSlug);
@@ -63,37 +32,33 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
 
   forgeParams.append("vibe",
     VIBE_TO_URL[vibe ?? ""] ??
-    VIBE_TO_URL[spot.vibe_tags?.[0] ?? ""] ??
     "chill"
   );
   forgeParams.append("budget", budget ? budget.toString() : "50000");
   forgeParams.append("squad", squadCount.toString());
   forgeParams.append("fresh", "true");
 
-  // Vibe colors
-  const vibeColors: Record<string, string> = {
-    "date-night": "#E91E63",
-    "squad-linkup": "#008751",
-    "birthday": "#FFD700",
-    "quick-bites": "#FF6F00",
-    "brunch": "#4CAF50",
-    "drinks": "#9C27B0",
-    "solo": "#2196F3",
-    "family": "#00BCD4",
-    "adventure": "#FF5722",
-    "nightlife": "#424242",
+  // Category-based colors for badges
+  const categoryColors: Record<string, string> = {
+    restaurant: "#008751",
+    bar: "#9C27B0",
+    cafe: "#4CAF50",
+    activity: "#FF5722",
+    entertainment: "#AB47BC",
+    experience: "#E91E63",
+    nature: "#2196F3",
+    beach: "#00BCD4"
   };
 
-  const vibeColor = (spot.vibe_tags && spot.vibe_tags[0] && vibeColors[spot.vibe_tags[0]]) || "#008751";
-  const rating = spot.computed_confidence_score ? (spot.computed_confidence_score / 20).toFixed(1) : "4.5"; // Dummy conversion for now
+  const badgeColor = categoryColors[card.category] || "#008751";
 
   return (
     <div className="w-full h-full max-w-[420px] mx-auto bg-white rounded-3xl overflow-hidden shadow-2xl border border-border-default flex flex-col relative select-none">
       {/* Full bleed image area (60% height) */}
       <div className="relative h-[55%] w-full bg-surface-grey">
-        {spot.image_url ? (
+        {card.heroImage ? (
           <Image
-            src={spot.image_url}
+            src={card.heroImage}
             alt={card.spotName}
             fill
             sizes="(max-width: 420px) 100vw, 420px"
@@ -120,15 +85,15 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
         
         <div className="absolute top-4 inset-x-4 flex justify-between items-start z-10 pointer-events-none">
           <span 
-            className="text-white text-[10px] font-extrabold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm"
-            style={{ backgroundColor: vibeColor }}
+            className="text-white text-[10px] font-extrabold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm capitalize"
+            style={{ backgroundColor: badgeColor }}
           >
-            {spot.vibe_tags?.[0] || card.category || 'Vibe'}
+            {card.category || 'Vibe'}
           </span>
           <div className="pointer-events-auto">
             <TrustBadge
-              status={deriveTrustStatus(spot)}
-              freshnessText={getFreshnessText(spot.price_updated_at)}
+              status={card.trustIndicator.level === 'high' ? 'verified' : card.trustIndicator.level === 'medium' ? 'estimated' : 'pending'}
+              freshnessText={card.verification}
               size="sm"
               className="shadow-md backdrop-blur-md bg-white/90 text-black border-none"
             />
@@ -139,28 +104,63 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
       {/* Info area (45% height) */}
       <div className="flex flex-col flex-1 p-6 justify-between bg-white">
         <div>
-          <div className="flex justify-between items-start mb-2">
-            <h2 className="text-2xl font-black text-text-primary uppercase leading-tight line-clamp-2">
+          <div className="mb-2">
+            <h2 className="text-2xl font-black text-text-primary uppercase leading-tight line-clamp-1">
               {card.spotName}
             </h2>
+            <p className="text-xs text-text-muted mt-0.5 line-clamp-1">{card.address}</p>
+          </div>
+
+          {/* Pricing Highlight Section */}
+          <div className="flex justify-between items-end mb-4 pt-2">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Estimated Total</span>
+              <div className="text-3xl font-black text-[#008751]">
+                ₦{card.totalCost.toLocaleString('en-NG')}
+              </div>
+            </div>
+            {budget && (
+              <div className="text-right">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Remaining</span>
+                <div className="text-sm font-extrabold text-midnight-lagoon">
+                  ₦{card.budgetRemaining.toLocaleString('en-NG')} left
+                </div>
+              </div>
+            )}
           </div>
           
-          <p className="text-sm text-text-muted mb-4 line-clamp-1">{card.address}</p>
-          
-          <div className="flex items-center gap-3 text-sm text-text-muted font-medium mb-4">
-            <div className="flex items-center gap-1 text-text-primary">
-              <span className="text-brand-green font-bold text-lg">₦{card.pricePerPerson.toLocaleString('en-NG')}</span>
-              <span className="text-[10px] uppercase tracking-wider text-text-muted">/ person</span>
+          {/* Cost Breakdown */}
+          <div className="border-t border-b border-border-default/50 py-3 mb-4 space-y-1.5">
+            <div className="flex justify-between text-xs font-bold text-text-secondary">
+              <span>Venue ({squadCount} people)</span>
+              <span>₦{card.venueCost.toLocaleString('en-NG')}</span>
             </div>
-            <span className="w-1 h-1 rounded-full bg-border-default" />
-            <div className="flex items-center gap-1">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFC107" stroke="none">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
-              <span>{rating}</span>
+            <div className="flex justify-between text-xs font-bold text-text-secondary">
+              <span>Estimated Transport</span>
+              <span>₦{card.transportCost.toLocaleString('en-NG')}</span>
             </div>
-            <span className="w-1 h-1 rounded-full bg-border-default" />
-            <span>~2.4km</span>
+          </div>
+
+          {/* Trust and Why It Fits Context */}
+          <div className="space-y-2 mb-4">
+            <p className="text-xs font-bold text-text-primary flex items-start gap-1.5">
+              <span className="text-[#008751] font-black shrink-0">✓</span>
+              <span>{card.whyItFits}</span>
+            </p>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              <span className="px-2.5 py-1 bg-surface-grey border border-border-default/60 text-text-secondary rounded-full text-[10px] font-bold">
+                {card.verification}
+              </span>
+              <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                card.trustIndicator.level === 'high' 
+                  ? 'bg-[#EAFDF3] border-[#A3F3C6] text-[#0A7C3F]' 
+                  : card.trustIndicator.level === 'medium'
+                    ? 'bg-[#FFF9E6] border-[#FFE29A] text-[#B27000]'
+                    : 'bg-[#FFF0F0] border-[#FFCDCD] text-[#C72C2C]'
+              }`}>
+                {card.trustIndicator.label}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -168,7 +168,7 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
           <button
             onClick={(e) => {
               e.preventDefault();
-              onSaveToggle(spot);
+              onSaveToggle();
             }}
             aria-label={isSaved ? "Remove from saved" : "Save this spot"}
             className={`p-3 min-w-[44px] min-h-[44px] rounded-xl border-2 flex items-center justify-center transition-all ${

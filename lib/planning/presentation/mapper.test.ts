@@ -50,7 +50,8 @@ describe('DecisionCardViewModel Mapper tests', () => {
       travel_info: '18 mins from Yaba • +₦8,000 transport'
     },
     isAdjacentZoneSuggestion: false,
-    travelInfo: undefined
+    travelInfo: undefined,
+    budgetRemaining: 2000
   };
 
   it('maps ExplainedPlan to DecisionCardViewModel with exact layout consistency', () => {
@@ -64,12 +65,11 @@ describe('DecisionCardViewModel Mapper tests', () => {
       transportCost: 8000,
       totalCost: 58000,
       budgetFit: 'Fits ₦60,000 squad budget',
-      verification: 'Prices updated just now',
+      verification: 'Verified today',
       confidence: 95,
       whyItFits: 'Your squad saves ₦2,000 under budget — enough for a bottle.',
       planningSummary: 'This is our strongest recommendation. It fits your budget comfortably.',
       
-      spot: dummySpot,
       spotId: 'spot-uuid-1',
       spotName: 'Shiro Lagos',
       category: 'restaurant',
@@ -78,7 +78,13 @@ describe('DecisionCardViewModel Mapper tests', () => {
       addressSlug: 'vi',
       areaSlug: 'vi',
       travelInfo: undefined,
-      isAdjacent: false
+      isAdjacent: false,
+      budgetRemaining: 2000,
+      trustIndicator: {
+        level: 'high',
+        label: 'Very high confidence',
+        description: 'Pricing details are direct from the venue or highly vetted.'
+      }
     });
   });
 });

@@ -2,19 +2,21 @@
 
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimation, PanInfo } from "framer-motion";
+import { Spot } from "@/lib/types";
 import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import { VenueCard } from "./VenueCard";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
 
 interface VenueCardStackProps {
   spots: DecisionCardViewModel[];
+  rawSpots: Spot[];
   slug: string;
   budget?: number;
   vibe?: string;
   squadCount?: number;
 }
 
-export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: VenueCardStackProps) {
+export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount = 2 }: VenueCardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { isSaved, saveSpot, removeSpot } = useSavedSpots();
   
@@ -53,7 +55,8 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
   };
 
   const handleSwipeRight = (card: DecisionCardViewModel) => {
-    if (!isSaved(card.spotId)) saveSpot(card.spot);
+    const rawSpot = rawSpots.find(s => s.id === card.spotId);
+    if (rawSpot && !isSaved(card.spotId)) saveSpot(rawSpot);
     nextCard();
   };
 
@@ -67,8 +70,12 @@ export function VenueCardStack({ spots, slug, budget, vibe, squadCount = 2 }: Ve
   };
 
   const handleSaveToggle = (card: DecisionCardViewModel) => {
-    if (isSaved(card.spotId)) removeSpot(card.spotId);
-    else saveSpot(card.spot);
+    if (isSaved(card.spotId)) {
+      removeSpot(card.spotId);
+    } else {
+      const rawSpot = rawSpots.find(s => s.id === card.spotId);
+      if (rawSpot) saveSpot(rawSpot);
+    }
   };
 
   const handleStartOver = () => {

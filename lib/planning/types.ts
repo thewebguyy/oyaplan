@@ -60,6 +60,7 @@ export interface ExplainedPlan extends RankedPlan {
   explanation: PlanExplanation;
   isAdjacentZoneSuggestion?: boolean;
   travelInfo?: string;
+  budgetRemaining?: number;
 }
 
 // Engine Interfaces
