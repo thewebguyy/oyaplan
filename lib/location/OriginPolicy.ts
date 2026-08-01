@@ -7,7 +7,7 @@ export interface StorageEnvelope {
 
 export class OriginPolicy {
   static isValid(envelope: StorageEnvelope | null): boolean {
-    if (!envelope || !envelope.origin) return false;
+    if (!envelope || !envelope.origin || !envelope.origin.displayArea) return false;
     
     if (envelope.origin.source === "gps") {
       const elapsed = Date.now() - envelope.savedAt;

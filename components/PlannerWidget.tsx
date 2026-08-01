@@ -226,7 +226,7 @@ export default function PlannerWidget({
           <div className="flex items-center justify-between">
             <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280]">
               {status === "gps" && origin
-                ? `📍 Current location: ${origin.displayArea.name}`
+                ? `📍 Around ${origin.displayArea.name}`
                 : `📍 Starting Location${mounted && selectedArea ? ` (${selectedArea.name})` : ""}`}
             </label>
             <button
