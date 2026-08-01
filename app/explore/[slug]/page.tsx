@@ -103,6 +103,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
               const areaParams = new URLSearchParams();
               if (urlParams.budget) areaParams.append("budget", urlParams.budget);
               if (urlParams.vibe) areaParams.append("vibe", urlParams.vibe);
+              if (urlParams.squad) areaParams.append("squad", urlParams.squad);
               const href = areaParams.toString() ? `/explore/${area.slug}?${areaParams.toString()}` : `/explore/${area.slug}`;
 
               return (
@@ -155,7 +156,8 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   // Process spots with budget and vibe filters
   let filteredSpots: FilteredSpot[] = (area.spots || []).filter((s) => s.active !== false).map((spot) => {
-    const estimatedTotal = spot.price_per_person * squadCount * 1.1; // adding buffer
+    // No 1.1× buffer — derived_typical_cost already includes VAT (Phase 3A parity with Forge)
+    const estimatedTotal = spot.price_per_person * squadCount;
     const fitsBudget = budget ? estimatedTotal <= budget : true;
     const fitsVibe = vibe && spot.vibe_tags ? spot.vibe_tags.includes(vibe) : true;
     

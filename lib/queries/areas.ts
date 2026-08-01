@@ -45,6 +45,7 @@ export async function getAreaWithSpots(
       .from('areas')
       .select('*, spots(*)')
       .eq('slug', slug)
+      .eq('spots.active', true)
       .single();
     if (error) {
       if (error.code === 'PGRST116') return { data: null, error: null, notFound: true };

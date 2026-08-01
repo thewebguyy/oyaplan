@@ -44,14 +44,29 @@ export function VenueCard({ spot, slug, isSaved, onSaveToggle, budget, vibe, squ
     return "pending";
   }
 
+  // Maps internal vibe tags AND URL slugs → valid Forge URL slug (Zod-accepted)
+  const VIBE_TO_URL: Record<string, string> = {
+    "Dinner": "date-night",   "date-night": "date-night",
+    "Chill":  "chill",        "chill":       "chill",
+    "Foodie": "foodie",       "foodie":      "foodie",
+    "Party":  "party",        "party":       "party",
+    "Quick":  "quick-link",   "quick-link":  "quick-link",
+    "Brunch": "brunch",       "brunch":      "brunch",
+  };
+
   const spotAreaSlug = spot.areas?.slug || spot.address_slug || spot.zone || slug;
   const forgeParams = new URLSearchParams();
   forgeParams.append("area", spotAreaSlug);
   forgeParams.append("pinned", spot.id);
-  forgeParams.append("vibe", vibe || (spot.vibe_tags?.[0] ? spot.vibe_tags[0].toLowerCase().replace(/\s+/g, "-") : "chill"));
+  forgeParams.append("vibe",
+    VIBE_TO_URL[vibe ?? ""] ??
+    VIBE_TO_URL[spot.vibe_tags?.[0] ?? ""] ??
+    "chill"
+  );
   forgeParams.append("budget", budget ? budget.toString() : "50000");
   forgeParams.append("squad", squadCount.toString());
   forgeParams.append("fresh", "true");
+
 
   // Vibe colors
   const vibeColors: Record<string, string> = {
