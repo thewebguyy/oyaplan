@@ -152,7 +152,7 @@ export function getAllowedCategories(categoryGroup: string | undefined): string[
  */
 const ADJACENT_ZONES: Record<string, string[]> = {
   mainland: ["mainland", "central"],
-  central: ["central", "mainland", "island"],
+  central: ["central", "mainland"],
   island: ["island", "central"],
   other: ["other", "central"],
 };
