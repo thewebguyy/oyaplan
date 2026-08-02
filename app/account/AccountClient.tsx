@@ -127,45 +127,108 @@ export default function AccountClient({
             </div>
           )}
 
-          <div className="border-t border-border-default pt-6 space-y-2">
-            {!isEditing && (
-              <Button
-                onClick={() => setIsEditing(true)}
-                variant="outline"
-                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12 tap-feedback"
-              >
-                <Pencil className="w-4 h-4 mr-2" />
-                Edit Name
-              </Button>
-            )}
-            
-            <Link href="/dashboard" className="block">
-              <Button
-                variant="outline"
-                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12 tap-feedback"
-              >
-                Saved Plans
-              </Button>
-            </Link>
+        </div>
 
-            <a href="mailto:support@oyaplan.app?subject=Reporting an issue (Beta)" className="block">
-              <Button
-                variant="outline"
-                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12 tap-feedback"
-              >
-                Report an issue
-              </Button>
-            </a>
-
-            <Button
-              onClick={() => signOut()}
-              variant="outline"
-              className="w-full border-red-100 text-red-600 hover:bg-red-50 rounded-xl type-label h-12 tap-feedback"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+        {/* Support & Safety Net */}
+        <div className="bg-white border border-border-default rounded-[20px] p-5 shadow-sm flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <span className="text-sm font-bold">🎧</span>
+            </div>
+            <div>
+              <h2 className="type-label text-text-primary">Support & Safety Net</h2>
+            </div>
           </div>
+          <a
+            href="mailto:support@oyaplan.app?subject=OyaPlan%20Support%20Request"
+            className="px-4 py-2 bg-brand-green/10 border border-brand-green/30 text-brand-green rounded-lg type-caption font-bold flex items-center gap-2 hover:bg-brand-green/20 transition-colors tap-feedback"
+          >
+            Email Support
+          </a>
+        </div>
+
+        {/* Referral Link & Squad Rewards */}
+        <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-5 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+              <span className="text-lg">🤝</span>
+            </div>
+            <div>
+              <h2 className="type-heading text-text-primary">Referral Program</h2>
+              <p className="type-caption text-text-muted">Invite friends to OyaPlan & share verified price confidence</p>
+            </div>
+          </div>
+
+          {referralCode ? (
+            <div className="space-y-4 pt-2">
+              <div className="p-3.5 bg-surface-grey border border-border-default rounded-xl flex items-center justify-between gap-3">
+                <span className="type-body text-text-primary font-mono text-sm truncate">oyaplan.app/?ref={referralCode}</span>
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://oyaplan.app/?ref=${referralCode}`);
+                    toast.success("Copied!");
+                  }}
+                  size="sm"
+                  className="bg-brand-green hover:bg-brand-green-70 text-white rounded-lg type-caption font-bold h-9 px-4 shrink-0 shadow-none tap-feedback"
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="type-body text-text-muted">Your referral code is being generated...</p>
+          )}
+        </div>
+
+        {/* Quick Nav Links */}
+        <div className="bg-white border border-border-default rounded-[24px] overflow-hidden shadow-sm divide-y divide-border-default">
+          <Link href="/dashboard" className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group tap-feedback">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center">
+                <span className="text-lg">🔖</span>
+              </div>
+              <div>
+                <h3 className="type-label text-text-primary group-hover:text-brand-green transition-colors">Saved Outing Plans</h3>
+                <p className="type-caption text-text-muted">View all your saved itineraries</p>
+              </div>
+            </div>
+          </Link>
+
+          {(profile?.role === 'admin' || profile?.role === 'scout') && (
+            <Link href="/scout" className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group tap-feedback">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <span className="text-lg">✨</span>
+                </div>
+                <div>
+                  <h3 className="type-label text-text-primary group-hover:text-purple-600 transition-colors">Scout Dashboard</h3>
+                  <p className="type-caption text-text-muted">Verify menu prices & earn OyaScore XP</p>
+                </div>
+              </div>
+            </Link>
+          )}
+          
+          <div className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group cursor-pointer tap-feedback" onClick={() => signOut()}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+                <LogOut className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="type-label text-red-600">Sign Out</h3>
+                <p className="type-caption text-text-muted">Disconnect session</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Data Privacy & Security Statement */}
+        <div className="p-5 bg-surface-grey border border-border-default rounded-[20px] space-y-2">
+          <div className="flex items-center gap-2 text-text-primary font-bold type-label">
+            <span className="text-brand-green">🔒</span> Data Privacy Guarantee
+          </div>
+          <p className="type-caption text-text-muted leading-relaxed">
+            Your email and saved plans are strictly private. We never share your contact details with third parties or venues.
+          </p>
         </div>
 
       </div>
