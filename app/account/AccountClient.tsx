@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { User, LogOut, Check, Pencil, Loader2 } from "lucide-react";
+import { User, LogOut, Check, Pencil, Loader2, Sparkles, Share2, Bookmark, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -21,6 +21,7 @@ interface AccountClientProps {
 export default function AccountClient({
   isAuthenticated,
   profile,
+  referralCode
 }: AccountClientProps) {
   const { signOut, openModal } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
@@ -29,20 +30,20 @@ export default function AccountClient({
 
   if (!isAuthenticated || !profile) {
     return (
-      <main className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-16 px-4">
-        <div className="max-w-md mx-auto space-y-8 text-center">
-          <div className="w-16 h-16 bg-brand-green/10 text-brand-green rounded-full flex items-center justify-center mx-auto">
-            <User className="w-8 h-8" />
+      <main className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-16 px-4 flex flex-col items-center justify-center">
+        <div className="w-full max-w-md space-y-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="w-20 h-20 bg-brand-green/10 text-brand-green rounded-[24px] flex items-center justify-center mx-auto shadow-sm">
+            <User className="w-10 h-10" />
           </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl font-black text-midnight-lagoon">Account</h1>
-            <p className="type-body text-text-muted">
-              Sign in to manage your profile and access saved plans.
+          <div className="space-y-3">
+            <h1 className="text-3xl font-black text-midnight-lagoon tracking-tight">Your OyaPlan</h1>
+            <p className="type-body text-text-muted px-4">
+              Sign in to manage your profile, access your saved plans, and join the Scout program.
             </p>
           </div>
           <Button 
             onClick={() => openModal()}
-            className="w-full bg-brand-green hover:bg-brand-green-70 text-white rounded-xl type-label h-12 shadow-md border-none"
+            className="w-full bg-brand-green hover:bg-brand-green-70 text-white rounded-[16px] type-label h-14 shadow-md border-none tap-feedback text-lg transition-all"
           >
             Sign In
           </Button>
@@ -67,168 +68,158 @@ export default function AccountClient({
     });
   };
 
+  const copyReferral = () => {
+    if (referralCode) {
+      navigator.clipboard.writeText(`https://oyaplan.app/?ref=${referralCode}`);
+      toast.success("Referral link copied!");
+    }
+  };
+
   return (
-    <main className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-16 px-4">
-      <div className="max-w-md mx-auto space-y-8">
+    <main className="min-h-[100dvh] bg-[#FAFAF8] pb-24">
+      {/* Premium Header Background */}
+      <div className="h-40 bg-gradient-to-br from-brand-green to-[#00603A] relative">
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+      </div>
+
+      <div className="max-w-md mx-auto px-4 sm:px-6 -mt-16 space-y-6">
         
         {/* Profile Card */}
-        <div className="bg-white border border-border-default rounded-[24px] p-8 text-center shadow-sm">
-          <div className="flex justify-center mb-4">
-            <Avatar name={profile.display_name} size="xl" />
+        <div className="bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] relative">
+          <div className="flex flex-col items-center">
+            <div className="p-1.5 bg-white rounded-full shadow-sm -mt-14 mb-4">
+              <Avatar name={profile.display_name} size="xl" className="w-24 h-24 text-2xl" />
+            </div>
+
+            {!isEditing ? (
+              <div className="text-center w-full space-y-1 animate-in fade-in duration-300">
+                <div className="flex items-center justify-center gap-2">
+                  <h2 className="text-2xl font-black text-text-primary tracking-tight truncate max-w-[250px]">
+                    {isEmailBasedName ? "Planner" : profile.display_name}
+                  </h2>
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="p-2 text-text-muted hover:text-brand-green bg-surface-grey hover:bg-brand-green/10 rounded-full transition-colors tap-feedback"
+                    aria-label="Edit Profile"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                </div>
+                {profile.email && (
+                  <p className="type-caption text-text-muted">{profile.email}</p>
+                )}
+                
+                {isEmailBasedName && (
+                  <div className="pt-3">
+                    <span className="type-caption font-bold text-brand-green bg-brand-green/10 py-1.5 px-4 rounded-full inline-block">
+                      Add your name to personalize
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="w-full space-y-4 animate-in fade-in duration-300">
+                <div>
+                  <Input 
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="e.g. Bode Olusegun"
+                    className="h-14 rounded-[16px] border-black/10 bg-surface-grey font-bold text-text-primary text-center text-lg"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => {
+                      setDisplayName(profile.display_name || "");
+                      setIsEditing(false);
+                    }} 
+                    variant="outline"
+                    disabled={isPending}
+                    className="flex-1 rounded-[16px] h-12 border-black/10 text-text-primary hover:bg-surface-grey font-bold tap-feedback"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSave} 
+                    disabled={isPending || !displayName.trim() || displayName === profile.display_name}
+                    className="flex-1 bg-brand-green hover:bg-brand-green-70 text-white rounded-[16px] h-12 shadow-sm font-bold tap-feedback"
+                  >
+                    {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save"}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
-
-          {!isEditing ? (
-            <div className="space-y-1 mb-8">
-              <h2 className="text-2xl font-black text-text-primary break-all">
-                {isEmailBasedName ? "Planner" : profile.display_name}
-              </h2>
-              {profile.email && (
-                <p className="type-body text-text-muted">{profile.email}</p>
-              )}
-              
-              {isEmailBasedName && (
-                <p className="type-caption text-brand-green font-bold mt-3 bg-brand-green/5 py-1.5 px-3 rounded-full inline-block">
-                  Add your name to personalize your account.
-                </p>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-4 mb-8 text-left">
-              <div>
-                <label className="type-caption font-bold text-text-muted mb-1.5 block">Display Name</label>
-                <Input 
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="e.g. Bode Olusegun"
-                  className="h-12 rounded-xl border-border-default bg-surface-grey font-bold text-text-primary"
-                  autoFocus
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={handleSave} 
-                  disabled={isPending || !displayName.trim() || displayName === profile.display_name}
-                  className="flex-1 bg-brand-green hover:bg-brand-green-70 text-white rounded-xl h-11"
-                >
-                  {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
-                </Button>
-                <Button 
-                  onClick={() => {
-                    setDisplayName(profile.display_name || "");
-                    setIsEditing(false);
-                  }} 
-                  variant="outline"
-                  disabled={isPending}
-                  className="flex-1 rounded-xl h-11 border-border-default text-text-primary hover:bg-surface-grey"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-
         </div>
 
-        {/* Support & Safety Net */}
-        <div className="bg-white border border-border-default rounded-[20px] p-5 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <span className="text-sm font-bold">🎧</span>
-            </div>
-            <div>
-              <h2 className="type-label text-text-primary">Support & Safety Net</h2>
-            </div>
-          </div>
-          <a
-            href="mailto:support@oyaplan.app?subject=OyaPlan%20Support%20Request"
-            className="px-4 py-2 bg-brand-green/10 border border-brand-green/30 text-brand-green rounded-lg type-caption font-bold flex items-center gap-2 hover:bg-brand-green/20 transition-colors tap-feedback"
-          >
-            Email Support
-          </a>
-        </div>
-
-        {/* Referral Link & Squad Rewards */}
-        <div className="bg-white border border-border-default rounded-[24px] p-6 space-y-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <span className="text-lg">🤝</span>
-            </div>
-            <div>
-              <h2 className="type-heading text-text-primary">Referral Program</h2>
-              <p className="type-caption text-text-muted">Invite friends to OyaPlan & share verified price confidence</p>
-            </div>
-          </div>
-
-          {referralCode ? (
-            <div className="space-y-4 pt-2">
-              <div className="p-3.5 bg-surface-grey border border-border-default rounded-xl flex items-center justify-between gap-3">
-                <span className="type-body text-text-primary font-mono text-sm truncate">oyaplan.app/?ref={referralCode}</span>
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`https://oyaplan.app/?ref=${referralCode}`);
-                    toast.success("Copied!");
-                  }}
-                  size="sm"
-                  className="bg-brand-green hover:bg-brand-green-70 text-white rounded-lg type-caption font-bold h-9 px-4 shrink-0 shadow-none tap-feedback"
-                >
-                  Copy
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <p className="type-body text-text-muted">Your referral code is being generated...</p>
-          )}
-        </div>
-
-        {/* Quick Nav Links */}
-        <div className="bg-white border border-border-default rounded-[24px] overflow-hidden shadow-sm divide-y divide-border-default">
-          <Link href="/dashboard" className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group tap-feedback">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center">
-                <span className="text-lg">🔖</span>
+        {/* Navigation List */}
+        <div className="bg-white rounded-[32px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/[0.03] p-2 flex flex-col gap-1">
+          
+          <Link href="/dashboard" className="flex items-center justify-between p-4 rounded-[24px] hover:bg-surface-grey transition-colors group tap-feedback">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-[18px] bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-sm">
+                <Bookmark className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="type-label text-text-primary group-hover:text-brand-green transition-colors">Saved Outing Plans</h3>
-                <p className="type-caption text-text-muted">View all your saved itineraries</p>
+                <h3 className="text-base font-bold text-text-primary">Saved Plans</h3>
+                <p className="text-xs font-medium text-text-muted">Your curated itineraries</p>
               </div>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-surface-grey group-hover:bg-white flex items-center justify-center transition-colors">
+              <ChevronRight className="w-4 h-4 text-text-muted" />
             </div>
           </Link>
 
           {(profile?.role === 'admin' || profile?.role === 'scout') && (
-            <Link href="/scout" className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group tap-feedback">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                  <span className="text-lg">✨</span>
+            <Link href="/scout" className="flex items-center justify-between p-4 rounded-[24px] hover:bg-surface-grey transition-colors group tap-feedback">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-[18px] bg-purple-50 text-purple-600 flex items-center justify-center shadow-sm">
+                  <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="type-label text-text-primary group-hover:text-purple-600 transition-colors">Scout Dashboard</h3>
-                  <p className="type-caption text-text-muted">Verify menu prices & earn OyaScore XP</p>
+                  <h3 className="text-base font-bold text-text-primary">Scout Dashboard</h3>
+                  <p className="text-xs font-medium text-text-muted">Verify prices & earn OyaScore XP</p>
                 </div>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-surface-grey group-hover:bg-white flex items-center justify-center transition-colors">
+                <ChevronRight className="w-4 h-4 text-text-muted" />
               </div>
             </Link>
           )}
-          
-          <div className="p-5 flex items-center justify-between hover:bg-surface-grey transition-colors group cursor-pointer tap-feedback" onClick={() => signOut()}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
-                <LogOut className="w-5 h-5" />
+
+          {referralCode && (
+            <div 
+              onClick={copyReferral}
+              className="flex items-center justify-between p-4 rounded-[24px] hover:bg-surface-grey transition-colors group tap-feedback cursor-pointer"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-[18px] bg-amber-50 text-amber-600 flex items-center justify-center shadow-sm">
+                  <Share2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-text-primary">Referral Program</h3>
+                  <p className="text-xs font-medium text-text-muted">Invite friends to OyaPlan</p>
+                </div>
               </div>
-              <div>
-                <h3 className="type-label text-red-600">Sign Out</h3>
-                <p className="type-caption text-text-muted">Disconnect session</p>
+              <div className="bg-amber-100/50 text-amber-700 px-3 py-1.5 rounded-full text-xs font-bold group-hover:bg-amber-100 transition-colors">
+                Copy Link
               </div>
             </div>
-          </div>
+          )}
+
         </div>
 
-        {/* Data Privacy & Security Statement */}
-        <div className="p-5 bg-surface-grey border border-border-default rounded-[20px] space-y-2">
-          <div className="flex items-center gap-2 text-text-primary font-bold type-label">
-            <span className="text-brand-green">🔒</span> Data Privacy Guarantee
-          </div>
-          <p className="type-caption text-text-muted leading-relaxed">
-            Your email and saved plans are strictly private. We never share your contact details with third parties or venues.
-          </p>
+        {/* Danger Zone */}
+        <div className="pt-4">
+          <Button
+            onClick={() => signOut()}
+            variant="outline"
+            className="w-full bg-white border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200 rounded-[24px] type-label h-14 shadow-sm tap-feedback font-bold"
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Sign Out
+          </Button>
         </div>
 
       </div>
