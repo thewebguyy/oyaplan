@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, Loader2, Award, Flame, Wallet, UserCheck } from "lucide-react";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
+import { triggerMoment } from "@/components/ui/moment-of-delight";
 
 export default function SuggestSpotPage() {
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,7 @@ export default function SuggestSpotPage() {
     setLoading(false);
     if (result.success) {
       setSuccess(true);
+      triggerMoment("venue_suggested");
     } else {
       setError(true);
     }

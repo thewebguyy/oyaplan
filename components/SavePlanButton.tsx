@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { Bookmark, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { triggerMoment } from "@/components/ui/moment-of-delight";
 
 export default function SavePlanButton({ planId, variant = "outline" }: { planId: string, variant?: "outline" | "ghost" | "default" | "filled" }) {
   const { session, openModal } = useAuth();
@@ -24,7 +25,8 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
       const res = await savePlan(planId);
       if (res.success) {
         setIsSaved(true);
-        toast.success("Plan saved to your Saved Plans!");
+        toast.success("Added to your plans.");
+        triggerMoment("plan_saved");
         AnalyticsService.track('plan_saved', {
           session_id: '00000000-0000-0000-0000-000000000000',
           properties: {
@@ -36,11 +38,11 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
       } else if (res.error === 'unauthorized') {
         openModal("Sign in to save plans", `/plan/${planId}`);
       } else {
-        toast.error("Couldn't save this plan. Please try again.");
+        toast.error("We couldn't load this right now. Try again.");
       }
     } catch (e) {
       console.error(e);
-      toast.error("Couldn't save this plan. Please try again.");
+      toast.error("We couldn't load this right now. Try again.");
     } finally {
       setIsSaving(false);
     }

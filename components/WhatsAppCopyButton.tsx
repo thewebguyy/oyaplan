@@ -7,6 +7,7 @@ import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { getReferralCode } from "@/lib/actions/getReferralCode";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { toast } from 'sonner';
+import { triggerMoment } from "@/components/ui/moment-of-delight";
 
 interface WhatsAppCopyButtonProps {
   plan: Plan;
@@ -84,7 +85,7 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
     const url = await ensureShareUrl();
     if (!url) {
       if (iosWindow) iosWindow.close();
-      toast.error("Couldn't prepare your plan link. Please try again.");
+      toast.error("We couldn't load this right now. Try again.");
       return;
     }
     const perPersonCost = Math.round(plan.totalCost / input.squadSize);
@@ -106,6 +107,7 @@ ${url}`;
 
     if (isMobile) {
       const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      triggerMoment("plan_shared");
       if (isIOS && iosWindow) {
         iosWindow.location.href = waUrl;
       } else {
@@ -115,6 +117,7 @@ ${url}`;
       navigator.clipboard.writeText(text);
       setCopied(true);
       toast.success('Link copied to clipboard!');
+      triggerMoment("plan_shared");
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -125,6 +128,7 @@ ${url}`;
       navigator.clipboard.writeText(url);
       setLinkCopied(true);
       toast.success('Link copied to clipboard!');
+      triggerMoment("plan_shared");
       setTimeout(() => setLinkCopied(false), 2000);
     }
   };

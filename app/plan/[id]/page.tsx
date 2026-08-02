@@ -200,6 +200,19 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           spotsList={spots || []}
         />
 
+        {/* Beta Feedback */}
+        <div className="mt-12 pt-8 border-t border-border-default/50 text-center space-y-3">
+          <p className="type-caption text-text-muted font-bold tracking-wide uppercase">Beta Feedback</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="mailto:support@oyaplan.app?subject=Plan Feedback: Was this helpful?" className="text-sm font-medium text-text-secondary hover:text-brand-green bg-white border border-border-default rounded-full px-4 py-2 tap-feedback shadow-sm">
+              Was this helpful?
+            </a>
+            <a href="mailto:support@oyaplan.app?subject=Plan Feedback: Suggest an improvement" className="text-sm font-medium text-text-secondary hover:text-brand-green bg-white border border-border-default rounded-full px-4 py-2 tap-feedback shadow-sm">
+              Suggest an improvement
+            </a>
+          </div>
+        </div>
+
         {/* Create My Own Plan CTA for viewers */}
         <div className="w-full max-w-lg mx-auto pt-2">
           <Link href="/">

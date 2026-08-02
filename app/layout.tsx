@@ -49,6 +49,7 @@ import NavBar from "@/components/NavBar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ClientOnly from "@/components/ClientOnly";
 import { OriginProvider } from "@/lib/location/OriginContext";
+import { MomentOfDelight } from "@/components/ui/moment-of-delight";
 
 export default function RootLayout({
   children,
@@ -79,6 +80,12 @@ export default function RootLayout({
               </Suspense>
               <AuthModal />
               <Toaster richColors position="bottom-right" />
+              <ClientOnly>
+                <MomentOfDelight triggerKey="plan_saved" message="First plan saved!" />
+                <MomentOfDelight triggerKey="outing_planned" message="First outing planned!" />
+                <MomentOfDelight triggerKey="venue_suggested" message="You're officially a Scout!" />
+                <MomentOfDelight triggerKey="plan_shared" message="Plan shared!" />
+              </ClientOnly>
             </OriginProvider>
           </AuthProvider>
         </AnalyticsProvider>

@@ -58,7 +58,7 @@ export class SavedPlanService {
         .from('user_saved_plans')
         .select(`
           saved_at,
-          shared_plans:shared_plan_id (
+          shared_plans (
             id,
             total_cost,
             squad_size,

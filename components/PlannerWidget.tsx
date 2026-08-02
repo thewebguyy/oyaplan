@@ -10,6 +10,7 @@ import { useTransportCost } from "@/hooks/useTransportCost";
 import { OriginStore } from "@/lib/storage/OriginStore";
 import { Origin } from "@/lib/location/types";
 import { useOrigin } from "@/lib/location/OriginContext";
+import { triggerMoment } from "@/components/ui/moment-of-delight";
 
 import { Spot } from "@/lib/types";
 
@@ -170,6 +171,8 @@ export default function PlannerWidget({
         version: "1.0",
       },
     });
+
+    triggerMoment("outing_planned");
 
     router.push(`/forge?${params.toString()}`);
   };

@@ -1,6 +1,7 @@
 'use server';
 
 import { SavedPlanService } from '../services/identity/savedPlanService';
+import { revalidatePath } from 'next/cache';
 
 export async function savePlan(sharedPlanId: string) {
   if (!sharedPlanId || typeof sharedPlanId !== 'string') {
@@ -8,5 +9,11 @@ export async function savePlan(sharedPlanId: string) {
   }
 
   // Orchestrate strictly through the Domain Service
-  return await SavedPlanService.savePlan(sharedPlanId);
+  const res = await SavedPlanService.savePlan(sharedPlanId);
+  
+  if (res.success) {
+    revalidatePath('/dashboard');
+  }
+  
+  return res;
 }

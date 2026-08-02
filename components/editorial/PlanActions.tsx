@@ -10,6 +10,7 @@ import { savePlan } from "@/lib/actions/savePlan";
 import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import WhatsAppCopyButton from "../WhatsAppCopyButton";
+import { triggerMoment } from "@/components/ui/moment-of-delight";
 
 export function PlanActions({
   plan,
@@ -41,7 +42,8 @@ export function PlanActions({
       } catch { /* ignore localStorage issues */ }
 
       setIsSaved(true);
-      toast.success("Plan saved to your Saved Plans!");
+      toast.success("Added to your plans.");
+      triggerMoment("plan_saved");
 
       // 2. Silently attempt server-side share/save sync if possible
       let currentPlanId = planId;
@@ -72,7 +74,7 @@ export function PlanActions({
       console.error(e);
       // Fallback: still treat as saved locally
       setIsSaved(true);
-      toast.success("Plan saved to your device!");
+      toast.success("Added to your plans.");
     } finally {
       setIsSaving(false);
     }

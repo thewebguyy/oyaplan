@@ -59,10 +59,10 @@ export default function AccountClient({
     startTransition(async () => {
       const res = await updateProfile({ displayName });
       if (res.success) {
-        toast.success("Profile updated!");
+        toast.success("Your profile has been updated.");
         setIsEditing(false);
       } else {
-        toast.error(res.error || "Failed to update profile.");
+        toast.error("We couldn't load this right now. Try again.");
       }
     });
   };
@@ -132,7 +132,7 @@ export default function AccountClient({
               <Button
                 onClick={() => setIsEditing(true)}
                 variant="outline"
-                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12"
+                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12 tap-feedback"
               >
                 <Pencil className="w-4 h-4 mr-2" />
                 Edit Name
@@ -142,16 +142,25 @@ export default function AccountClient({
             <Link href="/dashboard" className="block">
               <Button
                 variant="outline"
-                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12"
+                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12 tap-feedback"
               >
                 Saved Plans
               </Button>
             </Link>
 
+            <a href="mailto:support@oyaplan.app?subject=Reporting an issue (Beta)" className="block">
+              <Button
+                variant="outline"
+                className="w-full border-border-default text-text-primary hover:bg-surface-grey rounded-xl type-label h-12 tap-feedback"
+              >
+                Report an issue
+              </Button>
+            </a>
+
             <Button
               onClick={() => signOut()}
               variant="outline"
-              className="w-full border-red-100 text-red-600 hover:bg-red-50 rounded-xl type-label h-12"
+              className="w-full border-red-100 text-red-600 hover:bg-red-50 rounded-xl type-label h-12 tap-feedback"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out

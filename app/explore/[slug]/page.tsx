@@ -95,7 +95,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   }
 
   if (zoneQueryError) {
-    return <PageError message="We could not load this zone. Please try again." href="/explore" linkLabel="Back to Explore" />;
+    return <PageError message="We couldn't load this right now." href="/explore" linkLabel="Back to Explore" />;
   }
 
   if (zoneData) {
@@ -114,7 +114,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     }
 
     if (zoneAreasError) {
-      return <PageError message="We could not load areas for this zone. Please try again." href="/explore" linkLabel="Back to Explore" />;
+      return <PageError message="We couldn't load this right now." href="/explore" linkLabel="Back to Explore" />;
     }
 
     return (
@@ -180,7 +180,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   }
 
   if (areaFetchError) {
-    return <PageError message="We could not load this area. Please try again." href="/explore" linkLabel="Back to Explore" />;
+    return <PageError message="We couldn't load this right now." href="/explore" linkLabel="Back to Explore" />;
   }
 
   if (!area) notFound();

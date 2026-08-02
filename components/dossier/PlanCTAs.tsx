@@ -118,10 +118,10 @@ Are you in? 👇`;
         setIsModifyOpen(false);
         router.push(`/plan/${result.id}`);
       } else {
-        toast.error("Failed to update spot. Please try again.");
+        toast.error("We couldn't load this right now. Try again.");
       }
-    } catch {
-      toast.error("An error occurred. Please try again.");
+    } catch (e) {
+      toast.error("We couldn't load this right now. Try again.");
     } finally {
       setIsSwapping(false);
     }

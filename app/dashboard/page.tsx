@@ -41,7 +41,7 @@ export default async function DashboardPage() {
               Save your favourite Lagos outing plans and access them anytime across devices.
             </p>
             <Link href="/" className="inline-block mt-4">
-              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-12 px-8 shadow-none border-none">
+              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-[16px] type-label h-12 px-8 shadow-none border-none tap-feedback">
                 Go to Home
               </Button>
             </Link>
@@ -51,12 +51,9 @@ export default async function DashboardPage() {
             <div className="w-16 h-16 bg-red-50 text-error rounded-full flex items-center justify-center mx-auto mb-6">
               <span className="text-2xl">⚠️</span>
             </div>
-            <h3 className="type-heading text-text-primary">Couldn&apos;t load your saved plans</h3>
-            <p className="type-body text-text-muted max-w-sm mx-auto">
-              Something went wrong on our end. Please try again in a moment.
-            </p>
+            <h3 className="type-heading text-text-primary">We couldn't load this right now.</h3>
             <Link href="/dashboard" className="inline-block mt-4">
-              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-12 px-8 shadow-none border-none">
+              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-[16px] type-label h-12 px-8 shadow-none border-none tap-feedback">
                 Try again
               </Button>
             </Link>
@@ -66,12 +63,12 @@ export default async function DashboardPage() {
             <div className="w-16 h-16 bg-brand-green/5 text-brand-green rounded-full flex items-center justify-center mx-auto mb-6">
               <Calendar className="w-8 h-8" />
             </div>
-            <h3 className="type-heading text-text-primary">No saved plans yet</h3>
+            <h3 className="type-heading text-text-primary">Nothing saved yet.</h3>
             <p className="type-body text-text-muted max-w-sm mx-auto">
-              Your next great outing starts here.
+              Your next outing starts here.
             </p>
             <Link href="/" className="inline-block mt-4">
-              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-12 px-8 shadow-none border-none">
+              <Button className="bg-brand-green hover:bg-brand-green-70 text-white rounded-[16px] type-label h-12 px-8 shadow-none border-none tap-feedback">
                 Start Planning
               </Button>
             </Link>
@@ -132,7 +129,7 @@ export default async function DashboardPage() {
                           Share
                         </a>
                         <Link href={`/plan/${plan.id}`}>
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-text-muted hover:text-brand-green">
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-text-muted hover:text-brand-green" aria-label="View Plan">
                             <ArrowRight className="w-4 h-4" />
                           </Button>
                         </Link>
