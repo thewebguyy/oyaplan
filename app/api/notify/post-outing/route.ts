@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { captureServerException } from "@/lib/sentry";
+import { Resend } from "resend";
 
 /**
  * POST-OUTING SPEND NOTIFICATION
@@ -134,14 +135,32 @@ export async function POST(req: NextRequest) {
           feedbackUrl,
         });
 
-        // Attempt to send via Supabase (invoke will gracefully fail if not configured)
-        const { error: emailError } = await adminClient.functions.invoke("send-email", {
-          body: {
+        let emailError = null;
+
+        if (process.env.RESEND_API_KEY) {
+          // Send directly via Resend (Production Standard)
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          const { error } = await resend.emails.send({
+            from: 'OyaPlan <notifications@oyaplan.com>',
             to: email,
             subject: `How did ${spotName} go? 🍽️`,
             html: emailBody,
-          },
-        });
+          });
+          if (error) {
+            emailError = { message: error.message };
+          }
+        } else {
+          // Fallback to Supabase Edge Function to prevent breaking production
+          // before RESEND_API_KEY is configured in the environment.
+          const { error } = await adminClient.functions.invoke("send-email", {
+            body: {
+              to: email,
+              subject: `How did ${spotName} go? 🍽️`,
+              html: emailBody,
+            },
+          });
+          emailError = error;
+        }
 
         if (emailError) {
           // Log but don't fail — still record in notification_log so we don't retry spam

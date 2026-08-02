@@ -53,16 +53,16 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
   const badgeColor = categoryColors[card.category] || "#008751";
 
   return (
-    <div className="w-full h-full max-w-[420px] mx-auto bg-white rounded-3xl overflow-hidden shadow-2xl border border-border-default flex flex-col relative select-none">
-      {/* Full bleed image area (60% height) */}
-      <div className="relative h-[55%] w-full bg-surface-grey">
+    <div className="w-full h-full sm:w-[400px] mx-auto bg-white rounded-[32px] overflow-hidden shadow-lift-lagoon border border-border-default/40 flex flex-col relative select-none">
+      {/* Full bleed image area (55% height) */}
+      <div className="relative h-[55%] w-full bg-surface-grey img-zoom-container">
         {card.heroImage ? (
           <Image
             src={card.heroImage}
             alt={card.spotName}
             fill
-            sizes="(max-width: 420px) 100vw, 420px"
-            className="object-cover"
+            sizes="(max-width: 640px) 100vw, 400px"
+            className="object-cover img-zoom"
             draggable={false}
           />
         ) : (

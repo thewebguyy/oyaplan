@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimation, PanInfo } from "framer-motion";
+import { X, BookmarkCheck, RotateCcw } from "lucide-react";
 import { Spot } from "@/lib/types";
 import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import { VenueCard } from "./VenueCard";
@@ -64,6 +65,16 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
     nextCard();
   };
 
+  const handleSwipeLeftClick = async () => {
+    await controls.start({ x: -window.innerWidth, opacity: 0, transition: { duration: 0.3 } });
+    handleSwipeLeft();
+  };
+
+  const handleSwipeRightClick = async (card: DecisionCardViewModel) => {
+    await controls.start({ x: window.innerWidth, opacity: 0, transition: { duration: 0.3 } });
+    handleSwipeRight(card);
+  };
+
   const nextCard = () => {
     setCurrentIndex((prev) => prev + 1);
     x.set(0); // reset motion value for the new top card
@@ -98,9 +109,9 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
         </p>
         <button 
           onClick={handleStartOver}
-          className="text-brand-green font-bold text-sm uppercase tracking-wider border-2 border-brand-green px-6 py-3 rounded-full hover:bg-brand-green/10 transition-colors"
+          className="flex items-center gap-2 text-brand-green font-bold text-sm uppercase tracking-wider border-2 border-brand-green px-6 py-3 rounded-full hover:bg-brand-green/10 transition-colors"
         >
-          Start Over
+          <RotateCcw size={16} strokeWidth={2.5} /> Start Over
         </button>
       </div>
     );
@@ -108,17 +119,29 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
 
   return (
     <div className="relative w-full max-w-[420px] mx-auto h-[600px] max-h-[75vh] flex items-center justify-center">
-      {/* Swipe Affordance */}
+      {/* Swipe Affordance (Now interactive buttons!) */}
       {activeSpots.length > 0 && currentIndex === 0 && (
         <motion.div 
-          className="absolute -bottom-10 left-0 right-0 flex justify-center items-center gap-4 text-text-muted text-xs font-black uppercase tracking-widest z-10 pointer-events-none"
-          initial={{ opacity: 0, y: -5 }}
+          className="absolute -bottom-24 left-0 right-0 flex justify-center items-center gap-8 z-20"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.5 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
         >
-          <span className="flex items-center gap-1 opacity-70"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> PASS</span>
-          <span className="w-1 h-1 rounded-full bg-border-default"></span>
-          <span className="flex items-center gap-1 opacity-70">SAVE <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></span>
+          <button 
+            onClick={handleSwipeLeftClick}
+            className="w-16 h-16 rounded-full bg-white shadow-xl flex items-center justify-center text-error border-[3px] border-error/20 hover:bg-error/10 hover:border-error transition-all btn-press-tactile"
+            aria-label="Pass"
+          >
+            <X size={32} strokeWidth={3} />
+          </button>
+          
+          <button 
+            onClick={() => handleSwipeRightClick(activeSpots[0])}
+            className="w-16 h-16 rounded-full bg-white shadow-xl flex items-center justify-center text-brand-green border-[3px] border-brand-green/20 hover:bg-brand-green/10 hover:border-brand-green transition-all btn-press-tactile"
+            aria-label="Save"
+          >
+            <BookmarkCheck size={32} strokeWidth={3} />
+          </button>
         </motion.div>
       )}
 
@@ -153,19 +176,19 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
             {isTop && (
               <>
                 <motion.div 
-                  className="absolute inset-0 z-50 bg-brand-green/20 rounded-3xl pointer-events-none flex items-center justify-center"
+                  className="absolute inset-0 z-50 bg-brand-green/10 rounded-3xl pointer-events-none flex items-center justify-center backdrop-blur-[2px]"
                   style={{ opacity: saveOpacity }}
                 >
-                  <div className="bg-brand-green text-white px-6 py-2 rounded-full font-black uppercase tracking-widest text-xl rotate-[-15deg] border-4 border-white shadow-xl">
-                    SAVE
+                  <div className="bg-brand-green text-white px-8 py-3 rounded-full font-black uppercase tracking-widest text-3xl rotate-[-15deg] border-[6px] border-white shadow-2xl flex items-center gap-2">
+                    <BookmarkCheck size={36} strokeWidth={4} /> SAVE
                   </div>
                 </motion.div>
                 <motion.div 
-                  className="absolute inset-0 z-50 bg-error/20 rounded-3xl pointer-events-none flex items-center justify-center"
+                  className="absolute inset-0 z-50 bg-error/10 rounded-3xl pointer-events-none flex items-center justify-center backdrop-blur-[2px]"
                   style={{ opacity: passOpacity }}
                 >
-                  <div className="bg-error text-white px-6 py-2 rounded-full font-black uppercase tracking-widest text-xl rotate-[15deg] border-4 border-white shadow-xl">
-                    PASS
+                  <div className="bg-error text-white px-8 py-3 rounded-full font-black uppercase tracking-widest text-3xl rotate-[15deg] border-[6px] border-white shadow-2xl flex items-center gap-2">
+                    <X size={36} strokeWidth={4} /> PASS
                   </div>
                 </motion.div>
               </>
