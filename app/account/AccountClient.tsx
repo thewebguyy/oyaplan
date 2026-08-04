@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { User, ChevronRight, Share2, Bookmark, Sparkles, Pencil, LogOut } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { UserProfile } from "@/lib/services/identity/sessionResolver";
+import { getReferralCode } from "@/lib/actions/getReferralCode";
 import { Avatar } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -26,7 +27,16 @@ export default function AccountClient({
   
   const [isEditing, setIsEditing] = useState(false);
   const [displayNameState, setDisplayNameState] = useState(profile?.display_name || "");
+  const [codeState, setCodeState] = useState<string | null>(referralCode);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!codeState && isAuthenticated) {
+      getReferralCode().then((code) => {
+        if (code) setCodeState(code);
+      });
+    }
+  }, [codeState, isAuthenticated]);
 
   const handleSave = () => {
     if (!displayNameState.trim()) return;
@@ -234,13 +244,14 @@ export default function AccountClient({
 
           <div className="bg-white/60 rounded-[16px] border-2 border-dashed border-[#008751]/30 p-4 mb-5 flex items-center justify-between">
             <span className="font-mono font-bold text-[#008751] text-lg tracking-wider">
-              {referralCode || "GENERATING..."}
+              {codeState || "GENERATING..."}
             </span>
             <button 
               onClick={() => {
-                if(referralCode) {
-                  navigator.clipboard.writeText(`https://oyaplan.app/?ref=${referralCode}`);
-                  toast.success("Code copied!");
+                if (codeState) {
+                  const origin = typeof window !== "undefined" ? window.location.origin : "https://oyaplan.com";
+                  navigator.clipboard.writeText(`${origin}/?ref=${codeState}`);
+                  toast.success("Referral link copied!");
                 }
               }}
               className="text-sm font-black text-[#008751] uppercase tracking-wider tap-feedback bg-white px-4 py-2 rounded-full shadow-sm"
@@ -251,8 +262,10 @@ export default function AccountClient({
 
           <button 
             onClick={() => {
-              if (referralCode) {
-                const waUrl = `https://wa.me/?text=${encodeURIComponent(`Find out exactly what your Lagos outing will cost before you leave home. Use my code: https://oyaplan.app/?ref=${referralCode}`)}`;
+              if (codeState) {
+                const origin = typeof window !== "undefined" ? window.location.origin : "https://oyaplan.com";
+                const shareText = `Find out exactly what your Lagos outing will cost before you leave home. Use my link: ${origin}/?ref=${codeState}`;
+                const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
                 window.open(waUrl, "_blank");
               }
             }}
