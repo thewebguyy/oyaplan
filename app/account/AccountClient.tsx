@@ -86,44 +86,48 @@ export default function AccountClient({
 
   return (
     <main className="min-h-[100dvh] bg-[#FAFAF8] pb-24">
-      {/* 1. The Header — Solid Brand Green */}
-      <div className="w-full bg-[#008751] rounded-b-[24px] pt-16 pb-12 px-6 flex flex-col items-center text-center shadow-sm relative animate-in fade-in duration-300">
+      {/* 1. The Header — Solid Chowdeck-Style Brand Green (#008751) */}
+      <div className="w-full bg-[#008751] rounded-b-[28px] pt-14 pb-10 px-6 flex flex-col items-center text-center shadow-md relative animate-in fade-in duration-150">
         <div className="relative mb-3">
           <Avatar 
             name={profile.display_name} 
-            className="w-20 h-20 text-2xl font-bold bg-[#FFF9C4] text-[#00603A] shadow-sm ring-4 ring-white/10" 
+            size="xl"
+            className="ring-4 ring-white/30 shadow-md"
           />
         </div>
         
-        <h1 className="text-2xl font-black text-white tracking-tight mb-1">
+        <h1 className="text-2xl font-black text-white tracking-tight mb-0.5">
           {displayName}
         </h1>
         
         {profile.email && (
           <p 
-            onClick={() => toast(profile.email)}
-            className="text-sm text-white/80 truncate max-w-[200px] mb-4 cursor-pointer active:scale-95 transition-transform"
+            onClick={() => {
+              if (profile.email) {
+                navigator.clipboard.writeText(profile.email);
+                toast.success("Email copied!");
+              }
+            }}
+            className="text-xs font-bold text-white/80 truncate max-w-[220px] mb-4 cursor-pointer tap-feedback"
           >
             {profile.email}
           </p>
         )}
 
-        <div className="bg-[#FFF9C4] text-[#00603A] px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
-          Beta Member
+        <div className="flex items-center gap-2">
+          <span className="bg-[#FCC630] text-[#00603A] px-3.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
+            Beta Member
+          </span>
+          <span className="bg-[#FCC630] text-[#00603A] px-3.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
+            {savedPlansCount > 0 
+              ? `${savedPlansCount} ${savedPlansCount === 1 ? 'Outing' : 'Outings'}` 
+              : "Ready to Plan"}
+          </span>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 sm:px-6 -mt-4 space-y-6">
+      <div className="max-w-md mx-auto px-4 sm:px-6 mt-6 space-y-6">
         
-        {/* Value Statement */}
-        <div className="text-center pt-6 pb-2 animate-in fade-in duration-500 delay-100">
-          <p className="text-lg text-text-primary font-medium">
-            {savedPlansCount > 0 
-              ? `You've planned ${savedPlansCount} ${savedPlansCount === 1 ? 'outing' : 'outings'}.` 
-              : "Ready to plan your first outing."}
-          </p>
-        </div>
-
         {/* 2. User History Summary Strip */}
         <div className="bg-white rounded-[24px] p-5 shadow-sm border border-[#E5E7EB] grid grid-cols-4 gap-2 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-200 fill-mode-both relative z-10">
           <div className="text-center">
