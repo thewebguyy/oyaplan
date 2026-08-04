@@ -147,96 +147,94 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
   }
 
   return (
-    <div className="relative w-full max-w-[420px] mx-auto h-[600px] max-h-[75vh] flex items-center justify-center">
-      {/* Swipe Affordance (Always visible while cards remain) */}
+    <div className="w-full max-w-[420px] mx-auto flex flex-col items-center justify-center px-4 pb-20">
+      {/* Card Stack Container */}
+      <div className="relative w-full h-[500px] max-h-[60vh] flex items-center justify-center">
+        {activeSpots.map((card, index) => {
+          const isTop = index === 0;
+          
+          // Only render the top 3 cards for performance
+          if (index > 2) return null;
+
+          return (
+            <motion.div
+              key={card.spotId}
+              className="absolute inset-0 origin-bottom will-change-transform"
+              style={{
+                zIndex: spots.length - index,
+                // Only apply drag transforms to the top card
+                x: isTop ? x : 0,
+                rotate: isTop ? rotate : 0,
+                opacity: isTop ? opacity : 1 - (index * 0.15),
+                scale: isTop ? 1 : 1 - (index * 0.04),
+                y: isTop ? 0 : index * 12, // Stack effect offset
+              }}
+              drag={isTop ? "x" : false}
+              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              dragElastic={0.8}
+              onDragEnd={isTop ? handleDragEnd : undefined}
+              animate={isTop ? controls : undefined}
+              whileDrag={{ cursor: "grabbing" }}
+              whileTap={{ cursor: "grabbing" }}
+            >
+              {/* Visual Feedback Overlays */}
+              {isTop && (
+                <>
+                  <motion.div 
+                    className="absolute inset-0 z-50 bg-brand-green/10 rounded-3xl pointer-events-none flex items-center justify-center backdrop-blur-[2px]"
+                    style={{ opacity: saveOpacity }}
+                  >
+                    <div className="bg-brand-green text-white px-8 py-3 rounded-full font-black uppercase tracking-widest text-3xl rotate-[-15deg] border-[6px] border-white shadow-2xl flex items-center gap-2">
+                      <BookmarkCheck size={36} strokeWidth={4} /> SAVE
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    className="absolute inset-0 z-50 bg-error/10 rounded-3xl pointer-events-none flex items-center justify-center backdrop-blur-[2px]"
+                    style={{ opacity: passOpacity }}
+                  >
+                    <div className="bg-error text-white px-8 py-3 rounded-full font-black uppercase tracking-widest text-3xl rotate-[15deg] border-[6px] border-white shadow-2xl flex items-center gap-2">
+                      <X size={36} strokeWidth={4} /> PASS
+                    </div>
+                  </motion.div>
+                </>
+              )}
+
+              <div className="w-full h-full pointer-events-none [&_button]:pointer-events-auto [&_a]:pointer-events-auto">
+                <VenueCard 
+                  card={card} 
+                  slug={slug}
+                  isSaved={isSaved(card.spotId)}
+                  onSaveToggle={() => handleSaveToggle(card)}
+                  budget={budget}
+                  vibe={vibe}
+                  squadCount={squadCount}
+                />
+              </div>
+            </motion.div>
+          );
+        }).reverse()} {/* Reverse so index 0 is mapped last (top in DOM if zIndex fails, but zIndex handles it) */}
+      </div>
+
+      {/* Swipe Action Buttons Bar (Always visible below card stack) */}
       {activeSpots.length > 0 && (
-        <motion.div 
-          className="absolute -bottom-24 left-0 right-0 flex justify-center items-center gap-8 z-20"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-        >
+        <div className="flex justify-center items-center gap-8 mt-5 z-20">
           <button 
             onClick={handleSwipeLeftClick}
-            className="w-16 h-16 rounded-full bg-white shadow-xl flex items-center justify-center text-error border-[3px] border-error/20 hover:bg-error/10 hover:border-error transition-all btn-press-tactile"
+            className="w-14 h-14 rounded-full bg-white shadow-xl flex items-center justify-center text-error border-[3px] border-error/20 hover:bg-error/10 hover:border-error transition-all tap-feedback active:scale-95"
             aria-label="Pass"
           >
-            <X size={32} strokeWidth={3} />
+            <X className="w-7 h-7" strokeWidth={3} />
           </button>
           
           <button 
             onClick={() => handleSwipeRightClick(activeSpots[0])}
-            className="w-16 h-16 rounded-full bg-white shadow-xl flex items-center justify-center text-brand-green border-[3px] border-brand-green/20 hover:bg-brand-green/10 hover:border-brand-green transition-all btn-press-tactile"
+            className="w-14 h-14 rounded-full bg-white shadow-xl flex items-center justify-center text-[#008751] border-[3px] border-[#008751]/20 hover:bg-[#008751]/10 hover:border-[#008751] transition-all tap-feedback active:scale-95"
             aria-label="Save"
           >
-            <BookmarkCheck size={32} strokeWidth={3} />
+            <BookmarkCheck className="w-7 h-7" strokeWidth={3} />
           </button>
-        </motion.div>
+        </div>
       )}
-
-      {activeSpots.map((card, index) => {
-        const isTop = index === 0;
-        
-        // Only render the top 3 cards for performance
-        if (index > 2) return null;
-
-        return (
-          <motion.div
-            key={card.spotId}
-            className="absolute inset-0 origin-bottom will-change-transform"
-            style={{
-              zIndex: spots.length - index,
-              // Only apply drag transforms to the top card
-              x: isTop ? x : 0,
-              rotate: isTop ? rotate : 0,
-              opacity: isTop ? opacity : 1 - (index * 0.15),
-              scale: isTop ? 1 : 1 - (index * 0.04),
-              y: isTop ? 0 : index * 12, // Stack effect offset
-            }}
-            drag={isTop ? "x" : false}
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            dragElastic={0.8}
-            onDragEnd={isTop ? handleDragEnd : undefined}
-            animate={isTop ? controls : undefined}
-            whileDrag={{ cursor: "grabbing" }}
-            whileTap={{ cursor: "grabbing" }}
-          >
-            {/* Visual Feedback Overlays */}
-            {isTop && (
-              <>
-                <motion.div 
-                  className="absolute inset-0 z-50 bg-brand-green/10 rounded-3xl pointer-events-none flex items-center justify-center backdrop-blur-[2px]"
-                  style={{ opacity: saveOpacity }}
-                >
-                  <div className="bg-brand-green text-white px-8 py-3 rounded-full font-black uppercase tracking-widest text-3xl rotate-[-15deg] border-[6px] border-white shadow-2xl flex items-center gap-2">
-                    <BookmarkCheck size={36} strokeWidth={4} /> SAVE
-                  </div>
-                </motion.div>
-                <motion.div 
-                  className="absolute inset-0 z-50 bg-error/10 rounded-3xl pointer-events-none flex items-center justify-center backdrop-blur-[2px]"
-                  style={{ opacity: passOpacity }}
-                >
-                  <div className="bg-error text-white px-8 py-3 rounded-full font-black uppercase tracking-widest text-3xl rotate-[15deg] border-[6px] border-white shadow-2xl flex items-center gap-2">
-                    <X size={36} strokeWidth={4} /> PASS
-                  </div>
-                </motion.div>
-              </>
-            )}
-
-            <div className="w-full h-full pointer-events-none [&_button]:pointer-events-auto [&_a]:pointer-events-auto">
-              <VenueCard 
-                card={card} 
-                slug={slug}
-                isSaved={isSaved(card.spotId)}
-                onSaveToggle={() => handleSaveToggle(card)}
-                budget={budget}
-                vibe={vibe}
-                squadCount={squadCount}
-              />
-            </div>
-          </motion.div>
-        );
-      }).reverse()} {/* Reverse so index 0 is mapped last (top in DOM if zIndex fails, but zIndex handles it) */}
     </div>
   );
 }
