@@ -19,6 +19,12 @@ if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
 // Admin client to list users from auth.users
 const adminClient = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
+  global: {
+    headers: {
+      Authorization: `Bearer ${serviceRoleKey}`,
+      apikey: serviceRoleKey,
+    },
+  },
 });
 
 // Public client to trigger production auth emails (signInWithOtp triggers Supabase -> Resend email dispatch)
@@ -38,28 +44,32 @@ async function main() {
   console.log(`Target URL: ${supabaseUrl}`);
   console.log(`Redirect Callback: ${redirectTo}\n`);
 
-  // 1. Fetch all users via Supabase Admin API
-  const { data: usersData, error: listError } = await adminClient.auth.admin.listUsers({
-    page: 1,
-    perPage: 1000,
-  });
+  let confirmedEmails: string[] = [];
 
-  if (listError || !usersData?.users) {
-    console.error("❌ Failed to fetch user list from Supabase Admin API:", listError?.message || "No data");
-    process.exit(1);
+  // 1. Primary strategy: Supabase GoTrue Admin API
+  const { data: usersData, error: listError } = await adminClient.auth.admin.listUsers();
+
+  if (!listError && usersData?.users) {
+    const allUsers = usersData.users;
+    console.log(`Found ${allUsers.length} total user account(s) via GoTrue Admin API.`);
+    confirmedEmails = allUsers
+      .filter((u) => u.email && Boolean(u.email_confirmed_at))
+      .map((u) => u.email!);
+  } else {
+    console.warn("⚠️ GoTrue Admin API unavailable. Falling back to DB RPC (get_beta_tester_emails)...");
+    const { data: rpcData, error: rpcError } = await adminClient.rpc('get_beta_tester_emails');
+
+    if (rpcError || !rpcData) {
+      console.error("❌ Failed to fetch user emails via RPC fallback:", rpcError?.message || "No data");
+      process.exit(1);
+    }
+
+    confirmedEmails = (rpcData as Array<{ email: string }>).map((row) => row.email);
   }
 
-  const allUsers = usersData.users;
-  console.log(`Found ${allUsers.length} total user account(s) in auth.users.`);
+  console.log(`Found ${confirmedEmails.length} user(s) with confirmed emails.\n`);
 
-  // 2. Filter for users with confirmed emails
-  const confirmedUsers = allUsers.filter(
-    (u) => u.email && Boolean(u.email_confirmed_at)
-  );
-
-  console.log(`Filtered to ${confirmedUsers.length} user(s) with confirmed emails.\n`);
-
-  if (confirmedUsers.length === 0) {
+  if (confirmedEmails.length === 0) {
     console.log("⚠️ No confirmed email users found to process.");
     process.exit(0);
   }
@@ -69,11 +79,10 @@ async function main() {
   const failureDetails: Array<{ email: string; error: string }> = [];
 
   // 3. Process each confirmed user idempotently
-  for (let i = 0; i < confirmedUsers.length; i++) {
-    const user = confirmedUsers[i];
-    const email = user.email!;
+  for (let i = 0; i < confirmedEmails.length; i++) {
+    const email = confirmedEmails[i];
 
-    console.log(`[${i + 1}/${confirmedUsers.length}] Processing ${email}...`);
+    console.log(`[${i + 1}/${confirmedEmails.length}] Processing ${email}...`);
 
     try {
       const { error: otpError } = await publicClient.auth.signInWithOtp({
@@ -99,7 +108,7 @@ async function main() {
     }
 
     // 1 second delay between requests to avoid rate limits
-    if (i < confirmedUsers.length - 1) {
+    if (i < confirmedEmails.length - 1) {
       await delay(1000);
     }
   }
@@ -108,8 +117,7 @@ async function main() {
   console.log("\n========================================");
   console.log("📊 BETA AUTH EMAIL TEST SUMMARY");
   console.log("========================================");
-  console.log(`Total users in database : ${allUsers.length}`);
-  console.log(`Confirmed email users   : ${confirmedUsers.length}`);
+  console.log(`Confirmed email users   : ${confirmedEmails.length}`);
   console.log(`Successfully sent       : ${successCount}`);
   console.log(`Failed                  : ${failureCount}`);
 
