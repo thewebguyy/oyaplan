@@ -1,3 +1,4 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
 import { AnalyticsService } from './analytics/analyticsService';
 
@@ -25,7 +26,7 @@ export class GrowthEngine {
   static calculateFraudScore(
     referrerId: string, 
     refereeId: string, 
-    clientContext: any
+    clientContext: Record<string, unknown>
   ): { score: FraudScore; flags: string[] } {
     const flags: string[] = [];
     let severity = 0; // 0 = safe, 100 = critical
@@ -61,7 +62,7 @@ export class GrowthEngine {
    * Logs to Phase 8 Analytics Layer.
    */
   static async claimAttribution(payload: AttributionPayload, userId?: string) {
-    const { session_id, referrer_code, landing_path, device_fingerprint, ip_address, ...utms } = payload;
+    const { session_id, referrer_code, landing_path, utm_source, utm_medium, utm_campaign, utm_content, utm_term } = payload;
 
     const { error } = await supabase
       .from('attribution_sessions')
@@ -69,7 +70,11 @@ export class GrowthEngine {
         session_id,
         user_id: userId || null,
         referrer_code,
-        ...utms,
+        utm_source,
+        utm_medium,
+        utm_campaign,
+        utm_content,
+        utm_term,
         landing_path,
         updated_at: new Date().toISOString()
       }, { onConflict: 'session_id' });
@@ -84,14 +89,14 @@ export class GrowthEngine {
       }, userId);
     }
 
-    if (utms.utm_campaign || utms.utm_source) {
+    if (utm_campaign || utm_source) {
       await AnalyticsService.track('utm_captured', {
         session_id,
         properties: { 
           category: 'Acquisition',
-          utm_campaign: utms.utm_campaign,
-          utm_source: utms.utm_source,
-          utm_medium: utms.utm_medium,
+          utm_campaign,
+          utm_source,
+          utm_medium,
           version: '1.0'
         }
       }, userId);
@@ -102,7 +107,7 @@ export class GrowthEngine {
    * Generates or retrieves a user's referral code.
    * Handles user_id race conditions and 6-char code unique collisions.
    */
-  static async getUserReferralCode(userId: string, client?: any): Promise<string | null> {
+  static async getUserReferralCode(userId: string, client?: SupabaseClient): Promise<string | null> {
     const db = client || supabase;
 
     // 1. Try to fetch existing

@@ -104,7 +104,16 @@ export async function getPendingVerificationTasks(): Promise<
 
   if (error || !data) return [];
 
-  return data.map((item: any) => ({
+  interface QueueItem {
+    id: string;
+    venue_id: string;
+    image_url: string;
+    ocr_status: string;
+    created_at: string;
+    venues?: { name?: string } | null;
+  }
+
+  return (data as unknown as QueueItem[]).map((item: QueueItem) => ({
     id: item.id,
     venue_id: item.venue_id,
     venue_name: item.venues?.name || "Unknown Venue",
