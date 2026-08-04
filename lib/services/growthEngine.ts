@@ -100,30 +100,68 @@ export class GrowthEngine {
 
   /**
    * Generates or retrieves a user's referral code.
+   * Handles user_id race conditions and 6-char code unique collisions.
    */
-  static async getUserReferralCode(userId: string): Promise<string | null> {
+  static async getUserReferralCode(userId: string, client?: any): Promise<string | null> {
+    const db = client || supabase;
+
     // 1. Try to fetch existing
-    const { data } = await supabase
+    const { data: existing } = await db
       .from('referral_codes')
       .select('code')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
-    if (data?.code) return data.code;
+    if (existing?.code) return existing.code;
 
-    // 2. Generate new if missing
-    const code = Array.from({ length: 6 }, () => 
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
-    ).join('');
+    // 2. Retry loop (max 3 attempts) handling collisions & race conditions
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const code = Array.from({ length: 6 }, () => 
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
+      ).join('');
 
-    const { error, data: newCode } = await supabase
-      .from('referral_codes')
-      .insert({ user_id: userId, code })
-      .select('code')
-      .single();
-      
-    if (error || !newCode) return null;
-    return newCode.code;
+      const { error } = await db
+        .from('referral_codes')
+        .insert({ user_id: userId, code })
+        .select('code')
+        .maybeSingle();
+
+      if (error) {
+        // Race condition: another concurrent request inserted a code for this user_id
+        if (
+          error.message?.includes('referral_codes_user_id_key') || 
+          error.details?.includes('user_id')
+        ) {
+          const { data: raceCheck } = await db
+            .from('referral_codes')
+            .select('code')
+            .eq('user_id', userId)
+            .maybeSingle();
+          if (raceCheck?.code) return raceCheck.code;
+        }
+
+        // Code collision: random 6-character code collided with an existing primary key
+        if (
+          error.code === '23505' || 
+          error.message?.includes('duplicate key') || 
+          error.message?.includes('code')
+        ) {
+          continue;
+        }
+
+        console.error('Failed to generate referral code:', error);
+        return null;
+      }
+
+      const { data: check } = await db
+        .from('referral_codes')
+        .select('code')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (check?.code) return check.code;
+    }
+
+    return null;
   }
 
   /**

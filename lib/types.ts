@@ -1,5 +1,7 @@
 
 
+import { Experience } from "./constants/experiences";
+
 export type Area = {
   id: string;
   name: string;
@@ -39,6 +41,9 @@ export type Spot = {
   };
   computed_confidence_score?: number;
   confidence_reasons?: string[];
+  best_for?: (Experience | string)[];
+  not_recommended_for?: (Experience | string)[];
+  planning_notes?: string[];
 };
      
 export type ForgeInput = {

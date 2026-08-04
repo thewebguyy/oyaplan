@@ -21,7 +21,7 @@ describe('DecisionCardViewModel Mapper tests', () => {
     zone: 'island',
     computed_confidence_score: 95,
     verified_by: 'owner_verified',
-    price_updated_at: '2026-08-01T12:00:00Z',
+    price_updated_at: new Date().toISOString(),
     price_source: 'owner_submission'
   };
 

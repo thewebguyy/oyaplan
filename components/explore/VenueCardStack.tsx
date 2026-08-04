@@ -7,6 +7,7 @@ import { Spot } from "@/lib/types";
 import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import { VenueCard } from "./VenueCard";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
+import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
 interface VenueCardStackProps {
   spots: DecisionCardViewModel[];
@@ -47,7 +48,7 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
     // Swipe Left (Pass)
     else if (info.offset.x < -threshold || info.velocity.x < -swipeVelocity) {
       await controls.start({ x: -window.innerWidth, opacity: 0, transition: { duration: 0.3 } });
-      handleSwipeLeft();
+      handleSwipeLeft(activeSpots[0]);
     }
     // Snap back
     else {
@@ -55,22 +56,50 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
     }
   };
 
-  const handleSwipeRight = (card: DecisionCardViewModel) => {
-    const rawSpot = rawSpots.find(s => s.id === card.spotId);
-    if (rawSpot && !isSaved(card.spotId)) saveSpot(rawSpot);
+  const handleSwipeRight = (card?: DecisionCardViewModel) => {
+    if (card) {
+      const rawSpot = rawSpots.find(s => s.id === card.spotId);
+      if (rawSpot && !isSaved(card.spotId)) saveSpot(rawSpot);
+      AnalyticsService.track('spot_saved', {
+        session_id: '00000000-0000-0000-0000-000000000000',
+        properties: {
+          category: 'Engagement',
+          spot_id: card.spotId,
+          position_in_stack: currentIndex,
+          area: slug,
+          vibe: vibe || 'any',
+          version: '1.0'
+        }
+      });
+    }
     nextCard();
   };
 
-  const handleSwipeLeft = () => {
+  const handleSwipeLeft = (card?: DecisionCardViewModel) => {
+    if (card) {
+      AnalyticsService.track('spot_passed', {
+        session_id: '00000000-0000-0000-0000-000000000000',
+        properties: {
+          category: 'Engagement',
+          spot_id: card.spotId,
+          position_in_stack: currentIndex,
+          area: slug,
+          vibe: vibe || 'any',
+          version: '1.0'
+        }
+      });
+    }
     nextCard();
   };
 
   const handleSwipeLeftClick = async () => {
+    if (activeSpots.length === 0) return;
     await controls.start({ x: -window.innerWidth, opacity: 0, transition: { duration: 0.3 } });
-    handleSwipeLeft();
+    handleSwipeLeft(activeSpots[0]);
   };
 
   const handleSwipeRightClick = async (card: DecisionCardViewModel) => {
+    if (!card) return;
     await controls.start({ x: window.innerWidth, opacity: 0, transition: { duration: 0.3 } });
     handleSwipeRight(card);
   };
@@ -119,13 +148,13 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
 
   return (
     <div className="relative w-full max-w-[420px] mx-auto h-[600px] max-h-[75vh] flex items-center justify-center">
-      {/* Swipe Affordance (Now interactive buttons!) */}
-      {activeSpots.length > 0 && currentIndex === 0 && (
+      {/* Swipe Affordance (Always visible while cards remain) */}
+      {activeSpots.length > 0 && (
         <motion.div 
           className="absolute -bottom-24 left-0 right-0 flex justify-center items-center gap-8 z-20"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
         >
           <button 
             onClick={handleSwipeLeftClick}

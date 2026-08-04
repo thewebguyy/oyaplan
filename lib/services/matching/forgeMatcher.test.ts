@@ -278,6 +278,22 @@ describe('forgePlans — vibe filter', () => {
     const results = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [spot]);
     expect(results).toHaveLength(1);
   });
+
+  it('excludes spots listed in not_recommended_for for the requested experience (e.g. CafeOne for Date Night)', () => {
+    const cafeOne = makeSpot({
+      id: 'cafe-one-uuid',
+      name: 'CafeOne',
+      vibe_tags: ['Chill', 'Dinner'],
+      category: 'cafe',
+      best_for: ['coffee_date', 'remote_work', 'study'],
+      not_recommended_for: ['romantic_dinner', 'anniversary']
+    });
+    const dinnerResults = forgePlans({ ...BASE_INPUT, vibe: 'Dinner' }, [cafeOne]);
+    expect(dinnerResults).toHaveLength(0);
+
+    const chillResults = forgePlans({ ...BASE_INPUT, vibe: 'Chill' }, [cafeOne]);
+    expect(chillResults).toHaveLength(1);
+  });
 });
 
 // ─── Filter: pinned spot ──────────────────────────────────────────────────────

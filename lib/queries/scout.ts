@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseBrowser } from "@/lib/supabase";
 
 export interface ScoutProfile {
   user_id: string;
@@ -33,7 +33,10 @@ export async function getScoutProfile(userId: string): Promise<ScoutProfile | nu
  * Registers an authenticated user as a scout.
  */
 export async function createScoutProfile(userId: string, username: string): Promise<{ success: boolean; error?: string }> {
-  const { error } = await supabase.from("scout_profiles").insert({
+  // Use cookie-backed browser client so auth session JWT is attached to RLS policy check (auth.uid() = user_id)
+  const client = typeof window !== "undefined" ? supabaseBrowser : supabase;
+
+  const { error } = await client.from("scout_profiles").insert({
     user_id: userId,
     username: username,
     trust_tier: "novice",
@@ -46,8 +49,19 @@ export async function createScoutProfile(userId: string, username: string): Prom
   });
 
   if (error) {
-    return { success: false, error: error.message };
+    console.error("[ScoutProfile] Insert error:", error);
+
+    // Standardized user-friendly error mapping (never leak raw DB error strings)
+    if (error.code === "23505" || error.message?.includes("duplicate") || error.message?.includes("unique")) {
+      return { success: false, error: "That scout username is already taken. Please choose another." };
+    }
+    if (error.message?.includes("row-level security") || error.message?.includes("JWT") || error.code === "42501") {
+      return { success: false, error: "Please sign in first to join Scouts." };
+    }
+
+    return { success: false, error: "Something went wrong. Please try again." };
   }
+
   return { success: true };
 }
 

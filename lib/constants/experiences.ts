@@ -1,0 +1,38 @@
+export const EXPERIENCES = {
+  COFFEE_DATE: "coffee_date",
+  FIRST_DATE: "first_date",
+  ANNIVERSARY: "anniversary",
+  ROMANTIC_DINNER: "romantic_dinner",
+  REMOTE_WORK: "remote_work",
+  STUDY: "study",
+  CLIENT_MEETING: "client_meeting",
+  QUICK_BITES: "quick_bites",
+  FAMILY_LUNCH: "family_lunch",
+  AFTER_WORK: "after_work",
+  GIRLS_NIGHT: "girls_night",
+  GROUP_HANGOUT: "group_hangout",
+  CASUAL_HANGOUT: "casual_hangout",
+  SOLO_REFLECTION: "solo_reflection",
+  WEEKEND_BRUNCH: "weekend_brunch",
+  LATE_NIGHT: "late_night",
+  LIVE_MUSIC: "live_music",
+  BIRTHDAY_TURNUP: "birthday_turnup",
+} as const;
+
+export type Experience = typeof EXPERIENCES[keyof typeof EXPERIENCES];
+
+/**
+ * Maps input vibe strings (e.g. 'Dinner', 'Chill', 'date-night') to required/preferred Experience keys.
+ */
+export const VIBE_EXPERIENCE_MAP: Record<string, Experience[]> = {
+  "date-night": [EXPERIENCES.ROMANTIC_DINNER, EXPERIENCES.FIRST_DATE, EXPERIENCES.ANNIVERSARY],
+  "dinner": [EXPERIENCES.ROMANTIC_DINNER, EXPERIENCES.FIRST_DATE, EXPERIENCES.ANNIVERSARY],
+  "chill": [EXPERIENCES.GROUP_HANGOUT, EXPERIENCES.COFFEE_DATE, EXPERIENCES.CASUAL_HANGOUT, EXPERIENCES.AFTER_WORK],
+  "squad-linkup": [EXPERIENCES.GROUP_HANGOUT, EXPERIENCES.AFTER_WORK, EXPERIENCES.GIRLS_NIGHT],
+  "party": [EXPERIENCES.BIRTHDAY_TURNUP, EXPERIENCES.LATE_NIGHT, EXPERIENCES.LIVE_MUSIC],
+  "birthday": [EXPERIENCES.BIRTHDAY_TURNUP, EXPERIENCES.LATE_NIGHT, EXPERIENCES.GROUP_HANGOUT],
+  "quick": [EXPERIENCES.QUICK_BITES, EXPERIENCES.COFFEE_DATE],
+  "quick-link": [EXPERIENCES.QUICK_BITES, EXPERIENCES.COFFEE_DATE],
+  "foodie": [EXPERIENCES.ROMANTIC_DINNER, EXPERIENCES.FAMILY_LUNCH, EXPERIENCES.WEEKEND_BRUNCH, EXPERIENCES.QUICK_BITES],
+  "brunch": [EXPERIENCES.WEEKEND_BRUNCH, EXPERIENCES.COFFEE_DATE, EXPERIENCES.FAMILY_LUNCH],
+};

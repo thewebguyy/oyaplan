@@ -1,6 +1,7 @@
 import { Spot } from '../types';
 import { CandidateEngine, PlanningContext, PlanningCandidate } from './types';
 import { isSpotInArea, getZoneForArea } from './utils';
+import { VIBE_EXPERIENCE_MAP } from '../constants/experiences';
 
 const CATEGORY_MAP: Record<string, string[]> = {
   "Eat and drink": ["restaurant", "bar", "cafe"],
@@ -64,6 +65,24 @@ export class DefaultCandidateEngine implements CandidateEngine {
         }
       }
 
+      // Experience Suitability Filter (pinnedSpotId bypasses this)
+      if (spot.id !== pinnedSpotId && vibe) {
+        const normVibe = vibe.toLowerCase().trim();
+        const requiredExperiences = VIBE_EXPERIENCE_MAP[normVibe] || [];
+
+        // 1. Explicit Exclusion: If spot explicitly lists required experience in not_recommended_for
+        if (spot.not_recommended_for && spot.not_recommended_for.length > 0) {
+          const isExplicitlyExcluded = requiredExperiences.some(req => spot.not_recommended_for?.includes(req));
+          if (isExplicitlyExcluded) return false;
+        }
+
+        // 2. Positive Match: If spot defines best_for array, require experience or vibe tag match
+        if (spot.best_for && spot.best_for.length > 0) {
+          const matchesExperience = requiredExperiences.some(req => spot.best_for?.includes(req));
+          const matchesVibeTag = spot.vibe_tags.includes(vibe);
+          if (!matchesExperience && !matchesVibeTag) return false;
+        }
+      }
 
       // Vibe Filter (pinnedSpotId bypasses this)
       if (spot.id === pinnedSpotId) return true;

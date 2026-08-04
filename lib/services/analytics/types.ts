@@ -70,6 +70,14 @@ export const EventSchemas = {
     total_cost: z.number().optional(),
     version: z.literal('1.0')
   }),
+  'spot_saved': z.object({
+    category: z.literal('Engagement'),
+    spot_id: z.string(),
+    position_in_stack: z.number().optional(),
+    area: z.string().optional(),
+    vibe: z.string().optional(),
+    version: z.literal('1.0')
+  }),
   'page_viewed': z.object({
     category: z.literal('Engagement'),
     path: z.string(),
@@ -158,6 +166,45 @@ export const EventSchemas = {
   'identity_merge_skipped_no_session': z.object({
     category: z.literal('Operations'),
     reason: z.string(),
+    version: z.literal('1.0')
+  }),
+
+  // Scout Portal
+  'scout_profile_attempt': z.object({
+    category: z.literal('Scout'),
+    username: z.string(),
+    version: z.literal('1.0')
+  }),
+  'scout_profile_created': z.object({
+    category: z.literal('Scout'),
+    username: z.string(),
+    version: z.literal('1.0')
+  }),
+  'scout_profile_failed': z.object({
+    category: z.literal('Scout'),
+    username: z.string(),
+    error: z.string(),
+    version: z.literal('1.0')
+  }),
+
+  // Spot Swiping
+  'spot_passed': z.object({
+    category: z.literal('Engagement'),
+    spot_id: z.string(),
+    position_in_stack: z.number(),
+    area: z.string(),
+    vibe: z.string(),
+    version: z.literal('1.0')
+  }),
+
+  // Referral Events
+  'referral_code_requested': z.object({
+    category: z.literal('Growth'),
+    version: z.literal('1.0')
+  }),
+  'referral_code_generated': z.object({
+    category: z.literal('Growth'),
+    code: z.string(),
     version: z.literal('1.0')
   })
 } as const;

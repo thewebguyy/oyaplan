@@ -48,6 +48,7 @@ import { Suspense } from "react";
 import NavBar from "@/components/NavBar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ClientOnly from "@/components/ClientOnly";
+import BetaDiagnostics from "@/components/BetaDiagnostics";
 import { OriginProvider } from "@/lib/location/OriginContext";
 import { MomentOfDelight } from "@/components/ui/moment-of-delight";
 
@@ -81,6 +82,7 @@ export default function RootLayout({
               <AuthModal />
               <Toaster richColors position="bottom-right" />
               <ClientOnly>
+                <BetaDiagnostics />
                 <MomentOfDelight triggerKey="plan_saved" message="First plan saved!" />
                 <MomentOfDelight triggerKey="outing_planned" message="First outing planned!" />
                 <MomentOfDelight triggerKey="venue_suggested" message="You're officially a Scout!" />

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ShieldCheck, Award, Star, Loader2, ListChecks, CheckCircle2 } from "lucide-react";
 import { ScoutProfile } from "@/lib/queries/scout";
 import { createScoutProfile } from "@/lib/queries/scout";
+import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
 interface ScoutDashboardClientProps {
   userId: string;
@@ -35,17 +36,32 @@ export default function ScoutDashboardClient({
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!usernameInput.trim()) {
+    const trimmed = usernameInput.trim();
+    if (!trimmed) {
       setError("Please choose a username.");
       return;
     }
 
     setLoading(true);
-    const res = await createScoutProfile(userId, usernameInput.trim());
+    AnalyticsService.track('scout_profile_attempt', {
+      session_id: '00000000-0000-0000-0000-000000000000',
+      properties: { category: 'Scout', username: trimmed, version: '1.0' }
+    }, userId);
+
+    const res = await createScoutProfile(userId, trimmed);
     if (res.success) {
+      AnalyticsService.track('scout_profile_created', {
+        session_id: '00000000-0000-0000-0000-000000000000',
+        properties: { category: 'Scout', username: trimmed, version: '1.0' }
+      }, userId);
       window.location.reload();
     } else {
-      setError(res.error || "Failed to create profile. Username might be taken.");
+      const errorMsg = res.error || "That scout username is already taken. Please choose another.";
+      AnalyticsService.track('scout_profile_failed', {
+        session_id: '00000000-0000-0000-0000-000000000000',
+        properties: { category: 'Scout', username: trimmed, error: errorMsg, version: '1.0' }
+      }, userId);
+      setError(errorMsg);
       setLoading(false);
     }
   };
