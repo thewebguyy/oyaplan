@@ -206,6 +206,21 @@ export const EventSchemas = {
     category: z.literal('Growth'),
     code: z.string(),
     version: z.literal('1.0')
+  }),
+
+  // Micro-feedback loops
+  'plan_usefulness_rated': z.object({
+    category: z.literal('Trust'),
+    plan_id: z.string(),
+    rating: z.enum(['up', 'down']),
+    version: z.literal('1.0')
+  }),
+  'price_accuracy_reported': z.object({
+    category: z.literal('Trust'),
+    venue_id: z.string(),
+    venue_name: z.string(),
+    status: z.enum(['accurate', 'changed', 'outdated']),
+    version: z.literal('1.0')
   })
 } as const;
 

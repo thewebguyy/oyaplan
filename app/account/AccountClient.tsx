@@ -124,30 +124,32 @@ export default function AccountClient({
           </p>
         </div>
 
-        {/* 2. The Stat Strip — Numbers as Passport Stamps */}
-        <div className="bg-white rounded-[24px] p-6 shadow-sm border border-[#E5E7EB] flex items-center justify-between animate-in slide-in-from-bottom-4 fade-in duration-500 delay-200 fill-mode-both relative z-10">
-          <div className="flex-1 text-center">
-            <div className="text-2xl font-black text-[#008751]">{savedPlansCount}</div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-1">Plans</div>
+        {/* 2. User History Summary Strip */}
+        <div className="bg-white rounded-[24px] p-5 shadow-sm border border-[#E5E7EB] grid grid-cols-4 gap-2 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-200 fill-mode-both relative z-10">
+          <div className="text-center">
+            <div className="text-xl font-black text-[#008751]">{savedPlansCount}</div>
+            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Outings</div>
           </div>
-          <div className="w-px h-10 bg-border-default"></div>
-          <div className="flex-1 text-center">
-            <div className="text-2xl font-black text-[#008751]">
-              {(profile.role === 'admin' || profile.role === 'scout') ? '1+' : '0'}
+          <div className="text-center border-l border-border-default">
+            <div className="text-xl font-black text-[#008751]">{savedPlansCount}</div>
+            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Saved</div>
+          </div>
+          <div className="text-center border-l border-border-default">
+            <div className="text-xl font-black text-[#008751]">
+              {(profile.role === 'admin' || profile.role === 'scout') ? '1' : '0'}
             </div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-1">Suggestions</div>
+            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Verified</div>
           </div>
-          <div className="w-px h-10 bg-border-default"></div>
-          <div className="flex-1 text-center">
-            <div className="text-2xl font-black text-[#008751]">Lagos</div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-1">City</div>
+          <div className="text-center border-l border-border-default">
+            <div className="text-xl font-black text-[#008751]">0</div>
+            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Invited</div>
           </div>
         </div>
 
-        {/* 3. Section Rhythm — Cards That Breathe */}
+        {/* 3. Section Rhythm */}
         <div className="space-y-4 pt-2 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-300 fill-mode-both">
           
-          <Link href="/dashboard" className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
+          <Link href="/dashboard" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
@@ -162,7 +164,7 @@ export default function AccountClient({
             </div>
           </Link>
 
-          <Link href="/scout" className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
+          <Link href="/scout" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
@@ -170,7 +172,7 @@ export default function AccountClient({
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-text-primary">OyaScout Dashboard</h3>
-                  <p className="text-sm text-text-muted mt-0.5">Verify prices & earn points</p>
+                  <p className="text-sm text-text-muted mt-0.5">Verify prices & earn status</p>
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 text-text-muted" />
@@ -230,21 +232,21 @@ export default function AccountClient({
 
         </div>
 
-        {/* 4. Referral — Make It Feel Like a Gift */}
-        <div className="bg-[#FFF9C4] rounded-[24px] p-7 shadow-sm mt-8 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-400 fill-mode-both">
-          <div className="flex items-center gap-4 mb-5">
-            <div className="w-12 h-12 rounded-full bg-white text-[#008751] flex items-center justify-center shrink-0 shadow-sm">
+        {/* 4. Invite Squad Ticket */}
+        <div className="bg-[#FFF9C4] rounded-[24px] p-6 shadow-sm mt-8 space-y-4 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-400 fill-mode-both border border-amber-200/60">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-full bg-white text-[#008751] flex items-center justify-center shrink-0 shadow-xs">
               <Share2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#00603A]">Invite Friends</h2>
-              <p className="text-sm text-[#00603A]/80 mt-0.5">Share your verified price confidence</p>
+              <h2 className="text-base font-bold text-[#00603A]">Invite your squad</h2>
+              <p className="text-xs text-[#00603A]/80 mt-0.5">Everyone gets better planning together.</p>
             </div>
           </div>
 
-          <div className="bg-white/60 rounded-[16px] border-2 border-dashed border-[#008751]/30 p-4 mb-5 flex items-center justify-between">
-            <span className="font-mono font-bold text-[#008751] text-lg tracking-wider">
-              {codeState || "GENERATING..."}
+          <div className="bg-white/90 rounded-[16px] border border-[#008751]/20 p-3.5 flex items-center justify-between gap-2 shadow-xs">
+            <span className="font-mono font-bold text-[#008751] text-base tracking-wider truncate">
+              {codeState ? `https://oyaplan.com/?ref=${codeState}` : "GENERATING..."}
             </span>
             <button 
               onClick={() => {
@@ -254,7 +256,7 @@ export default function AccountClient({
                   toast.success("Referral link copied!");
                 }
               }}
-              className="text-sm font-black text-[#008751] uppercase tracking-wider tap-feedback bg-white px-4 py-2 rounded-full shadow-sm"
+              className="text-xs font-black text-[#008751] uppercase tracking-wider tap-feedback bg-[#FFF9C4] hover:bg-amber-200 px-3.5 py-2 rounded-xl shrink-0 transition-colors"
             >
               Copy
             </button>
@@ -269,9 +271,9 @@ export default function AccountClient({
                 window.open(waUrl, "_blank");
               }
             }}
-            className="w-full bg-[#008751] text-white rounded-[16px] h-14 font-bold text-base flex items-center justify-center gap-2 tap-feedback shadow-sm"
+            className="w-full h-13 bg-[#008751] hover:bg-[#006b41] text-white rounded-[16px] font-bold text-sm flex items-center justify-center gap-2 tap-feedback shadow-xs transition-colors"
           >
-            Share on WhatsApp <ChevronRight className="w-5 h-5" />
+            Share on WhatsApp <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 

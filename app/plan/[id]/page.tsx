@@ -22,6 +22,7 @@ import { TrustStatus } from "@/components/ui/trust-badge";
 import { BudgetFitStatus } from "@/components/ui/budget-fit-badge";
 import { SharedPlanRow, Spot } from "@/lib/types";
 import { TrendingUp } from "lucide-react";
+import RecommendationFeedback from "@/components/RecommendationFeedback";
 
 export const dynamic = "force-dynamic";
 
@@ -199,6 +200,11 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           startArea={plan?.start_area || "lekki"}
           spotsList={spots || []}
         />
+
+        {/* Recommendation Utility Feedback */}
+        <div className="mt-8">
+          <RecommendationFeedback planId={plan?.id || id} />
+        </div>
 
         {/* Beta Feedback */}
         <div className="mt-12 pt-8 border-t border-border-default/50 text-center space-y-3">

@@ -180,6 +180,24 @@ export default function ScoutDashboardClient({
         </div>
       </div>
 
+      {/* Trust Progress Bar */}
+      <div className="bg-[#008751]/5 border border-[#008751]/15 rounded-2xl p-4.5 flex items-center justify-between gap-4">
+        <div className="space-y-0.5">
+          <p className="text-xs font-bold text-[#008751] uppercase tracking-wider">Trust Progress</p>
+          <p className="text-sm font-bold text-midnight-lagoon">
+            {profile.accepted_submissions >= 5 
+              ? "Highest community trust tier unlocked"
+              : `${5 - profile.accepted_submissions} more verified menus to reach Trusted Scout`}
+          </p>
+        </div>
+        <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden shrink-0">
+          <div 
+            className="h-full bg-[#008751] rounded-full transition-all duration-300"
+            style={{ width: `${Math.min(100, Math.max(10, (profile.accepted_submissions / 5) * 100))}%` }}
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Verification Task Hero Card System */}
         <div className="md:col-span-2 space-y-4">

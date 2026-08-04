@@ -76,6 +76,7 @@ export default function MobileBottomNav() {
             <Link
               key={item.name}
               href={href}
+              prefetch={true}
               className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback ${
                 item.isActive
                   ? "text-[#008751] font-bold"
@@ -100,28 +101,38 @@ export default function MobileBottomNav() {
         })}
 
         {/* Account / Sign In Tab */}
-        <button
-          onClick={() => {
-            if (!showSessionState) {
-              openModal();
-            } else {
-              window.location.href = "/account";
-            }
-          }}
-          className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback ${
-            pathname === "/account"
-              ? "text-[#008751] font-bold"
-              : "text-[#6B7280] hover:text-[#1A1A1A]"
-          }`}
-          aria-label={showSessionState ? "Account profile" : "Sign in"}
-        >
-          <div className="relative">
-            <User className="w-5 h-5" />
-          </div>
-          <span className="text-[11px] mt-1 font-medium tracking-tight">
-            {showSessionState ? "Account" : "Sign In"}
-          </span>
-        </button>
+        {showSessionState ? (
+          <Link
+            href="/account"
+            prefetch={true}
+            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback ${
+              pathname === "/account"
+                ? "text-[#008751] font-bold"
+                : "text-[#6B7280] hover:text-[#1A1A1A]"
+            }`}
+            aria-label="Account profile"
+          >
+            <div className="relative">
+              <User className="w-5 h-5" />
+            </div>
+            <span className="text-[11px] mt-1 font-medium tracking-tight">
+              Account
+            </span>
+          </Link>
+        ) : (
+          <button
+            onClick={() => openModal()}
+            className="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback text-[#6B7280] hover:text-[#1A1A1A]"
+            aria-label="Sign in"
+          >
+            <div className="relative">
+              <User className="w-5 h-5" />
+            </div>
+            <span className="text-[11px] mt-1 font-medium tracking-tight">
+              Sign In
+            </span>
+          </button>
+        )}
       </nav>
     </div>
   );
