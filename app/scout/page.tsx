@@ -10,12 +10,8 @@ export default async function ScoutPage() {
   const serverClient = await createServerClient();
   const { data: { user } } = await serverClient.auth.getUser();
 
-  if (!user) {
-    // Redirect to login but retain scout path
-    redirect("/admin/login?next=/scout");
-  }
-
-  const profile = await getScoutProfile(user.id);
+  const userId = user?.id ?? null;
+  const profile = userId ? await getScoutProfile(userId) : null;
   const leaderboard = await getScoutLeaderboard();
   const tasks = await getPendingVerificationTasks();
 
@@ -35,7 +31,7 @@ export default async function ScoutPage() {
 
       <div className="max-w-4xl mx-auto px-4 pt-10">
         <ScoutDashboardClient
-          userId={user.id}
+          userId={userId}
           initialProfile={profile}
           leaderboard={leaderboard}
           initialTasks={tasks}

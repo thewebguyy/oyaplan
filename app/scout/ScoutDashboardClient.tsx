@@ -5,9 +5,10 @@ import { ShieldCheck, Award, Star, Loader2, ListChecks, CheckCircle2 } from "luc
 import { ScoutProfile } from "@/lib/queries/scout";
 import { createScoutProfile } from "@/lib/queries/scout";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 interface ScoutDashboardClientProps {
-  userId: string;
+  userId: string | null;
   initialProfile: ScoutProfile | null;
   leaderboard: ScoutProfile[];
   initialTasks: Array<{
@@ -26,6 +27,7 @@ export default function ScoutDashboardClient({
   leaderboard,
   initialTasks,
 }: ScoutDashboardClientProps) {
+  const { openModal } = useAuth();
   const [profile, setProfile] = useState<ScoutProfile | null>(initialProfile);
   const [usernameInput, setUsernameInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,6 +38,12 @@ export default function ScoutDashboardClient({
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!userId) {
+      openModal("Sign in to join OyaPlan Scouts", "/scout");
+      return;
+    }
+
     const trimmed = usernameInput.trim();
     if (!trimmed) {
       setError("Please choose a username.");
