@@ -13,7 +13,8 @@ export default function MobileBottomNav() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   // Hide on standalone forms / dedicated pages

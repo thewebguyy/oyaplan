@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldCheck, Award, Star, Loader2, ListChecks, CheckCircle2 } from "lucide-react";
+import { Award, Star, Loader2, ListChecks, CheckCircle2 } from "lucide-react";
 import { ScoutProfile } from "@/lib/queries/scout";
 import { createScoutProfile } from "@/lib/queries/scout";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
@@ -29,7 +29,7 @@ export default function ScoutDashboardClient({
   initialTasks,
 }: ScoutDashboardClientProps) {
   const { openModal } = useAuth();
-  const [profile, setProfile] = useState<ScoutProfile | null>(initialProfile);
+  const [profile] = useState<ScoutProfile | null>(initialProfile);
   const [usernameInput, setUsernameInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
