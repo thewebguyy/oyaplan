@@ -159,6 +159,12 @@
     @apply border-border-default;
   }
   
+  html,
+  body {
+    overscroll-behavior-y: contain;
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-background text-text-primary antialiased;
     font-family: var(--font-body);
