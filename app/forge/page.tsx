@@ -27,6 +27,7 @@ const forgeParamsSchema = z.object({
   area: z.string().optional(),
   pinned: z.string().optional(),
   fresh: z.string().optional(),
+  mode: z.enum(["ride-hailing", "public-transit", "driving"]).optional(),
 });
 
 function isBotRequest(userAgent: string | null): boolean {
@@ -151,6 +152,7 @@ export default async function ForgePage({
     budget: parsed.data.budget,
     vibe: VIBE_URL_MAP[parsed.data.vibe] || parsed.data.vibe,
     pinnedSpotId: validatedPinnedId,
+    transportMode: parsed.data.mode || "ride-hailing",
   };
 
   // Run Matching/Pricing Engine: 2-Pass Matching (gated by area presence)

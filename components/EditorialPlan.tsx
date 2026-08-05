@@ -13,6 +13,7 @@ import { getVibeConfig } from "@/lib/constants/vibes";
 import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 import { Shield, Check } from "lucide-react";
 import RouteCard from "./dossier/RouteCard";
+import TransportEstimateCard from "./TransportEstimateCard";
 import { LocationService } from "@/lib/services/LocationService";
 
 interface EditorialPlanProps {
@@ -144,6 +145,19 @@ export default function EditorialPlan({
             </li>
           </ul>
         </div>
+
+        {/* Transport Range & Confidence Card */}
+        <TransportEstimateCard
+          minCost={plan.transportMinCost}
+          maxCost={plan.transportMaxCost}
+          transportCost={plan.transportCost}
+          mode={plan.transportMode || input.transportMode || "ride-hailing"}
+          confidenceScore={plan.transportConfidenceScore}
+          confidenceLabel={plan.transportConfidenceLabel || "Typical estimate"}
+          badgeColor={plan.transportConfidenceBadgeColor || "yellow"}
+          assumptions={plan.transportAssumptions}
+          startAreaName={input.startArea && input.startArea !== "anywhere" ? input.startArea : "Yaba"}
+        />
 
         {/* Route Card — only when we have a start area and venue coordinates */}
         {input.startArea && input.startArea !== "anywhere" && plan.spot.coordinates && (() => {

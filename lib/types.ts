@@ -54,6 +54,7 @@ export type ForgeInput = {
   pinnedSpotId?: string;
   categoryGroup?: string;
   daypart?: 'Morning' | 'Afternoon' | 'Evening' | 'Night' | 'Any time';
+  transportMode?: 'ride-hailing' | 'public-transit' | 'driving';
 };
 
 export interface PlanExplanation {
@@ -113,6 +114,13 @@ export type Plan = {
   spot: Spot;
   foodCost: number;
   transportCost: number;
+  transportMinCost?: number;
+  transportMaxCost?: number;
+  transportMode?: "ride-hailing" | "public-transit" | "driving";
+  transportConfidenceScore?: number;
+  transportConfidenceLabel?: string;
+  transportConfidenceBadgeColor?: "green" | "yellow" | "orange";
+  transportAssumptions?: string;
   totalCost: number;
   whyItFits: string;
   explanation?: PlanExplanation;

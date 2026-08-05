@@ -9,6 +9,13 @@ export interface DecisionCardViewModel {
   heroImage?: string;
   venueCost: number;
   transportCost: number;
+  transportMinCost?: number;
+  transportMaxCost?: number;
+  transportMode?: string;
+  transportConfidenceScore?: number;
+  transportConfidenceLabel?: string;
+  transportConfidenceBadgeColor?: "green" | "yellow" | "orange";
+  transportAssumptions?: string;
   totalCost: number;
   budgetFit: string;
   verification: string;

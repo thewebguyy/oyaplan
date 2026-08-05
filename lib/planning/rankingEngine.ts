@@ -22,7 +22,7 @@ export class DefaultRankingEngine implements RankingEngine {
       const costScore = (1 - Math.abs(budget - totalCost) / budget) * config.budgetWeight;
 
       // 2. Vibe matching score
-      const vibeMatches = spot.vibe_tags.filter(t => t === vibe).length;
+      const vibeMatches = (spot.vibe_tags || []).filter((t: string) => t === vibe).length;
       const vibeScore = Math.min(vibeMatches * 5, 10);
 
       // 3. Featured Boost
@@ -30,7 +30,7 @@ export class DefaultRankingEngine implements RankingEngine {
 
       // 4. Tie breaker weight (hash of spot ID segment)
       const idWeight =
-        spot.id.split('-')[0].split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10;
+        spot.id.split('-')[0].split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0) % 10;
       const tieBreaker = idWeight * config.trendingWeight;
 
       // 5. Confidence score boost

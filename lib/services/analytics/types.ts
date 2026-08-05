@@ -10,7 +10,8 @@ export const EventCategory = z.enum([
   'Contribution',
   'Retention',
   'Operations',
-  'AI'
+  'AI',
+  'Feedback'
 ]);
 
 export type EventCategoryType = z.infer<typeof EventCategory>;
@@ -220,6 +221,14 @@ export const EventSchemas = {
     venue_id: z.string(),
     venue_name: z.string(),
     status: z.enum(['accurate', 'changed', 'outdated']),
+    version: z.literal('1.0')
+  }),
+  'transport_actual_feedback': z.object({
+    category: z.literal('Feedback'),
+    mode: z.string(),
+    result: z.enum(['about_right', 'higher', 'lower']),
+    estimated_min: z.number().optional(),
+    estimated_max: z.number().optional(),
     version: z.literal('1.0')
   })
 } as const;

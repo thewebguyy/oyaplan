@@ -1,4 +1,5 @@
 import { Spot, DecisionConfidence, PlanExplanation, RecoverySuggestion } from '../types';
+import { TransportMode } from './transportProfiles';
 
 export interface PlanningRequest {
   startArea?: string;
@@ -9,6 +10,7 @@ export interface PlanningRequest {
   categoryGroup?: string;
   daypart?: 'Morning' | 'Afternoon' | 'Evening' | 'Night' | 'Any time';
   isAdjacent?: boolean;
+  transportMode?: TransportMode;
 }
 
 export interface TransportProvider {
@@ -45,6 +47,13 @@ export interface CostedPlan {
   spot: Spot;
   activityCost: number;
   transportCost: number;
+  transportMinCost?: number;
+  transportMaxCost?: number;
+  transportMode?: TransportMode;
+  transportConfidenceScore?: number;
+  transportConfidenceLabel?: string;
+  transportConfidenceBadgeColor?: "green" | "yellow" | "orange";
+  transportAssumptions?: string;
   totalCost: number;
 }
 

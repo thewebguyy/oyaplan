@@ -39,7 +39,8 @@ export function getPrimaryAreaMatches(input: ForgeInput, allSpots: Spot[]): Plan
     vibe: input.vibe,
     pinnedSpotId: input.pinnedSpotId,
     categoryGroup: input.categoryGroup,
-    daypart: input.daypart
+    daypart: input.daypart,
+    transportMode: input.transportMode,
   };
 
   const context = createPlanningContext(request);
@@ -81,7 +82,8 @@ export function getAdjacentZoneMatches(
     pinnedSpotId: input.pinnedSpotId,
     categoryGroup: input.categoryGroup,
     daypart: input.daypart,
-    isAdjacent: true
+    isAdjacent: true,
+    transportMode: input.transportMode,
   };
 
   const context = createPlanningContext(request);
@@ -117,7 +119,8 @@ export function generateRecoverySuggestions(
     vibe: input.vibe,
     pinnedSpotId: input.pinnedSpotId,
     categoryGroup: input.categoryGroup,
-    daypart: input.daypart
+    daypart: input.daypart,
+    transportMode: input.transportMode,
   };
 
   const context = createPlanningContext(request);
