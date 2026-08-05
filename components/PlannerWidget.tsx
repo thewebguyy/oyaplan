@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 
-import { LocationService, Location, UserLocation } from "@/lib/services/LocationService";
+import { LocationService, Location } from "@/lib/services/LocationService";
 import { useTransportCost } from "@/hooks/useTransportCost";
-import { OriginStore } from "@/lib/storage/OriginStore";
-import { Origin } from "@/lib/location/types";
 import { useOrigin } from "@/lib/location/OriginContext";
 import { triggerMoment } from "@/components/ui/moment-of-delight";
 
@@ -60,15 +58,14 @@ export default function PlannerWidget({
   recommendedSpots,
   prefilledLocation,
   selectedArea: controlledArea,
-  setSelectedArea: setControlledArea,
+  setSelectedArea: _setControlledArea,
 }: PlannerWidgetProps) {
   const router = useRouter();
   const [showMoreVibes, setShowMoreVibes] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const [isLocating, setIsLocating] = useState(false);
 
   // NEW LOCATION STATE & PREFERENCES
-  const [internalArea, setInternalArea] = useState<Location | null>(() => {
+  const [internalArea] = useState<Location | null>(() => {
     if (prefilledLocation) {
       return (
         LocationService.getVerifiedAreas().find(
@@ -79,22 +76,16 @@ export default function PlannerWidget({
     return null;
   });
 
-  const selectedArea = controlledArea !== undefined ? controlledArea : internalArea;
   const { origin, status, requestCurrentLocation, setManualOrigin, resetStatus } = useOrigin();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
+  const selectedArea = useMemo(() => {
+    if (controlledArea !== undefined) return controlledArea;
+    if (internalArea) return internalArea;
     if (!prefilledLocation && origin) {
-      const nearest = LocationService.getVerifiedAreas().find(a => a.id === origin.planningAreaSlug) || null;
-      if (nearest) {
-        setInternalArea(nearest);
-        if (setControlledArea) {
-          setControlledArea(nearest);
-        }
-      }
+      return LocationService.getVerifiedAreas().find((a) => a.id === origin.planningAreaSlug) || null;
     }
-  }, [prefilledLocation, origin, setControlledArea]);
+    return null;
+  }, [controlledArea, internalArea, prefilledLocation, origin]);
 
   // Dynamic transport estimate using Location-Aware Hook
   useTransportCost({
@@ -228,7 +219,7 @@ export default function PlannerWidget({
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between flex-wrap gap-1">
             <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280] flex items-center gap-2 flex-wrap">
-              <span>📍 Starting Location{mounted && selectedArea ? ` (${selectedArea.name})` : ""}</span>
+              <span>📍 Starting Location{selectedArea ? ` (${selectedArea.name})` : ""}</span>
               {(status === "permission-denied" || status === "unsupported" || status === "error") && (
                 <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
                   Defaulted to Surulere (tap to change)

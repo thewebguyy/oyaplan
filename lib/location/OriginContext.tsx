@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { Origin, LocationStatus } from "./types";
 import { OriginStore } from "../storage/OriginStore";
 import { OriginPolicy } from "./OriginPolicy";
@@ -18,20 +18,22 @@ export interface OriginContextType {
 const OriginContext = createContext<OriginContextType | undefined>(undefined);
 
 export function OriginProvider({ children }: { children: React.ReactNode }) {
-  const [origin, setOriginState] = useState<Origin | null>(null);
-  const [status, setStatus] = useState<LocationStatus>("idle");
-
-  useEffect(() => {
+  const [initialData] = useState(() => {
+    if (typeof window === "undefined") return { origin: null, status: "idle" as LocationStatus };
     const envelope = OriginStore.loadOrigin();
     if (OriginPolicy.isValid(envelope)) {
-      setOriginState(envelope!.origin);
-      setStatus(envelope!.origin.source === "gps" ? "gps" : "manual");
+      return {
+        origin: envelope!.origin,
+        status: envelope!.origin.source === "gps" ? ("gps" as LocationStatus) : ("manual" as LocationStatus)
+      };
     } else {
       OriginStore.clearOrigin();
-      setOriginState(null);
-      setStatus("idle");
+      return { origin: null, status: "idle" as LocationStatus };
     }
-  }, []);
+  });
+
+  const [origin, setOriginState] = useState<Origin | null>(initialData.origin);
+  const [status, setStatus] = useState<LocationStatus>(initialData.status);
 
   const requestCurrentLocation = async () => {
     setStatus("locating");
