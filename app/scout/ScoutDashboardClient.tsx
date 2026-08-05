@@ -96,13 +96,19 @@ export default function ScoutDashboardClient({
     if (res.success) {
       setSuggestSuccess(true);
       triggerMoment("venue_suggested");
-      toast.success("Spot suggested! Thank you for contributing to squad budget confidence.");
-      AnalyticsService.track('spot_saved', {
+      toast.success("Venue suggested! Thank you for contributing to squad budget confidence.");
+      AnalyticsService.track('spot_suggested', {
         session_id: '00000000-0000-0000-0000-000000000000',
-        properties: { category: 'Engagement', spot_id: suggestForm.spotName, area: suggestForm.areaName, vibe: suggestForm.vibe, version: '1.0' }
+        properties: {
+          category: 'Contribution',
+          spot_name: suggestForm.spotName,
+          area: suggestForm.areaName,
+          rough_price: parseInt(suggestForm.roughPrice) || 30000,
+          version: '1.0'
+        }
       }, userId || undefined);
     } else {
-      toast.error(res.error || "Failed to submit spot suggestion.");
+      toast.error(res.error || "Failed to submit venue suggestion.");
     }
   };
 
@@ -258,7 +264,7 @@ export default function ScoutDashboardClient({
             className="w-full sm:w-auto px-4 py-2.5 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-colors tap-feedback shrink-0 shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            <span>Suggest a Spot 📍</span>
+            <span>Suggest a Venue 📍</span>
           </button>
         </div>
       </div>
@@ -352,19 +358,19 @@ export default function ScoutDashboardClient({
 
         {/* Top Contributors & Badges Column */}
         <div className="space-y-6">
-          {/* Scout Action Card: Suggest a Hidden Gem */}
+          {/* Scout Action Card: Know a Great Spot? */}
           <div className="bg-gradient-to-br from-[#008751]/10 via-amber-50 to-white border border-[#008751]/20 rounded-[24px] p-5 space-y-3 shadow-xs">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#008751]" />
-                <h3 className="text-xs font-black text-midnight-lagoon uppercase tracking-wider">Suggest a Spot</h3>
+                <h3 className="text-xs font-black text-midnight-lagoon uppercase tracking-wider">Know a Great Spot?</h3>
               </div>
               <span className="text-[10px] font-black uppercase text-[#008751] bg-[#008751]/15 px-2 py-0.5 rounded-full">
-                +Scout Points
+                +Impact
               </span>
             </div>
             <p className="text-xs text-text-secondary leading-relaxed">
-              Know a hidden gem or new restaurant in Lagos? Suggest it to unlock Scout badges & give squad planners budget confidence.
+              Know a great restaurant, café, or linkup spot in Lagos? Suggest it to help us build Lagos venue intelligence.
             </p>
             <button
               onClick={() => {
@@ -374,7 +380,7 @@ export default function ScoutDashboardClient({
               className="w-full py-2.5 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors flex items-center justify-center gap-1.5 tap-feedback"
             >
               <Plus className="w-4 h-4" />
-              <span>Suggest Hidden Gem</span>
+              <span>Suggest a New Venue</span>
             </button>
           </div>
 
@@ -433,8 +439,8 @@ export default function ScoutDashboardClient({
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🏅</span>
                 <div>
-                  <h3 className="text-lg font-black text-midnight-lagoon">Suggest a Spot</h3>
-                  <p className="text-xs text-text-muted">Tell us about a hidden gem or fresh linkup spot</p>
+                  <h3 className="text-lg font-black text-midnight-lagoon">Suggest a New Venue</h3>
+                  <p className="text-xs text-text-muted">Know a great spot in Lagos? Help us build venue intelligence.</p>
                 </div>
               </div>
               <button
@@ -450,26 +456,34 @@ export default function ScoutDashboardClient({
                 <div className="w-16 h-16 bg-emerald-50 text-[#008751] rounded-full flex items-center justify-center mx-auto text-2xl font-black border border-emerald-200">
                   ✓
                 </div>
-                <h4 className="text-xl font-black text-midnight-lagoon">Spot Logged!</h4>
+                <h4 className="text-xl font-black text-midnight-lagoon">Venue Submitted 🎉</h4>
                 <p className="text-xs text-text-muted max-w-xs mx-auto leading-relaxed">
-                  We&apos;re verifying menu prices for <span className="font-bold text-text-primary">&quot;{suggestForm.spotName}&quot;</span>. Thanks for giving Lagos planners budget confidence!
+                  Thanks for helping improve OyaPlan. Our team reviews every suggestion for <span className="font-bold text-text-primary">&quot;{suggestForm.spotName}&quot;</span> before publishing it to ensure accurate menu prices.
                 </p>
-                <button
-                  onClick={() => {
-                    setSuggestSuccess(false);
-                    setSuggestForm({
-                      spotName: "",
-                      areaName: areas[0]?.name || "Lekki Phase 1",
-                      roughPrice: "30000",
-                      vibe: "Chill",
-                      comment: "",
-                      whatsapp: "",
-                    });
-                  }}
-                  className="w-full py-3 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors"
-                >
-                  Suggest Another Spot 📍
-                </button>
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    onClick={() => {
+                      setSuggestSuccess(false);
+                      setSuggestForm({
+                        spotName: "",
+                        areaName: areas[0]?.name || "Lekki Phase 1",
+                        roughPrice: "30000",
+                        vibe: "Chill",
+                        comment: "",
+                        whatsapp: "",
+                      });
+                    }}
+                    className="w-full py-3 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors"
+                  >
+                    Suggest Another Venue 📍
+                  </button>
+                  <button
+                    onClick={() => setShowSuggestModal(false)}
+                    className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-colors"
+                  >
+                    Back to Scout Dashboard
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSuggestSpot} className="space-y-4">

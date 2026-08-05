@@ -230,6 +230,13 @@ export const EventSchemas = {
     estimated_min: z.number().optional(),
     estimated_max: z.number().optional(),
     version: z.literal('1.0')
+  }),
+  'spot_suggested': z.object({
+    category: z.literal('Contribution'),
+    spot_name: z.string(),
+    area: z.string(),
+    rough_price: z.number().optional(),
+    version: z.literal('1.0')
   })
 } as const;
 
