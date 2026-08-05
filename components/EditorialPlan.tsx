@@ -1,6 +1,6 @@
 "use client";
 
-import { ForgeInput, PlanEvaluation } from "@/lib/types";
+import { ForgeInput, PlanEvaluation, PlanExplanation } from "@/lib/types";
 import { PlanHeader } from "./editorial/PlanHeader";
 import { BudgetConfidenceCard } from "./editorial/BudgetConfidenceCard";
 import { AdjustmentPanel } from "./editorial/AdjustmentPanel";
@@ -38,6 +38,7 @@ export default function EditorialPlan({
   isAdjusting = false 
 }: EditorialPlanProps) {
   const { plan } = evaluation;
+  const explanation: Partial<PlanExplanation> = plan.explanation || {};
   const diff = originalBudget ? originalBudget - plan.totalCost : 0;
 
   const getSquadWord = (size: number) => {
@@ -116,35 +117,63 @@ export default function EditorialPlan({
         {/* Why this plan? Section */}
         <div className="bg-white border border-border-default/60 rounded-[20px] p-6 space-y-3">
           <h4 className="type-ui-label font-bold text-midnight-lagoon uppercase tracking-wider text-xs">Why this fits you</h4>
-          <ul className="space-y-2">
-            <li className="flex items-start gap-2.5 text-sm text-text-secondary">
-              <span className="text-palm-green font-bold select-none">•</span>
-              <span>
-                {diff < 0 
-                  ? `Stays near your budget limits, costing ₦${plan.totalCost.toLocaleString()} total`
-                  : `Fits comfortably inside your ₦${(originalBudget || plan.totalCost).toLocaleString()} budget limit (no cap)`
-                }
-              </span>
-            </li>
-            <li className="flex items-start gap-2.5 text-sm text-text-secondary">
-              <span className="text-palm-green font-bold select-none">•</span>
-              <span>
-                {input.startArea && input.startArea !== "anywhere"
-                  ? calculateTransportTime(input.startArea, plan.spot.coordinates).displayCopy
-                  : "Est. round-trip transport (Uber/Bolt) is factored into standard Lagos routes"
-                }
-              </span>
-            </li>
-            <li className="flex items-start gap-2.5 text-sm text-text-secondary">
-              <span className="text-palm-green font-bold select-none">•</span>
-              <span>{getVibeConfig(input.vibe).receiptFull}</span>
-            </li>
-            <li className="flex items-start gap-2.5 text-sm text-text-secondary">
-              <span className="text-palm-green font-bold select-none">•</span>
-              <span>Perfect for a squad size of {getSquadWord(input.squadSize)}</span>
-            </li>
+          <ul className="space-y-2.5">
+            {(explanation.ordered_reasons || []).length > 0 ? (
+              explanation.ordered_reasons?.map((reason, idx) => (
+                <li key={idx} className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
+                  <span className="text-[#008751] font-bold select-none">•</span>
+                  <span>{reason}</span>
+                </li>
+              ))
+            ) : (
+              <>
+                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
+                  <span className="text-[#008751] font-bold select-none">•</span>
+                  <span>
+                    {diff < 0 
+                      ? `Stays near your budget limits, costing ₦${plan.totalCost.toLocaleString()} total`
+                      : `Fits comfortably inside your ₦${(originalBudget || plan.totalCost).toLocaleString()} budget limit`
+                    }
+                  </span>
+                </li>
+                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
+                  <span className="text-[#008751] font-bold select-none">•</span>
+                  <span>
+                    {input.startArea && input.startArea !== "anywhere"
+                      ? calculateTransportTime(input.startArea, plan.spot.coordinates).displayCopy
+                      : "Est. round-trip transport (Uber/Bolt) is factored into standard Lagos routes"
+                    }
+                  </span>
+                </li>
+                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
+                  <span className="text-[#008751] font-bold select-none">•</span>
+                  <span>{getVibeConfig(input.vibe).receiptFull}</span>
+                </li>
+                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
+                  <span className="text-[#008751] font-bold select-none">•</span>
+                  <span>Perfect for a squad size of {getSquadWord(input.squadSize)}</span>
+                </li>
+              </>
+            )}
           </ul>
         </div>
+
+        {/* Things to Know — Surfacing Trade-Offs */}
+        {(explanation.things_to_know || []).length > 0 && (
+          <div className="bg-amber-500/5 border border-amber-500/20 rounded-[20px] p-5 space-y-2">
+            <h4 className="text-xs font-black uppercase text-amber-800 tracking-wider flex items-center gap-1.5">
+              <span>⚠️ Things to know</span>
+            </h4>
+            <ul className="space-y-1.5">
+              {explanation.things_to_know?.map((item, idx) => (
+                <li key={idx} className="text-xs text-amber-900 font-medium flex items-start gap-2">
+                  <span className="select-none text-amber-600">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Transport Range & Confidence Card */}
         <TransportEstimateCard

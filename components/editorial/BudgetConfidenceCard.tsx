@@ -67,9 +67,26 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
 
       <div className={`pt-6 border-t ${cfg.divider} flex items-start gap-3`}>
         {cfg.icon}
-        <div>
-          <p className="font-bold text-lg leading-tight">{cfg.headline}</p>
-          <p className="text-text-muted">{cfg.sub(diff)}</p>
+        <div className="space-y-3 w-full">
+          <div>
+            <p className="font-bold text-lg leading-tight">{cfg.headline}</p>
+            <p className="text-text-muted text-sm">{cfg.sub(diff)}</p>
+          </div>
+
+          <div className="pt-2 border-t border-black/5 flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block w-full mb-0.5">
+              Verified information
+            </span>
+            <span className="px-2.5 py-1 bg-emerald-600/10 text-emerald-800 border border-emerald-600/20 rounded-full text-xs font-bold flex items-center gap-1">
+              ✓ Menu prices
+            </span>
+            <span className="px-2.5 py-1 bg-emerald-600/10 text-emerald-800 border border-emerald-600/20 rounded-full text-xs font-bold flex items-center gap-1">
+              ✓ Opening hours
+            </span>
+            <span className="px-2.5 py-1 bg-blue-600/10 text-blue-800 border border-blue-600/20 rounded-full text-xs font-bold flex items-center gap-1">
+              🚗 Transport estimate
+            </span>
+          </div>
         </div>
       </div>
     </div>

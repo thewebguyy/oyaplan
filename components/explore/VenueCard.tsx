@@ -182,7 +182,7 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
           
           <Link href={`/forge?${forgeParams.toString()}`} className="flex-1 block">
             <button className="w-full bg-[#0A0A0A] text-white type-ui-label text-sm uppercase font-extrabold px-5 py-3.5 rounded-xl btn-intent-snaps cursor-pointer">
-              Forge Plan →
+              Start Planning →
             </button>
           </Link>
         </div>

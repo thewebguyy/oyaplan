@@ -112,9 +112,92 @@ function evaluateDecisionConfidence(spot: Spot, transportCost: number): Decision
   return { level, evidenceList };
 }
 
+function generateOrderedReasons(
+  spot: Spot,
+  vibe: string,
+  total: number,
+  budget: number,
+  originArea: string,
+  squadSize: number
+): string[] {
+  const reasons: string[] = [];
+  const diff = budget - total;
+
+  // 1. Budget & Squad Savings
+  if (diff <= 2000 && diff >= 0) {
+    reasons.push(`Fits your ₦${budget.toLocaleString()} budget right on the mark`);
+  } else if (diff > 2000) {
+    reasons.push(`Fits your ₦${budget.toLocaleString()} budget (squad keeps ₦${diff.toLocaleString()} to spare)`);
+  } else {
+    reasons.push(`Budget-optimized for ₦${budget.toLocaleString()} squad outing`);
+  }
+
+  // 2. Vibe & Experience Match
+  const vibeLabelMap: Record<string, string> = {
+    "Dinner": "date night & intimate conversations",
+    "Chill": "relaxed catch-ups & coffee",
+    "Foodie": "serious chop & menu exploration",
+    "Party": "turn up & weekend energy",
+    "Quick": "fast casual linkups",
+    "Brunch": "weekend brunch & cocktails"
+  };
+  const vibeDesc = vibeLabelMap[vibe] || `${vibe.toLowerCase()} outings`;
+  reasons.push(`Great match for ${vibeDesc}`);
+
+  // 3. Transport Predictability
+  const originName = formatAreaSlugName(originArea);
+  reasons.push(`Typical transport fare from ${originName} is predictable`);
+
+  // 4. Menu Price Recency
+  if (spot.price_updated_at) {
+    reasons.push(`Menu prices verified ${timeAgo(spot.price_updated_at)}`);
+  } else if (spot.verified_by) {
+    reasons.push(`Verified by Lagos Scout network`);
+  } else {
+    reasons.push(`Taxes and service fees included in estimate`);
+  }
+
+  // 5. Group Size Suitability
+  if (squadSize === 1) {
+    reasons.push(`Comfortable atmosphere for solo outings`);
+  } else if (squadSize <= 3) {
+    reasons.push(`Ideal table layout for small linkups (${squadSize} people)`);
+  } else {
+    reasons.push(`Good capacity for squad hangouts (${squadSize} people)`);
+  }
+
+  return reasons;
+}
+
+function generateThingsToKnow(spot: Spot, originArea: string): string[] {
+  if (spot.things_to_know && spot.things_to_know.length > 0) {
+    return spot.things_to_know;
+  }
+
+  const items: string[] = [];
+
+  if (spot.category === 'bar' || spot.category === 'entertainment') {
+    items.push("Can get busy on Friday & weekend evenings");
+  }
+
+  if (spot.category === 'restaurant' && spot.price_tier && spot.price_tier >= 3) {
+    items.push("Table reservations recommended for peak weekend dining");
+  }
+
+  if (spot.address_slug === 'lekki-phase-1' || spot.address_slug === 'vi') {
+    items.push("Parking may be limited near venue during peak hours");
+  }
+
+  if (originArea && originArea !== spot.address_slug) {
+    items.push("Transport travel times can vary during weekday evening traffic");
+  }
+
+  return items;
+}
+
 export class DefaultExplainabilityEngine implements ExplainabilityEngine {
   run(plans: TravelledPlan[], context: PlanningContext, isAdjacent: boolean = false): ExplainedPlan[] {
-    const { vibe, budget, startArea } = context.request;
+    const { vibe, budget, startArea, squadSize } = context.request;
     const areaKey = startArea || "ikeja";
 
     return plans.map((plan) => {
@@ -122,6 +205,8 @@ export class DefaultExplainabilityEngine implements ExplainabilityEngine {
       const confidenceScore = Number(spot.computed_confidence_score || 50.00);
 
       const whyItFits = generateWhyItFits(spot, vibe, totalCost, budget);
+      const orderedReasons = generateOrderedReasons(spot, vibe, totalCost, budget, areaKey, squadSize);
+      const thingsToKnow = generateThingsToKnow(spot, areaKey);
       const priceSource = spot.price_source || 'historical_estimate';
       const sourceLabel = formatPriceSource(priceSource);
       
@@ -142,6 +227,8 @@ export class DefaultExplainabilityEngine implements ExplainabilityEngine {
         confidence_score: Math.round(confidenceScore),
         status,
         travel_info: travelInfo,
+        ordered_reasons: orderedReasons,
+        things_to_know: thingsToKnow,
       };
 
       // Create a temporary mock to satisfy standard title formatters

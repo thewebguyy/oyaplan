@@ -42,7 +42,7 @@ export function PlanActions({
       } catch { /* ignore localStorage issues */ }
 
       setIsSaved(true);
-      toast.success("Added to your plans.");
+      toast.success("Plan saved for later 📌");
       triggerMoment("plan_saved");
 
       // 2. Silently attempt server-side share/save sync if possible

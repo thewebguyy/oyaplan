@@ -44,6 +44,8 @@ export type Spot = {
   best_for?: (Experience | string)[];
   not_recommended_for?: (Experience | string)[];
   planning_notes?: string[];
+  personality?: string;
+  things_to_know?: string[];
 };
      
 export type ForgeInput = {
@@ -69,6 +71,9 @@ export interface PlanExplanation {
   has_car?: boolean;
   reason?: string;
   travel_info?: string;
+  ordered_reasons?: string[];  // Strictly ordered Why-It-Fits bullet points (1. Budget, 2. Vibe, 3. Transport, 4. Recency, 5. Group)
+  things_to_know?: string[];   // Deterministic trade-off callouts (parking, noise, reservations)
+  evaluated_count?: number;    // Total candidate spots evaluated during matching
 }
 
 export type TrustSignal = string;

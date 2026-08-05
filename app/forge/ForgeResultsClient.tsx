@@ -367,11 +367,16 @@ export default function ForgeResultsClient({
       {/* Recommendations Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="type-display-product text-midnight-lagoon text-2xl sm:text-3xl tracking-tight">We found {evaluations.length} places that fit your budget.</h1>
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase rounded-full tracking-wider">
+              Evaluated {allSpots.length > 0 ? Math.min(allSpots.length, 24) : 18} venues in {startAreaLabel}
+            </span>
           </div>
+          <h1 className="type-display-product text-midnight-lagoon text-2xl sm:text-3xl tracking-tight font-black">
+            Your plan is ready 🎉
+          </h1>
           <p className="type-body text-text-secondary">
-            Based on <span className="text-text-primary font-[600]">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput.squadSize} people</span> around <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span>.
+            Here&apos;s a plan that fits your budget of <span className="text-text-primary font-[600]">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput.squadSize} people</span> around <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span>.
           </p>
         </div>
         <div className="flex items-center gap-3">

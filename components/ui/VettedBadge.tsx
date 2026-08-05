@@ -18,7 +18,7 @@ const VARIANT_CONFIG = {
   vetted: {
     bg: "bg-midnight-lagoon text-white",
     icon: Shield,
-    label: "Vetted by Forge",
+    label: "Vetted by OyaPlan",
   },
   confidence: {
     bg: "bg-lasgidi-yellow/20 text-midnight-lagoon border border-lasgidi-yellow/30",

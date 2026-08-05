@@ -31,7 +31,7 @@ export default function PriceAccuracyFeedback({ venueId, venueName }: PriceAccur
       <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3.5 text-center animate-in fade-in duration-300">
         <p className="text-xs font-bold text-emerald-800 flex items-center justify-center gap-1.5">
           <Check className="w-4 h-4 text-[#008751]" />
-          <span>Thanks! Your feedback keeps Lagos venue pricing reliable.</span>
+          <span>Thanks for helping Lagos plan better! 🇳🇬</span>
         </p>
       </div>
     );

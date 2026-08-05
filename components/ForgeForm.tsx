@@ -61,10 +61,10 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { id: 'budget', title: "How much is your budget? (What's the damage?)" },
-  { id: 'area', title: "Where you wan go?", reassurance: "Understood. We'll find somewhere fresh that fits." },
-  { id: 'squad', title: "Who's coming? (Na only you or squad?)", reassurance: "Solid squad size." },
-  { id: 'vibe', title: "What's the gbedu/vibe?", reassurance: "Almost active. Prepping plans..." }
+  { id: 'budget', title: "What's your budget for this outing?" },
+  { id: 'area', title: "Where are you starting from?", reassurance: "Understood. We'll find somewhere fresh that fits." },
+  { id: 'squad', title: "How many people are going?", reassurance: "Solid squad size." },
+  { id: 'vibe', title: "What are you in the mood for?", reassurance: "Prepping plans..." }
 ];
 
 const VIBE_URL_MAP: Record<string, string> = {
@@ -440,7 +440,7 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
               disabled={loading}
               className="w-full h-[64px] rounded-full bg-lasgidi-yellow hover:bg-lasgidi-yellow/90 text-midnight-lagoon font-extrabold text-lg overflow-hidden tap-feedback btn-spring disabled:opacity-50"
             >
-              {loading ? "Finding your plan..." : "Find Places"}
+              {loading ? "Finding great places within your budget..." : "Plan My Outing"}
             </Button>
           </div>
         )}
