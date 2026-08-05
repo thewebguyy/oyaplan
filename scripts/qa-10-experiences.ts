@@ -174,10 +174,8 @@ EXPERIENCES.forEach((exp, idx) => {
   );
 
   const travelledPlans = costedPlans.map((cp) => ({
-    spot: cp.spot,
-    activityCost: cp.foodCost,
-    transportCost: cp.transportCost,
-    totalCost: cp.totalCost,
+    ...cp,
+    score: cp.spot.computed_confidence_score || 80,
     travelTimeMinutes: 20,
     distanceKm: 5,
   }));
