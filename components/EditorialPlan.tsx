@@ -116,7 +116,7 @@ export default function EditorialPlan({
 
         {/* Why this plan? Section */}
         <div className="bg-white border border-border-default/60 rounded-[20px] p-6 space-y-3">
-          <h4 className="type-ui-label font-bold text-midnight-lagoon uppercase tracking-wider text-xs">Why this fits you</h4>
+          <h4 className="type-ui-label font-bold text-midnight-lagoon uppercase tracking-wider text-xs">Why we picked {plan.spot.name} for you</h4>
           <ul className="space-y-2.5">
             {(explanation.ordered_reasons || []).length > 0 ? (
               explanation.ordered_reasons?.map((reason, idx) => (

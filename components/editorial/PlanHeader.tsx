@@ -36,11 +36,30 @@ export function PlanHeader({
     return "bg-transparent";
   };
 
+  const getAlternativeLabel = () => {
+    if (plan.totalCost && input.budget && plan.totalCost <= input.budget * 0.85) {
+      return "Option B: Budget Saver 💰";
+    }
+    if (plan.transportCost && plan.transportCost < 3000) {
+      return "Option B: Lower Transport 🚖";
+    }
+    if (plan.spot.vibe_tags?.some(t => t.toLowerCase().includes("chill") || t.toLowerCase().includes("quiet"))) {
+      return "Option B: Quieter Spot 🌿";
+    }
+    return alternativeIndex === 0 ? "Option B: Different Vibe 🔮" : "Option C: Alternative Spot 📍";
+  };
+
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
-      {isTopPick && (
+      {isTopPick ? (
         <div className="mb-6 flex items-center gap-2 bg-[#F6C642]/12 border border-[#F6C642]/30 text-[#7A5D00] px-4 py-1.5 rounded-full">
           <span className="text-[11px] font-black uppercase tracking-[0.12em]">★ Our top pick</span>
+        </div>
+      ) : (
+        <div className="mb-6 flex items-center gap-2 bg-[#008751]/10 border border-[#008751]/20 text-[#008751] px-4 py-1.5 rounded-full">
+          <span className="text-[11px] font-black uppercase tracking-[0.12em]">
+            {getAlternativeLabel()}
+          </span>
         </div>
       )}
       {plan.spot.image_url ? (

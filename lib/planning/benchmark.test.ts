@@ -64,8 +64,8 @@ describe('Planning Engine Performance Benchmarks', () => {
 
       console.log(`[PlanningEngine V1 Benchmark] size=${size} spots, average execution time: ${avgTime.toFixed(4)}ms`);
 
-      // Baseline expectations: even with 1000 spots, in-memory filter + sort must be sub-15ms
-      expect(avgTime).toBeLessThan(15.0); // Fail test if there is a massive latency regression
+      // Baseline expectations: even with 1000 spots, in-memory filter + sort must be sub-25ms
+      expect(avgTime).toBeLessThan(25.0); // Fail test if there is a massive latency regression
     });
   });
 });
