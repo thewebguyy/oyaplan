@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Award, Star, Loader2, ListChecks, CheckCircle2, MapPin, Plus, Sparkles, X, Building2, Clock, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { Award, Star, Loader2, ListChecks, CheckCircle2, MapPin, Plus, Sparkles, X, Building2, Clock } from "lucide-react";
 import { ScoutProfile } from "@/lib/queries/scout";
 import { createScoutProfile } from "@/lib/queries/scout";
 import { Area } from "@/lib/types";
@@ -49,27 +49,67 @@ export default function ScoutDashboardClient({
   const [tasks, setTasks] = useState(initialTasks);
   const [submittingTask, setSubmittingTask] = useState<string | null>(null);
 
-  // Scout Submissions State (persisted & immediately updated)
-  const [submissions, setSubmissions] = useState<ScoutSubmission[]>([]);
-
-  useEffect(() => {
+  // Scout Submissions State (lazy initializer with strict type-safety & no synchronous setState in effect)
+  const [submissions, setSubmissions] = useState<ScoutSubmission[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
       const raw = localStorage.getItem("oyaplan_scout_submissions");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          const normalized: ScoutSubmission[] = parsed.map((item: any, idx: number) => ({
-            id: item.id || `sub_${item.timestamp || idx}`,
-            spotName: item.spotName || item.spot_name || "Unknown Venue",
-            areaName: item.areaName || item.location || item.area_name || "Lagos",
-            createdAt: item.createdAt || (item.timestamp ? new Date(item.timestamp).toISOString() : new Date().toISOString()),
-            status: item.status === "verified" ? "verified" : item.status === "needs_more_info" ? "needs_more_info" : "pending",
-          }));
-          setSubmissions(normalized);
-        }
-      }
-    } catch { /* ignore */ }
-  }, []);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+
+      return parsed.map((item: unknown, idx: number) => {
+        const it = (item ?? {}) as Record<string, unknown>;
+
+        const id =
+          typeof it.id === "string"
+            ? it.id
+            : typeof it.timestamp === "number" || typeof it.timestamp === "string"
+              ? `sub_${String(it.timestamp)}`
+              : `sub_${idx}`;
+
+        const spotName =
+          typeof it.spotName === "string"
+            ? it.spotName
+            : typeof it.spot_name === "string"
+              ? it.spot_name
+              : "Unknown Venue";
+
+        const areaName =
+          typeof it.areaName === "string"
+            ? it.areaName
+            : typeof it.location === "string"
+              ? it.location
+              : typeof it.area_name === "string"
+                ? it.area_name
+                : "Lagos";
+
+        const createdAt =
+          typeof it.createdAt === "string"
+            ? it.createdAt
+            : typeof it.timestamp === "number" || typeof it.timestamp === "string"
+              ? new Date(Number(it.timestamp)).toISOString()
+              : new Date().toISOString();
+
+        const status =
+          it.status === "verified"
+            ? "verified"
+            : it.status === "needs_more_info"
+              ? "needs_more_info"
+              : "pending";
+
+        return {
+          id,
+          spotName,
+          areaName,
+          createdAt,
+          status,
+        } as ScoutSubmission;
+      });
+    } catch {
+      return [];
+    }
+  });
 
   // Suggest a Spot Modal State inside Scout Portal
   const [showSuggestModal, setShowSuggestModal] = useState(false);
