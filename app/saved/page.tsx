@@ -26,9 +26,21 @@ export default function SavedPage() {
             Back to Planner
           </button>
         </Link>
-        <h1 className="type-display-product text-3xl sm:text-4xl font-black">
-          Saved Spots
-        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="type-display-product text-3xl sm:text-4xl font-black">
+            Saved Spots
+          </h1>
+          <div className="flex items-center gap-2 bg-surface-grey p-1.5 rounded-full border border-border-default w-fit">
+            <span className="px-4 py-1.5 bg-midnight-lagoon text-white font-extrabold text-xs rounded-full">
+              Saved Spots ({savedSpots.length})
+            </span>
+            <Link href="/dashboard">
+              <span className="px-4 py-1.5 text-text-secondary hover:text-text-primary font-extrabold text-xs rounded-full transition-colors">
+                Saved Plans →
+              </span>
+            </Link>
+          </div>
+        </div>
         <p className="type-body text-text-muted max-w-xl">
           Your saved outing spots. You can pre-fill the planner directly from any of these spots when you&apos;re ready to go.
         </p>
@@ -49,7 +61,7 @@ export default function SavedPage() {
             const urlVibe = VIBE_TO_URL_MAP[firstVibe] || "chill";
 
             const prefillParams = new URLSearchParams({
-              area: spot.areas?.slug || "anywhere",
+              area: spot.address_slug || spot.areas?.slug || "anywhere",
               pinned: spot.id,
               squad: "2",
               budget: Math.round(spot.price_per_person * 2 * 1.1).toString(),

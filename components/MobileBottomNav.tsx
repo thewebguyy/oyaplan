@@ -61,7 +61,7 @@ export default function MobileBottomNav() {
     },
     {
       name: "Saved",
-      href: showSessionState ? "/dashboard" : "/saved",
+      href: "/saved",
       icon: Bookmark,
       isActive: pathname === "/saved" || pathname === "/dashboard",
     },

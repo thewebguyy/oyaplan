@@ -23,9 +23,21 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="type-display text-text-primary">Saved Plans</h1>
-        <p className="type-body text-text-muted mt-2">Your upcoming Lagos outings & price breakdowns.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="type-display text-text-primary">Saved Plans</h1>
+          <p className="type-body text-text-muted mt-2">Your upcoming Lagos outings & price breakdowns.</p>
+        </div>
+        <div className="flex items-center gap-2 bg-surface-grey p-1.5 rounded-full border border-border-default w-fit">
+          <Link href="/saved">
+            <span className="px-4 py-1.5 text-text-secondary hover:text-text-primary font-extrabold text-xs rounded-full transition-colors">
+              Saved Spots →
+            </span>
+          </Link>
+          <span className="px-4 py-1.5 bg-midnight-lagoon text-white font-extrabold text-xs rounded-full">
+            Saved Plans ({savedPlans?.length || 0})
+          </span>
+        </div>
       </div>
 
       <div className="space-y-4">
