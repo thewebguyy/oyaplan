@@ -2,6 +2,7 @@ import { Spot } from '../lib/types';
 import { forgePlans } from '../lib/services/matching/forgeMatcher';
 import { DefaultCostEngine } from '../lib/planning/costEngine';
 import { DefaultExplainabilityEngine } from '../lib/planning/explainability';
+import { MatrixTransportProvider } from '../lib/planning/transport';
 
 function makeSpot(overrides: Partial<Spot> & { id: string; name: string }): Spot {
   return {
@@ -168,7 +169,8 @@ EXPERIENCES.forEach((exp, idx) => {
         featuredWeight: 30,
         pinnedWeight: 1000,
       },
-    }
+    },
+    new MatrixTransportProvider()
   );
 
   const travelledPlans = costedPlans.map((cp) => ({
