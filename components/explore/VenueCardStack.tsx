@@ -8,6 +8,7 @@ import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import { VenueCard } from "./VenueCard";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { toast } from "sonner";
 
 interface VenueCardStackProps {
   spots: DecisionCardViewModel[];
@@ -56,10 +57,39 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
     }
   };
 
+  const resolveSpot = (card: DecisionCardViewModel): Spot => {
+    const rawSpot = rawSpots.find(s => s.id === card.spotId);
+    if (rawSpot) return rawSpot;
+
+    return {
+      id: card.spotId,
+      name: card.spotName,
+      address: card.address,
+      address_slug: card.addressSlug || card.areaSlug || slug || 'lagos',
+      area_id: card.areaSlug || slug || 'lagos',
+      vibe_tags: card.whyItFits ? card.whyItFits.split(' • ') : ['Chill'],
+      price_per_person: card.pricePerPerson || Math.round(card.venueCost / (squadCount || 2)),
+      price_updated_at: new Date().toISOString(),
+      price_source: 'manual',
+      transport_matrix: {},
+      active: true,
+      category: card.category || 'restaurant',
+      has_food: true,
+      typical_duration_hours: 2,
+      subcategory: 'mid-range',
+      price_tier: 2,
+      crowd_type: 'mixed',
+      best_daypart: 'afternoon',
+      image_url: card.heroImage,
+    };
+  };
+
   const handleSwipeRight = (card?: DecisionCardViewModel) => {
     if (card) {
-      const rawSpot = rawSpots.find(s => s.id === card.spotId);
-      if (rawSpot && !isSaved(card.spotId)) saveSpot(rawSpot);
+      if (!isSaved(card.spotId)) {
+        saveSpot(resolveSpot(card));
+        toast.success(`Saved "${card.spotName}" to your Saved Spots!`);
+      }
       AnalyticsService.track('spot_saved', {
         session_id: '00000000-0000-0000-0000-000000000000',
         properties: {
@@ -112,9 +142,10 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
   const handleSaveToggle = (card: DecisionCardViewModel) => {
     if (isSaved(card.spotId)) {
       removeSpot(card.spotId);
+      toast.info(`Removed "${card.spotName}" from Saved Spots.`);
     } else {
-      const rawSpot = rawSpots.find(s => s.id === card.spotId);
-      if (rawSpot) saveSpot(rawSpot);
+      saveSpot(resolveSpot(card));
+      toast.success(`Saved "${card.spotName}" to your Saved Spots!`);
     }
   };
 
