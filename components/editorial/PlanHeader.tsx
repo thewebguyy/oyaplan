@@ -105,7 +105,7 @@ export function PlanHeader({
           <div className="flex items-center gap-1 bg-palm-green/10 text-palm-green px-2.5 py-0.5 rounded-full mt-2 sm:mt-0 shadow-xs">
             <CheckCircle className="w-3.5 h-3.5" />
             <span className="text-[11px] font-bold uppercase tracking-wider">
-              {plan.spot.computed_confidence_score}% Verified
+              {plan.spot.computed_confidence_score}% Planning Confidence
             </span>
           </div>
         )}

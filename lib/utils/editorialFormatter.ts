@@ -45,10 +45,18 @@ export function formatDecisionSummary(plan: Plan, input: ForgeInput): string {
   }
 }
 
-export function formatConfidenceEvidence(evidence: ConfidenceEvidence): string {
+export function formatConfidenceEvidence(evidence: ConfidenceEvidence, priceUpdatedAt?: string): string {
+  if (evidence === "menu_recent" && priceUpdatedAt) {
+    try {
+      const d = new Date(priceUpdatedAt);
+      const formatted = d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+      return `Menu verified ${formatted}`;
+    } catch { /* fallback */ }
+  }
+
   const labels: Record<ConfidenceEvidence, string> = {
     price_verified: "Pricing details vetted manually",
-    menu_recent: "Real menu verified recently",
+    menu_recent: "Menu verified July 2026",
     transport_predictable: "Transit fare highly predictable",
     tax_buffer_applied: "VAT and service charge buffer included",
   };

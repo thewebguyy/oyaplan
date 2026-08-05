@@ -106,7 +106,7 @@ export default function EditorialPlan({
                     <Check className="w-3 h-3 text-[#008751] stroke-[3]" />
                   </div>
                   <span className="text-xs text-text-secondary font-medium">
-                    {formatConfidenceEvidence(ev)}
+                    {formatConfidenceEvidence(ev, plan.spot.price_updated_at)}
                   </span>
                 </div>
               ))}
