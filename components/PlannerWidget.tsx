@@ -229,7 +229,7 @@ export default function PlannerWidget({
           <div className="flex items-center justify-between flex-wrap gap-1">
             <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280] flex items-center gap-2 flex-wrap">
               <span>📍 Starting Location{mounted && selectedArea ? ` (${selectedArea.name})` : ""}</span>
-              {(status === "denied" || status === "unsupported") && (
+              {(status === "permission-denied" || status === "unsupported" || status === "error") && (
                 <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
                   Defaulted to Surulere (tap to change)
                 </span>
