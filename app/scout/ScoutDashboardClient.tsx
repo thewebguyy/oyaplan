@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Award, Star, Loader2, ListChecks, CheckCircle2 } from "lucide-react";
+import { Award, Star, Loader2, ListChecks, CheckCircle2, MapPin, Plus, Sparkles, X } from "lucide-react";
 import { ScoutProfile } from "@/lib/queries/scout";
 import { createScoutProfile } from "@/lib/queries/scout";
+import { Area } from "@/lib/types";
+import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
+import { triggerMoment } from "@/components/ui/moment-of-delight";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { toast } from "sonner";
@@ -20,6 +23,7 @@ interface ScoutDashboardClientProps {
     ocr_status: string;
     created_at: string;
   }>;
+  areas?: Area[];
 }
 
 export default function ScoutDashboardClient({
@@ -27,6 +31,7 @@ export default function ScoutDashboardClient({
   initialProfile,
   leaderboard,
   initialTasks,
+  areas = [],
 }: ScoutDashboardClientProps) {
   const { openModal } = useAuth();
   const [profile] = useState<ScoutProfile | null>(initialProfile);
@@ -35,6 +40,71 @@ export default function ScoutDashboardClient({
   const [error, setError] = useState<string | null>(null);
   const [tasks, setTasks] = useState(initialTasks);
   const [submittingTask, setSubmittingTask] = useState<string | null>(null);
+
+  // Suggest a Spot Modal State inside Scout Portal
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestSuccess, setSuggestSuccess] = useState(false);
+  const [suggestForm, setSuggestForm] = useState({
+    spotName: "",
+    areaName: areas[0]?.name || "Lekki Phase 1",
+    roughPrice: "30000",
+    vibe: "Chill",
+    comment: "",
+    whatsapp: "",
+  });
+
+  const handleSuggestSpot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!suggestForm.spotName.trim() || !suggestForm.areaName.trim()) {
+      toast.error("Please enter spot name and area.");
+      return;
+    }
+
+    setSuggestLoading(true);
+
+    try {
+      const existingSubmissions = JSON.parse(localStorage.getItem("oyaplan_scout_submissions") || "[]");
+      existingSubmissions.push({
+        spotName: suggestForm.spotName,
+        location: suggestForm.areaName,
+        timestamp: Date.now(),
+      });
+      localStorage.setItem("oyaplan_scout_submissions", JSON.stringify(existingSubmissions));
+
+      const userProfile = JSON.parse(localStorage.getItem("oyaplan_user_profile") || "{}");
+      localStorage.setItem(
+        "oyaplan_user_profile",
+        JSON.stringify({
+          ...userProfile,
+          isScout: true,
+          scoutBadgesCount: existingSubmissions.length,
+        })
+      );
+    } catch { /* ignore localStorage errors */ }
+
+    const res = await submitSpotSuggestion({
+      spotName: suggestForm.spotName,
+      areaName: suggestForm.areaName,
+      roughPricePerPerson: parseInt(suggestForm.roughPrice) || 30000,
+      vibeDescription: `${suggestForm.vibe}: ${suggestForm.comment}`,
+      suggesterWhatsapp: suggestForm.whatsapp || null,
+    });
+
+    setSuggestLoading(false);
+
+    if (res.success) {
+      setSuggestSuccess(true);
+      triggerMoment("venue_suggested");
+      toast.success("Spot suggested! Thank you for contributing to squad budget confidence.");
+      AnalyticsService.track('spot_saved', {
+        session_id: '00000000-0000-0000-0000-000000000000',
+        properties: { category: 'Engagement', spot_id: suggestForm.spotName, area: suggestForm.areaName, vibe: suggestForm.vibe, version: '1.0' }
+      }, userId || undefined);
+    } else {
+      toast.error(res.error || "Failed to submit spot suggestion.");
+    }
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,19 +234,32 @@ export default function ScoutDashboardClient({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 border-t md:border-t-0 md:border-l border-border-default/50 pt-4 md:pt-0 md:pl-8">
-          <div className="text-center">
-            <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Verified</p>
-            <p className="text-xl font-black text-midnight-lagoon">{profile.accepted_submissions}</p>
+        <div className="flex flex-col sm:flex-row items-center gap-4 border-t md:border-t-0 md:border-l border-border-default/50 pt-4 md:pt-0 md:pl-8">
+          <div className="grid grid-cols-3 gap-4 w-full sm:w-auto">
+            <div className="text-center">
+              <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Verified</p>
+              <p className="text-xl font-black text-midnight-lagoon">{profile.accepted_submissions}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Status</p>
+              <p className="text-xl font-black text-[#008751]">{formatTier(profile.trust_tier)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Points</p>
+              <p className="text-xl font-black text-midnight-lagoon">{profile.total_score}</p>
+            </div>
           </div>
-          <div className="text-center">
-            <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Status</p>
-            <p className="text-xl font-black text-[#008751]">{formatTier(profile.trust_tier)}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Points</p>
-            <p className="text-xl font-black text-midnight-lagoon">{profile.total_score}</p>
-          </div>
+
+          <button
+            onClick={() => {
+              setSuggestSuccess(false);
+              setShowSuggestModal(true);
+            }}
+            className="w-full sm:w-auto px-4 py-2.5 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-colors tap-feedback shrink-0 shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Suggest a Spot 📍</span>
+          </button>
         </div>
       </div>
 
@@ -269,6 +352,32 @@ export default function ScoutDashboardClient({
 
         {/* Top Contributors & Badges Column */}
         <div className="space-y-6">
+          {/* Scout Action Card: Suggest a Hidden Gem */}
+          <div className="bg-gradient-to-br from-[#008751]/10 via-amber-50 to-white border border-[#008751]/20 rounded-[24px] p-5 space-y-3 shadow-xs">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#008751]" />
+                <h3 className="text-xs font-black text-midnight-lagoon uppercase tracking-wider">Suggest a Spot</h3>
+              </div>
+              <span className="text-[10px] font-black uppercase text-[#008751] bg-[#008751]/15 px-2 py-0.5 rounded-full">
+                +Scout Points
+              </span>
+            </div>
+            <p className="text-xs text-text-secondary leading-relaxed">
+              Know a hidden gem or new restaurant in Lagos? Suggest it to unlock Scout badges & give squad planners budget confidence.
+            </p>
+            <button
+              onClick={() => {
+                setSuggestSuccess(false);
+                setShowSuggestModal(true);
+              }}
+              className="w-full py-2.5 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors flex items-center justify-center gap-1.5 tap-feedback"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Suggest Hidden Gem</span>
+            </button>
+          </div>
+
           {/* Badges Display */}
           <div className="bg-white border border-border-default/60 rounded-[24px] p-5 space-y-3 shadow-xs">
             <div className="flex items-center gap-2">
@@ -315,6 +424,173 @@ export default function ScoutDashboardClient({
           </div>
         </div>
       </div>
+
+      {/* Suggest a Spot Modal inside Scout Portal */}
+      {showSuggestModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-[28px] max-w-md w-full p-6 sm:p-8 space-y-5 shadow-2xl animate-in zoom-in-95 duration-200 relative my-8">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🏅</span>
+                <div>
+                  <h3 className="text-lg font-black text-midnight-lagoon">Suggest a Spot</h3>
+                  <p className="text-xs text-text-muted">Tell us about a hidden gem or fresh linkup spot</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSuggestModal(false)}
+                className="w-8 h-8 rounded-full bg-surface-grey flex items-center justify-center font-bold text-text-muted hover:text-midnight-lagoon"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {suggestSuccess ? (
+              <div className="text-center space-y-4 py-4">
+                <div className="w-16 h-16 bg-emerald-50 text-[#008751] rounded-full flex items-center justify-center mx-auto text-2xl font-black border border-emerald-200">
+                  ✓
+                </div>
+                <h4 className="text-xl font-black text-midnight-lagoon">Spot Logged!</h4>
+                <p className="text-xs text-text-muted max-w-xs mx-auto leading-relaxed">
+                  We&apos;re verifying menu prices for <span className="font-bold text-text-primary">&quot;{suggestForm.spotName}&quot;</span>. Thanks for giving Lagos planners budget confidence!
+                </p>
+                <button
+                  onClick={() => {
+                    setSuggestSuccess(false);
+                    setSuggestForm({
+                      spotName: "",
+                      areaName: areas[0]?.name || "Lekki Phase 1",
+                      roughPrice: "30000",
+                      vibe: "Chill",
+                      comment: "",
+                      whatsapp: "",
+                    });
+                  }}
+                  className="w-full py-3 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors"
+                >
+                  Suggest Another Spot 📍
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSuggestSpot} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
+                    Spot / Venue Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Hard Rock Cafe, Danfo Bistro, Sailor's Lounge"
+                    value={suggestForm.spotName}
+                    onChange={(e) => setSuggestForm((prev) => ({ ...prev, spotName: e.target.value }))}
+                    className="w-full h-11 px-4 bg-surface-grey border border-border-default rounded-xl type-body text-sm focus:outline-none focus:border-[#008751] focus:bg-white transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
+                    Area / Neighborhood *
+                  </label>
+                  {areas.length > 0 ? (
+                    <select
+                      value={suggestForm.areaName}
+                      onChange={(e) => setSuggestForm((prev) => ({ ...prev, areaName: e.target.value }))}
+                      className="w-full h-11 px-4 bg-surface-grey border border-border-default rounded-xl type-body text-sm focus:outline-none focus:border-[#008751] focus:bg-white transition-all"
+                    >
+                      {areas.map((area) => (
+                        <option key={area.id} value={area.name}>
+                          {area.name}
+                        </option>
+                      ))}
+                      <option value="Other Lagos Area">Other Lagos Area</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Lekki Phase 1, Ikeja GRA, Yaba"
+                      value={suggestForm.areaName}
+                      onChange={(e) => setSuggestForm((prev) => ({ ...prev, areaName: e.target.value }))}
+                      className="w-full h-11 px-4 bg-surface-grey border border-border-default rounded-xl type-body text-sm focus:outline-none focus:border-[#008751] focus:bg-white transition-all"
+                    />
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
+                      Est. Spend per Person
+                    </label>
+                    <select
+                      value={suggestForm.roughPrice}
+                      onChange={(e) => setSuggestForm((prev) => ({ ...prev, roughPrice: e.target.value }))}
+                      className="w-full h-11 px-3 bg-surface-grey border border-border-default rounded-xl type-body text-xs font-bold focus:outline-none focus:border-[#008751] focus:bg-white transition-all"
+                    >
+                      <option value="15000">Under ₦15k</option>
+                      <option value="25000">₦15k - ₦25k</option>
+                      <option value="35000">₦25k - ₦40k</option>
+                      <option value="50000">₦40k - ₦60k</option>
+                      <option value="75000">₦75k+</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
+                      Primary Vibe
+                    </label>
+                    <select
+                      value={suggestForm.vibe}
+                      onChange={(e) => setSuggestForm((prev) => ({ ...prev, vibe: e.target.value }))}
+                      className="w-full h-11 px-3 bg-surface-grey border border-border-default rounded-xl type-body text-xs font-bold focus:outline-none focus:border-[#008751] focus:bg-white transition-all"
+                    >
+                      <option value="Chill">Chill Vibe</option>
+                      <option value="Dinner">Date Night</option>
+                      <option value="Foodie">Serious Chop</option>
+                      <option value="Party">Turn Up</option>
+                      <option value="Quick">Quick Linkup</option>
+                      <option value="Brunch">Brunch</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
+                    Notes / Must-try Dishes (Optional)
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Great cocktails, outdoor terrace seating..."
+                    value={suggestForm.comment}
+                    onChange={(e) => setSuggestForm((prev) => ({ ...prev, comment: e.target.value }))}
+                    className="w-full p-3 bg-surface-grey border border-border-default rounded-xl type-body text-xs focus:outline-none focus:border-[#008751] focus:bg-white transition-all resize-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block">
+                    Your WhatsApp Number (Optional)
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. +2348012345678"
+                    value={suggestForm.whatsapp}
+                    onChange={(e) => setSuggestForm((prev) => ({ ...prev, whatsapp: e.target.value }))}
+                    className="w-full h-11 px-4 bg-surface-grey border border-border-default rounded-xl type-body text-xs focus:outline-none focus:border-[#008751] focus:bg-white transition-all"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={suggestLoading}
+                  className="w-full h-12 bg-[#008751] hover:bg-[#006b41] disabled:opacity-40 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm"
+                >
+                  {suggestLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Spot & Earn Badge 🏅"}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

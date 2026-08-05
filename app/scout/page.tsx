@@ -1,8 +1,8 @@
 import { createServerClient } from "@/lib/supabase-server";
 import { getScoutProfile, getScoutLeaderboard, getPendingVerificationTasks } from "@/lib/queries/scout";
+import { getActiveAreas } from "@/lib/queries/areas";
 import ScoutDashboardClient from "./ScoutDashboardClient";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +14,7 @@ export default async function ScoutPage() {
   const profile = userId ? await getScoutProfile(userId) : null;
   const leaderboard = await getScoutLeaderboard();
   const tasks = await getPendingVerificationTasks();
+  const { data: areas } = await getActiveAreas();
 
   return (
     <main className="min-h-[100dvh] bg-[#FAFAF8] antialiased pb-24">
@@ -35,6 +36,7 @@ export default async function ScoutPage() {
           initialProfile={profile}
           leaderboard={leaderboard}
           initialTasks={tasks}
+          areas={areas || []}
         />
       </div>
     </main>
