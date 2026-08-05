@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Award, Star, Loader2, ListChecks, CheckCircle2, MapPin, Plus, Sparkles, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Award, Star, Loader2, ListChecks, CheckCircle2, MapPin, Plus, Sparkles, X, Building2, Clock, AlertCircle } from "lucide-react";
 import { ScoutProfile } from "@/lib/queries/scout";
 import { createScoutProfile } from "@/lib/queries/scout";
 import { Area } from "@/lib/types";
@@ -10,6 +10,14 @@ import { triggerMoment } from "@/components/ui/moment-of-delight";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { toast } from "sonner";
+
+export interface ScoutSubmission {
+  id: string;
+  spotName: string;
+  areaName: string;
+  createdAt: string;
+  status: "pending" | "verified" | "needs_more_info";
+}
 
 interface ScoutDashboardClientProps {
   userId: string | null;
@@ -41,6 +49,28 @@ export default function ScoutDashboardClient({
   const [tasks, setTasks] = useState(initialTasks);
   const [submittingTask, setSubmittingTask] = useState<string | null>(null);
 
+  // Scout Submissions State (persisted & immediately updated)
+  const [submissions, setSubmissions] = useState<ScoutSubmission[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("oyaplan_scout_submissions");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const normalized: ScoutSubmission[] = parsed.map((item: any, idx: number) => ({
+            id: item.id || `sub_${item.timestamp || idx}`,
+            spotName: item.spotName || item.spot_name || "Unknown Venue",
+            areaName: item.areaName || item.location || item.area_name || "Lagos",
+            createdAt: item.createdAt || (item.timestamp ? new Date(item.timestamp).toISOString() : new Date().toISOString()),
+            status: item.status === "verified" ? "verified" : item.status === "needs_more_info" ? "needs_more_info" : "pending",
+          }));
+          setSubmissions(normalized);
+        }
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   // Suggest a Spot Modal State inside Scout Portal
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [suggestLoading, setSuggestLoading] = useState(false);
@@ -63,14 +93,21 @@ export default function ScoutDashboardClient({
 
     setSuggestLoading(true);
 
+    const newSub: ScoutSubmission = {
+      id: `sub_${Date.now()}`,
+      spotName: suggestForm.spotName.trim(),
+      areaName: suggestForm.areaName.trim(),
+      createdAt: new Date().toISOString(),
+      status: "pending",
+    };
+
+    setSubmissions((prev) => [newSub, ...prev]);
+
     try {
-      const existingSubmissions = JSON.parse(localStorage.getItem("oyaplan_scout_submissions") || "[]");
-      existingSubmissions.push({
-        spotName: suggestForm.spotName,
-        location: suggestForm.areaName,
-        timestamp: Date.now(),
-      });
-      localStorage.setItem("oyaplan_scout_submissions", JSON.stringify(existingSubmissions));
+      const raw = localStorage.getItem("oyaplan_scout_submissions") || "[]";
+      const existing = JSON.parse(raw);
+      const updated = [newSub, ...existing];
+      localStorage.setItem("oyaplan_scout_submissions", JSON.stringify(updated));
 
       const userProfile = JSON.parse(localStorage.getItem("oyaplan_user_profile") || "{}");
       localStorage.setItem(
@@ -78,7 +115,7 @@ export default function ScoutDashboardClient({
         JSON.stringify({
           ...userProfile,
           isScout: true,
-          scoutBadgesCount: existingSubmissions.length,
+          scoutBadgesCount: updated.length,
         })
       );
     } catch { /* ignore localStorage errors */ }
@@ -215,11 +252,29 @@ export default function ScoutDashboardClient({
     );
   }
 
+  const verifiedCount = submissions.filter((s) => s.status === "verified").length;
+  const effectiveAccepted = profile.accepted_submissions + verifiedCount;
+  const effectiveScore = profile.total_score + (verifiedCount * 50);
+  const effectiveTier = effectiveAccepted >= 5 ? "elite" : effectiveAccepted >= 1 ? "verified" : profile.trust_tier;
+
   const formatTier = (tier: string) => {
     if (tier === "elite") return "Lead Scout";
     if (tier === "verified") return "Trusted Scout";
     return "Scout";
   };
+
+  const formatDate = (isoStr: string) => {
+    try {
+      const d = new Date(isoStr);
+      return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    } catch {
+      return "Recently";
+    }
+  };
+
+  const sortedSubmissions = [...submissions].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   return (
     <div className="space-y-8">
@@ -227,13 +282,13 @@ export default function ScoutDashboardClient({
       <div className="bg-white border border-border-default/60 rounded-[28px] p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-lagoon">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-[#008751]/10 flex items-center justify-center text-3xl shrink-0">
-            {profile.trust_tier === "elite" ? "👑" : profile.trust_tier === "verified" ? "🏅" : "🎒"}
+            {effectiveTier === "elite" ? "👑" : effectiveTier === "verified" ? "🏅" : "🎒"}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-black text-midnight-lagoon">@{profile.username}</h2>
               <span className="px-2.5 py-0.5 bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase rounded-full tracking-wider">
-                {formatTier(profile.trust_tier)}
+                {formatTier(effectiveTier)}
               </span>
             </div>
             <p className="text-xs text-text-muted mt-0.5">Scout Member since July 2026</p>
@@ -244,15 +299,15 @@ export default function ScoutDashboardClient({
           <div className="grid grid-cols-3 gap-4 w-full sm:w-auto">
             <div className="text-center">
               <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Verified</p>
-              <p className="text-xl font-black text-midnight-lagoon">{profile.accepted_submissions}</p>
+              <p className="text-xl font-black text-midnight-lagoon">{effectiveAccepted}</p>
             </div>
             <div className="text-center">
               <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Status</p>
-              <p className="text-xl font-black text-[#008751]">{formatTier(profile.trust_tier)}</p>
+              <p className="text-xl font-black text-[#008751]">{formatTier(effectiveTier)}</p>
             </div>
             <div className="text-center">
               <p className="text-xs font-bold text-text-muted uppercase tracking-wider">Points</p>
-              <p className="text-xl font-black text-midnight-lagoon">{profile.total_score}</p>
+              <p className="text-xl font-black text-midnight-lagoon">{effectiveScore}</p>
             </div>
           </div>
 
@@ -274,22 +329,101 @@ export default function ScoutDashboardClient({
         <div className="space-y-0.5">
           <p className="text-xs font-bold text-[#008751] uppercase tracking-wider">Trust Progress</p>
           <p className="text-sm font-bold text-midnight-lagoon">
-            {profile.accepted_submissions >= 5 
+            {effectiveAccepted >= 5 
               ? "Highest community trust tier unlocked"
-              : `${5 - profile.accepted_submissions} more verified menus to reach Trusted Scout`}
+              : `${5 - effectiveAccepted} more verified menus to reach Trusted Scout`}
           </p>
         </div>
         <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden shrink-0">
           <div 
             className="h-full bg-[#008751] rounded-full transition-all duration-300"
-            style={{ width: `${Math.min(100, Math.max(10, (profile.accepted_submissions / 5) * 100))}%` }}
+            style={{ width: `${Math.min(100, Math.max(10, (effectiveAccepted / 5) * 100))}%` }}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Verification Task Hero Card System */}
-        <div className="md:col-span-2 space-y-4">
+        {/* Left Column: My Venue Suggestions & Verification Tasks */}
+        <div className="md:col-span-2 space-y-8">
+          {/* Section 1: My Venue Suggestions */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-[#008751]" />
+                <h3 className="text-base font-black text-midnight-lagoon">My Venue Suggestions</h3>
+              </div>
+              <span className="text-xs text-text-muted font-medium bg-gray-100 px-2.5 py-0.5 rounded-full">
+                {submissions.length} {submissions.length === 1 ? "suggestion" : "suggestions"}
+              </span>
+            </div>
+
+            {sortedSubmissions.length > 0 ? (
+              <div className="space-y-3">
+                {sortedSubmissions.map((sub) => (
+                  <div
+                    key={sub.id}
+                    className="bg-white border border-border-default/60 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all hover:border-[#008751]/30"
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-base font-black text-midnight-lagoon truncate">{sub.spotName}</h4>
+                        <span className="text-xs text-text-muted font-medium flex items-center gap-1 shrink-0 bg-surface-grey px-2 py-0.5 rounded-md border border-border-default/40">
+                          <MapPin className="w-3 h-3 text-[#008751]" />
+                          {sub.areaName}
+                        </span>
+                      </div>
+                      <p className="text-xs text-text-muted flex items-center gap-1.5">
+                        <Clock className="w-3 h-3 text-text-muted" />
+                        Submitted on {formatDate(sub.createdAt)}
+                      </p>
+                    </div>
+
+                    {/* Status Badges */}
+                    <div className="shrink-0">
+                      {sub.status === "verified" && (
+                        <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-xs font-bold rounded-full inline-flex items-center gap-1.5">
+                          <span>🟢</span> Verified
+                        </span>
+                      )}
+                      {sub.status === "needs_more_info" && (
+                        <span className="px-3 py-1 bg-red-50 text-red-800 border border-red-200/80 text-xs font-bold rounded-full inline-flex items-center gap-1.5">
+                          <span>🔴</span> Needs More Info
+                        </span>
+                      )}
+                      {sub.status === "pending" && (
+                        <span className="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 text-xs font-bold rounded-full inline-flex items-center gap-1.5">
+                          <span>🟡</span> Pending Review
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* Friendly Empty State */
+              <div className="bg-white border border-border-default/60 rounded-2xl p-8 text-center space-y-4 shadow-xs">
+                <div className="w-14 h-14 rounded-2xl bg-[#008751]/10 text-[#008751] flex items-center justify-center mx-auto text-2xl border border-[#008751]/20">
+                  📍
+                </div>
+                <div className="space-y-1.5 max-w-sm mx-auto">
+                  <h4 className="text-base font-black text-midnight-lagoon">No venue suggestions yet</h4>
+                  <p className="text-xs text-text-muted leading-relaxed">
+                    Know a hidden gem, favorite café, or local linkup spot in Lagos? Suggest your first venue to help squad planners leave home with budget confidence.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setSuggestSuccess(false);
+                    setShowSuggestModal(true);
+                  }}
+                  className="px-4 py-2.5 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase tracking-wider rounded-xl inline-flex items-center gap-1.5 transition-colors tap-feedback shadow-xs"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Suggest Your First Venue 📍</span>
+                </button>
+              </div>
+            )}
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ListChecks className="w-5 h-5 text-[#008751]" />
