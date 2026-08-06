@@ -34,7 +34,7 @@ BEGIN
       'authenticated',
       'authenticated',
       'pstmax@gmail.com',
-      crypt('OyaPlan#Admin2026!Cto', gen_salt('bf')),
+      crypt('OyaPlan#Admin2026!Cto', gen_salt('bf', 10)),
       now(),
       '{"provider":"email","providers":["email"]}',
       '{}',
@@ -43,7 +43,7 @@ BEGIN
     );
   ELSE
     UPDATE auth.users
-    SET encrypted_password = crypt('OyaPlan#Admin2026!Cto', gen_salt('bf')),
+    SET encrypted_password = crypt('OyaPlan#Admin2026!Cto', gen_salt('bf', 10)),
         email_confirmed_at = COALESCE(email_confirmed_at, now())
     WHERE id = v_cto_id;
   END IF;
@@ -71,7 +71,7 @@ BEGIN
       'authenticated',
       'authenticated',
       'temi@oyaplan.com',
-      crypt('OyaPlan#Admin2026!Coo', gen_salt('bf')),
+      crypt('OyaPlan#Admin2026!Coo', gen_salt('bf', 10)),
       now(),
       '{"provider":"email","providers":["email"]}',
       '{}',
@@ -80,7 +80,7 @@ BEGIN
     );
   ELSE
     UPDATE auth.users
-    SET encrypted_password = crypt('OyaPlan#Admin2026!Coo', gen_salt('bf')),
+    SET encrypted_password = crypt('OyaPlan#Admin2026!Coo', gen_salt('bf', 10)),
         email_confirmed_at = COALESCE(email_confirmed_at, now())
     WHERE id = v_coo_id;
   END IF;
