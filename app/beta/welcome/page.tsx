@@ -2,6 +2,7 @@ import Metadata from "next";
 import Link from "next/link";
 import { Sparkles, ArrowRight, ShieldCheck, Heart, Award, MessageSquare } from "lucide-react";
 import { BetaBadge } from "@/components/ui/BetaBadge";
+import { BetaWelcomeClient } from "./BetaWelcomeClient";
 
 export const metadata = {
   title: "Welcome to the Founding Beta | OyaPlan",
@@ -91,13 +92,7 @@ export default function BetaWelcomePage() {
 
         {/* Call to Action */}
         <div className="flex flex-col items-center gap-3">
-          <Link
-            href="/"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-base rounded-[16px] shadow-md transition-all tap-feedback"
-          >
-            <span>Start Planning Your First Outing</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          <BetaWelcomeClient />
 
           <p className="text-xs text-text-muted font-medium text-center">
             By continuing, you agree to our{" "}
