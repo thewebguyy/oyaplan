@@ -79,9 +79,21 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Phase 9: Growth Platform Deep Link Interception
+  // Intercept /r/:code or /invite/:code, rewrite to home, and set cookie if needed
+  const { pathname } = request.nextUrl;
+
+  // Set x-pathname header for server components and layouts
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', pathname);
+
   // Supabase session refresh — must run on every non-blocked request.
   // supabaseResponse must be returned unchanged so cookie rotation works.
-  let supabaseResponse = NextResponse.next({ request });
+  let supabaseResponse = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
@@ -95,7 +107,11 @@ export async function proxy(request: NextRequest) {
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value)
         );
-        supabaseResponse = NextResponse.next({ request });
+        supabaseResponse = NextResponse.next({
+          request: {
+            headers: requestHeaders,
+          },
+        });
         cookiesToSet.forEach(({ name, value, options }) =>
           supabaseResponse.cookies.set(name, value, options)
         );
@@ -103,15 +119,11 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Refresh the session if an auth cookie exists to avoid blocking network roundtrips for unauthenticated visitors.
+  // Refresh the session if an auth cookie exists or accessing admin routes
   const hasAuthCookie = request.cookies.getAll().some(c => c.name.startsWith('sb-') || c.name.includes('auth-token'));
-  if (hasAuthCookie) {
+  if (hasAuthCookie || pathname.startsWith('/admin')) {
     await supabase.auth.getUser();
   }
-
-  // Phase 9: Growth Platform Deep Link Interception
-  // Intercept /r/:code or /invite/:code, rewrite to home, and set cookie if needed
-  const { pathname } = request.nextUrl;
   if (pathname.startsWith('/r/') || pathname.startsWith('/invite/')) {
     const code = pathname.split('/')[2];
     
