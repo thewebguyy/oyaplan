@@ -2,6 +2,8 @@ import React from "react";
 import { isAuthorizedAdmin } from "@/lib/admin/permissions";
 import Sidebar from "@/components/admin/Sidebar";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const auth = await isAuthorizedAdmin();
 
