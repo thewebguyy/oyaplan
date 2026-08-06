@@ -4,7 +4,7 @@ import { ArrowLeft, ShieldCheck, Mail, Lock, FileText } from "lucide-react";
 
 export const metadata = {
   title: "Privacy Policy | OyaPlan",
-  description: "How OyaPlan Technologies Limited collects, protects, and handles your data.",
+  description: "How OyaPlan Technologies Limited collects, protects, and handles your data under NDPR guidelines.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-black uppercase tracking-wider text-[#008751]">Legal & Security</span>
+              <span className="text-xs font-black uppercase tracking-wider text-[#008751]">Legal &amp; Security</span>
               <h1 className="text-3xl sm:text-4xl font-black text-midnight-lagoon tracking-tight">Privacy Policy</h1>
             </div>
           </div>
@@ -41,81 +41,72 @@ export default function PrivacyPolicyPage() {
         <div className="bg-white border border-[#E5E7EB] rounded-[24px] p-6 sm:p-10 shadow-sm space-y-8 text-sm sm:text-base leading-relaxed text-[#4B5563]">
           
           <section className="space-y-3">
-            <h2 className="text-xl font-extrabold text-[#1A1A1A]">1. Introduction</h2>
+            <h2 className="text-xl font-extrabold text-[#1A1A1A]">1. Introduction &amp; Compliance</h2>
             <p>
-              At <strong>OyaPlan Technologies Limited</strong> (&quot;OyaPlan&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and safeguard your information when you visit <strong>oyaplan.com</strong>, use our Lagos outing planner, or participate in our Founding Beta program.
+              At <strong>OyaPlan Technologies Limited</strong> (&quot;OyaPlan&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), we respect your privacy and are committed to protecting your personal data in accordance with the <strong>Nigeria Data Protection Act (NDPA) 2023</strong> and international data privacy principles. This policy explains how we collect, use, and protect your information across <strong>oyaplan.com</strong> and our beta services.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-extrabold text-[#1A1A1A]">2. Information We Collect</h2>
-            <p>We only collect information strictly necessary to provide cost-transparent outing recommendations and maintain secure account access:</p>
+            <p>We collect only data necessary to deliver verified outing plans and secure account access:</p>
             <ul className="list-disc pl-5 space-y-2 font-medium">
               <li>
-                <strong>Account & Contact Information:</strong> Your email address and display name provided during authentication (via Supabase Auth) or beta registration.
+                <strong>Account Identity Data:</strong> Email address and display name created during sign-in via Supabase Authentication.
               </li>
               <li>
-                <strong>Planning Inputs & Preferences:</strong> Anonymized outing criteria you enter into the planner, such as starting location (e.g. Lekki, Yaba, Ikeja), squad size, budget range, and vibe selections.
+                <strong>Planning Inputs:</strong> Anonymous criteria entered into the planner, including starting location, squad size, budget range, and vibe selections.
               </li>
               <li>
-                <strong>Beta Feedback & Spend Data:</strong> Feedback, ratings, and voluntary actual spend reports submitted to help calibrate our pricing intelligence algorithms.
+                <strong>Beta Feedback &amp; Spend Intelligence:</strong> Voluntary actual spend submissions and venue reviews submitted to calibrate transport and menu pricing accuracy.
               </li>
               <li>
-                <strong>Technical & Usage Data:</strong> IP address, device type, browser information, and referral sources to prevent fraud, enforce rate limits, and optimize mobile network performance.
+                <strong>Technical Logs:</strong> IP address, device type, browser user-agent, and request timestamps to prevent abuse, enforce rate limits, and secure our network.
               </li>
             </ul>
           </section>
 
-          <section className="space-y-3">
-            <h2 className="text-xl font-extrabold text-[#1A1A1A]">3. How We Use Your Information</h2>
-            <p>We process your information for the following specific purposes:</p>
-            <ul className="list-disc pl-5 space-y-2 font-medium">
-              <li>To calculate accurate venue recommendations, transport estimates, and budget buffers.</li>
-              <li>To manage your saved plans and authenticated user profile.</li>
-              <li>To verify beta tester access and assign founding tester badges.</li>
-              <li>To detect and prevent technical abuse, rate-limit violations, and security threats.</li>
-              <li>To analyze product performance and improve our pricing models.</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3 border-l-4 border-[#008751] pl-4 py-1 bg-[#F0FDF4] rounded-r-xl">
-            <h2 className="text-lg font-extrabold text-[#008751]">Our Strict Data Promise</h2>
+          <section className="space-y-3 border-l-4 border-[#008751] pl-4 py-2 bg-[#F0FDF4] rounded-r-xl">
+            <h2 className="text-lg font-extrabold text-[#008751]">No Data Selling Promise</h2>
             <p className="text-sm font-semibold text-[#1A1A1A]">
-              We do not sell, rent, or trade your personal data to third parties. We do not use your private planning data for invasive cross-site advertisement targeting.
+              We never sell, rent, or trade your personal information or squad outing plans to third parties or advertising networks.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-extrabold text-[#1A1A1A]">4. Cookies & Session Storage</h2>
+            <h2 className="text-xl font-extrabold text-[#1A1A1A]">3. Cookies &amp; Session Storage</h2>
             <p>
-              OyaPlan uses essential cookies and local browser storage to keep you signed in, preserve your planning criteria between pages, and enforce security policies. You can disable cookies in your browser settings, though certain features like saved plans may require authentication cookies to function properly.
+              We use essential HTTP cookies and browser session storage strictly to maintain authenticated sessions, preserve planning selections between screens, and protect forms against cross-site request forgery.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-extrabold text-[#1A1A1A]">5. Third-Party Infrastructure</h2>
-            <p>
-              We partner with trusted infrastructure providers to deliver a fast, reliable mobile experience:
-            </p>
+            <h2 className="text-xl font-extrabold text-[#1A1A1A]">4. Third-Party Infrastructure</h2>
+            <p>Your data is processed using secure cloud service providers:</p>
             <ul className="list-disc pl-5 space-y-1.5 font-medium">
-              <li><strong>Supabase:</strong> Cloud database, authentication, and security infrastructure.</li>
-              <li><strong>Vercel:</strong> Application hosting and global edge distribution network.</li>
-              <li><strong>Sentry:</strong> Anonymous error reporting to catch crashes in real-time.</li>
+              <li><strong>Supabase Inc.:</strong> Encrypted cloud database and authentication provider.</li>
+              <li><strong>Vercel Inc.:</strong> Hosting infrastructure and global edge network.</li>
+              <li><strong>Sentry:</strong> Anonymous runtime error reporting.</li>
             </ul>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-extrabold text-[#1A1A1A]">6. Data Retention & Your Rights</h2>
-            <p>
-              You retain full control over your data. You may request access to your stored profile data or request complete account deletion at any time by contacting us. Upon receiving a valid request, we will delete your account records within 30 days, except where retention is required by applicable law.
+            <h2 className="text-xl font-extrabold text-[#1A1A1A]">5. Data Retention &amp; Your NDPA Rights</h2>
+            <p>Under the Nigeria Data Protection Act, you have the right to:</p>
+            <ul className="list-disc pl-5 space-y-1.5 font-medium">
+              <li>Access all personal data stored under your account.</li>
+              <li>Request correction of inaccurate information.</li>
+              <li>Request complete erasure of your account and associated profile data.</li>
+              <li>Object to processing or request data portability.</li>
+            </ul>
+            <p className="pt-1">
+              Account deletion requests are processed within 30 days of email verification.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-xl font-extrabold text-[#1A1A1A]">7. Contact Us</h2>
-            <p>
-              If you have any questions, concerns, or data requests regarding this Privacy Policy, please reach out to our legal and support team:
-            </p>
+            <h2 className="text-xl font-extrabold text-[#1A1A1A]">6. Contact Us</h2>
+            <p>For privacy inquiries or data rights requests, contact our compliance team:</p>
             <div className="pt-2">
               <a
                 href="mailto:hello@oyaplan.com"
@@ -132,7 +123,7 @@ export default function PrivacyPolicyPage() {
 
         </div>
 
-        {/* Footer Navigation Links */}
+        {/* Footer Links */}
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#E5E7EB] pt-6 text-xs font-bold text-[#6B7280]">
           <div className="flex items-center gap-4">
             <Link href="/terms" className="hover:text-[#008751] transition-colors">
