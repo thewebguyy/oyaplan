@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { getAreasWithSpotCounts } from "@/lib/queries/areas";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Explore Lagos Outings — OyaPlan",

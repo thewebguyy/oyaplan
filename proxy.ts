@@ -103,8 +103,11 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Refresh the session — do not remove this call.
-  await supabase.auth.getUser();
+  // Refresh the session if an auth cookie exists to avoid blocking network roundtrips for unauthenticated visitors.
+  const hasAuthCookie = request.cookies.getAll().some(c => c.name.startsWith('sb-') || c.name.includes('auth-token'));
+  if (hasAuthCookie) {
+    await supabase.auth.getUser();
+  }
 
   // Phase 9: Growth Platform Deep Link Interception
   // Intercept /r/:code or /invite/:code, rewrite to home, and set cookie if needed
