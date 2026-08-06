@@ -25,21 +25,18 @@ export interface AdminVenue {
   area_id?: string;
   area_name?: string;
   category: string;
-  vibe?: string;
   address?: string;
   description?: string;
-  image_url?: string;
-  gallery_urls?: string[];
+  image_url?: string; // maps to cover_url
+  cover_url?: string;
+  logo_url?: string;
   price_level?: string;
-  min_price?: number;
-  max_price?: number;
-  is_verified?: boolean;
+  price_per_person?: number;
+  price_tier?: number;
+  active?: boolean;
   status: 'published' | 'draft';
   opening_hours?: Record<string, string>;
-  amenities?: string[];
-  tags?: string[];
-  latitude?: number;
-  longitude?: number;
+  vibe_tags?: string[];
   updated_at?: string;
 }
 

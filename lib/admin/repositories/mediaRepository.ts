@@ -5,17 +5,17 @@ import { ActivityRepository } from "./activityRepository";
 export class MediaRepository {
   static async getMediaItems(): Promise<MediaItem[]> {
     const supabase = await createServerClient();
-    const { data } = await supabase.from("spots").select("id, name, image_url, gallery_urls").not("image_url", "is", null);
+    const { data } = await supabase.from("spots").select("id, name, cover_url").not("cover_url", "is", null);
 
     const items: MediaItem[] = [];
     (data || []).forEach((spot: any) => {
-      if (spot.image_url) {
+      if (spot.cover_url) {
         items.push({
           id: `${spot.id}-hero`,
-          url: spot.image_url,
+          url: spot.cover_url,
           venue_id: spot.id,
           venue_name: spot.name,
-          filename: spot.image_url.split("/").pop() || "hero.jpg",
+          filename: spot.cover_url.split("/").pop() || "hero.jpg",
           created_at: new Date().toISOString(),
           is_hero: true,
         });
@@ -27,7 +27,7 @@ export class MediaRepository {
 
   static async assignImageToVenue(venueId: string, imageUrl: string, isHero = true, actorEmail = "admin"): Promise<boolean> {
     const supabase = await createServerClient();
-    const updates = isHero ? { image_url: imageUrl } : {};
+    const updates = isHero ? { cover_url: imageUrl } : {};
 
     const { error } = await supabase.from("spots").update(updates).eq("id", venueId);
 

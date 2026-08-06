@@ -16,12 +16,12 @@ export class DashboardService {
       { count: pendingSubmissionsCount },
     ] = await Promise.all([
       supabase.from("spots").select("id", { count: "exact", head: true }),
-      supabase.from("spots").select("id", { count: "exact", head: true }).eq("status", "published"),
-      supabase.from("spots").select("id", { count: "exact", head: true }).eq("status", "draft"),
+      supabase.from("spots").select("id", { count: "exact", head: true }).eq("active", true),
+      supabase.from("spots").select("id", { count: "exact", head: true }).eq("active", false),
       supabase.from("profiles").select("id", { count: "exact", head: true }).not("profile_badge", "is", null),
       supabase.from("approved_beta_users").select("email", { count: "exact", head: true }).is("accepted_at", null),
-      supabase.from("spots").select("id", { count: "exact", head: true }).or("image_url.is.null,image_url.eq.''"),
-      supabase.from("spots").select("id", { count: "exact", head: true }).or("min_price.is.null,min_price.eq.0"),
+      supabase.from("spots").select("id", { count: "exact", head: true }).or("cover_url.is.null,cover_url.eq.''"),
+      supabase.from("spots").select("id", { count: "exact", head: true }).or("price_per_person.is.null,price_per_person.eq.0"),
       supabase.from("spot_submissions_raw").select("id", { count: "exact", head: true }).eq("status", "pending"),
     ]);
 

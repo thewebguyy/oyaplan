@@ -13,7 +13,7 @@ export class VenueRepository {
   }): Promise<{ venues: AdminVenue[]; total: number }> {
     const supabase = await createServerClient();
     
-    let query = supabase.from("spots").select("*, areas:area_id(name)", { count: "exact" });
+    let query = supabase.from("spots").select("*, areas(name)", { count: "exact" });
 
     if (options?.search) {
       query = query.ilike("name", `%${options.search}%`);
@@ -28,7 +28,7 @@ export class VenueRepository {
     }
 
     if (options?.status) {
-      query = query.eq("status", options.status);
+      query = query.eq("active", options.status === "published");
     }
 
     const limit = options?.limit || 50;
@@ -46,26 +46,23 @@ export class VenueRepository {
     const venues: AdminVenue[] = (data || []).map((spot: any) => ({
       id: spot.id,
       name: spot.name,
-      slug: spot.slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       area_id: spot.area_id,
       area_name: spot.areas?.name || "Lagos",
       category: spot.category || "Venue",
-      vibe: spot.vibe || "Squad Linkup",
       address: spot.address || "",
-      description: spot.description || "",
-      image_url: spot.image_url || "",
-      gallery_urls: spot.gallery_urls || [],
-      price_level: spot.price_level || "₦₦",
-      min_price: spot.min_price || 0,
-      max_price: spot.max_price || 0,
-      is_verified: spot.is_verified || false,
-      status: spot.status === "draft" ? "draft" : "published",
+      description: spot.description || spot.crowd_type || "",
+      image_url: spot.cover_url || spot.logo_url || "",
+      cover_url: spot.cover_url || "",
+      logo_url: spot.logo_url || "",
+      price_level: spot.price_tier ? "₦".repeat(Math.min(spot.price_tier, 4)) : "₦₦",
+      price_per_person: spot.price_per_person || 0,
+      price_tier: spot.price_tier || 1,
+      active: spot.active ?? true,
+      status: spot.active === false ? "draft" : "published",
       opening_hours: spot.opening_hours || {},
-      amenities: spot.amenities || [],
-      tags: spot.tags || [],
-      latitude: spot.latitude,
-      longitude: spot.longitude,
-      updated_at: spot.updated_at,
+      vibe_tags: spot.vibe_tags || [],
+      updated_at: spot.price_updated_at || spot.created_at,
     }));
 
     return { venues, total: count || 0 };
@@ -75,7 +72,7 @@ export class VenueRepository {
     const supabase = await createServerClient();
     const { data, error } = await supabase
       .from("spots")
-      .select("*, areas:area_id(name)")
+      .select("*, areas(name)")
       .eq("id", id)
       .single();
 
@@ -84,39 +81,46 @@ export class VenueRepository {
     return {
       id: data.id,
       name: data.name,
-      slug: data.slug || data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      slug: data.address_slug || data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       area_id: data.area_id,
       area_name: data.areas?.name || "Lagos",
       category: data.category || "Venue",
-      vibe: data.vibe || "Squad Linkup",
       address: data.address || "",
       description: data.description || "",
-      image_url: data.image_url || "",
-      gallery_urls: data.gallery_urls || [],
-      price_level: data.price_level || "₦₦",
-      min_price: data.min_price || 0,
-      max_price: data.max_price || 0,
-      is_verified: data.is_verified || false,
-      status: data.status === "draft" ? "draft" : "published",
+      image_url: data.cover_url || data.logo_url || "",
+      cover_url: data.cover_url || "",
+      logo_url: data.logo_url || "",
+      price_level: data.price_tier ? "₦".repeat(Math.min(data.price_tier, 4)) : "₦₦",
+      price_per_person: data.price_per_person || 0,
+      price_tier: data.price_tier || 1,
+      active: data.active ?? true,
+      status: data.active === false ? "draft" : "published",
       opening_hours: data.opening_hours || {},
-      amenities: data.amenities || [],
-      tags: data.tags || [],
-      latitude: data.latitude,
-      longitude: data.longitude,
-      updated_at: data.updated_at,
+      vibe_tags: data.vibe_tags || [],
+      updated_at: data.price_updated_at || data.created_at,
     };
   }
 
   static async updateVenue(id: string, updates: Partial<AdminVenue>, actorEmail = "admin"): Promise<boolean> {
     const supabase = await createServerClient();
-    const { error } = await supabase.from("spots").update(updates).eq("id", id);
+    
+    // Map AdminVenue updates back to actual spots DB columns
+    const dbUpdates: Record<string, any> = {};
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.category !== undefined) dbUpdates.category = updates.category;
+    if (updates.address !== undefined) dbUpdates.address = updates.address;
+    if (updates.image_url !== undefined) dbUpdates.cover_url = updates.image_url;
+    if (updates.price_per_person !== undefined) dbUpdates.price_per_person = updates.price_per_person;
+    if (updates.status !== undefined) dbUpdates.active = updates.status === "published";
+
+    const { error } = await supabase.from("spots").update(dbUpdates).eq("id", id);
 
     if (error) {
       console.error("Failed to update venue:", error);
       return false;
     }
 
-    await ActivityRepository.logActivity(actorEmail, "Updated Venue", "Venue", id, updates as Record<string, unknown>);
+    await ActivityRepository.logActivity(actorEmail, "Updated Venue", "Venue", id, dbUpdates);
     return true;
   }
 }

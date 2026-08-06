@@ -15,8 +15,7 @@ export async function updateVenueAction(formData: FormData) {
     status: formData.get("status") as "published" | "draft",
     description: formData.get("description") as string,
     price_level: formData.get("price_level") as string,
-    min_price: Number(formData.get("min_price")) || 0,
-    max_price: Number(formData.get("max_price")) || 0,
+    price_per_person: Number(formData.get("price_per_person")) || 0,
     address: formData.get("address") as string,
     image_url: formData.get("image_url") as string,
   };

@@ -109,22 +109,12 @@ export default async function AdminEditVenuePage({
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="font-bold text-gray-600">Min Price (₦)</label>
+            <div className="space-y-1 sm:col-span-2">
+              <label className="font-bold text-gray-600">Price Per Person (₦)</label>
               <input
-                name="min_price"
+                name="price_per_person"
                 type="number"
-                defaultValue={venue.min_price}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-xs font-mono focus:outline-none focus:border-[#008751]"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="font-bold text-gray-600">Max Price (₦)</label>
-              <input
-                name="max_price"
-                type="number"
-                defaultValue={venue.max_price}
+                defaultValue={venue.price_per_person}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-xs font-mono focus:outline-none focus:border-[#008751]"
               />
             </div>
