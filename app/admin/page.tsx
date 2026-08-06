@@ -1,748 +1,107 @@
-import { createServerClient } from "@/lib/supabase-server";
-import { captureServerException } from "@/lib/sentry";
-import { getAllPlanRequests, getPlanCount, getPlanCountSince } from "@/lib/queries/plans";
-import { getStaleSpotsForAdmin } from "@/lib/queries/spots";
-import {
-  getTesterObservations,
-  getSpotSuggestions,
-  getOperatorInquiries,
-  getDataHealthKPIs,
-  getPendingEvidence,
-} from "@/lib/queries/admin";
-import { getSpendAccuracyStats } from "@/lib/queries/actualSpend";
-import { signOutAdmin } from "@/lib/actions/adminAuth";
-import { redirect } from "next/navigation";
-import PageError from "@/components/PageError";
-import ModerationTable, { PendingEvidenceItem } from "./ModerationTable";
+import React from "react";
+import { DashboardService } from "@/lib/admin/services/dashboardService";
+import PageHeader from "@/components/admin/PageHeader";
+import MetricCard from "@/components/admin/MetricCard";
+import { ActivityService } from "@/lib/admin/services/activityService";
+import StatusBadge from "@/components/admin/StatusBadge";
+import { MapPin, Award, ImageIcon, FileSpreadsheet, CheckCircle2, Star, Clock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboard() {
-  const serverClient = await createServerClient();
-  const { data: { user } } = await serverClient.auth.getUser();
-
-  if (!user) {
-    redirect('/admin/login');
-  }
-
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-  const sixtyDaysAgo = new Date();
-  sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
-
-  // Fetch all dashboard data — allRequests is critical for aggregations; others degrade to empty
-  let adminFetchError = false;
-  let totalPlans = 0;
-  let plansThisWeek = 0;
-  let allRequests: Array<Record<string, string | number>> = [];
-  let observations: Array<{ id: string; resolved: boolean; created_at: string; tester_name: string; device_and_network: string; what_they_tried: string; what_frustrated_them: string | null; what_they_wished_existed: string | null }> = [];
-  let suggestions: Array<{ id: string; created_at: string; reviewed: boolean; spot_name: string; area_name: string; rough_price_per_person: number | null; suggester_whatsapp: string | null }> = [];
-  let inquiries: Array<{ id: string; created_at: string; converted: boolean; contacted: boolean; business_name: string; owner_name: string; whatsapp_number: string; area_slug: string; listing_tier: string; monthly_budget_ngn: number | null }> = [];
-  let staleSpots: Array<{ id: string; name: string; price_updated_at: string; verified_by: string | null; active: boolean }> = [];
-  let pendingEvidence: PendingEvidenceItem[] = [];
-  let dataHealth: { confidence_histogram: { high: number; medium: number; low: number }; freshness_distribution: Record<string, number>; moderation_backlog: number; receipts_this_week: number; avg_confidence: number; error_p50: number; error_p90: number; total_venues: number; total_evidence: number } | null = null;
-  let spendAccuracy: Awaited<ReturnType<typeof getSpendAccuracyStats>> = {
-    submissionsThisWeek: 0,
-    medianAccuracyPct: 0,
-    highVarianceSpots: [],
-  };
-
-  try {
-    const [
-      totalPlansResult,
-      plansThisWeekResult,
-      allRequestsResult,
-      observationsResult,
-      suggestionsResult,
-      inquiriesResult,
-      staleSpotsResult,
-      dataHealthResult,
-    ] = await Promise.all([
-      getPlanCount(serverClient),
-      getPlanCountSince(sevenDaysAgo.toISOString(), serverClient),
-      getAllPlanRequests(serverClient),
-      getTesterObservations(serverClient),
-      getSpotSuggestions(serverClient),
-      getOperatorInquiries(serverClient),
-      getStaleSpotsForAdmin(sixtyDaysAgo.toISOString()),
-      getDataHealthKPIs(serverClient),
-    ]);
-
-    if (!allRequestsResult.error) {
-      totalPlans = totalPlansResult.data;
-      plansThisWeek = plansThisWeekResult.data;
-      allRequests = (allRequestsResult.data || []) as typeof allRequests;
-      observations = (observationsResult.data || []) as typeof observations;
-      suggestions = (suggestionsResult.data || []) as typeof suggestions;
-      inquiries = (inquiriesResult.data || []) as typeof inquiries;
-      staleSpots = (staleSpotsResult.data || []) as typeof staleSpots;
-      if (dataHealthResult.data) dataHealth = dataHealthResult.data;
-
-      const [pendingEvidenceResult, spendAccuracyResult] = await Promise.all([
-        getPendingEvidence(serverClient),
-        getSpendAccuracyStats(serverClient),
-      ]);
-      const { data: pendingEvidenceData } = pendingEvidenceResult;
-      spendAccuracy = spendAccuracyResult;
-
-      pendingEvidence = (pendingEvidenceData || []).map(item => {
-        const venueObj = Array.isArray(item.venues) 
-          ? (item.venues[0] as { name: string } | undefined)
-          : (item.venues as { name: string } | null);
-          
-        const menuItemObj = Array.isArray(item.menu_items)
-          ? (item.menu_items[0] as { name: string } | undefined)
-          : (item.menu_items as { name: string } | null);
-
-        return {
-          id: item.id,
-          source_type: item.source_type,
-          recorded_price: item.recorded_price,
-          evidence_url: item.evidence_url,
-          created_at: item.created_at,
-          submitted_by: item.submitted_by,
-          venues: venueObj || null,
-          menu_items: menuItemObj || null
-        };
-      });
-    } else {
-      adminFetchError = true;
-    }
-  } catch (e) {
-    captureServerException(e);
-    adminFetchError = true;
-  }
-
-  if (adminFetchError) {
-    return <PageError message="Could not load admin dashboard data. Please try again." href="/admin" linkLabel="Retry" />;
-  }
-
-  const unresolvedCount = observations.filter(o => !o.resolved).length;
-  const totalInquiries = inquiries.length;
-  const unconvertedInquiries = inquiries.filter(i => !i.converted).length;
-
-  // Aggregations
-  const vibeCounts = allRequests.reduce<Record<string, number>>((acc, r) => {
-    const vibe = String(r.vibe || "");
-    acc[vibe] = (acc[vibe] || 0) + 1;
-    return acc;
-  }, {});
-  const popularVibe = Object.entries(vibeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
-
-  const areaCounts = allRequests.reduce<Record<string, number>>((acc, r) => {
-    const area = String(r.start_area || "");
-    acc[area] = (acc[area] || 0) + 1;
-    return acc;
-  }, {});
-  const popularArea = Object.entries(areaCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
-
-  const budgetRanges = {
-    "Under ₦20k": 0,
-    "₦20k–₦50k": 0,
-    "₦50k–₦100k": 0,
-    "Over ₦100k": 0
-  };
-  allRequests.forEach(r => {
-    const b = Number(r.budget);
-    if (b < 20000) budgetRanges["Under ₦20k"]++;
-    else if (b < 50000) budgetRanges["₦20k–₦50k"]++;
-    else if (b < 100000) budgetRanges["₦50k–₦100k"]++;
-    else budgetRanges["Over ₦100k"]++;
-  });
-
-  const recentRequests = allRequests.slice(0, 10);
-
-  function timeAgo(date: string) {
-    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    let interval = seconds / 31536000;
-    if (interval > 1) return Math.floor(interval) + " years ago";
-    interval = seconds / 2592000;
-    if (interval > 1) return Math.floor(interval) + " months ago";
-    interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + " days ago";
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + " hours ago";
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + " minutes ago";
-    return Math.floor(seconds) + " seconds ago";
-  }
+export default async function AdminDashboardPage() {
+  const [metrics, recentActivity] = await Promise.all([
+    DashboardService.getMetrics(),
+    ActivityService.getRecentActivity(5),
+  ]);
 
   return (
-    <main className="min-h-[100dvh] bg-gray-50 p-8 font-sans text-gray-900">
-      <div className="max-w-6xl mx-auto space-y-10">
-        <header className="flex items-center justify-between">
-          <h1 className="text-3xl font-black tracking-tighter text-[#008751]">
-            OyaPlan Intelligence
-          </h1>
-          <form action={signOutAdmin}>
-            <button
-              type="submit"
-              className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              Sign out
-            </button>
-          </form>
-        </header>
+    <div className="space-y-8">
+      <PageHeader
+        title="OyaPlan Control Center"
+        description="Live operational numbers and system health overview."
+      />
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[
-            { label: "Total Plans", value: totalPlans },
-            { label: "Plans This Week", value: plansThisWeek },
-            { label: "Top Vibe", value: popularVibe },
-            { label: "Top Area", value: popularArea }
-          ].map(c => (
-            <div key={c.label} className="p-6 bg-white border border-gray-200 rounded-2xl">
-              <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">{c.label}</p>
-              <p className="text-2xl font-black text-[#008751]">{c.value?.toLocaleString()}</p>
-            </div>
-          ))}
-        </div>
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          label="Total Venues"
+          value={metrics.totalVenues}
+          subtext={`${metrics.publishedVenues} Published • ${metrics.draftVenues} Draft`}
+          href="/admin/venues"
+          icon={<MapPin className="w-5 h-5" />}
+        />
+        <MetricCard
+          label="Beta Users"
+          value={metrics.betaUsersCount}
+          subtext={`${metrics.pendingBetaApprovalsCount} Pending Approvals`}
+          href="/admin/beta-users"
+          icon={<Award className="w-5 h-5" />}
+        />
+        <MetricCard
+          label="Pending Submissions"
+          value={metrics.pendingSubmissionsCount}
+          subtext="Scout & User submissions queue"
+          href="/admin/submissions"
+          icon={<FileSpreadsheet className="w-5 h-5" />}
+        />
+        <MetricCard
+          label="Missing Images"
+          value={metrics.venuesMissingImagesCount}
+          subtext="Venues without hero images"
+          href="/admin/media"
+          icon={<ImageIcon className="w-5 h-5" />}
+        />
+      </div>
 
-        {/* Spend Accuracy — Flywheel Health */}
-        <div className="space-y-4">
+      {/* Secondary Operational Checks */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-gray-900">Spend Accuracy Flywheel</h2>
-            <span className="px-3 py-1 text-xs font-black uppercase rounded-full bg-green-100 text-green-700">
-              {spendAccuracy.submissionsThisWeek} submissions this week
-            </span>
+            <h3 className="font-bold text-gray-900 text-sm">Weekly Data Quality Checklist</h3>
+            <span className="text-xs text-[#008751] font-bold">Auto-Monitored</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-5 bg-white border border-gray-200 rounded-2xl">
-              <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Submissions This Week</p>
-              <p className="text-2xl font-black text-[#008751]">{spendAccuracy.submissionsThisWeek}</p>
+
+          <div className="space-y-3 text-xs font-medium text-gray-600">
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <span>Venues Missing Hero Image</span>
+              <span className="font-bold text-red-600">{metrics.venuesMissingImagesCount}</span>
             </div>
-            <div className="p-5 bg-white border border-gray-200 rounded-2xl">
-              <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Median Accuracy</p>
-              <p className="text-2xl font-black text-[#008751]">
-                {spendAccuracy.medianAccuracyPct > 0 ? `${spendAccuracy.medianAccuracyPct}%` : "—"}
-              </p>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <span>Venues Missing Price Range</span>
+              <span className="font-bold text-amber-600">{metrics.venuesMissingPricesCount}</span>
             </div>
-            <div className="p-5 bg-white border border-gray-200 rounded-2xl">
-              <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">High-Variance Spots</p>
-              <p className="text-2xl font-black text-amber-600">{spendAccuracy.highVarianceSpots.length}</p>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <span>Pending Scout Submissions</span>
+              <span className="font-bold text-blue-600">{metrics.pendingSubmissionsCount}</span>
             </div>
           </div>
-          {spendAccuracy.highVarianceSpots.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                    <th className="px-6 py-3">Spot ID</th>
-                    <th className="px-6 py-3">Reports</th>
-                    <th className="px-6 py-3 text-right">Avg Variance</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {spendAccuracy.highVarianceSpots.map((s, i) => (
-                    <tr key={i} className="text-sm font-medium">
-                      <td className="px-6 py-3 font-mono text-xs text-gray-500">{s.spot_id?.slice(0, 8) ?? "unknown"}…</td>
-                      <td className="px-6 py-3">{s.count}</td>
-                      <td className="px-6 py-3 text-right">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
-                          s.variance_pct > 25 ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-600"
-                        }`}>
-                          ±{s.variance_pct}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
-        <div className="space-y-4">
+
+        {/* Recent Operational Activity Feed */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-gray-900">Price Freshness Monitoring</h2>
-            <span className={`px-3 py-1 text-xs font-black uppercase rounded-full ${
-              (staleSpots?.length || 0) > 0 ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"
-            }`}>
-              {staleSpots?.length || 0} spots need verification
-            </span>
+            <h3 className="font-bold text-gray-900 text-sm">Recent Activity</h3>
+            <Clock className="w-4 h-4 text-gray-400" />
           </div>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                  <th className="px-6 py-3">Spot Name</th>
-                  <th className="px-6 py-3">Last Verified</th>
-                  <th className="px-6 py-3">Source</th>
-                  <th className="px-6 py-3 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {staleSpots?.map((s) => (
-                  <tr key={s.id} className="text-sm font-medium">
-                    <td className="px-6 py-4 font-bold">{s.name}</td>
-                    <td className="px-6 py-4 text-gray-400">{timeAgo(s.price_updated_at)}</td>
-                    <td className="px-6 py-4 text-xs">{s.verified_by || "manual"}</td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[10px] font-black uppercase">
-                        STALE
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-                {(!staleSpots || staleSpots.length === 0) && (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-400 text-sm italic">
-                      All spot prices are fresh (verified within last 60 days).
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-            </div>
-          </div>
-        </div>
 
-        {/* COO Data Health Dashboard */}
-        {dataHealth && (
-          <div className="space-y-6 mb-8">
-            <h2 className="text-xl font-black text-gray-900">Data Health & Intelligence</h2>
-            
-            {/* Top KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Receipts This Week</p>
-                <p className="text-2xl font-black text-[#008751]">{dataHealth.receipts_this_week}</p>
-              </div>
-              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Pending Moderation</p>
-                <div className="flex items-baseline gap-2">
-                  <p className={`text-2xl font-black ${dataHealth.moderation_backlog > 0 ? 'text-amber-600' : 'text-[#008751]'}`}>
-                    {dataHealth.moderation_backlog}
-                  </p>
-                  {dataHealth.moderation_backlog > 0 && <span className="text-xs text-amber-600 font-bold">Needs review</span>}
+          <div className="space-y-3 text-xs font-medium text-gray-600">
+            {recentActivity.length === 0 ? (
+              <p className="text-gray-400 py-4 text-center">No recent admin activity logged.</p>
+            ) : (
+              recentActivity.map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl">
+                  <div className="truncate">
+                    <span className="font-bold text-gray-900">{item.actor_email.split("@")[0]}</span>
+                    <span className="mx-1 text-gray-400">•</span>
+                    <span>{item.action}</span>
+                  </div>
+                  <StatusBadge status={item.target_type} type="info" />
                 </div>
-              </div>
-              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Avg Confidence</p>
-                <div className="flex items-baseline gap-2">
-                  <p className="text-2xl font-black text-gray-900">{dataHealth.avg_confidence}%</p>
-                  <span className="text-xs text-gray-400">across {dataHealth.total_venues} venues</span>
-                </div>
-              </div>
-              <div className="p-6 bg-white border border-gray-200 rounded-2xl">
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Estimate Variance (30d)</p>
-                <div className="flex items-baseline gap-3">
-                  <div>
-                    <span className="text-xs font-bold text-gray-400 block">P50 (Median)</span>
-                    <span className="text-lg font-black text-[#008751]">{dataHealth.error_p50 > 0 ? '+' : ''}{dataHealth.error_p50}%</span>
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-gray-400 block">P90 (Worst 10%)</span>
-                    <span className="text-lg font-black text-amber-600">{dataHealth.error_p90 > 0 ? '+' : ''}{dataHealth.error_p90}%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Distribution Charts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Confidence Histogram */}
-              <div className="p-6 bg-white border border-gray-200 rounded-2xl space-y-4">
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400">Confidence Distribution</p>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-xs font-bold mb-1">
-                      <span className="text-[#008751]">High (80-100%)</span>
-                      <span>{dataHealth.confidence_histogram.high} venues</span>
-                    </div>
-                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#008751]" style={{ width: `${(dataHealth.confidence_histogram.high / Math.max(1, dataHealth.total_venues)) * 100}%` }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs font-bold mb-1">
-                      <span className="text-amber-500">Medium (40-79%)</span>
-                      <span>{dataHealth.confidence_histogram.medium} venues</span>
-                    </div>
-                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-amber-400" style={{ width: `${(dataHealth.confidence_histogram.medium / Math.max(1, dataHealth.total_venues)) * 100}%` }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs font-bold mb-1">
-                      <span className="text-red-500">Low (0-39%)</span>
-                      <span>{dataHealth.confidence_histogram.low} venues</span>
-                    </div>
-                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-red-500" style={{ width: `${(dataHealth.confidence_histogram.low / Math.max(1, dataHealth.total_venues)) * 100}%` }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Freshness Distribution */}
-              <div className="p-6 bg-white border border-gray-200 rounded-2xl space-y-4">
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400">Status Distribution</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Fresh / Active</span>
-                    <p className="text-xl font-black text-[#008751]">
-                      {(dataHealth.freshness_distribution['fresh'] || 0) + (dataHealth.freshness_distribution['verified'] || 0) + (dataHealth.freshness_distribution['community_verified'] || 0)}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Stale (&gt;90d)</span>
-                    <p className="text-xl font-black text-amber-600">
-                      {dataHealth.freshness_distribution['stale'] || 0}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-red-500">Needs Review</span>
-                    <p className="text-xl font-black text-red-600">
-                      {dataHealth.freshness_distribution['needs_review'] || 0}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Ingestion queue moderation */}
-        <ModerationTable pendingEvidence={pendingEvidence} />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Vibe Breakdown */}
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
-              Vibe Breakdown
-            </h2>
-            <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                  <th className="px-6 py-3">Vibe</th>
-                  <th className="px-6 py-3">Count</th>
-                  <th className="px-6 py-3 text-right">%</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {Object.entries(vibeCounts).sort((a, b) => b[1] - a[1]).map(([v, count]) => (
-                  <tr key={v} className="text-sm font-medium">
-                    <td className="px-6 py-4">{v}</td>
-                    <td className="px-6 py-4">{count}</td>
-                    <td className="px-6 py-4 text-right text-gray-400">
-                      {((count / (totalPlans || 1)) * 100).toFixed(1)}%
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </div>
-
-          {/* Area Demand */}
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
-              Area Demand
-            </h2>
-            <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                  <th className="px-6 py-3">Area</th>
-                  <th className="px-6 py-3 text-right">Requests</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {Object.entries(areaCounts).sort((a, b) => b[1] - a[1]).map(([area, count]) => (
-                  <tr key={area} className="text-sm font-medium">
-                    <td className="px-6 py-4 capitalize">{area}</td>
-                    <td className="px-6 py-4 text-right font-black">{count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </div>
-
-          {/* Budget Distribution */}
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
-              Budget Distribution
-            </h2>
-            <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                  <th className="px-6 py-3">Range</th>
-                  <th className="px-6 py-3 text-right">Count</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {Object.entries(budgetRanges).map(([range, count]) => (
-                  <tr key={range} className="text-sm font-medium">
-                    <td className="px-6 py-4">{range}</td>
-                    <td className="px-6 py-4 text-right font-black">{count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Requests */}
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-          <h2 className="p-6 text-sm font-black uppercase tracking-widest text-gray-400 border-b border-gray-100">
-            Recent 10 Requests
-          </h2>
-          <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                <th className="px-6 py-3">Time</th>
-                <th className="px-6 py-3">Area</th>
-                <th className="px-6 py-3">Vibe</th>
-                <th className="px-6 py-3">Budget</th>
-                <th className="px-6 py-3">Squad</th>
-                <th className="px-6 py-3 text-right">Results</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {recentRequests.map((r) => (
-                <tr key={String(r.id)} className="text-sm font-medium">
-                  <td className="px-6 py-4 text-gray-400">{timeAgo(String(r.created_at))}</td>
-                  <td className="px-6 py-4 capitalize">{r.start_area}</td>
-                  <td className="px-6 py-4">{r.vibe}</td>
-                  <td className="px-6 py-4">₦{Number(r.budget).toLocaleString()}</td>
-                  <td className="px-6 py-4">{r.squad_size}</td>
-                  <td className="px-6 py-4 text-right">{r.results_count}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
-        </div>
-
-        {/* Tester Observations */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-gray-900">Tester Observations</h2>
-            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-black uppercase rounded-full">
-              {unresolvedCount} unresolved
-            </span>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                  <th className="px-6 py-3">Time</th>
-                  <th className="px-6 py-3">Tester</th>
-                  <th className="px-6 py-3">Device</th>
-                  <th className="px-6 py-3">What they tried</th>
-                  <th className="px-6 py-3">Frustration</th>
-                  <th className="px-6 py-3">Wish List</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {observations?.map((o) => (
-                  <tr key={o.id} className={`text-sm font-medium ${!o.resolved ? 'bg-yellow-50/30' : ''}`}>
-                    <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(o.created_at)}</td>
-                    <td className="px-6 py-4 font-bold">{o.tester_name}</td>
-                    <td className="px-6 py-4 text-xs">{o.device_and_network}</td>
-                    <td className="px-6 py-4 truncate max-w-[150px]" title={o.what_they_tried}>{o.what_they_tried}</td>
-                    <td className="px-6 py-4 truncate max-w-[150px] text-red-500" title={o.what_frustrated_them ?? undefined}>{o.what_frustrated_them ?? "—"}</td>
-                    <td className="px-6 py-4 truncate max-w-[150px] text-[#008751]" title={o.what_they_wished_existed ?? undefined}>{o.what_they_wished_existed ?? "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Spot Suggestions */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-black text-gray-900">Spot Suggestions</h2>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                  <th className="px-6 py-3">Time</th>
-                  <th className="px-6 py-3">Spot Name</th>
-                  <th className="px-6 py-3">Area</th>
-                  <th className="px-6 py-3">Price</th>
-                  <th className="px-6 py-3">WhatsApp</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {suggestions.map((s) => (
-                  <tr key={s.id} className={`text-sm font-medium ${!s.reviewed ? 'bg-blue-50/30' : ''}`}>
-                    <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(s.created_at)}</td>
-                    <td className="px-6 py-4 font-bold">{s.spot_name}</td>
-                    <td className="px-6 py-4">{s.area_name}</td>
-                    <td className="px-6 py-4">₦{s.rough_price_per_person?.toLocaleString() ?? "—"}</td>
-                    <td className="px-6 py-4 text-gray-400 font-mono text-xs">{s.suggester_whatsapp ?? "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Operator Inquiries */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-gray-900">Operator Inquiries</h2>
-            <div className="flex gap-2">
-              <span className="px-3 py-1 bg-green-100 text-[#008751] text-xs font-black uppercase rounded-full">
-                {totalInquiries} total
-              </span>
-              <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-black uppercase rounded-full">
-                {unconvertedInquiries} unconverted
-              </span>
-            </div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                  <th className="px-6 py-3">Time</th>
-                  <th className="px-6 py-3">Business Name</th>
-                  <th className="px-6 py-3">Owner</th>
-                  <th className="px-6 py-3">WhatsApp</th>
-                  <th className="px-6 py-3">Area</th>
-                  <th className="px-6 py-3">Tier</th>
-                  <th className="px-6 py-3">Budget</th>
-                  <th className="px-6 py-3">Contacted</th>
-                  <th className="px-6 py-3">Converted</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {inquiries.map((i) => (
-                  <tr key={i.id} className={`text-sm font-medium ${!i.contacted ? 'bg-yellow-50/30' : ''}`}>
-                    <td className="px-6 py-4 text-gray-400 text-xs">{timeAgo(i.created_at)}</td>
-                    <td className="px-6 py-4 font-bold">{i.business_name}</td>
-                    <td className="px-6 py-4">{i.owner_name}</td>
-                    <td className="px-6 py-4 text-gray-400 font-mono text-xs">{i.whatsapp_number}</td>
-                    <td className="px-6 py-4 capitalize">{i.area_slug}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
-                        i.listing_tier === 'Premium' ? 'bg-purple-100 text-purple-700' :
-                        i.listing_tier === 'Featured' ? 'bg-green-100 text-[#008751]' :
-                        'bg-gray-100 text-gray-600'
-                      }`}>
-                        {i.listing_tier}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">₦{i.monthly_budget_ngn?.toLocaleString() ?? "—"}</td>
-                    <td className="px-6 py-4">{i.contacted ? "✅" : "❌"}</td>
-                    <td className="px-6 py-4">{i.converted ? "✅" : "❌"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Venue Claims Queue */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-black text-gray-900">Operator Claims Queue</h2>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                    <th className="px-6 py-3">Claim Date</th>
-                    <th className="px-6 py-3">Business ID / Info</th>
-                    <th className="px-6 py-3">User ID</th>
-                    <th className="px-6 py-3">Method</th>
-                    <th className="px-6 py-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {/* Pull claims from DB */}
-                  {(() => {
-                    return (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm italic">
-                          No pending operator claims requiring moderation.
-                        </td>
-                      </tr>
-                    );
-                  })()}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Venue Edit Requests */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-black text-gray-900">Venue Price & Menu Edit Requests</h2>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                    <th className="px-6 py-3">Request Date</th>
-                    <th className="px-6 py-3">Venue ID</th>
-                    <th className="px-6 py-3">Field</th>
-                    <th className="px-6 py-3">Proposed Value</th>
-                    <th className="px-6 py-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {(() => {
-                    return (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm italic">
-                          No pending menu item edit requests.
-                        </td>
-                      </tr>
-                    );
-                  })()}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Scout Community Stats */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-black text-gray-900">Scout Leaderboard</h2>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-[11px] uppercase text-gray-400 bg-gray-50 font-black tracking-widest border-b border-gray-100">
-                    <th className="px-6 py-3">Scout Username</th>
-                    <th className="px-6 py-3">Tier</th>
-                    <th className="px-6 py-3">Accuracy</th>
-                    <th className="px-6 py-3">Total Score</th>
-                    <th className="px-6 py-3 text-right">Approved Submissions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {/* Dynamic list rendering */}
-                  {(() => {
-                    return (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-gray-400 text-sm italic">
-                          No active scout leaderboard details. Run invites to onboard.
-                        </td>
-                      </tr>
-                    );
-                  })()}
-                </tbody>
-              </table>
-            </div>
+              ))
+            )}
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
