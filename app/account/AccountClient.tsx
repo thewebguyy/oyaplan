@@ -9,6 +9,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { BetaBadge } from "@/components/ui/BetaBadge";
 
 interface AccountClientProps {
   isAuthenticated: boolean;
@@ -84,6 +85,10 @@ export default function AccountClient({
   const isEmailBasedName = profile.display_name === profile.email || profile.display_name?.includes("@");
   const displayName = isEmailBasedName ? "Planner" : profile.display_name;
 
+  const joinedDateText = profile.beta_joined_at
+    ? new Date(profile.beta_joined_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : "August 2026";
+
   return (
     <main className="min-h-[100dvh] bg-[#FAFAF8] pb-24">
       {/* 1. The Header — Solid Chowdeck-Style Brand Green (#008751) */}
@@ -108,20 +113,16 @@ export default function AccountClient({
                 toast.success("Email copied!");
               }
             }}
-            className="text-xs font-bold text-white/80 truncate max-w-[220px] mb-4 cursor-pointer tap-feedback"
+            className="text-xs font-bold text-white/80 truncate max-w-[220px] mb-3 cursor-pointer tap-feedback"
           >
             {profile.email}
           </p>
         )}
 
-        <div className="flex items-center gap-2">
-          <span className="bg-[#FCC630] text-[#00603A] px-3.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
-            Beta Member
-          </span>
-          <span className="bg-[#FCC630] text-[#00603A] px-3.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
-            {savedPlansCount > 0 
-              ? `${savedPlansCount} ${savedPlansCount === 1 ? 'Outing' : 'Outings'}` 
-              : "Ready to Plan"}
+        <div className="flex flex-col items-center gap-1.5 mt-1">
+          <BetaBadge badgeType={profile.profile_badge || "founding_beta"} size="md" />
+          <span className="text-xs font-bold text-white/90 tracking-wide mt-0.5">
+            Joined {joinedDateText}
           </span>
         </div>
       </div>

@@ -6,6 +6,9 @@ export interface UserProfile {
   role: 'planner' | 'scout' | 'venue_operator' | 'admin';
   display_name?: string;
   email?: string;
+  profile_badge?: string | null;
+  beta_joined_at?: string | null;
+  beta_onboarding_complete?: boolean;
 }
 
 export type IdentityState = 
@@ -53,7 +56,7 @@ export class SessionResolver {
     // We fetch the profile directly to enforce RBAC downstream.
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, role, display_name')
+      .select('id, role, display_name, profile_badge, beta_joined_at, beta_onboarding_complete')
       .eq('id', user.id)
       .single();
 
@@ -65,6 +68,9 @@ export class SessionResolver {
         role: profile?.role || 'planner',
         display_name: profile?.display_name,
         email: user.email,
+        profile_badge: profile?.profile_badge || null,
+        beta_joined_at: profile?.beta_joined_at || null,
+        beta_onboarding_complete: profile?.beta_onboarding_complete ?? false,
       }
     };
   }

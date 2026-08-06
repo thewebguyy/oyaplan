@@ -77,22 +77,22 @@ export default function Footer() {
             <h3 className="font-semibold text-white tracking-wide mb-6">Top Areas</h3>
             <ul className="flex flex-col gap-4">
               <li>
-                <Link href="/explore" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/explore/ikeja" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
                   Ikeja
                 </Link>
               </li>
               <li>
-                <Link href="/explore" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/explore/lekki" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
                   Lekki
                 </Link>
               </li>
               <li>
-                <Link href="/explore" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/explore/victoria-island" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
                   Victoria Island
                 </Link>
               </li>
               <li>
-                <Link href="/explore" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/explore/yaba" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
                   Yaba
                 </Link>
               </li>
@@ -128,11 +128,14 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} OyaPlan Technologies Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="#" className="text-sm text-white/40 hover:text-white transition-colors">
-              Terms of Service
+            <Link href="/privacy" className="text-sm text-white/40 hover:text-white transition-colors">
+              Privacy
             </Link>
-            <Link href="#" className="text-sm text-white/40 hover:text-white transition-colors">
-              Privacy Policy
+            <Link href="/terms" className="text-sm text-white/40 hover:text-white transition-colors">
+              Terms
+            </Link>
+            <Link href="/beta" className="text-sm text-[#FCC630] hover:underline font-bold transition-colors">
+              Beta Program
             </Link>
           </div>
         </div>
