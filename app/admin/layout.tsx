@@ -27,9 +27,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAF8] flex flex-col md:flex-row antialiased">
+    <div className="h-[100dvh] w-full bg-[#FAFAF8] flex flex-col md:flex-row antialiased overflow-hidden">
       <Sidebar userEmail={auth.email} role={auth.role} />
-      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto">
+      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto h-full scroll-smooth">
         {children}
       </main>
     </div>

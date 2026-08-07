@@ -1231,4 +1231,29 @@
   font-size: 16px;
 }
 
+/* Fluid Desktop & Touch Scrolling Enhancements */
+html, body {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom subtle scrollbar styling */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(1, 5, 40, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(1, 5, 40, 0.35);
+}
+
 

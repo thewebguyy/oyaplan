@@ -39,7 +39,7 @@ export function Sidebar({ userEmail = "admin@oyaplan.com", role = "admin" }: Sid
   ];
 
   return (
-    <aside className="w-64 bg-[#010528] text-white flex flex-col justify-between shrink-0 min-h-[100dvh] border-r border-white/10 select-none">
+    <aside className="w-64 bg-[#010528] text-white flex flex-col justify-between shrink-0 h-full border-r border-white/10 select-none overflow-y-auto">
       <div>
         {/* Brand Header */}
         <div className="h-16 px-6 flex items-center justify-between border-b border-white/10">
