@@ -60,6 +60,33 @@ export class BetaRepository {
     return true;
   }
 
+  static async approveBulkEmails(emails: string[], notes?: string, actorEmail = "admin"): Promise<{ approvedCount: number }> {
+    const supabase = await createServerClient();
+    
+    const cleanEmails = emails
+      .map(e => e.trim().toLowerCase())
+      .filter(e => e.length > 3 && e.includes("@"));
+
+    if (cleanEmails.length === 0) return { approvedCount: 0 };
+
+    const records = cleanEmails.map(email => ({
+      email,
+      approved_by: actorEmail,
+      notes: notes || "Bulk Import from Google Sheets",
+      approved_at: new Date().toISOString(),
+    }));
+
+    const { error } = await supabase.from("approved_beta_users").upsert(records, { onConflict: "email" });
+
+    if (error) {
+      console.error("Failed to bulk approve beta emails:", error);
+      return { approvedCount: 0 };
+    }
+
+    await ActivityRepository.logActivity(actorEmail, `Bulk Approved ${cleanEmails.length} Beta Emails`, "BetaUser", undefined, { count: cleanEmails.length, notes });
+    return { approvedCount: cleanEmails.length };
+  }
+
   static async removeEmail(email: string, actorEmail = "admin"): Promise<boolean> {
     const supabase = await createServerClient();
     const cleanEmail = email.trim().toLowerCase();
