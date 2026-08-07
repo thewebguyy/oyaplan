@@ -43,11 +43,32 @@ export class VenueRepository {
       return { venues: [], total: 0 };
     }
 
-    const venues: AdminVenue[] = (data || []).map((spot: any) => ({
+    interface SpotDbRow {
+      id: string;
+      name: string;
+      address_slug?: string | null;
+      area_id?: string | null;
+      areas?: { name: string } | null;
+      category?: string | null;
+      address?: string | null;
+      description?: string | null;
+      crowd_type?: string | null;
+      cover_url?: string | null;
+      logo_url?: string | null;
+      price_tier?: number | null;
+      price_per_person?: number | null;
+      active?: boolean | null;
+      opening_hours?: Record<string, string> | null;
+      vibe_tags?: string[] | null;
+      price_updated_at?: string | null;
+      created_at?: string | null;
+    }
+
+    const venues: AdminVenue[] = ((data as unknown as SpotDbRow[]) || []).map((spot) => ({
       id: spot.id,
       name: spot.name,
       slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      area_id: spot.area_id,
+      area_id: spot.area_id || undefined,
       area_name: spot.areas?.name || "Lagos",
       category: spot.category || "Venue",
       address: spot.address || "",
@@ -62,7 +83,7 @@ export class VenueRepository {
       status: spot.active === false ? "draft" : "published",
       opening_hours: spot.opening_hours || {},
       vibe_tags: spot.vibe_tags || [],
-      updated_at: spot.price_updated_at || spot.created_at,
+      updated_at: spot.price_updated_at || spot.created_at || undefined,
     }));
 
     return { venues, total: count || 0 };
@@ -105,7 +126,7 @@ export class VenueRepository {
     const supabase = await createServerClient();
     
     // Map AdminVenue updates back to actual spots DB columns
-    const dbUpdates: Record<string, any> = {};
+    const dbUpdates: Record<string, unknown> = {};
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.category !== undefined) dbUpdates.category = updates.category;
     if (updates.address !== undefined) dbUpdates.address = updates.address;

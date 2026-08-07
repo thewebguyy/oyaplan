@@ -18,7 +18,16 @@ export class BetaRepository {
       return [];
     }
 
-    return (data || []).map((row: any) => {
+    interface BetaRow {
+      email: string;
+      approved_at: string;
+      approved_by?: string | null;
+      invited_at?: string | null;
+      accepted_at?: string | null;
+      notes?: string | null;
+    }
+
+    return ((data as unknown as BetaRow[]) || []).map((row) => {
       let status: "Pending" | "Accepted" | "Not Registered" = "Pending";
       if (row.accepted_at) {
         status = "Accepted";
@@ -32,9 +41,9 @@ export class BetaRepository {
         email: row.email,
         approved_at: row.approved_at,
         approved_by: row.approved_by || "admin",
-        invited_at: row.invited_at,
-        accepted_at: row.accepted_at,
-        notes: row.notes,
+        invited_at: row.invited_at || undefined,
+        accepted_at: row.accepted_at || undefined,
+        notes: row.notes || undefined,
         status,
       };
     });

@@ -15,7 +15,19 @@ export class CampaignRepository {
       return [];
     }
 
-    return (data || []).map((row: any) => ({
+    interface CampaignDbRow {
+      id: string;
+      venue_id: string;
+      spots?: { name: string } | null;
+      tier: "featured" | "basic" | "premium";
+      placement?: "homepage" | "explore" | "search" | "category" | null;
+      start_date: string;
+      end_date: string;
+      status: "active" | "scheduled" | "ended";
+      created_at: string;
+    }
+
+    return ((data as unknown as CampaignDbRow[]) || []).map((row) => ({
       id: row.id,
       venue_id: row.venue_id,
       venue_name: row.spots?.name || "Venue",

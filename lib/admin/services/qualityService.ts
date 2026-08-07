@@ -13,9 +13,21 @@ export class QualityService {
       return [];
     }
 
+    interface QualitySpotDbRow {
+      id: string;
+      name: string;
+      cover_url?: string | null;
+      logo_url?: string | null;
+      price_per_person?: number | null;
+      category?: string | null;
+      opening_hours?: Record<string, string> | null;
+      area_id?: string | null;
+      areas?: { name: string } | null;
+    }
+
     const items: QualityCheckItem[] = [];
 
-    (spots || []).forEach((spot: any) => {
+    ((spots as unknown as QualitySpotDbRow[]) || []).forEach((spot) => {
       const areaName = spot.areas?.name || "Lagos";
 
       if (!spot.cover_url || spot.cover_url.trim() === "") {

@@ -15,7 +15,20 @@ export class SubmissionRepository {
       return [];
     }
 
-    return (data || []).map((row: any) => ({
+    interface SubmissionDbRow {
+      id: string;
+      spot_name?: string | null;
+      area?: string | null;
+      category?: string | null;
+      estimated_price?: string | null;
+      notes?: string | null;
+      tweet_text?: string | null;
+      submitted_by?: string | null;
+      status?: "pending" | "approved" | "rejected" | null;
+      created_at: string;
+    }
+
+    return ((data as unknown as SubmissionDbRow[]) || []).map((row) => ({
       id: row.id,
       spot_name: row.spot_name || "Submitted Spot",
       area: row.area || "Lagos",

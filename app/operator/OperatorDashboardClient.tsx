@@ -172,7 +172,7 @@ export default function OperatorDashboardClient({
               </label>
               <select
                 value={claimMethod}
-                onChange={(e: any) => setClaimMethod(e.target.value)}
+                onChange={(e) => setClaimMethod(e.target.value as "business_document" | "email_domain" | "phone" | "manual")}
                 className="w-full h-10 px-3 bg-surface-grey border border-border-default rounded-[10px] text-sm focus:outline-none"
               >
                 <option value="business_document">Business Document upload</option>

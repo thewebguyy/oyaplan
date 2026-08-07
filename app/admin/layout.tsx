@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     if (auth.authorized) {
       redirect("/admin");
     }
-    return <div className="min-h-[100dvh] bg-[#FAFAF8] flex-1 w-full">{children}</div>;
+    return <div className="min-h-[calc(100vh-56px)] bg-[#FAFAF8] flex-1 w-full">{children}</div>;
   }
 
   // For all other /admin routes, enforce strict authorization
@@ -27,9 +27,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="h-[100dvh] w-full bg-[#FAFAF8] flex flex-col md:flex-row antialiased overflow-hidden">
+    <div className="w-full bg-[#FAFAF8] flex flex-col md:flex-row antialiased min-h-[calc(100vh-56px)]">
       <Sidebar userEmail={auth.email} role={auth.role} />
-      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto h-full scroll-smooth">
+      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full">
         {children}
       </main>
     </div>

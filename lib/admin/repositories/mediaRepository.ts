@@ -7,8 +7,14 @@ export class MediaRepository {
     const supabase = await createServerClient();
     const { data } = await supabase.from("spots").select("id, name, cover_url").not("cover_url", "is", null);
 
+    interface MediaSpotDbRow {
+      id: string;
+      name: string;
+      cover_url?: string | null;
+    }
+
     const items: MediaItem[] = [];
-    (data || []).forEach((spot: any) => {
+    ((data as unknown as MediaSpotDbRow[]) || []).forEach((spot) => {
       if (spot.cover_url) {
         items.push({
           id: `${spot.id}-hero`,
