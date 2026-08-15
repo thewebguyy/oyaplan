@@ -68,6 +68,18 @@ export async function GET(request: Request) {
       if (pendingPlan) {
         await IdentityMergeService.linkSavedPlan(data.user.id, pendingPlan);
       }
+
+      // 3. Beta welcome redirect: if user has a badge but hasn't completed onboarding,
+      //    route them through /beta/welcome before the normal destination.
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_badge, beta_onboarding_complete')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profile?.profile_badge && !profile.beta_onboarding_complete) {
+        return NextResponse.redirect(`${origin}/beta/welcome`);
+      }
       
       return NextResponse.redirect(`${origin}${next}`);
     }

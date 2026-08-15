@@ -120,7 +120,9 @@ export default function AccountClient({
         )}
 
         <div className="flex flex-col items-center gap-1.5 mt-1">
-          <BetaBadge badgeType={profile.profile_badge || "founding_beta"} size="md" />
+          {profile.profile_badge && (
+            <BetaBadge badgeType={profile.profile_badge} size="md" />
+          )}
           <span className="text-xs font-bold text-white/90 tracking-wide mt-0.5">
             Joined {joinedDateText}
           </span>
