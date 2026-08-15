@@ -20,16 +20,6 @@ export async function checkRateLimit(ip: string): Promise<RateLimitResult> {
   const kvUrl = process.env.KV_REST_API_URL;
   const kvToken = process.env.KV_REST_API_TOKEN;
 
-  console.error('[RATE_LIMIT_DEBUG]', JSON.stringify({
-    hasKvUrl: !!kvUrl,
-    kvUrlLength: kvUrl?.length ?? 0,
-    kvUrlStartsWithHttps: kvUrl?.startsWith('https://') ?? false,
-    hasKvToken: !!kvToken,
-    kvTokenLength: kvToken?.length ?? 0,
-    nodeEnv: process.env.NODE_ENV,
-    vercelEnv: process.env.VERCEL_ENV,
-  }));
-
   // Fail-open ONLY in non-production or if completely misconfigured in non-prod.
   // In production, we fail-closed if Upstash credentials are missing or errors occur.
   const isProduction = process.env.NODE_ENV === 'production';
@@ -39,11 +29,7 @@ export async function checkRateLimit(ip: string): Promise<RateLimitResult> {
       return { limited: false, remaining: -1 };
     } else {
       console.error('[RATE_LIMIT_FAIL_CLOSED] Missing KV credentials in production.');
-      // Production without credentials is a severe configuration error.
-      // Sentry would catch this if we capture it here.
-      if (typeof captureServerException === 'function') {
-        captureServerException(new Error('Missing KV credentials in production. Failing closed.'));
-      }
+      captureServerException(new Error('Missing KV credentials in production. Failing closed.'));
       return { limited: true, remaining: 0 };
     }
   }
@@ -56,10 +42,12 @@ export async function checkRateLimit(ip: string): Promise<RateLimitResult> {
       remaining,
     };
   } catch (error) {
-    console.error('[RATE_LIMIT_FAIL_OPEN] Rate limit exception.', error);
-    if (typeof captureServerException === 'function') {
-      captureServerException(error);
+    captureServerException(error);
+    if (isProduction) {
+      console.error('[RATE_LIMIT_FAIL_CLOSED] Upstash error in production. Blocking request.');
+      return { limited: true, remaining: 0 };
     }
+    // Non-production: fail open so local dev isn't painful
     return { limited: false, remaining: -1 };
   }
 }
