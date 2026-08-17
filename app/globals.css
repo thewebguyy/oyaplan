@@ -916,7 +916,7 @@
   border-radius: 9999px;
   outline: none;
   background: #F3F4F6;
-  touch-action: none; /* prevents browser zoom/swipe interference while dragging */
+  touch-action: pan-y; /* allow vertical scroll; capture only horizontal drag */
 }
 
 /* Chrome/Safari/Edge Webkit thumb styling */

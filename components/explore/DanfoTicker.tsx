@@ -37,13 +37,12 @@ export default function DanfoTicker({ spots }: DanfoTickerProps) {
   // Duplicate items to ensure a seamless looping marquee
   const tickerItems = [...spots, ...spots, ...spots];
 
-  const handleItemTouch = (spotId: string, event: React.TouchEvent) => {
+  const handleItemTouch = (spotId: string, _event: React.TouchEvent) => {
     if (activeId === spotId) {
       router.push(`/?pinnedSpotId=${spotId}`);
       return;
     }
 
-    event.preventDefault();
     setActiveId(spotId);
     setIsPaused(true);
   };

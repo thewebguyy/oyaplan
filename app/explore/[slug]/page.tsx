@@ -189,7 +189,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   const viewModels = area.spots.map((spot) => mapSpotToDiscoveryCard(spot, squadCount, budget));
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-8 flex flex-col relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-8 flex flex-col relative overflow-x-hidden">
       <div className="w-full max-w-lg mx-auto px-6 mb-6 flex flex-col z-10 relative pointer-events-none">
         <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-2 w-fit pointer-events-auto tap-feedback">
           <ArrowLeft className="w-4 h-4" />
