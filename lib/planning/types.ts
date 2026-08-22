@@ -11,6 +11,8 @@ export interface PlanningRequest {
   daypart?: 'Morning' | 'Afternoon' | 'Evening' | 'Night' | 'Any time';
   isAdjacent?: boolean;
   transportMode?: TransportMode;
+  departureAt?: Date;
+  routeOverrides?: Record<string, { low: number; high: number; source: string; confidence: number }>;
 }
 
 export interface TransportProvider {

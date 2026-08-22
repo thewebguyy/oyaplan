@@ -13,8 +13,40 @@ const ZONES: Record<string, string> = {
   "lekki-phase-1": "island",
   vi: "island",
   ikoyi: "island",
-  apapa: "other"
+  apapa: "other",
+  // Fallback pricing buckets only — not geographic identity assertions.
+  // Used when no route-specific override exists.
+  ajah: "island",
+  chevron: "island",
+  festac: "other",
 };
+
+/**
+ * Departure time bucket for transport estimate assumptions.
+ * Pure function — depends only on the provided departure time.
+ */
+export type DepartureBucket = "off-peak" | "peak" | "late-night";
+
+export function getDepartureBucket(departureAt?: Date): DepartureBucket {
+  const d = departureAt ?? new Date();
+  const hour = d.getHours();
+  const day = d.getDay();
+  const isWeekend = day === 0 || day === 6;
+
+  // Weekday rush hours
+  if (!isWeekend && ((hour >= 7 && hour <= 10) || (hour >= 16 && hour <= 20))) {
+    return "peak";
+  }
+  // Friday/Saturday nights
+  if ((day === 5 || day === 6) && hour >= 20) {
+    return "peak";
+  }
+  // Late night (low supply)
+  if (hour >= 23 || hour < 5) {
+    return "late-night";
+  }
+  return "off-peak";
+}
 
 /**
  * Deterministic Lagos 2026 Zone Fare Formula
@@ -84,12 +116,14 @@ export class TransportPricingProvider {
     origin: string,
     destination: string,
     mode: TransportMode = "ride-hailing",
-    defaultMatrix?: Record<string, number>
+    defaultMatrix?: Record<string, number>,
+    departureAt?: Date
   ): TransportRange {
     const profile = getTransportProfile(mode);
     const rawBase = defaultMatrix?.[origin] ?? calculateZoneFare(origin, destination);
     
-    // Scale base fare by mode multiplier, respecting ₦1,500 baseline threshold
+    // Scale base fare by mode multiplier, respecting ₦1,500 baseline threshold.
+    // departureAt is threaded but no multiplier applied yet (P1, pending evidence).
     const scaledBase = Math.max(1500, rawBase * profile.multiplier);
 
     const delta = scaledBase * profile.variancePercent;
@@ -106,27 +140,39 @@ export class TransportConfidenceProvider {
     origin: string,
     destination: string,
     mode: TransportMode,
-    hasVenueOverride: boolean = false
+    _hasVenueOverride: boolean = false,
+    departureAt?: Date,
+    overrideScore?: number
   ): ConfidenceEvaluation {
-    let score = 75; // Baseline typical score
+    let score = overrideScore ?? 75; // Baseline typical score
 
-    const z1 = ZONES[origin] || "other";
-    const z2 = ZONES[destination] || "other";
+    if (overrideScore === undefined) {
+      const z1 = ZONES[origin] || "other";
+      const z2 = ZONES[destination] || "other";
 
-    if (origin === destination) {
-      score += 20; // Same area: high certainty
-    } else if (z1 === z2) {
-      score += 10; // Same zone
-    } else if ((z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland")) {
-      score -= 25; // Cross-city trips have higher traffic variance
+      if (origin === destination) {
+        score += 20; // Same area: high certainty
+      } else if (z1 === z2) {
+        score += 10; // Same zone
+      } else if ((z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland")) {
+        score -= 25; // Cross-city trips have higher traffic variance
+      }
     }
 
-    if (hasVenueOverride) {
-      score += 15; // Specifically verified venue access override
-    }
+    // Override existence does NOT boost confidence.
+    // Confidence should be based on freshness + verification source + report volume.
+    // See Data Operations Manual: confidence requires 1 manual verification + 3 user-reported outcomes.
 
     if (mode === "public-transit") {
       score -= 5; // Transit schedules fluctuate slightly more
+    }
+
+    // Peak departure times reduce confidence — fare variability is higher
+    const bucket = getDepartureBucket(departureAt);
+    if (bucket === "peak") {
+      score -= 10;
+    } else if (bucket === "late-night") {
+      score -= 5;
     }
 
     score = Math.min(100, Math.max(10, score));
@@ -146,16 +192,19 @@ export class TransportDisplayFormatter {
     return `₦${minCost.toLocaleString()} – ₦${maxCost.toLocaleString()}`;
   }
 
-  static formatAssumptions(origin: string, mode: TransportMode): string {
+  static formatAssumptions(origin: string, mode: TransportMode, departureAt?: Date): string {
     const profile = getTransportProfile(mode);
     const formattedArea = origin
       .split("-")
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
 
-    const now = new Date();
-    const isWeekend = now.getDay() === 0 || now.getDay() === 6;
-    const timeOfDayLabel = isWeekend ? "Weekend outing estimate" : "Typical weekday estimate";
+    const bucket = getDepartureBucket(departureAt);
+    const timeOfDayLabel = bucket === "peak"
+      ? "Peak-time variability included"
+      : bucket === "late-night"
+        ? "Late-night variability included"
+        : "Standard estimate";
 
     return `${profile.shortLabel} • ${timeOfDayLabel} • Leaving from ${formattedArea}`;
   }

@@ -229,6 +229,11 @@ export const EventSchemas = {
     result: z.enum(['about_right', 'higher', 'lower']),
     estimated_min: z.number().optional(),
     estimated_max: z.number().optional(),
+    origin_district_id: z.string().optional(),
+    destination_district_id: z.string().optional(),
+    spot_id: z.string().optional(),
+    actual_amount: z.number().optional(),
+    departure_at: z.string().optional(),
     version: z.literal('1.0')
   }),
   'spot_suggested': z.object({

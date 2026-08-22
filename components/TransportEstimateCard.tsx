@@ -15,6 +15,10 @@ interface TransportEstimateCardProps {
   badgeColor?: "green" | "yellow" | "orange";
   assumptions?: string;
   startAreaName?: string;
+  originDistrictId?: string;
+  destinationDistrictId?: string;
+  spotId?: string;
+  departureAt?: string;
 }
 
 export default function TransportEstimateCard({
@@ -26,6 +30,10 @@ export default function TransportEstimateCard({
   badgeColor = "yellow",
   assumptions,
   startAreaName = "Yaba",
+  originDistrictId,
+  destinationDistrictId,
+  spotId,
+  departureAt,
 }: TransportEstimateCardProps) {
   const [showWhyModal, setShowWhyModal] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<string | null>(null);
@@ -70,6 +78,10 @@ export default function TransportEstimateCard({
         result,
         estimated_min: displayMin,
         estimated_max: displayMax,
+        origin_district_id: originDistrictId,
+        destination_district_id: destinationDistrictId,
+        spot_id: spotId,
+        departure_at: departureAt,
         version: "1.0",
       },
     });

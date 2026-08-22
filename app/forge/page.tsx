@@ -2,7 +2,7 @@ import { z } from "zod";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import { getForgeSpots } from "@/lib/queries/spots";
+import { getForgeSpots, getRouteOverrides } from "@/lib/queries/spots";
 import { getAllowedCategories, getPrimaryAreaMatches, getAdjacentZoneMatches, generateRecoverySuggestions } from "@/lib/services/matching/forgeMatcher";
 import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { captureServerException } from "@/lib/sentry";
@@ -28,6 +28,7 @@ const forgeParamsSchema = z.object({
   pinned: z.string().optional(),
   fresh: z.string().optional(),
   mode: z.enum(["ride-hailing", "public-transit", "driving"]).optional(),
+  departureAt: z.string().optional(),
 });
 
 function isBotRequest(userAgent: string | null): boolean {
@@ -113,24 +114,52 @@ export default async function ForgePage({
   const allowedCategories = getAllowedCategories(categoryGroup);
 
   let allSpots: Spot[] = [];
+  let routeOverrides: Record<string, { low: number; high: number; source: string; confidence: number }> = {};
+  let originDistrictId: string | undefined = undefined;
+
   try {
     const isFreshSubmission = parsed.data.fresh === "true";
     const spotsPromise = getForgeSpots(allowedCategories ?? undefined);
-    
+    const overridesPromise = parsed.data.area && parsed.data.area !== "anywhere"
+      ? getRouteOverrides(parsed.data.area)
+      : Promise.resolve({ data: [], error: null });
+
     // Data-gated Hold-Up logic: only enforce the 900ms floor on fresh submissions
-    const promises: Promise<unknown>[] = [spotsPromise];
+    const promises: Promise<unknown>[] = [spotsPromise, overridesPromise];
     if (isFreshSubmission) {
       promises.push(new Promise(resolve => setTimeout(resolve, 900)));
     }
     
     const results = await Promise.all(promises);
     const spotsResult = results[0] as { data: Spot[] | null; error: unknown };
+    const overridesResult = results[1] as { data: any[] | null; error: unknown };
     const { data, error } = spotsResult;
 
     if (error || !data || data.length === 0) {
       redirect("/?error=spots_unavailable");
     }
     allSpots = data;
+
+    if (overridesResult.data && overridesResult.data.length > 0) {
+      originDistrictId = overridesResult.data[0]?.origin_area_id;
+      overridesResult.data.forEach((ov) => {
+        routeOverrides[ov.destination_area_id] = {
+          low: ov.fixed_cost_low,
+          high: ov.fixed_cost_high,
+          source: ov.source,
+          confidence: ov.confidence
+        };
+      });
+    } else if (parsed.data.area && parsed.data.area !== "anywhere") {
+      const { data: areaData } = await supabase
+        .from('areas')
+        .select('id')
+        .eq('slug', parsed.data.area)
+        .single();
+      if (areaData) {
+        originDistrictId = areaData.id;
+      }
+    }
   } catch (e) {
     captureServerException(e);
     redirect("/?error=spots_unavailable");
@@ -153,6 +182,9 @@ export default async function ForgePage({
     vibe: VIBE_URL_MAP[parsed.data.vibe] || parsed.data.vibe,
     pinnedSpotId: validatedPinnedId,
     transportMode: parsed.data.mode || "ride-hailing",
+    departureAt: parsed.data.departureAt,
+    routeOverrides,
+    originDistrictId,
   };
 
   // Run Matching/Pricing Engine: 2-Pass Matching (gated by area presence)

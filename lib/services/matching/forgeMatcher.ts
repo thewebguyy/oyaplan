@@ -41,6 +41,8 @@ export function getPrimaryAreaMatches(input: ForgeInput, allSpots: Spot[]): Plan
     categoryGroup: input.categoryGroup,
     daypart: input.daypart,
     transportMode: input.transportMode,
+    departureAt: input.departureAt ? new Date(input.departureAt) : undefined,
+    routeOverrides: input.routeOverrides,
   };
 
   const context = createPlanningContext(request);
@@ -84,6 +86,8 @@ export function getAdjacentZoneMatches(
     daypart: input.daypart,
     isAdjacent: true,
     transportMode: input.transportMode,
+    departureAt: input.departureAt ? new Date(input.departureAt) : undefined,
+    routeOverrides: input.routeOverrides,
   };
 
   const context = createPlanningContext(request);

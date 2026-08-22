@@ -186,6 +186,10 @@ export default function EditorialPlan({
           badgeColor={plan.transportConfidenceBadgeColor || "yellow"}
           assumptions={plan.transportAssumptions}
           startAreaName={input.startArea && input.startArea !== "anywhere" ? input.startArea : "Yaba"}
+          originDistrictId={input.originDistrictId}
+          destinationDistrictId={plan.spot.area_id}
+          spotId={plan.spot.id}
+          departureAt={input.departureAt}
         />
 
         {/* Route Card — only when we have a start area and venue coordinates */}

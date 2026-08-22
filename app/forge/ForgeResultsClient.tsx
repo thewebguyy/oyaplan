@@ -134,6 +134,9 @@ export default function ForgeResultsClient({
     if (forgeInput.pinnedSpotId) {
       params.set("pinned", forgeInput.pinnedSpotId);
     }
+    if (forgeInput.departureAt) {
+      params.set("departureAt", forgeInput.departureAt);
+    }
 
     startTransition(() => {
       router.push(`/forge?${params.toString()}`, { scroll: false });
@@ -161,6 +164,9 @@ export default function ForgeResultsClient({
     }
     if (forgeInput.pinnedSpotId) {
       params.set("pinned", forgeInput.pinnedSpotId);
+    }
+    if (forgeInput.departureAt) {
+      params.set("departureAt", forgeInput.departureAt);
     }
 
     startTransition(() => {
@@ -202,6 +208,9 @@ export default function ForgeResultsClient({
     params.set("vibe", VIBE_TO_URL_MAP[targetVibe] || targetVibe.toLowerCase());
     params.set("squad", String(targetSquad));
     params.set("fresh", "true");
+    if (forgeInput.departureAt) {
+      params.set("departureAt", forgeInput.departureAt);
+    }
 
     return `/?${params.toString()}`;
   };
@@ -230,6 +239,7 @@ export default function ForgeResultsClient({
   }
   if (forgeInput.startArea) adjustParams.set("area", forgeInput.startArea);
   if (forgeInput.pinnedSpotId) adjustParams.set("pinned", forgeInput.pinnedSpotId);
+  if (forgeInput.departureAt) adjustParams.set("departureAt", forgeInput.departureAt);
   const adjustUrl = `/?${adjustParams.toString()}`;
 
   const [isLocating, setIsLocating] = useState(false);

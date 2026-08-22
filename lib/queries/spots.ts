@@ -84,3 +84,32 @@ export async function getRecentlyVerifiedSpots(
     return { data: null, error: 'Unexpected error fetching recently verified spots' };
   }
 }
+
+export async function getRouteOverrides(
+  originAreaSlug: string
+): Promise<{ data: any[] | null; error: string | null }> {
+  try {
+    // 1. Resolve area id by slug first
+    const { data: areaData, error: areaError } = await supabase
+      .from('areas')
+      .select('id')
+      .eq('slug', originAreaSlug)
+      .single();
+
+    if (areaError || !areaData) {
+      return { data: null, error: areaError?.message || 'Area not found' };
+    }
+
+    // 2. Query overrides where origin_area_id matches
+    const { data, error } = await supabase
+      .from('transport_route_overrides')
+      .select('*, destination_areas:destination_area_id(slug)')
+      .eq('origin_area_id', areaData.id)
+      .eq('mode_slug', 'uber-x');
+
+    if (error) return { data: null, error: error.message };
+    return { data: data || [], error: null };
+  } catch (err: unknown) {
+    return { data: null, error: 'Unexpected error fetching route overrides' };
+  }
+}

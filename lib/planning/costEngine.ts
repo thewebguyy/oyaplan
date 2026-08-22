@@ -11,23 +11,43 @@ export class DefaultCostEngine implements CostEngine {
       const activityCost = Math.round((spot.price_per_person * squadSize) / 100) * 100;
       
       const destinationKey = spot.address_slug || "ikeja";
-      const hasOverride = Boolean(spot.transport_matrix && spot.transport_matrix[areaKey]);
 
-      const range = TransportPricingProvider.calculateRange(
-        areaKey,
-        destinationKey,
-        transportMode,
-        spot.transport_matrix
-      );
+      // 1. Resolve route override from the contextual routeOverrides dictionary using spot's area_id
+      const override = context.request.routeOverrides?.[spot.area_id];
+
+      let range;
+      let hasOverride = false;
+      let confidenceScore: number | undefined = undefined;
+
+      if (override) {
+        hasOverride = true;
+        confidenceScore = Number(override.confidence);
+        // If override is present, use its low/high bounds directly
+        range = {
+          minCost: override.low,
+          maxCost: override.high,
+          midpointCost: Math.round((override.low + override.high) / 2)
+        };
+      } else {
+        range = TransportPricingProvider.calculateRange(
+          areaKey,
+          destinationKey,
+          transportMode,
+          spot.transport_matrix,
+          context.request.departureAt
+        );
+      }
 
       const confidence = TransportConfidenceProvider.evaluate(
         areaKey,
         destinationKey,
         transportMode,
-        hasOverride
+        hasOverride,
+        context.request.departureAt,
+        confidenceScore
       );
 
-      const assumptions = TransportDisplayFormatter.formatAssumptions(areaKey, transportMode);
+      const assumptions = TransportDisplayFormatter.formatAssumptions(areaKey, transportMode, context.request.departureAt);
 
       // We use internal midpointCost for totalCost & budget constraint checks
       const transportCost = range.midpointCost;

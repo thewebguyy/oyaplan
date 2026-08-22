@@ -57,6 +57,9 @@ export type ForgeInput = {
   categoryGroup?: string;
   daypart?: 'Morning' | 'Afternoon' | 'Evening' | 'Night' | 'Any time';
   transportMode?: 'ride-hailing' | 'public-transit' | 'driving';
+  departureAt?: string; // ISO 8601 string, parsed to Date in planning layer
+  routeOverrides?: Record<string, { low: number; high: number; source: string; confidence: number }>;
+  originDistrictId?: string;
 };
 
 export interface PlanExplanation {
