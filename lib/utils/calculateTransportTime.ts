@@ -19,7 +19,8 @@ const AREA_CENTERS: Record<string, { lat: number; lng: number }> = {
 
 export function calculateTransportTime(
   fromArea: string | undefined | null,
-  toVenueCoordinates?: { lat: number; lng: number } | null
+  toVenueCoordinates?: { lat: number; lng: number } | null,
+  departureAt?: string
 ): TransportTimeEstimate {
   if (!fromArea || !toVenueCoordinates) {
     return {
@@ -35,9 +36,9 @@ export function calculateTransportTime(
 
   const distanceKm = LocationService.calculateDistance(fromCoords, toVenueCoordinates);
 
-  const now = new Date();
-  const hour = now.getHours();
-  const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+  const d = departureAt ? new Date(departureAt) : new Date();
+  const hour = d.getHours();
+  const isWeekend = d.getDay() === 0 || d.getDay() === 6;
   const isPeakHour = !isWeekend && ((hour >= 7 && hour <= 10) || (hour >= 16 && hour <= 20));
 
   const speedKmH = isPeakHour ? 12 : 25;

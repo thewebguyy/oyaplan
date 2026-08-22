@@ -3,6 +3,7 @@
 import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Spot, ForgeInput, PlanEvaluation, RecoverySuggestion } from "@/lib/types";
+import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
 import { formatRecoverySuggestion } from "@/lib/utils/editorialFormatter";
@@ -54,6 +55,26 @@ export default function ForgeResultsClient({
   const [tempSquadSize, setTempSquadSize] = useState(forgeInput.squadSize);
   const [tempVibe, setTempVibe] = useState(forgeInput.vibe);
   const [tempArea, setTempArea] = useState(forgeInput.startArea || "anywhere");
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+
+  const handleViewAdjacentPlan = async (e: React.MouseEvent, evalItem: PlanEvaluation) => {
+    e.preventDefault();
+    const spotId = evalItem.plan.spot.id;
+    if (loadingPlanId) return;
+
+    setLoadingPlanId(spotId);
+    try {
+      const res = await createShareablePlan(evalItem.plan, forgeInput);
+      if (res.success && res.id) {
+        router.push(`/plan/${res.id}`);
+      } else {
+        router.push(`/explore/${evalItem.plan.spot.address_slug}?pinned=${spotId}`);
+      }
+    } catch (err) {
+      console.error(err);
+      router.push(`/explore/${evalItem.plan.spot.address_slug}?pinned=${spotId}`);
+    }
+  };
 
   // Save to localStorage post-hydration
   useEffect(() => {
@@ -729,11 +750,18 @@ export default function ForgeResultsClient({
                         <span className="mx-1">•</span>
                         <span>Transport: ₦{plan.transportCost.toLocaleString()}</span>
                       </div>
-                      <Link href={`/plan/${spot.id}?area=${spot.address_slug}`}>
-                        <Button size="sm" variant="outline" className="h-8 px-3 text-xs font-bold rounded-lg border-brand-green text-brand-green hover:bg-brand-green/10">
-                          View &rarr;
-                        </Button>
-                      </Link>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        disabled={loadingPlanId === spot.id}
+                        onClick={(e) => handleViewAdjacentPlan(e, evalItem)}
+                        className="h-8 px-3 text-xs font-bold rounded-lg border-brand-green text-brand-green hover:bg-brand-green/10 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        {loadingPlanId === spot.id && (
+                          <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                        )}
+                        <span>View &rarr;</span>
+                      </Button>
                     </div>
                   </div>
                 );

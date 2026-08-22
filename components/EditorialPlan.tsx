@@ -198,7 +198,7 @@ export default function EditorialPlan({
             (a) => a.id === input.startArea
           );
           if (!startArea) return null;
-          const transport = calculateTransportTime(input.startArea, plan.spot.coordinates);
+          const transport = calculateTransportTime(input.startArea, plan.spot.coordinates, input.departureAt);
           return (
             <RouteCard
               startAreaName={startArea.name}
