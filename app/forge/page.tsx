@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { getForgeSpots, getRouteOverrides } from "@/lib/queries/spots";
+import { supabase } from "@/lib/supabase";
 import { getAllowedCategories, getPrimaryAreaMatches, getAdjacentZoneMatches, generateRecoverySuggestions } from "@/lib/services/matching/forgeMatcher";
 import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { captureServerException } from "@/lib/sentry";
