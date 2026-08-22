@@ -5,7 +5,7 @@ import { calculateZoneFare } from "@/lib/planning/transport";
 import { LocationService } from "../location/LocationService";
 
 export class MatrixTravelEstimator implements TravelEstimator {
-  estimateTravel(origin: Coordinates, destination: Coordinates): TravelEstimate {
+  estimateTravel(origin: Coordinates, destination: Coordinates, departureAt?: Date): TravelEstimate {
     // 1. Calculate distance via Haversine
     const distanceKm = LocationDataService.calculateDistance(origin, destination);
 
@@ -15,9 +15,9 @@ export class MatrixTravelEstimator implements TravelEstimator {
     const transportCost = calculateZoneFare(originArea.id, destinationArea.id);
 
     // 3. Compute ETA
-    const now = new Date();
-    const hour = now.getHours();
-    const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+    const d = departureAt ?? new Date();
+    const hour = d.getHours();
+    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
     const isPeakHour = !isWeekend && ((hour >= 7 && hour <= 10) || (hour >= 16 && hour <= 20));
 
     const speedKmH = isPeakHour ? 12 : 25;

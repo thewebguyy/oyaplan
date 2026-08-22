@@ -24,7 +24,7 @@ export class DefaultTravelEngine implements TravelEngine {
       };
 
       try {
-        const estimate = travelEstimator.estimateTravel(originCoords, destCoords);
+        const estimate = travelEstimator.estimateTravel(originCoords, destCoords, context.request.departureAt);
         return {
           ...plan,
           travelEstimate: estimate

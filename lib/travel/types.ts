@@ -10,5 +10,5 @@ export interface TravelEstimate {
 }
 
 export interface TravelEstimator {
-  estimateTravel(origin: Coordinates, destination: Coordinates): TravelEstimate;
+  estimateTravel(origin: Coordinates, destination: Coordinates, departureAt?: Date): TravelEstimate;
 }

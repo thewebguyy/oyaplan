@@ -144,19 +144,27 @@ export class TransportConfidenceProvider {
     departureAt?: Date,
     overrideScore?: number
   ): ConfidenceEvaluation {
-    let score = overrideScore ?? 75; // Baseline typical score
-
-    if (overrideScore === undefined) {
-      const z1 = ZONES[origin] || "other";
-      const z2 = ZONES[destination] || "other";
-
-      if (origin === destination) {
-        score += 20; // Same area: high certainty
-      } else if (z1 === z2) {
-        score += 10; // Same zone
-      } else if ((z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland")) {
-        score -= 25; // Cross-city trips have higher traffic variance
+    if (overrideScore !== undefined) {
+      const score = Math.min(100, Math.max(10, overrideScore));
+      if (score >= 80) {
+        return { score, label: "High confidence", badgeColor: "green" };
+      } else if (score >= 50) {
+        return { score, label: "Typical estimate", badgeColor: "yellow" };
+      } else {
+        return { score, label: "Allow extra travel time", badgeColor: "orange" };
       }
+    }
+
+    let score = 75; // Baseline typical score
+    const z1 = ZONES[origin] || "other";
+    const z2 = ZONES[destination] || "other";
+
+    if (origin === destination) {
+      score += 20; // Same area: high certainty
+    } else if (z1 === z2) {
+      score += 10; // Same zone
+    } else if ((z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland")) {
+      score -= 25; // Cross-city trips have higher traffic variance
     }
 
     // Override existence does NOT boost confidence.

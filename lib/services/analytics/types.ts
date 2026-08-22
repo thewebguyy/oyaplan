@@ -224,7 +224,7 @@ export const EventSchemas = {
     version: z.literal('1.0')
   }),
   'transport_actual_feedback': z.object({
-    category: z.literal('Feedback'),
+    category: z.literal('Trust'),
     mode: z.string(),
     result: z.enum(['about_right', 'higher', 'lower']),
     estimated_min: z.number().optional(),

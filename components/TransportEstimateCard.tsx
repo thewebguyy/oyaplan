@@ -73,7 +73,7 @@ export default function TransportEstimateCard({
     AnalyticsService.track("transport_actual_feedback", {
       session_id: "00000000-0000-0000-0000-000000000000",
       properties: {
-        category: "Feedback",
+        category: "Trust",
         mode,
         result,
         estimated_min: displayMin,
