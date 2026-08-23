@@ -41,7 +41,9 @@ export async function createShareablePlan(plan: Plan, input: ForgeInput): Promis
         food_cost: plan.foodCost,
         transport_cost: plan.transportCost,
         total_cost: plan.totalCost,
-        why_it_fits: plan.whyItFits
+        why_it_fits: plan.whyItFits,
+        transport_estimate: plan.transportEstimate || null,
+        explanation: plan.explanation || null
       })
       .select('id')
       .single();

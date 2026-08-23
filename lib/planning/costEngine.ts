@@ -1,5 +1,5 @@
 import { PlanningCandidate, PlanningContext, CostedPlan, CostEngine, TransportProvider } from './types';
-import { TransportPricingProvider, TransportConfidenceProvider, TransportDisplayFormatter } from './transport';
+import { TransportPricingProvider, TransportConfidenceProvider, TransportDisplayFormatter, getDepartureBucket } from './transport';
 
 export class DefaultCostEngine implements CostEngine {
   run(candidates: PlanningCandidate[], context: PlanningContext, transportProvider: TransportProvider): CostedPlan[] {
@@ -53,6 +53,16 @@ export class DefaultCostEngine implements CostEngine {
       const transportCost = range.midpointCost;
       const totalCost = activityCost + transportCost;
 
+      const transportEstimate = {
+        low: range.minCost,
+        high: range.maxCost,
+        mode: transportMode,
+        origin: areaKey,
+        destination: destinationKey,
+        departure_assumption: getDepartureBucket(context.request.departureAt),
+        calculation_version: "2026-v1"
+      };
+
       return {
         spot,
         activityCost,
@@ -64,7 +74,8 @@ export class DefaultCostEngine implements CostEngine {
         transportConfidenceLabel: confidence.label,
         transportConfidenceBadgeColor: confidence.badgeColor,
         transportAssumptions: assumptions,
-        totalCost
+        totalCost,
+        transportEstimate
       };
     });
   }

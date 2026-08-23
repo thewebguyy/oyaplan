@@ -84,12 +84,24 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
         
         <div className="absolute top-4 inset-x-4 flex justify-between items-start z-10 pointer-events-none">
-          <span 
-            className="text-white text-[10px] font-extrabold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm capitalize"
-            style={{ backgroundColor: badgeColor }}
-          >
-            {card.category || 'Vibe'}
-          </span>
+          <div className="flex flex-col gap-1.5 items-start">
+            <span 
+              className="text-white text-[10px] font-extrabold tracking-widest uppercase px-3 py-1.5 rounded-full shadow-sm capitalize"
+              style={{ backgroundColor: badgeColor }}
+            >
+              {card.category || 'Vibe'}
+            </span>
+            {card.secondaryExperience && (
+              <span className="bg-white/90 backdrop-blur-md text-[#1A1A1A] text-[9px] font-extrabold tracking-widest uppercase px-2 py-1 rounded-full shadow-sm flex items-center gap-1 select-none">
+                ⚡ {card.secondaryExperience}
+              </span>
+            )}
+            {card.foodType && (
+              <span className="bg-white/90 backdrop-blur-md text-[#1A1A1A] text-[9px] font-extrabold tracking-widest uppercase px-2 py-1 rounded-full shadow-sm flex items-center gap-1 select-none">
+                🍪 {card.foodType}
+              </span>
+            )}
+          </div>
           <div className="pointer-events-auto">
             <TrustBadge
               status={card.trustIndicator.level === 'high' ? 'verified' : card.trustIndicator.level === 'medium' ? 'estimated' : 'pending'}

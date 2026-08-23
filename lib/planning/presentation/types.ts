@@ -1,3 +1,5 @@
+import { TransportEstimate } from "../../types";
+
 export interface TrustIndicator {
   level: "high" | "medium" | "low";
   label: string;
@@ -37,4 +39,7 @@ export interface DecisionCardViewModel {
   // Sprint 3A fields:
   budgetRemaining: number;
   trustIndicator: TrustIndicator;
+  secondaryExperience?: string;
+  foodType?: string;
+  transportEstimate?: TransportEstimate;
 }

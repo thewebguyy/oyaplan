@@ -8,6 +8,7 @@ import Link from "next/link";
 import RouteCard from "./dossier/RouteCard";
 import { LocationService } from "@/lib/services/LocationService";
 import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
+import { TransportPricingProvider } from "@/lib/planning/transport";
 
 interface MobileLivePreviewBarProps {
   squadSize: number;
@@ -37,13 +38,26 @@ export default function MobileLivePreviewBar({
     };
   }, [isOpen]);
 
+  const getSpotTransportCost = (spot: Spot) => {
+    if (squadSize === 1) return 0;
+    if (!startAreaId || startAreaId === "anywhere") {
+      return squadSize > 4 ? 10000 : 5000;
+    }
+    const range = TransportPricingProvider.calculateRange(
+      startAreaId,
+      spot.address_slug || "ikeja",
+      "ride-hailing",
+      spot.transport_matrix || {}
+    );
+    return range.midpointCost;
+  };
+
   if (!recommendedSpots || recommendedSpots.length === 0 || !vibe) return null;
   
   const topSpot = recommendedSpots[0];
   const spotsToUse = recommendedSpots.slice(0, 3);
 
-  // Transport calculation: Solo -> ₦0; 2-4 -> ₦5k; 5+ -> ₦10k
-  const transportCost = squadSize === 1 ? 0 : squadSize > 4 ? 10000 : 5000;
+  const transportCost = getSpotTransportCost(topSpot);
   const foodCost = (topSpot.price_per_person || 12000) * squadSize;
   const taxCost = Math.round(foodCost * 0.1);
   const totalCost = foodCost + transportCost + taxCost;
@@ -79,42 +93,46 @@ export default function MobileLivePreviewBar({
 
           <button
             onClick={() => setIsOpen(true)}
-            className="h-10 px-4 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center gap-1 shrink-0 tap-feedback cursor-pointer shadow-md"
+            className="h-10 px-4 bg-white hover:bg-white/90 text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-colors shrink-0 shadow-sm"
           >
-            <span>View Plan</span>
-            <ChevronUp className="w-4 h-4" />
+            Review Cost
           </button>
         </motion.div>
       </div>
 
-      {/* Expanded Mobile Bottom Drawer */}
+      {/* Full Sheet Cost Breakdown Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-50 md:hidden flex items-end">
-            {/* Backdrop */}
+          <>
+            {/* Dark Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm"
             />
 
-            {/* Bottom Sheet Drawer Container */}
+            {/* Bottom Sheet */}
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative w-full bg-white rounded-t-[28px] p-6 pb-10 shadow-2xl z-10 space-y-5 max-h-[85vh] overflow-y-auto"
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="fixed bottom-0 inset-x-0 bg-white rounded-t-[32px] z-50 max-h-[85vh] overflow-y-auto shadow-2xl flex flex-col"
             >
-              {/* Drawer Handle & Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#008751] animate-pulse" />
-                  <h3 className="text-base font-black text-[#1A1A1A]">
-                    Live Outing Breakdown
+              {/* Header handle indicator */}
+              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto my-3 shrink-0" />
+
+              {/* Sheet Title */}
+              <div className="px-6 pb-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+                <div>
+                  <h3 className="text-lg font-black text-black uppercase tracking-wide">
+                    Cost Estimator
                   </h3>
+                  <p className="text-xs text-gray-500 font-medium">
+                    Calculated for squad of {squadSize}
+                  </p>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
@@ -125,11 +143,12 @@ export default function MobileLivePreviewBar({
               </div>
 
               {/* Render each spot */}
-              <div className="space-y-6">
+              <div className="space-y-6 px-6 py-6">
                 {spotsToUse.map((spot, idx) => {
+                  const sTransportCost = getSpotTransportCost(spot);
                   const sFoodCost = (spot.price_per_person || 12000) * squadSize;
                   const sTaxCost = Math.round(sFoodCost * 0.1);
-                  const sTotalCost = sFoodCost + transportCost + sTaxCost;
+                  const sTotalCost = sFoodCost + sTransportCost + sTaxCost;
                   
                   return (
                     <div key={spot.id || idx} className="space-y-3 pb-6 border-b border-gray-200 last:border-b-0 last:pb-0">
@@ -167,7 +186,7 @@ export default function MobileLivePreviewBar({
                             Estimated Uber Transport
                           </span>
                           <span className="font-bold text-[#1A1A1A]">
-                            ₦{transportCost.toLocaleString()}
+                            ₦{sTransportCost.toLocaleString()}
                           </span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -178,26 +197,17 @@ export default function MobileLivePreviewBar({
                             ₦{sTaxCost.toLocaleString()}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center pt-2 pb-2">
-                          <span className="font-black text-[#1A1A1A] text-sm">
-                            TOTAL SQUAD COST
-                          </span>
-                          <span className="text-lg font-black text-[#008751]">
-                            ₦{sTotalCost.toLocaleString()}
-                          </span>
+                        <div className="flex justify-between items-center pt-2 font-black text-base text-black">
+                          <span className="uppercase tracking-wide">Total Estimated Cost</span>
+                          <span className="text-[#008751]">₦{sTotalCost.toLocaleString()}</span>
                         </div>
+                      </div>
 
-                        {/* Action Button inside the breakdown card */}
-                        <div className="pt-2 border-t border-gray-100">
+                      {/* Direct Explore CTA */}
+                      <div className="px-4">
+                        <div className="flex flex-col gap-2">
                           <Link
-                            href={`/forge?pinned=${spot.id}&area=${startAreaId || 'anywhere'}&squad=${squadSize}&budget=${budget}&vibe=${
-                              vibe === "Dinner" ? "date-night" :
-                              vibe === "Chill" ? "chill" :
-                              vibe === "Foodie" ? "foodie" :
-                              vibe === "Party" ? "party" :
-                              vibe === "Quick" ? "quick-link" :
-                              vibe === "Brunch" ? "brunch" : vibe
-                            }&fresh=true`}
+                            href={`/plan/new?spotId=${spot.id}&startAreaId=${startAreaId || ""}&squadSize=${squadSize}&vibe=${vibe || ""}&budget=${budget || ""}&fresh=true`}
                             onClick={() => setIsOpen(false)}
                             className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
                           >
@@ -212,6 +222,23 @@ export default function MobileLivePreviewBar({
                         const startArea = LocationService.getVerifiedAreas().find((a) => a.id === startAreaId);
                         if (!startArea) return null;
                         const transport = calculateTransportTime(startAreaId, spot.coordinates);
+                        const range = startAreaId === "anywhere" 
+                          ? { minCost: squadSize > 4 ? 8000 : 4000, maxCost: squadSize > 4 ? 12000 : 6000, midpointCost: squadSize > 4 ? 10000 : 5000 }
+                          : TransportPricingProvider.calculateRange(
+                              startAreaId,
+                              spot.address_slug || "ikeja",
+                              "ride-hailing",
+                              spot.transport_matrix || {}
+                            );
+                        const transportEstimate = {
+                          low: range.minCost,
+                          high: range.maxCost,
+                          mode: "ride-hailing",
+                          origin: startAreaId,
+                          destination: spot.address_slug || "ikeja",
+                          departure_assumption: "off-peak",
+                          calculation_version: "2026-v1"
+                        };
                         return (
                           <RouteCard
                             startAreaName={startArea.name}
@@ -219,8 +246,9 @@ export default function MobileLivePreviewBar({
                             venueName={spot.name}
                             venueAddress={spot.address || ""}
                             venueCoords={spot.coordinates}
-                            transportCost={transportCost}
+                            transportCost={range.midpointCost}
                             distanceKm={transport.distanceKm}
+                            transportEstimate={transportEstimate}
                           />
                         );
                       })()}
@@ -229,7 +257,7 @@ export default function MobileLivePreviewBar({
                 })}
               </div>
             </motion.div>
-          </div>
+          </>
         )}
       </AnimatePresence>
     </>

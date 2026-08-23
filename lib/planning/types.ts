@@ -1,4 +1,4 @@
-import { Spot, DecisionConfidence, PlanExplanation, RecoverySuggestion } from '../types';
+import { Spot, DecisionConfidence, PlanExplanation, RecoverySuggestion, TransportEstimate } from '../types';
 import { TransportMode } from './transportProfiles';
 
 export interface PlanningRequest {
@@ -57,6 +57,7 @@ export interface CostedPlan {
   transportConfidenceBadgeColor?: "green" | "yellow" | "orange";
   transportAssumptions?: string;
   totalCost: number;
+  transportEstimate?: TransportEstimate;
 }
 
 // Stage 3: Ranked Plan (Costed + total Score computed)

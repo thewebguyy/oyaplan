@@ -173,6 +173,7 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           hasCar={hasCar}
           transportToggleNode={<TransportToggle planId={plan?.id || id} hasCar={hasCar} />}
           budget={plan?.budget || plan?.total_cost || 0}
+          transportEstimate={plan?.transport_estimate}
         />
 
         {/* Action CTAs */}

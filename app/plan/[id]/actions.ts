@@ -2,6 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase-server";
 import { captureServerException } from "@/lib/sentry";
+import { TransportPricingProvider } from "@/lib/planning/transport";
 
 export async function togglePlanTransport(planId: string, hasCar: boolean) {
   try {
@@ -18,7 +19,6 @@ export async function togglePlanTransport(planId: string, hasCar: boolean) {
       throw new Error("Plan not found");
     }
 
-    // Use explanation JSON column to store state, defaulting to empty object if null
     const explanation = existingPlan.explanation || {};
     
     // If they already match the requested state, just return the same ID
@@ -28,29 +28,58 @@ export async function togglePlanTransport(planId: string, hasCar: boolean) {
     }
 
     let newTransportCost = 0;
-    
+    let newTransportEstimate = null;
+
     if (hasCar) {
-      // Transitioning TO car: save the original transport cost, zero it out in DB
-      explanation.original_transport_cost = existingPlan.transport_cost;
-      explanation.has_car = true;
       newTransportCost = 0;
+      newTransportEstimate = {
+        low: 0,
+        high: 0,
+        mode: "driving",
+        origin: existingPlan.start_area,
+        destination: existingPlan.transport_estimate?.destination || "ikeja",
+        departure_assumption: "off-peak",
+        calculation_version: "2026-v1"
+      };
+      explanation.has_car = true;
     } else {
-      // Transitioning FROM car back to ride: restore original transport cost
-      newTransportCost = explanation.original_transport_cost || 0;
+      // Recalculate range from database spot values
+      const { data: spot } = await supabase
+        .from("spots")
+        .select("address_slug, transport_matrix")
+        .eq("id", existingPlan.spot_id)
+        .single();
+
+      const range = TransportPricingProvider.calculateRange(
+        existingPlan.start_area,
+        spot?.address_slug || "ikeja",
+        "ride-hailing",
+        spot?.transport_matrix || {}
+      );
+      newTransportCost = range.midpointCost;
+      newTransportEstimate = {
+        low: range.minCost,
+        high: range.maxCost,
+        mode: "ride-hailing",
+        origin: existingPlan.start_area,
+        destination: spot?.address_slug || "ikeja",
+        departure_assumption: "off-peak",
+        calculation_version: "2026-v1"
+      };
       explanation.has_car = false;
     }
 
     const newTotalCost = existingPlan.food_cost + newTransportCost;
 
     // 2. Clone the row with new values
-    // Destructure to remove id and created_at so DB generates new ones
     const { id, created_at, ...planDataToClone } = existingPlan;
     
     const newPlanData = {
       ...planDataToClone,
       transport_cost: newTransportCost,
       total_cost: newTotalCost,
-      explanation: explanation
+      explanation: explanation,
+      transport_estimate: newTransportEstimate
     };
 
     const { data: newPlan, error: insertError } = await supabase
@@ -94,13 +123,53 @@ export async function switchPlanSpot(
     const newFoodCost = newSpotPrice * squadSize;
     const newTaxCost = Math.round((newFoodCost * 0.1) / 100) * 100;
     
-    // Recalculate total cost
-    const transportCost = existingPlan.transport_cost;
-    const newTotalCost = newFoodCost + transportCost + newTaxCost;
-
-    // Use explanation JSON column to store spot update
     const explanation = existingPlan.explanation || {};
     explanation.previous_spot_id = existingPlan.spot_id;
+
+    const currentlyHasCar = explanation.has_car === true;
+
+    // Fetch the new spot's address_slug and transport overrides
+    const { data: newSpot } = await supabase
+      .from("spots")
+      .select("address_slug, transport_matrix")
+      .eq("id", newSpotId)
+      .single();
+
+    let newTransportCost = 0;
+    let newTransportEstimate = null;
+
+    if (currentlyHasCar) {
+      newTransportCost = 0;
+      newTransportEstimate = {
+        low: 0,
+        high: 0,
+        mode: "driving",
+        origin: existingPlan.start_area,
+        destination: newSpot?.address_slug || "ikeja",
+        departure_assumption: "off-peak",
+        calculation_version: "2026-v1"
+      };
+    } else {
+      const mode = existingPlan.transport_estimate?.mode || "ride-hailing";
+      const range = TransportPricingProvider.calculateRange(
+        existingPlan.start_area,
+        newSpot?.address_slug || "ikeja",
+        mode,
+        newSpot?.transport_matrix || {}
+      );
+      newTransportCost = range.midpointCost;
+      newTransportEstimate = {
+        low: range.minCost,
+        high: range.maxCost,
+        mode,
+        origin: existingPlan.start_area,
+        destination: newSpot?.address_slug || "ikeja",
+        departure_assumption: "off-peak",
+        calculation_version: "2026-v1"
+      };
+    }
+
+    const newTotalCost = newFoodCost + newTransportCost + newTaxCost;
 
     // 2. Clone the row with new values
     const { id, created_at, ...planDataToClone } = existingPlan;
@@ -110,7 +179,8 @@ export async function switchPlanSpot(
       spot_id: newSpotId,
       food_cost: newFoodCost,
       total_cost: newTotalCost,
-      explanation: explanation
+      explanation: explanation,
+      transport_estimate: newTransportEstimate
     };
 
     const { data: newPlan, error: insertError } = await supabase

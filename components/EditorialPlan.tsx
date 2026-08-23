@@ -208,6 +208,7 @@ export default function EditorialPlan({
               venueCoords={plan.spot.coordinates}
               transportCost={plan.transportCost}
               distanceKm={transport.distanceKm}
+              transportEstimate={plan.transportEstimate}
             />
           );
         })()}

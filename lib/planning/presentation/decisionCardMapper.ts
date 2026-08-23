@@ -81,6 +81,9 @@ export function mapPlanToCardViewModel(plan: ExplainedPlan): DecisionCardViewMod
     isAdjacent: plan.isAdjacentZoneSuggestion,
 
     budgetRemaining: plan.budgetRemaining ?? 0,
-    trustIndicator: deriveTrustIndicator(confidenceScore)
+    trustIndicator: deriveTrustIndicator(confidenceScore),
+    secondaryExperience: plan.spot.secondary_experience,
+    foodType: plan.spot.food_type,
+    transportEstimate: plan.transportEstimate
   };
 }

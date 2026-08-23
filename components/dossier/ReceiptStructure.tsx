@@ -5,6 +5,8 @@ import { HelpCircle, Check, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { NumericCounter } from "@/components/ui/NumericCounter";
 
+import { TransportEstimate } from "@/lib/types";
+
 interface ReceiptStructureProps {
   venueName: string;
   venueCost: number; // For the entire squad
@@ -14,6 +16,7 @@ interface ReceiptStructureProps {
   hasCar: boolean;
   transportToggleNode: React.ReactNode;
   budget: number;
+  transportEstimate?: TransportEstimate;
 }
 
 export function ReceiptStructure({ 
@@ -24,7 +27,8 @@ export function ReceiptStructure({
   budgetFitStatus,
   hasCar,
   transportToggleNode,
-  budget
+  budget,
+  transportEstimate
 }: ReceiptStructureProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -106,7 +110,7 @@ export function ReceiptStructure({
                 <HelpCircle className="w-3.5 h-3.5" />
               </button>
             </div>
-            <span>{hasCar ? "₦0" : `₦${transportCost.toLocaleString()}`}</span>
+            <span>{hasCar ? "₦0" : (transportEstimate && transportEstimate.low > 0 ? `₦${transportEstimate.low.toLocaleString()} – ₦${transportEstimate.high.toLocaleString()}` : `₦${transportCost.toLocaleString()}`)}</span>
           </div>
 
           {/* Tooltip */}
@@ -123,11 +127,19 @@ export function ReceiptStructure({
             <div className="pl-4 text-xs text-[#6B7280] space-y-1">
               <div className="flex justify-between">
                 <span>└─ Outbound to venue:</span>
-                <span className="font-semibold text-[#1A1A1A]">₦{(transportCost / 2).toLocaleString()}</span>
+                <span className="font-semibold text-[#1A1A1A]">
+                  {transportEstimate && transportEstimate.low > 0 
+                    ? `₦${(transportEstimate.low / 2).toLocaleString()} – ₦${(transportEstimate.high / 2).toLocaleString()}`
+                    : `₦${(transportCost / 2).toLocaleString()}`}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>└─ Return fare:</span>
-                <span className="font-semibold text-[#1A1A1A]">₦{(transportCost / 2).toLocaleString()}</span>
+                <span className="font-semibold text-[#1A1A1A]">
+                  {transportEstimate && transportEstimate.low > 0 
+                    ? `₦${(transportEstimate.low / 2).toLocaleString()} – ₦${(transportEstimate.high / 2).toLocaleString()}`
+                    : `₦${(transportCost / 2).toLocaleString()}`}
+                </span>
               </div>
             </div>
           )}

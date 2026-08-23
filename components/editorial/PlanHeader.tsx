@@ -110,6 +110,23 @@ export function PlanHeader({
           </div>
         )}
       </div>
+
+      {/* Structured Category Badges */}
+      <div className="flex flex-wrap gap-2 justify-center mt-3 select-none">
+        <span className="px-2.5 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+          Primary: {plan.spot.category || 'Restaurant'}
+        </span>
+        {plan.spot.secondary_experience && (
+          <span className="px-2.5 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+            Experience: {plan.spot.secondary_experience}
+          </span>
+        )}
+        {plan.spot.food_type && (
+          <span className="px-2.5 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+            Food: {plan.spot.food_type}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

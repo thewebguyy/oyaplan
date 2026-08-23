@@ -8,6 +8,16 @@ export type Area = {
   slug: string;
 };
 
+export type TransportEstimate = {
+  low: number;
+  high: number;
+  mode: string;
+  origin: string;
+  destination: string;
+  departure_assumption: string;
+  calculation_version: string;
+};
+
 export type Spot = {
   id: string;
   name: string;
@@ -46,6 +56,8 @@ export type Spot = {
   planning_notes?: string[];
   personality?: string;
   things_to_know?: string[];
+  secondary_experience?: string;
+  food_type?: string;
 };
      
 export type ForgeInput = {
@@ -140,6 +152,7 @@ export type Plan = {
   decisionSummary?: string;
   isAdjacentZoneSuggestion?: boolean;
   travelInfo?: string;
+  transportEstimate?: TransportEstimate;
 };
 
 export interface PlanEvaluation {
@@ -161,6 +174,7 @@ export type SharedPlanRow = {
   start_area?: string;
   explanation?: PlanExplanation;
   saved_at?: string;
+  transport_estimate?: TransportEstimate;
 };
 
 // Phase 2 Normalized Architecture Types
