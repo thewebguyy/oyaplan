@@ -15,6 +15,7 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  BarChart3,
 } from "lucide-react";
 import { signOutAdmin } from "@/lib/actions/adminAuth";
 
@@ -31,6 +32,7 @@ export function Sidebar({ userEmail = "admin@oyaplan.com", role = "admin" }: Sid
     { name: "Venues", href: "/admin/venues", icon: MapPin },
     { name: "Media", href: "/admin/media", icon: ImageIcon },
     { name: "Beta Users", href: "/admin/beta-users", icon: Award },
+    { name: "Usage", href: "/admin/usage", icon: BarChart3 },
     { name: "Submissions", href: "/admin/submissions", icon: FileSpreadsheet },
     { name: "Sponsored", href: "/admin/sponsored", icon: Star },
     { name: "Data Quality", href: "/admin/quality", icon: CheckCircle2 },

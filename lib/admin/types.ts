@@ -109,3 +109,13 @@ export interface AdminSettings {
   inviteOnlyMode: boolean;
   publicLaunch: boolean;
 }
+
+export interface AccountUsageRow {
+  user_id: string;
+  email: string;
+  display_name: string;
+  profile_badge: string | null;
+  created_at: string;
+  plan_count: number;
+  last_plan_at: string | null;
+}
