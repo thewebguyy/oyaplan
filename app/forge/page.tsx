@@ -8,6 +8,7 @@ import { getAllowedCategories, getPrimaryAreaMatches, getAdjacentZoneMatches, ge
 import { evaluatePlan } from "@/lib/services/matching/evaluators/evaluatePlan";
 import { captureServerException } from "@/lib/sentry";
 import { ForgeInput, Spot, Plan, RecoverySuggestion } from "@/lib/types";
+import { SessionResolver } from "@/lib/services/identity/sessionResolver";
 import ForgeResultsClient from "./ForgeResultsClient";
 
 export const dynamic = "force-dynamic";
@@ -175,6 +176,11 @@ export default async function ForgePage({
     }
   }
 
+  // Resolve Identity for user attribution
+  const identity = await SessionResolver.resolveIdentity();
+  const userId = identity.type === "authenticated" ? identity.profile.id : undefined;
+  const sessionId = identity.sessionId;
+
   // Map parsed params to ForgeInput
   const input: ForgeInput = {
     startArea: parsed.data.area,
@@ -186,6 +192,8 @@ export default async function ForgePage({
     departureAt: parsed.data.departureAt,
     routeOverrides,
     originDistrictId,
+    userId,
+    sessionId,
   };
 
   // Run Matching/Pricing Engine: 2-Pass Matching (gated by area presence)

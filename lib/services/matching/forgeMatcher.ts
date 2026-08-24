@@ -61,7 +61,9 @@ export function getPrimaryAreaMatches(input: ForgeInput, allSpots: Spot[]): Plan
       budget: input.budget,
       vibe: input.vibe,
       results_count: sortedPlans.length,
-      top_spot_id: sortedPlans[0]?.spot.id || null
+      top_spot_id: sortedPlans[0]?.spot.id || null,
+      user_id: input.userId || null,
+      session_id: input.sessionId || null,
     }).then();
   } catch {}
 

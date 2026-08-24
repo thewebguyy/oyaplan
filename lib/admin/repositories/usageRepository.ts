@@ -35,11 +35,12 @@ export class UsageRepository {
       return { accounts: [], totalAccounts: 0, totalPlans: 0, accountsWithZeroPlans: 0, anonymousPlansCount: 0 };
     }
 
-    // 2. Fetch exact total plans count & exact anonymous plans count using head queries
+    // 2. Fetch exact total plans count, anonymous count, user plan_requests, and user_saved_plans
     const [
       { count: totalPlansCount, error: totalPlansErr },
       { count: anonymousPlansCount, error: anonPlansErr },
       { data: userPlanRequests, error: userPlansError },
+      { data: userSavedPlans, error: savedPlansError },
     ] = await Promise.all([
       supabase.from("plan_requests").select("id", { count: "exact", head: true }),
       supabase.from("plan_requests").select("id", { count: "exact", head: true }).is("user_id", null),
@@ -47,6 +48,10 @@ export class UsageRepository {
         .from("plan_requests")
         .select("user_id, created_at")
         .not("user_id", "is", null)
+        .range(0, 9999),
+      supabase
+        .from("user_saved_plans")
+        .select("user_id, saved_at")
         .range(0, 9999),
     ]);
 
@@ -57,8 +62,9 @@ export class UsageRepository {
 
     const typedProfiles = (profiles ?? []) as ProfileRow[];
     const typedUserPlans = (userPlanRequests ?? []) as Array<{ user_id: string; created_at: string }>;
+    const typedSavedPlans = (userSavedPlans ?? []) as Array<{ user_id: string; saved_at: string }>;
 
-    // 3. Aggregate plan counts per user
+    // 3. Aggregate plan counts per user from both plan_requests AND user_saved_plans
     const planCountMap = new Map<string, { count: number; lastPlanAt: string }>();
 
     for (const plan of typedUserPlans) {
@@ -72,6 +78,20 @@ export class UsageRepository {
         }
       } else {
         planCountMap.set(plan.user_id, { count: 1, lastPlanAt: plan.created_at });
+      }
+    }
+
+    for (const saved of typedSavedPlans) {
+      if (!saved.user_id) continue;
+
+      const existing = planCountMap.get(saved.user_id);
+      if (existing) {
+        existing.count++;
+        if (saved.saved_at > existing.lastPlanAt) {
+          existing.lastPlanAt = saved.saved_at;
+        }
+      } else {
+        planCountMap.set(saved.user_id, { count: 1, lastPlanAt: saved.saved_at });
       }
     }
 

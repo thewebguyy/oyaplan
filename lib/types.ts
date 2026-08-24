@@ -72,6 +72,8 @@ export type ForgeInput = {
   departureAt?: string; // ISO 8601 string, parsed to Date in planning layer
   routeOverrides?: Record<string, { low: number; high: number; source: string; confidence: number }>;
   originDistrictId?: string;
+  userId?: string;
+  sessionId?: string;
 };
 
 export interface PlanExplanation {

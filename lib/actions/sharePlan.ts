@@ -23,12 +23,19 @@ const sharePlanSchema = z.object({
   }).passthrough()
 });
 
+import { SessionResolver } from '../services/identity/sessionResolver';
+import { SavedPlanService } from '../services/identity/savedPlanService';
+
 export async function createShareablePlan(plan: Plan, input: ForgeInput): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const parseResult = sharePlanSchema.safeParse({ plan, input });
     if (!parseResult.success) {
       return { success: false, error: 'Invalid plan data' };
     }
+
+    const identity = await SessionResolver.resolveIdentity();
+    const userId = identity.type === 'authenticated' ? identity.profile.id : null;
+    const sessionId = identity.sessionId;
 
     const { data, error } = await supabase
       .from('shared_plans')
@@ -43,7 +50,9 @@ export async function createShareablePlan(plan: Plan, input: ForgeInput): Promis
         total_cost: plan.totalCost,
         why_it_fits: plan.whyItFits,
         transport_estimate: plan.transportEstimate || null,
-        explanation: plan.explanation || null
+        explanation: plan.explanation || null,
+        user_id: userId,
+        session_id: sessionId,
       })
       .select('id')
       .single();
@@ -51,6 +60,11 @@ export async function createShareablePlan(plan: Plan, input: ForgeInput): Promis
     if (error) {
       captureServerException(new Error(`sharePlan Supabase error: ${error.message}`));
       return { success: false, error: 'Failed to create plan' };
+    }
+
+    // If logged in, automatically associate in user_saved_plans
+    if (userId && data.id) {
+      await SavedPlanService.savePlan(data.id).catch(console.error);
     }
 
     return { success: true, id: data.id };
