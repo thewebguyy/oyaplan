@@ -1,10 +1,8 @@
 import React from "react";
 import { BetaService } from "@/lib/admin/services/betaService";
 import PageHeader from "@/components/admin/PageHeader";
-import DataTable, { Column } from "@/components/admin/DataTable";
-import StatusBadge from "@/components/admin/StatusBadge";
-import { ApprovedBetaUser } from "@/lib/admin/types";
-import { approveBetaEmailAction, approveBulkBetaEmailsAction, removeBetaEmailAction } from "@/lib/actions/adminBetaActions";
+import { approveBetaEmailAction, approveBulkBetaEmailsAction } from "@/lib/actions/adminBetaActions";
+import BetaUsersTable from "./BetaUsersTable";
 
 export const dynamic = "force-dynamic";
 
@@ -15,52 +13,6 @@ export default async function AdminBetaUsersPage({
 }) {
   const params = await searchParams;
   const betaUsers = await BetaService.getApprovedBetaUsers(params.search);
-
-  const columns: Column<ApprovedBetaUser>[] = [
-    {
-      header: "Tester Email",
-      cell: (row) => (
-        <div>
-          <div className="font-bold text-gray-900">{row.email}</div>
-          {row.notes && <div className="text-[11px] text-gray-400">{row.notes}</div>}
-        </div>
-      ),
-    },
-    {
-      header: "Status",
-      cell: (row) => <StatusBadge status={row.status} />,
-    },
-    {
-      header: "Approved Date",
-      cell: (row) => (
-        <span className="text-gray-500 font-mono text-[11px]">
-          {new Date(row.approved_at).toLocaleDateString()}
-        </span>
-      ),
-    },
-    {
-      header: "Accepted Date",
-      cell: (row) => (
-        <span className="text-gray-500 font-mono text-[11px]">
-          {row.accepted_at ? new Date(row.accepted_at).toLocaleDateString() : "—"}
-        </span>
-      ),
-    },
-    {
-      header: "Actions",
-      cell: (row) => (
-        <form action={removeBetaEmailAction} className="inline">
-          <input type="hidden" name="email" value={row.email} />
-          <button
-            type="submit"
-            className="text-xs font-bold text-red-600 hover:text-red-800 hover:underline cursor-pointer"
-          >
-            Remove
-          </button>
-        </form>
-      ),
-    },
-  ];
 
   return (
     <div className="space-y-8">
@@ -102,7 +54,7 @@ export default async function AdminBetaUsersPage({
                 name="rawEmails"
                 required
                 rows={3}
-                placeholder="tester1@gmail.com&#10;tester2@gmail.com"
+                placeholder={"tester1@gmail.com\ntester2@gmail.com"}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-xs font-mono focus:outline-none focus:border-[#008751]"
               />
             </div>
@@ -119,13 +71,7 @@ export default async function AdminBetaUsersPage({
         </div>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={betaUsers}
-        searchPlaceholder="Search approved emails..."
-        emptyTitle="No approved beta emails"
-        emptyDescription="Approve applicant email addresses to grant Founding Beta Tester badges."
-      />
+      <BetaUsersTable betaUsers={betaUsers} />
     </div>
   );
 }

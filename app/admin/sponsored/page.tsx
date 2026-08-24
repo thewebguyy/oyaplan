@@ -2,9 +2,7 @@ import React from "react";
 import { CampaignService } from "@/lib/admin/services/campaignService";
 import { VenueService } from "@/lib/admin/services/venueService";
 import PageHeader from "@/components/admin/PageHeader";
-import DataTable, { Column } from "@/components/admin/DataTable";
-import StatusBadge from "@/components/admin/StatusBadge";
-import { SponsoredCampaign } from "@/lib/admin/types";
+import CampaignsTable from "./CampaignsTable";
 import { createCampaignAction } from "@/lib/actions/adminCampaignActions";
 
 export const dynamic = "force-dynamic";
@@ -14,33 +12,6 @@ export default async function AdminSponsoredPage() {
     CampaignService.getCampaigns(),
     VenueService.getVenues({ limit: 100 }),
   ]);
-
-  const columns: Column<SponsoredCampaign>[] = [
-    {
-      header: "Venue",
-      accessorKey: "venue_name",
-    },
-    {
-      header: "Subscription Tier",
-      cell: (row) => <StatusBadge status={row.tier} type={row.tier === "premium" ? "success" : "warning"} />,
-    },
-    {
-      header: "Placement Target",
-      cell: (row) => <span className="font-mono text-xs font-bold text-gray-700 capitalize">{row.placement}</span>,
-    },
-    {
-      header: "Campaign Dates",
-      cell: (row) => (
-        <span className="text-gray-500 font-mono text-[11px]">
-          {row.start_date} to {row.end_date}
-        </span>
-      ),
-    },
-    {
-      header: "Status",
-      cell: (row) => <StatusBadge status={row.status} />,
-    },
-  ];
 
   return (
     <div className="space-y-8">
@@ -95,13 +66,7 @@ export default async function AdminSponsoredPage() {
         </form>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={campaigns}
-        searchPlaceholder="Search campaigns by venue name..."
-        emptyTitle="No active campaigns"
-        emptyDescription="Create a campaign to grant algorithmic placement boosts to operator partners."
-      />
+      <CampaignsTable campaigns={campaigns} />
     </div>
   );
 }

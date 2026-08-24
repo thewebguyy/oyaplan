@@ -2,9 +2,7 @@ import React from "react";
 import { MediaService } from "@/lib/admin/services/mediaService";
 import { VenueService } from "@/lib/admin/services/venueService";
 import PageHeader from "@/components/admin/PageHeader";
-import DataTable, { Column } from "@/components/admin/DataTable";
-import StatusBadge from "@/components/admin/StatusBadge";
-import { MediaItem } from "@/lib/admin/types";
+import MediaTable from "./MediaTable";
 import { assignMediaAction } from "@/lib/actions/adminMediaActions";
 
 export const dynamic = "force-dynamic";
@@ -14,32 +12,6 @@ export default async function AdminMediaPage() {
     MediaService.getMediaItems(),
     VenueService.getVenues({ limit: 100 }),
   ]);
-
-  const columns: Column<MediaItem>[] = [
-    {
-      header: "Preview",
-      cell: (row) => (
-        <img
-          src={row.url}
-          alt={row.filename}
-          className="w-16 h-12 rounded-lg object-cover bg-gray-100 border border-gray-200"
-        />
-      ),
-    },
-    {
-      header: "Venue",
-      accessorKey: "venue_name",
-    },
-    {
-      header: "Filename",
-      accessorKey: "filename",
-      className: "font-mono text-gray-500",
-    },
-    {
-      header: "Role",
-      cell: (row) => <StatusBadge status={row.is_hero ? "Hero Image" : "Gallery"} type={row.is_hero ? "success" : "info"} />,
-    },
-  ];
 
   return (
     <div className="space-y-8">
@@ -75,13 +47,7 @@ export default async function AdminMediaPage() {
         </form>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={mediaItems}
-        searchPlaceholder="Search media by venue name..."
-        emptyTitle="No media items found"
-        emptyDescription="Upload images or assign photos to your venue catalog."
-      />
+      <MediaTable mediaItems={mediaItems} />
     </div>
   );
 }
