@@ -56,6 +56,14 @@ export default function UsageTable({ accounts }: UsageTableProps) {
       ),
     },
     {
+      header: "Plans Saved",
+      cell: (row) => (
+        <span className="font-extrabold text-sm text-gray-700">
+          {row.saved_plan_count || 0}
+        </span>
+      ),
+    },
+    {
       header: "Last Plan",
       cell: (row) => (
         <span className="text-gray-500 font-mono text-[11px]">

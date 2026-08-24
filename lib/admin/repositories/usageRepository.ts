@@ -64,8 +64,9 @@ export class UsageRepository {
     const typedUserPlans = (userPlanRequests ?? []) as Array<{ user_id: string; created_at: string }>;
     const typedSavedPlans = (userSavedPlans ?? []) as Array<{ user_id: string; saved_at: string }>;
 
-    // 3. Aggregate plan counts per user from both plan_requests AND user_saved_plans
+    // 3. Aggregate plan counts per user separately for generated vs saved plans
     const planCountMap = new Map<string, { count: number; lastPlanAt: string }>();
+    const savedCountMap = new Map<string, number>();
 
     for (const plan of typedUserPlans) {
       if (!plan.user_id) continue;
@@ -83,37 +84,13 @@ export class UsageRepository {
 
     for (const saved of typedSavedPlans) {
       if (!saved.user_id) continue;
-
-      const existing = planCountMap.get(saved.user_id);
-      if (existing) {
-        existing.count++;
-        if (saved.saved_at > existing.lastPlanAt) {
-          existing.lastPlanAt = saved.saved_at;
-        }
-      } else {
-        planCountMap.set(saved.user_id, { count: 1, lastPlanAt: saved.saved_at });
-      }
+      savedCountMap.set(saved.user_id, (savedCountMap.get(saved.user_id) || 0) + 1);
     }
-
-    // 4. Fetch emails from auth.users via admin API
-    // We use the profiles table which was seeded with email as display_name on creation,
-    // but display_name may have been changed. We'll use the supabase admin listUsers
-    // when available, but since we use anon key, we read from the profiles table.
-    // The auth.users table is not accessible via PostgREST with anon key.
-    // We'll enrich with user email from approved_beta_users as a best-effort approach.
-    const { data: betaUsers } = await supabase
-      .from("approved_beta_users")
-      .select("email, accepted_at");
-
-    const emailByAcceptedProfile = new Map<string, string>();
-    // Cross-reference: approved_beta_users who accepted → their email is known
-    // But we don't have a direct user_id→email mapping from this table.
-    // The most reliable source is the profiles table display_name (set to email on creation).
-    // We'll use that and note it may have been updated.
 
     // Build the accounts array
     const accounts: AccountUsageRow[] = typedProfiles.map((profile) => {
       const usage = planCountMap.get(profile.id);
+      const savedCount = savedCountMap.get(profile.id) || 0;
       return {
         user_id: profile.id,
         email: profile.display_name || "Unknown",
@@ -121,6 +98,7 @@ export class UsageRepository {
         profile_badge: profile.profile_badge,
         created_at: profile.created_at,
         plan_count: usage?.count ?? 0,
+        saved_plan_count: savedCount,
         last_plan_at: usage?.lastPlanAt ?? null,
       };
     });

@@ -84,13 +84,32 @@ export interface SponsoredCampaign {
   created_at: string;
 }
 
-export interface QualityCheckItem {
+export type IssueScope = 'system' | 'venue';
+export type QualityCategory = 'trust_risk' | 'experience_quality';
+
+export interface DataQualityIssue {
   id: string;
-  issue_type: 'Missing Hero' | 'Missing Gallery' | 'Missing Pricing' | 'Missing Category' | 'Missing Hours' | 'Missing Coordinates' | 'Duplicate Slugs' | 'Needs Review';
-  venue_id: string;
-  venue_name: string;
+  issue_type: 'UNVERIFIED_PRICE_SOURCE' | 'LOW_CONFIDENCE' | 'MISSING_HERO' | 'STALE_PRICING';
+  category: QualityCategory;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  scope: IssueScope;
+  venue_id?: string;
+  venue_name?: string;
   area_name?: string;
-  severity: 'high' | 'medium' | 'low';
+  price_source?: string;
+  verified_by?: string;
+  reason: string;
+  detected_at: string;
+}
+
+export type QualityCheckItem = DataQualityIssue;
+
+export interface TrustHealthMetrics {
+  totalSpots: number;
+  priceCoveragePct: number;
+  priceProvenancePct: number;
+  verifiedPct: number;
+  transportCoveragePct: number;
 }
 
 export interface AdminActivityItem {
@@ -117,5 +136,6 @@ export interface AccountUsageRow {
   profile_badge: string | null;
   created_at: string;
   plan_count: number;
+  saved_plan_count?: number;
   last_plan_at: string | null;
 }

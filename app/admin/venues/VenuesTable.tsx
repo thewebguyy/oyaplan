@@ -6,6 +6,7 @@ import DataTable, { Column } from "@/components/admin/DataTable";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { AdminVenue } from "@/lib/admin/types";
 import { Edit2, ExternalLink } from "lucide-react";
+import { getSpotPublicUrl } from "@/lib/admin/url";
 
 interface VenuesTableProps {
   venues: AdminVenue[];
@@ -67,7 +68,7 @@ export default function VenuesTable({ venues }: VenuesTableProps) {
             <Edit2 className="w-3.5 h-3.5" />
           </Link>
           <Link
-            href={`/explore/ikeja`}
+            href={getSpotPublicUrl(row)}
             target="_blank"
             className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-500"
             title="View on site"

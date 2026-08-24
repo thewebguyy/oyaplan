@@ -1,10 +1,13 @@
 "use server";
 
 import { VenueService } from "@/lib/admin/services/venueService";
+import { assertAdminSession } from "@/lib/admin/permissions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function updateVenueAction(formData: FormData) {
+  const admin = await assertAdminSession();
+
   const id = formData.get("id") as string;
   if (!id) return;
 
@@ -20,7 +23,7 @@ export async function updateVenueAction(formData: FormData) {
     image_url: formData.get("image_url") as string,
   };
 
-  await VenueService.updateVenue(id, updates);
+  await VenueService.updateVenue(id, updates, admin.email);
 
   revalidatePath(`/admin/venues/${id}`);
   revalidatePath("/admin/venues");

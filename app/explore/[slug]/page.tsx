@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ budget?: string; vibe?: string; squad?: string }>;
+  searchParams: Promise<{ budget?: string; vibe?: string; squad?: string; pinned?: string; spot?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -184,6 +184,21 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   }
 
   if (!area) notFound();
+
+  // If pinned or spot param is passed, reorder area.spots to bring target spot to top of stack (index 0)
+  const targetId = urlParams.pinned || urlParams.spot;
+  if (targetId && area.spots.length > 0) {
+    const pinnedIndex = area.spots.findIndex(
+      (s) =>
+        s.id === targetId ||
+        s.address_slug === targetId ||
+        s.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === targetId.toLowerCase()
+    );
+    if (pinnedIndex > 0) {
+      const [pinnedSpot] = area.spots.splice(pinnedIndex, 1);
+      area.spots.unshift(pinnedSpot);
+    }
+  }
 
   // Map spots directly on the server to visual view models (Pure Discovery)
   const viewModels = area.spots.map((spot) => mapSpotToDiscoveryCard(spot, squadCount, budget));

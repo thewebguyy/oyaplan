@@ -19,14 +19,17 @@ export async function isAuthorizedAdmin(): Promise<{ authorized: boolean; email?
       return { authorized: true, email: adminRecord.email, role: adminRecord.role };
     }
 
-    // Default fallback for initial CTO access
-    if (user.email === "pstmax@gmail.com") {
-      return { authorized: true, email: user.email, role: "owner" };
-    }
-
     return { authorized: false, email: user.email };
   } catch (error) {
     console.error("Failed to check admin authorization:", error);
     return { authorized: false };
   }
+}
+
+export async function assertAdminSession(): Promise<{ email: string; role: string }> {
+  const auth = await isAuthorizedAdmin();
+  if (!auth.authorized || !auth.email) {
+    throw new Error("Unauthorized: Admin session required.");
+  }
+  return { email: auth.email, role: auth.role || "admin" };
 }
