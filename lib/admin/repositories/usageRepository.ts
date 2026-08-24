@@ -35,28 +35,34 @@ export class UsageRepository {
       return { accounts: [], totalAccounts: 0, totalPlans: 0, accountsWithZeroPlans: 0, anonymousPlansCount: 0 };
     }
 
-    // 2. Fetch all plan_requests with user_id (only the columns we need)
-    const { data: planRequests, error: plansError } = await supabase
-      .from("plan_requests")
-      .select("user_id, created_at");
+    // 2. Fetch exact total plans count & exact anonymous plans count using head queries
+    const [
+      { count: totalPlansCount, error: totalPlansErr },
+      { count: anonymousPlansCount, error: anonPlansErr },
+      { data: userPlanRequests, error: userPlansError },
+    ] = await Promise.all([
+      supabase.from("plan_requests").select("id", { count: "exact", head: true }),
+      supabase.from("plan_requests").select("id", { count: "exact", head: true }).is("user_id", null),
+      supabase
+        .from("plan_requests")
+        .select("user_id, created_at")
+        .not("user_id", "is", null)
+        .range(0, 9999),
+    ]);
 
-    if (plansError) {
-      console.error("Failed to fetch plan_requests for usage report:", plansError);
+    if (totalPlansErr || anonPlansErr || userPlansError) {
+      console.error("Failed to fetch plan_requests for usage report:", totalPlansErr || anonPlansErr || userPlansError);
       return { accounts: [], totalAccounts: 0, totalPlans: 0, accountsWithZeroPlans: 0, anonymousPlansCount: 0 };
     }
 
     const typedProfiles = (profiles ?? []) as ProfileRow[];
-    const typedPlans = (planRequests ?? []) as Array<{ user_id: string | null; created_at: string }>;
+    const typedUserPlans = (userPlanRequests ?? []) as Array<{ user_id: string; created_at: string }>;
 
     // 3. Aggregate plan counts per user
     const planCountMap = new Map<string, { count: number; lastPlanAt: string }>();
-    let anonymousPlansCount = 0;
 
-    for (const plan of typedPlans) {
-      if (!plan.user_id) {
-        anonymousPlansCount++;
-        continue;
-      }
+    for (const plan of typedUserPlans) {
+      if (!plan.user_id) continue;
 
       const existing = planCountMap.get(plan.user_id);
       if (existing) {
@@ -116,9 +122,9 @@ export class UsageRepository {
     return {
       accounts: filtered,
       totalAccounts: accounts.length,
-      totalPlans: typedPlans.length,
+      totalPlans: totalPlansCount || 0,
       accountsWithZeroPlans,
-      anonymousPlansCount,
+      anonymousPlansCount: anonymousPlansCount || 0,
     };
   }
 }
