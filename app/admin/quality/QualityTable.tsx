@@ -5,7 +5,8 @@ import Link from "next/link";
 import DataTable, { Column } from "@/components/admin/DataTable";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { DataQualityIssue } from "@/lib/admin/types";
-import { Edit2, ShieldAlert, Sparkles } from "lucide-react";
+import { Edit2, ShieldAlert, Sparkles, CheckCircle2 } from "lucide-react";
+import { quickVerifySpotAction } from "@/lib/actions/adminEvidenceActions";
 
 interface QualityTableProps {
   issues: DataQualityIssue[];
@@ -76,13 +77,28 @@ export default function QualityTable({ issues }: QualityTableProps) {
       header: "Action",
       cell: (row) =>
         row.venue_id ? (
-          <Link
-            href={`/admin/venues/${row.venue_id}`}
-            className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-[#008751] hover:text-white rounded-lg text-xs font-bold transition-colors"
-          >
-            <Edit2 className="w-3 h-3" />
-            <span>Fix Spot</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            {row.issue_type === "UNVERIFIED_PRICE_SOURCE" && (
+              <form action={quickVerifySpotAction}>
+                <input type="hidden" name="id" value={row.venue_id} />
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#008751] hover:bg-[#007043] text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
+                  title="Quick Verify Spot"
+                >
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>Verify</span>
+                </button>
+              </form>
+            )}
+            <Link
+              href={`/admin/venues/${row.venue_id}`}
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition-colors"
+            >
+              <Edit2 className="w-3 h-3" />
+              <span>Fix Spot</span>
+            </Link>
+          </div>
         ) : (
           <span className="text-gray-300">—</span>
         ),
