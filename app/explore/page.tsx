@@ -133,10 +133,10 @@ export default async function ExploreIndex() {
                   🧑‍🍳
                 </div>
                 <h2 className="text-xl font-black text-gray-800 tracking-tight">
-                  Your hood next?
+                  Where next? 📍
                 </h2>
                 <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                  We&apos;re currently cooking up the math for <strong>Surulere</strong>, <strong>Ikoyi</strong>, and more. Sit tight, your budget confidence is loading...
+                  Surulere, Ikoyi, and others are next on the fire. Hold tight, we&apos;re still running the numbers.
                 </p>
               </div>
               <div className="mt-6 flex items-center gap-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
@@ -144,7 +144,7 @@ export default async function ExploreIndex() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#008751] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-[#008751]"></span>
                 </span>
-                <span>Calibrating price matrix</span>
+                <span>Running the numbers</span>
               </div>
             </div>
 
@@ -154,33 +154,33 @@ export default async function ExploreIndex() {
         {/* Quality Promise / Trust Dashboard */}
         <div className="mt-20 border-t border-border-default/80 pt-12">
           <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-8 text-center">
-            The OyaPlan Quality Promise
+            No billing shocks here 🎯
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-border-default shadow-sm flex gap-4 items-start">
               <span className="text-2xl select-none">🕵️‍♂️</span>
               <div>
-                <h4 className="font-bold text-midnight-lagoon text-sm">100% Manually Audited</h4>
+                <h4 className="font-bold text-midnight-lagoon text-sm">Hand-checked menus</h4>
                 <p className="text-xs text-text-muted mt-1 leading-relaxed">
-                  No scraped data or outdated web lists. We check menus directly to verify every price point.
+                  No copy-paste from old blogs. We verify the actual menus ourselves to keep prices real.
                 </p>
               </div>
             </div>
             <div className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-border-default shadow-sm flex gap-4 items-start">
               <span className="text-2xl select-none">🚕</span>
               <div>
-                <h4 className="font-bold text-midnight-lagoon text-sm">Transport Calibrated</h4>
+                <h4 className="font-bold text-midnight-lagoon text-sm">Real Uber/Bolt fares</h4>
                 <p className="text-xs text-text-muted mt-1 leading-relaxed">
-                  Uber/Bolt costs are dynamically calibrated using actual traffic patterns and off-peak values.
+                  We calculate rides using actual traffic data and times of day, not just vibes.
                 </p>
               </div>
             </div>
             <div className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-border-default shadow-sm flex gap-4 items-start">
-              <span className="text-2xl select-none">🎯</span>
+              <span className="text-2xl select-none">🧾</span>
               <div>
-                <h4 className="font-bold text-midnight-lagoon text-sm">Zero Surprise Bills</h4>
+                <h4 className="font-bold text-midnight-lagoon text-sm">Hidden fees included</h4>
                 <p className="text-xs text-text-muted mt-1 leading-relaxed">
-                  Taxes, service charges, and cover fees are baked into the cost engine so the plan remains accurate.
+                  Taxes, VAT, and service charges are already built into the total. What you see is what you spend.
                 </p>
               </div>
             </div>
