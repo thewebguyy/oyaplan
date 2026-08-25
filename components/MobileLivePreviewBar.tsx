@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, ChevronUp, X, Check, ShieldCheck } from "lucide-react";
+import { MapPin, ChevronUp, X, Check, ShieldCheck, Loader2 } from "lucide-react";
 import { Spot } from "@/lib/types";
 import Link from "next/link";
 import RouteCard from "./dossier/RouteCard";
 import { LocationService } from "@/lib/services/LocationService";
 import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 import { TransportPricingProvider } from "@/lib/planning/transport";
+import { createShareablePlan } from "@/lib/actions/sharePlan";
 
 interface MobileLivePreviewBarProps {
   squadSize: number;
@@ -26,6 +28,43 @@ export default function MobileLivePreviewBar({
   startAreaId,
 }: MobileLivePreviewBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [pendingSpotId, setPendingSpotId] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleExplorePlan = (spot: Spot) => {
+    if (isPending) return;
+    setPendingSpotId(spot.id);
+    startTransition(async () => {
+      const spotTransportCost = getSpotTransportCost(spot);
+      const spotFoodCost = (spot.price_per_person || 12000) * squadSize;
+      const spotTotalCost = spotFoodCost + spotTransportCost + Math.round(spotFoodCost * 0.1);
+
+      const result = await createShareablePlan(
+        {
+          spot,
+          foodCost: spotFoodCost,
+          transportCost: spotTransportCost,
+          totalCost: spotTotalCost,
+          whyItFits: `Matched for ${vibe || "outing"} vibe within your budget.`,
+        },
+        {
+          startArea: startAreaId || "",
+          squadSize,
+          budget: budget || spotTotalCost,
+          vibe: vibe || "Chill",
+        }
+      );
+
+      if (result.success && result.id) {
+        setIsOpen(false);
+        router.push(`/plan/${result.id}`);
+      } else {
+        setPendingSpotId(null);
+        console.error("Failed to create plan:", result.error);
+      }
+    });
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -206,14 +245,17 @@ export default function MobileLivePreviewBar({
                       {/* Direct Explore CTA */}
                       <div className="px-4">
                         <div className="flex flex-col gap-2">
-                          <Link
-                            href={`/plan/new?spotId=${spot.id}&startAreaId=${startAreaId || ""}&squadSize=${squadSize}&vibe=${vibe || ""}&budget=${budget || ""}&fresh=true`}
-                            onClick={() => setIsOpen(false)}
-                            className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
+                          <button
+                            onClick={() => handleExplorePlan(spot)}
+                            disabled={isPending}
+                            className="w-full h-10 bg-[#008751] hover:bg-[#006b41] disabled:opacity-60 text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
                           >
-                            <span>Explore Full Plan</span>
-                            <Check className="w-3.5 h-3.5 stroke-[3]" />
-                          </Link>
+                            {isPending && pendingSpotId === spot.id ? (
+                              <><Loader2 className="w-3.5 h-3.5 animate-spin" /><span>Creating Plan…</span></>
+                            ) : (
+                              <><span>Explore Full Plan</span><Check className="w-3.5 h-3.5 stroke-[3]" /></>
+                            )}
+                          </button>
                         </div>
                       </div>
 
