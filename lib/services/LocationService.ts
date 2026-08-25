@@ -51,8 +51,18 @@ const VERIFIED_AREAS: Location[] = PLANNING_AREAS.map((a) => ({
 }));
 
 export class LocationService {
-  // 1. Get all verified canonical areas (6 areas)
+  // 1. Get active planning areas (beta-gated — excludes areas with active: false)
   static getVerifiedAreas(): Location[] {
+    return VERIFIED_AREAS
+      .filter((a) => {
+        const source = PLANNING_AREAS.find((pa) => pa.id === a.id);
+        return source?.active !== false;
+      })
+      .map((a) => ({ ...a, alias: [...a.alias] }));
+  }
+
+  // 1b. Get ALL planning areas including inactive (for transport calculations)
+  static getAllAreas(): Location[] {
     return VERIFIED_AREAS.map((a) => ({ ...a, alias: [...a.alias] }));
   }
 

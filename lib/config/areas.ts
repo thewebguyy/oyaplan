@@ -64,7 +64,7 @@ export const AREAS: MapArea[] = [
     textX: 380,
     textY: 380,
     neonColor: "#FF8F00", // Mustard Orange
-    isActive: true
+    isActive: false
   },
   {
     name: "Yaba",
@@ -82,7 +82,7 @@ export const AREAS: MapArea[] = [
     textX: 560,
     textY: 450,
     neonColor: "#D81B60", // Deep Pink
-    isActive: true
+    isActive: false
   },
   {
     name: "Ikoyi",
@@ -91,7 +91,7 @@ export const AREAS: MapArea[] = [
     textX: 650,
     textY: 420,
     neonColor: "#AB47BC", // Purple
-    isActive: true
+    isActive: false
   },
   {
     name: "Victoria Island",

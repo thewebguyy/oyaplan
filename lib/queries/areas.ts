@@ -1,12 +1,19 @@
 import { supabase } from '../supabase';
 import { Area, Spot } from '../types';
 
+/**
+ * Beta launch: only these area slugs appear in discovery surfaces.
+ * Add slugs here to expand coverage — zero component changes needed.
+ */
+const BETA_AREA_SLUGS = ["ikeja", "yaba", "vi", "lekki-phase-1"];
+
 export async function getActiveAreas(): Promise<{ data: Area[] | null; error: string | null }> {
   try {
     const { data, error } = await supabase
       .from('areas')
       .select('*')
       .eq('active', true)
+      .in('slug', BETA_AREA_SLUGS)
       .order('name');
     if (error) return { data: null, error: error.message };
     return { data: data as Area[], error: null };
@@ -23,6 +30,7 @@ export async function getAreasWithSpotCounts(): Promise<{
     const { data, error } = await supabase
       .from('areas')
       .select('*, spots(active)')
+      .in('slug', BETA_AREA_SLUGS)
       .order('name');
     if (error) return { data: null, error: error.message };
     const areas = (data || []).map((area) => ({

@@ -5,6 +5,8 @@ export interface PlanningArea {
   name: string;
   coordinates: Coordinates;
   alias: string[];
+  /** When false the area is excluded from user-facing pickers but kept for transport lookups. Defaults to true. */
+  active?: boolean;
 }
 
 export interface DisplayLocation {
@@ -47,12 +49,14 @@ export const PLANNING_AREAS: PlanningArea[] = [
     name: "Ikoyi",
     coordinates: { lat: 6.4549, lng: 3.4347 },
     alias: ["ikoyi", "banana island", "falomo"],
+    active: false,
   },
   {
     id: "surulere",
     name: "Surulere",
     coordinates: { lat: 6.4969, lng: 3.354 },
     alias: ["surulere", "ojuelegba", "bode thomas"],
+    active: false,
   },
 ];
 
