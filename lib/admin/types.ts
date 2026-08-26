@@ -89,7 +89,7 @@ export type QualityCategory = 'trust_risk' | 'experience_quality';
 
 export interface DataQualityIssue {
   id: string;
-  issue_type: 'UNVERIFIED_PRICE_SOURCE' | 'LOW_CONFIDENCE' | 'MISSING_HERO' | 'STALE_PRICING';
+  issue_type: 'UNVERIFIED_PRICE_SOURCE' | 'LOW_CONFIDENCE' | 'MISSING_HERO' | 'STALE_PRICING' | 'OUT_OF_BOUNDS_AREA';
   category: QualityCategory;
   severity: 'critical' | 'high' | 'medium' | 'low';
   scope: IssueScope;

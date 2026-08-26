@@ -11,7 +11,7 @@ interface QualitySpotDbRow {
   computed_confidence_score?: number | null;
   transport_matrix?: Record<string, number> | null;
   area_id?: string | null;
-  areas?: { name: string } | null;
+  areas?: { name: string; slug: string; active: boolean } | null;
 }
 
 export class QualityService {
@@ -62,7 +62,7 @@ export class QualityService {
     const supabase = await createServerClient();
     const { data: spots, error } = await supabase
       .from("spots")
-      .select("id, name, cover_url, price_per_person, price_source, verified_by, computed_confidence_score, area_id, areas(name)");
+      .select("id, name, cover_url, price_per_person, price_source, verified_by, computed_confidence_score, area_id, areas(name, slug, active)");
 
     if (error) {
       console.error("Failed to fetch spots for QualityService:", error);
@@ -71,6 +71,8 @@ export class QualityService {
 
     const items: DataQualityIssue[] = [];
     const now = new Date().toISOString();
+
+    const BETA_AREA_SLUGS = ["ikeja", "yaba", "vi", "lekki-phase-1"];
 
     ((spots as unknown as QualitySpotDbRow[]) || []).forEach((spot) => {
       const areaName = spot.areas?.name || "Lagos";
@@ -123,6 +125,25 @@ export class QualityService {
           venue_name: spot.name,
           area_name: areaName,
           reason: "Venue is missing a cover image.",
+          detected_at: now,
+        });
+      }
+
+      // 4. Out-of-Bounds Area (Beta Release Gate)
+      const areaSlug = spot.areas?.slug || "";
+      const isBetaArea = BETA_AREA_SLUGS.includes(areaSlug);
+      
+      if (!isBetaArea && spot.areas) {
+        items.push({
+          id: `${spot.id}-out-of-bounds`,
+          issue_type: "OUT_OF_BOUNDS_AREA",
+          category: "experience_quality",
+          severity: "medium",
+          scope: "venue",
+          venue_id: spot.id,
+          venue_name: spot.name,
+          area_name: areaName,
+          reason: `Venue is in '${areaName}' (slug: '${areaSlug}'), which is deactivated for this beta release.`,
           detected_at: now,
         });
       }
