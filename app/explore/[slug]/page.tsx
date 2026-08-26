@@ -7,15 +7,23 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
 import { Spot } from "@/lib/types";
-import { VenueCardStack } from "@/components/explore/VenueCardStack";
+import { ExploreSlugClient } from "@/components/explore/ExploreSlugClient";
 import { getVerificationText, deriveTrustIndicator } from "@/lib/planning/presentation/decisionCardMapper";
 import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
+import { TransportPricingProvider } from "@/lib/planning/transport";
 
 export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ budget?: string; vibe?: string; squad?: string; pinned?: string; spot?: string }>;
+  searchParams: Promise<{ 
+    budget?: string; 
+    vibe?: string; 
+    squad?: string; 
+    pinned?: string; 
+    spot?: string;
+    startArea?: string;
+  }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -41,11 +49,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: "Explore — OyaPlan" };
 }
 
-function mapSpotToDiscoveryCard(spot: Spot, squadCount: number, budget: number | null): DecisionCardViewModel {
+function mapSpotToDiscoveryCard(
+  spot: Spot, 
+  squadCount: number, 
+  budget: number | null,
+  startArea: string | null
+): DecisionCardViewModel {
   const confidenceScore = spot.computed_confidence_score || 50;
-  const venueCost = (spot.price_per_person || 0) * squadCount;
-  const transportCost = 0;
-  const totalCost = venueCost;
+  const venueCost = (spot.price_per_person || 12000) * squadCount;
+  
+  // Calculate real transport cost if startArea is provided
+  let transportCost = 0;
+  if (startArea && startArea !== "anywhere" && squadCount > 1) {
+    const range = TransportPricingProvider.calculateRange(
+      startArea,
+      spot.address_slug || "ikeja",
+      "ride-hailing",
+      spot.transport_matrix || {}
+    );
+    transportCost = range.midpointCost;
+  } else if (startArea === "anywhere" && squadCount > 1) {
+    // General city-wide average fallback
+    transportCost = squadCount > 4 ? 10000 : 5000;
+  }
+
+  const taxCost = Math.round(venueCost * 0.1);
+  const totalCost = venueCost + transportCost + taxCost;
   const budgetRemaining = budget ? (budget * squadCount) - totalCost : 0;
 
   return {
@@ -57,7 +86,7 @@ function mapSpotToDiscoveryCard(spot: Spot, squadCount: number, budget: number |
     budgetFit: budget ? (totalCost <= budget * squadCount ? "Fits budget" : "Over budget") : "Discovery price",
     verification: getVerificationText(spot.price_updated_at),
     confidence: confidenceScore,
-    whyItFits: spot.vibe_tags?.join(" • ") || "Discovery spot",
+    whyItFits: spot.vibe_tags?.slice(0, 3).join(" • ") || "Vetted Outing Spot",
     planningSummary: spot.address,
 
     spotId: spot.id,
@@ -69,6 +98,8 @@ function mapSpotToDiscoveryCard(spot: Spot, squadCount: number, budget: number |
     areaSlug: spot.areas?.slug || spot.address_slug,
     travelInfo: undefined,
     isAdjacent: false,
+    secondaryExperience: spot.secondary_experience,
+    foodType: spot.food_type,
 
     budgetRemaining,
     trustIndicator: deriveTrustIndicator(confidenceScore)
@@ -78,9 +109,11 @@ function mapSpotToDiscoveryCard(spot: Spot, squadCount: number, budget: number |
 export default async function ExploreSlug({ params, searchParams }: Props) {
   const { slug } = await params;
   const urlParams = await searchParams;
+  
   const budget = urlParams.budget ? parseInt(urlParams.budget) : null;
   const vibe = urlParams.vibe || null;
   const squadCount = urlParams.squad ? parseInt(urlParams.squad) : 2;
+  const startArea = urlParams.startArea || null;
 
   // 1. Try Zone View
   let zoneData: { id: string; name: string; slug: string; description: string } | null = null;
@@ -135,7 +168,8 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
               if (urlParams.budget) areaParams.append("budget", urlParams.budget);
               if (urlParams.vibe) areaParams.append("vibe", urlParams.vibe);
               if (urlParams.squad) areaParams.append("squad", urlParams.squad);
-              const href = areaParams.toString() ? `/explore/${area.slug}?${areaParams.toString()}` : `/explore/${area.slug}`;
+              if (urlParams.startArea) areaParams.append("startArea", urlParams.startArea);
+              const href = areaParams.toString() ? `/explore/${area.slug}?${areaParams.toString()}` : `/explore/${area.slug}` ;
 
               return (
                 <Link 
@@ -163,7 +197,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     );
   }
 
-  // 2. Try Area View
+  // 2. Area View
   let area: { id: string; name: string; slug: string; spots: Spot[] } | null = null;
   let areaFetchError = false;
   try {
@@ -185,7 +219,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
 
   if (!area) notFound();
 
-  // If pinned or spot param is passed, reorder area.spots to bring target spot to top of stack (index 0)
+  // Reorder if pinned or spot query is passed
   const targetId = urlParams.pinned || urlParams.spot;
   if (targetId && area.spots.length > 0) {
     const pinnedIndex = area.spots.findIndex(
@@ -200,39 +234,46 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     }
   }
 
+  // Server-side filtering for active vibes
+  let filteredSpots = area.spots;
+  if (vibe) {
+    const VIBE_MAP: Record<string, string[]> = {
+      "date-night": ["Dinner", "date-night", "Intimate"],
+      "chill": ["Chill", "chill", "Casual"],
+      "foodie": ["Foodie", "foodie", "Gourmet"],
+      "party": ["Party", "party", "Loud"],
+      "brunch": ["Brunch", "brunch", "Daylight"]
+    };
+    const targetTags = VIBE_MAP[vibe] || [vibe];
+    filteredSpots = area.spots.filter(spot =>
+      spot.vibe_tags?.some(tag => 
+        targetTags.some(target => tag.toLowerCase().includes(target.toLowerCase()))
+      )
+    );
+  }
+
+  // Server-side filtering for max budget per person
+  if (budget) {
+    filteredSpots = filteredSpots.filter(spot => 
+      (spot.price_per_person || 0) <= budget
+    );
+  }
+
   // Map spots directly on the server to visual view models (Pure Discovery)
-  const viewModels = area.spots.map((spot) => mapSpotToDiscoveryCard(spot, squadCount, budget));
+  const viewModels = filteredSpots.map((spot) => 
+    mapSpotToDiscoveryCard(spot, squadCount, budget, startArea)
+  );
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-8 flex flex-col relative overflow-x-hidden">
-      <div className="w-full max-w-lg mx-auto px-6 mb-6 flex flex-col z-10 relative pointer-events-none">
-        <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-2 w-fit pointer-events-auto tap-feedback">
-          <ArrowLeft className="w-4 h-4" />
-          All Areas
-        </Link>
-        <div className="flex items-end justify-between">
-          <h1 className="text-3xl font-black text-midnight-lagoon capitalize">{area.name}</h1>
-          <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{viewModels.length} venues</span>
-        </div>
-      </div>
-
-      <div className="flex-1 w-full flex items-center justify-center pb-12 z-10">
-        <VenueCardStack 
-          spots={viewModels} 
-          rawSpots={area.spots}
-          slug={slug} 
-          budget={budget || undefined} 
-          vibe={vibe || undefined} 
-          squadCount={squadCount} 
-        />
-      </div>
-      
-      {/* Background decoration to replace map feel */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{
-        backgroundImage: 'radial-gradient(circle at 50% 50%, #008751 0%, transparent 60%)',
-        backgroundSize: '100% 100%',
-        backgroundPosition: 'center',
-      }} />
-    </div>
+    <ExploreSlugClient
+      slug={slug}
+      areaName={area.name}
+      initialSpots={viewModels}
+      rawSpots={filteredSpots}
+      initialBudget={budget}
+      initialVibe={vibe}
+      initialSquadCount={squadCount}
+      initialStartArea={startArea}
+    />
   );
 }
