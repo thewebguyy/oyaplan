@@ -111,15 +111,20 @@ export default function MobileLivePreviewBar({
           animate={{ y: 0, opacity: 1 }}
           className="bg-[#111827] text-white rounded-2xl p-3 shadow-2xl border border-white/10 flex items-center justify-between backdrop-blur-xl"
         >
-          <div className="flex items-center gap-3 min-w-0">
+          <div 
+            onClick={() => setIsOpen(true)} 
+            className="flex items-center gap-3 min-w-0 cursor-pointer select-none active:opacity-80 transition-opacity flex-1 mr-2"
+            title="Tap to review cost breakdown"
+          >
             <div className="w-10 h-10 rounded-xl bg-[#008751] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-inner">
               ✨
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FCC630] uppercase tracking-wider">
                 <span>{spotsToUse.length > 1 ? `Top ${spotsToUse.length} Matches` : "Top Match"}</span>
                 <span>•</span>
                 <span className="truncate">{vibe || "Outing"}</span>
+                <ChevronUp className="w-3 h-3 text-white/50 shrink-0" />
               </div>
               <p className="text-sm font-bold text-white truncate leading-tight">
                 {topSpot.name} {spotsToUse.length > 1 ? `& ${spotsToUse.length - 1} more` : ""}
@@ -131,10 +136,18 @@ export default function MobileLivePreviewBar({
           </div>
 
           <button
-            onClick={() => setIsOpen(true)}
-            className="h-10 px-4 bg-white hover:bg-white/90 text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-colors shrink-0 shadow-sm"
+            onClick={() => handleExplorePlan(topSpot)}
+            disabled={isPending}
+            className="h-10 px-4 bg-white hover:bg-white/90 disabled:opacity-60 text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-colors shrink-0 shadow-sm flex items-center gap-1.5"
           >
-            Review Cost
+            {isPending && pendingSpotId === topSpot.id ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#008751]" />
+                <span>Cooking…</span>
+              </>
+            ) : (
+              <span>Generate Plan</span>
+            )}
           </button>
         </motion.div>
       </div>
