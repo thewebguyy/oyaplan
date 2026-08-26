@@ -124,15 +124,16 @@ export async function proxy(request: NextRequest) {
   if (hasAuthCookie || pathname.startsWith('/admin')) {
     await supabase.auth.getUser();
   }
+
+  // Ensure a persistent anonymous session cookie exists for user attribution
+  let sessionId = request.cookies.get('oya_session_id')?.value;
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    supabaseResponse.cookies.set('oya_session_id', sessionId, { path: '/', maxAge: 60 * 60 * 24 * 30 });
+  }
+
   if (pathname.startsWith('/r/') || pathname.startsWith('/invite/')) {
     const code = pathname.split('/')[2];
-    
-    // Ensure an anonymous session cookie exists
-    let sessionId = request.cookies.get('oya_session_id')?.value;
-    if (!sessionId) {
-      sessionId = crypto.randomUUID();
-      supabaseResponse.cookies.set('oya_session_id', sessionId, { path: '/', maxAge: 60 * 60 * 24 * 30 });
-    }
 
     // Rewrite to home page silently, passing the ref code via query param for the client to parse
     const rewriteUrl = request.nextUrl.clone();
