@@ -125,20 +125,30 @@ export class VenueRepository {
   static async updateVenue(id: string, updates: Partial<AdminVenue>, actorEmail = "admin"): Promise<boolean> {
     const supabase = await createServerClient();
     
-    // Map AdminVenue updates back to actual spots DB columns
+    // Map AdminVenue updates back to public.venues DB columns
     const dbUpdates: Record<string, unknown> = {};
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.category !== undefined) dbUpdates.category = updates.category;
     if (updates.address !== undefined) dbUpdates.address = updates.address;
-    if (updates.image_url !== undefined) dbUpdates.cover_url = updates.image_url;
-    if (updates.price_per_person !== undefined) dbUpdates.price_per_person = updates.price_per_person;
+    if (updates.image_url !== undefined || updates.cover_url !== undefined) {
+      dbUpdates.cover_url = updates.image_url || updates.cover_url;
+    }
+    if (updates.logo_url !== undefined) dbUpdates.logo_url = updates.logo_url;
+    if (updates.price_per_person !== undefined) dbUpdates.derived_typical_cost = updates.price_per_person;
     if (updates.status !== undefined) dbUpdates.active = updates.status === "published";
+    if (updates.active !== undefined) dbUpdates.active = updates.active;
 
-    const { error } = await supabase.from("spots").update(dbUpdates).eq("id", id);
+    // Update base table public.venues
+    const { error: venueError } = await supabase.from("venues").update(dbUpdates).eq("id", id);
 
-    if (error) {
-      console.error("Failed to update venue:", error);
-      return false;
+    if (venueError) {
+      console.error("Failed to update venue in public.venues:", venueError);
+      // Fallback for legacy environments where spots might be a table
+      const { error: spotError } = await supabase.from("spots").update(dbUpdates).eq("id", id);
+      if (spotError) {
+        console.error("Failed to update spot:", spotError);
+        return false;
+      }
     }
 
     await ActivityRepository.logActivity(actorEmail, "Updated Venue", "Venue", id, dbUpdates);

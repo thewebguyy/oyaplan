@@ -19,24 +19,29 @@ export async function verifySpotAction(formData: FormData) {
   const supabase = await createServerClient();
   const now = new Date().toISOString();
 
-  // 1. Update spot record
-  const spotUpdates: Record<string, unknown> = {
-    verified_by,
-    price_source,
-    price_updated_at: now,
+  // 1. Update venue record in public.venues base table
+  const venueUpdates: Record<string, unknown> = {
+    operational_status: verified_by === "owner_verified" ? "verified" : "community_verified",
+    last_price_source: price_source,
+    last_price_updated_at: now,
   };
   if (price_per_person > 0) {
-    spotUpdates.price_per_person = price_per_person;
+    venueUpdates.derived_typical_cost = price_per_person;
   }
 
-  const { error: spotError } = await supabase
-    .from("spots")
-    .update(spotUpdates)
+  const { error: venueError } = await supabase
+    .from("venues")
+    .update(venueUpdates)
     .eq("id", id);
 
-  if (spotError) {
-    console.error("Failed to verify spot price:", spotError);
-    return;
+  if (venueError) {
+    console.error("Failed to verify venue in public.venues:", venueError);
+    await supabase.from("spots").update({
+      verified_by,
+      price_source,
+      price_updated_at: now,
+      ...(price_per_person > 0 ? { price_per_person } : {})
+    }).eq("id", id);
   }
 
   // 2. Insert audit record in price_evidence
@@ -74,16 +79,19 @@ export async function quickVerifySpotAction(formData: FormData) {
   const now = new Date().toISOString();
 
   const { error } = await supabase
-    .from("spots")
+    .from("venues")
     .update({
-      verified_by: "owner_verified",
-      price_updated_at: now,
+      operational_status: "verified",
+      last_price_updated_at: now,
     })
     .eq("id", id);
 
   if (error) {
-    console.error("Failed to quick verify spot:", error);
-    return;
+    console.error("Failed to quick verify venue in public.venues:", error);
+    await supabase.from("spots").update({
+      verified_by: "owner_verified",
+      price_updated_at: now,
+    }).eq("id", id);
   }
 
   await ActivityRepository.logActivity(

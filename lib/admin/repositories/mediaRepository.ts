@@ -33,13 +33,18 @@ export class MediaRepository {
 
   static async assignImageToVenue(venueId: string, imageUrl: string, isHero = true, actorEmail = "admin"): Promise<boolean> {
     const supabase = await createServerClient();
-    const updates = isHero ? { cover_url: imageUrl } : {};
+    const updates = isHero ? { cover_url: imageUrl } : { logo_url: imageUrl };
 
-    const { error } = await supabase.from("spots").update(updates).eq("id", venueId);
+    // Update base table public.venues
+    const { error: venueError } = await supabase.from("venues").update(updates).eq("id", venueId);
 
-    if (error) {
-      console.error("Failed to assign image to venue:", error);
-      return false;
+    if (venueError) {
+      console.error("Failed to assign image in public.venues:", venueError);
+      const { error: spotError } = await supabase.from("spots").update(updates).eq("id", venueId);
+      if (spotError) {
+        console.error("Failed to assign image to spot:", spotError);
+        return false;
+      }
     }
 
     await ActivityRepository.logActivity(actorEmail, "Assigned Venue Image", "Media", venueId, { imageUrl, isHero });
