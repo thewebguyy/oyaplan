@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Info, Check, ArrowUp, ArrowDown } from "lucide-react";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import { TransportDisplayFormatter } from "@/lib/planning/transport";
 
 interface TransportEstimateCardProps {
@@ -70,20 +70,17 @@ export default function TransportEstimateCard({
 
   const handleFeedback = (result: "about_right" | "higher" | "lower") => {
     setFeedbackSubmitted(result);
-    AnalyticsService.track("transport_actual_feedback", {
-      session_id: "00000000-0000-0000-0000-000000000000",
-      properties: {
-        category: "Trust",
-        mode,
-        result,
-        estimated_min: displayMin,
-        estimated_max: displayMax,
-        origin_district_id: originDistrictId,
-        destination_district_id: destinationDistrictId,
-        spot_id: spotId,
-        departure_at: departureAt,
-        version: "1.0",
-      },
+    trackEvent("transport_actual_feedback", {
+      category: "Trust",
+      mode,
+      result,
+      estimated_min: displayMin,
+      estimated_max: displayMax,
+      origin_district_id: originDistrictId,
+      destination_district_id: destinationDistrictId,
+      spot_id: spotId,
+      departure_at: departureAt,
+      version: "1.0",
     });
   };
 

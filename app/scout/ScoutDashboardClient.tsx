@@ -7,7 +7,7 @@ import { createScoutProfile } from "@/lib/queries/scout";
 import { Area } from "@/lib/types";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
 import { triggerMoment } from "@/components/ui/moment-of-delight";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { toast } from "sonner";
 
@@ -174,16 +174,13 @@ export default function ScoutDashboardClient({
       setSuggestSuccess(true);
       triggerMoment("venue_suggested");
       toast.success("Venue suggested! Thank you for contributing to squad budget confidence.");
-      AnalyticsService.track('spot_suggested', {
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: {
-          category: 'Contribution',
-          spot_name: suggestForm.spotName,
-          area: suggestForm.areaName,
-          rough_price: parseInt(suggestForm.roughPrice) || 30000,
-          version: '1.0'
-        }
-      }, userId || undefined);
+      trackEvent('spot_suggested', {
+        category: 'Contribution',
+        spot_name: suggestForm.spotName,
+        area: suggestForm.areaName,
+        rough_price: parseInt(suggestForm.roughPrice) || 30000,
+        version: '1.0'
+      });
     } else {
       toast.error(res.error || "Failed to submit venue suggestion.");
     }
@@ -205,24 +202,28 @@ export default function ScoutDashboardClient({
     }
 
     setLoading(true);
-    AnalyticsService.track('scout_profile_attempt', {
-      session_id: '00000000-0000-0000-0000-000000000000',
-      properties: { category: 'Scout', username: trimmed, version: '1.0' }
-    }, userId);
+    trackEvent('scout_profile_attempt', {
+      category: 'Scout',
+      username: trimmed,
+      version: '1.0'
+    });
 
     const res = await createScoutProfile(userId, trimmed);
     if (res.success) {
-      AnalyticsService.track('scout_profile_created', {
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: { category: 'Scout', username: trimmed, version: '1.0' }
-      }, userId);
+      trackEvent('scout_profile_created', {
+        category: 'Scout',
+        username: trimmed,
+        version: '1.0'
+      });
       window.location.reload();
     } else {
       const errorMsg = res.error || "That scout username is already taken. Please choose another.";
-      AnalyticsService.track('scout_profile_failed', {
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: { category: 'Scout', username: trimmed, error: errorMsg, version: '1.0' }
-      }, userId);
+      trackEvent('scout_profile_failed', {
+        category: 'Scout',
+        username: trimmed,
+        error: errorMsg,
+        version: '1.0'
+      });
       setError(errorMsg);
       setLoading(false);
     }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Area, Spot } from "@/lib/types";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import { Button } from "@/components/ui/button";
 import { Heart, Coffee, Utensils, Music, Zap, Sun } from "lucide-react";
 import { getAvailableOptions } from "@/lib/services/matching/forgeMatcher";
@@ -220,16 +220,13 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
       params.append("pinned", formData.pinnedSpotId);
     }
     
-    AnalyticsService.track('forge_started', {
-      session_id: '00000000-0000-0000-0000-000000000000',
-      properties: {
-        category: 'Activation',
-        source: 'conversational_flow',
-        area: formData.startArea,
-        budget: Number(formData.budget),
-        squad_size: Number(formData.squadSize),
-        version: '1.0'
-      }
+    trackEvent('forge_started', {
+      category: 'Activation',
+      source: 'conversational_flow',
+      area: formData.startArea,
+      budget: Number(formData.budget),
+      squad_size: Number(formData.squadSize),
+      version: '1.0'
     });
 
     params.set("fresh", "true");

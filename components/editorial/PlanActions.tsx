@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 import { Plan, ForgeInput } from "@/lib/types";
 import { savePlan } from "@/lib/actions/savePlan";
 import { createShareablePlan } from "@/lib/actions/sharePlan";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import WhatsAppCopyButton from "../WhatsAppCopyButton";
 import { triggerMoment } from "@/components/ui/moment-of-delight";
 
@@ -58,15 +58,12 @@ export function PlanActions({
       if (currentPlanId) {
         const res = await savePlan(currentPlanId);
         if (res.success) {
-          AnalyticsService.track('plan_saved', {
-            session_id: '00000000-0000-0000-0000-000000000000',
-            properties: {
-              category: 'Engagement',
-              shared_plan_id: currentPlanId,
-              spot_id: plan.spot.id,
-              total_cost: plan.totalCost,
-              version: '1.0'
-            }
+          trackEvent('plan_saved', {
+            category: 'Engagement',
+            shared_plan_id: currentPlanId,
+            spot_id: plan.spot.id,
+            total_cost: plan.totalCost,
+            version: '1.0'
           });
         }
       }

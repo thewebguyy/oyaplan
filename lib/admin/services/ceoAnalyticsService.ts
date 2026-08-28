@@ -53,6 +53,7 @@ export class CeoAnalyticsService {
       { data: planRequestsUsers },
       { data: sharedOpenedEvents },
       { data: planFailedEvents },
+      { data: forgeStartEvents },
       { data: feedbackEvents },
       { data: attributionRows }
     ] = await Promise.all([
@@ -76,10 +77,13 @@ export class CeoAnalyticsService {
       supabase.from('plan_requests').select('user_id, session_id').range(0, 4999),
 
       // Shared plan opens
-      supabase.from('raw_product_events').select('id').eq('event_name', 'shared_plan_opened'),
+      supabase.from('raw_product_events').select('session_id, properties').eq('event_name', 'shared_plan_opened'),
 
       // Failure events
       supabase.from('raw_product_events').select('id').eq('event_name', 'plan_generation_failed'),
+
+      // Planning start events for accurate activation denominator
+      supabase.from('raw_product_events').select('session_id, user_id').eq('event_name', 'forge_started'),
 
       // Feedback events
       supabase.from('raw_product_events').select('id').in('event_name', ['plan_usefulness_rated', 'price_accuracy_reported', 'transport_actual_feedback', 'actual_spend_submitted']),
@@ -89,7 +93,7 @@ export class CeoAnalyticsService {
     ]);
 
     // 1. Calculate Activation & Second Plan Rate
-    // Activation: Unique actors (user_id or session_id) who generated >= 1 viable plan
+    // Numerator: Unique actors (user_id or session_id) who generated >= 1 viable plan
     const actorPlanCounts = new Map<string, number>();
     for (const req of planRequestsUsers || []) {
       const actorKey = req.user_id || (req.session_id as string) || 'anonymous';
@@ -98,7 +102,6 @@ export class CeoAnalyticsService {
       }
     }
 
-    const uniqueActorsCount = actorPlanCounts.size || 1;
     let activatedUsersCount = 0;
     let secondPlanUsersCount = 0;
 
@@ -107,15 +110,35 @@ export class CeoAnalyticsService {
       if (count >= 2) secondPlanUsersCount++;
     }
 
+    // Denominator: Unique actors who started planning (forge_started) or generated plans
+    const starterActors = new Set<string>();
+    for (const start of forgeStartEvents || []) {
+      const key = start.user_id || start.session_id;
+      if (key && key !== '00000000-0000-0000-0000-000000000000') starterActors.add(key);
+    }
+    // Combined unique planning initiators
+    for (const key of actorPlanCounts.keys()) {
+      starterActors.add(key);
+    }
+    const totalPlanningStarters = Math.max(starterActors.size, activatedUsersCount, 1);
+
     const totalPlans = totalPlansGenerated || 0;
     const totalSaves = totalSavedPlans || 0;
     const totalShares = totalSharedPlans || 0;
-    const totalOpens = sharedOpenedEvents?.length || 0;
     const totalFailures = planFailedEvents?.length || 0;
     const totalFeedbacks = (feedbackEvents?.length || 0) + (totalSpendReports || 0);
 
-    const activationRatePct = uniqueActorsCount > 0 
-      ? Math.min(100, Math.round((activatedUsersCount / uniqueActorsCount) * 100))
+    // Unique plans opened by recipients (prevents multi-open skew)
+    const openedPlanIds = new Set<string>();
+    for (const ev of sharedOpenedEvents || []) {
+      const props = ev.properties as Record<string, unknown> | null;
+      const planId = props?.plan_id as string | undefined;
+      if (planId) openedPlanIds.add(planId);
+    }
+    const uniquePlansOpenedCount = openedPlanIds.size || (sharedOpenedEvents?.length || 0);
+
+    const activationRatePct = totalPlanningStarters > 0 
+      ? Math.min(100, Math.round((activatedUsersCount / totalPlanningStarters) * 100))
       : 0;
 
     const plansPerActiveUser = activatedUsersCount > 0
@@ -131,7 +154,7 @@ export class CeoAnalyticsService {
       : 0;
 
     const recipientEngagementRatePct = totalShares > 0
-      ? Math.min(100, Math.round((totalOpens / totalShares) * 100))
+      ? Math.min(100, Math.round((uniquePlansOpenedCount / totalShares) * 100))
       : 0;
 
     const secondPlanRatePct = activatedUsersCount > 0
@@ -167,7 +190,7 @@ export class CeoAnalyticsService {
       saveRatePct,
       sharedPlansCount: totalShares,
       shareRatePct,
-      sharedPlansOpenedCount: totalOpens,
+      sharedPlansOpenedCount: uniquePlansOpenedCount,
       recipientEngagementRatePct,
       secondPlanUsersCount,
       secondPlanRatePct,

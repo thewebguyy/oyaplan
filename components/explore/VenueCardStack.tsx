@@ -7,7 +7,7 @@ import { Spot } from "@/lib/types";
 import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
 import { VenueCard } from "./VenueCard";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import { toast } from "sonner";
 
 interface VenueCardStackProps {
@@ -91,16 +91,13 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
         saveSpot(resolveSpot(card));
         toast.success(`Saved "${card.spotName}" to your Saved Spots!`);
       }
-      AnalyticsService.track('spot_saved', {
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: {
-          category: 'Engagement',
-          spot_id: card.spotId,
-          position_in_stack: currentIndex,
-          area: slug,
-          vibe: vibe || 'any',
-          version: '1.0'
-        }
+      trackEvent('spot_saved', {
+        category: 'Engagement',
+        spot_id: card.spotId,
+        position_in_stack: currentIndex,
+        area: slug,
+        vibe: vibe || 'any',
+        version: '1.0'
       });
     }
     nextCard();
@@ -108,16 +105,13 @@ export function VenueCardStack({ spots, rawSpots, slug, budget, vibe, squadCount
 
   const handleSwipeLeft = (card?: DecisionCardViewModel) => {
     if (card) {
-      AnalyticsService.track('spot_passed', {
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: {
-          category: 'Engagement',
-          spot_id: card.spotId,
-          position_in_stack: currentIndex,
-          area: slug,
-          vibe: vibe || 'any',
-          version: '1.0'
-        }
+      trackEvent('spot_passed', {
+        category: 'Engagement',
+        spot_id: card.spotId,
+        position_in_stack: currentIndex,
+        area: slug,
+        vibe: vibe || 'any',
+        version: '1.0'
       });
     }
     nextCard();
