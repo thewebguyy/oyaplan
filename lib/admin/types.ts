@@ -50,14 +50,19 @@ export interface MediaItem {
   is_hero?: boolean;
 }
 
+export type BetaLifecycleStatus = 'Active' | 'Accepted' | 'Registered' | 'Invited' | 'Pending' | 'Not Registered';
+
 export interface ApprovedBetaUser {
   email: string;
   approved_at: string;
   approved_by: string;
   invited_at?: string | null;
   accepted_at?: string | null;
+  registered_at?: string | null;
   notes?: string | null;
-  status: 'Pending' | 'Accepted' | 'Not Registered';
+  status: BetaLifecycleStatus;
+  has_badge: boolean;
+  user_id?: string | null;
 }
 
 export interface SpotSubmission {

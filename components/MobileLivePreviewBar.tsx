@@ -11,6 +11,7 @@ import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 import { TransportPricingProvider } from "@/lib/planning/transport";
 import { trackEvent } from "@/lib/analytics/trackClient";
 import { triggerMoment } from "@/components/ui/moment-of-delight";
+import { CTA_LABELS } from "@/components/ui/ctaVocabulary";
 
 const VIBE_TO_URL_MAP: Record<string, string> = {
   Dinner: "date-night",
@@ -88,15 +89,15 @@ export default function MobileLivePreviewBar({
   }, [isOpen]);
 
   const getSpotTransportCost = (spot: Spot) => {
-    if (squadSize === 1) return 0;
-    if (!startAreaId || startAreaId === "anywhere") {
-      return squadSize > 4 ? 10000 : 5000;
-    }
+    const origin = startAreaId || "anywhere";
+    const dest = spot.address_slug || "ikeja";
     const range = TransportPricingProvider.calculateRange(
-      startAreaId,
-      spot.address_slug || "ikeja",
+      origin,
+      dest,
       "ride-hailing",
-      spot.transport_matrix || {}
+      spot.transport_matrix,
+      undefined,
+      squadSize
     );
     return range.midpointCost;
   };
@@ -153,7 +154,7 @@ export default function MobileLivePreviewBar({
             className="h-10 px-4 bg-white hover:bg-white/90 text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] shrink-0 shadow-sm flex items-center gap-1.5 cursor-pointer"
             aria-label="Start planning and view full options"
           >
-            <span>Start Planning</span>
+            <span>{CTA_LABELS.start_planning}</span>
           </button>
         </motion.div>
       </div>
@@ -261,14 +262,14 @@ export default function MobileLivePreviewBar({
                         </div>
                       </div>
 
-                      {/* Direct Explore CTA */}
+                      {/* Direct Explore CTA - Clean Next-State Label */}
                       <div className="px-4">
                         <div className="flex flex-col gap-2">
                           <button
                             onClick={() => handleGeneratePlan(spot)}
                             className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
                           >
-                            <span>Start Planning for {spot.name}</span>
+                            <span>{CTA_LABELS.view_plan}</span>
                             <Check className="w-3.5 h-3.5 stroke-[3]" />
                           </button>
                         </div>
@@ -279,23 +280,13 @@ export default function MobileLivePreviewBar({
                         const startArea = LocationService.getVerifiedAreas().find((a) => a.id === startAreaId);
                         if (!startArea) return null;
                         const transport = calculateTransportTime(startAreaId, spot.coordinates);
-                        const range = startAreaId === "anywhere" 
-                          ? { minCost: squadSize > 4 ? 8000 : 4000, maxCost: squadSize > 4 ? 12000 : 6000, midpointCost: squadSize > 4 ? 10000 : 5000 }
-                          : TransportPricingProvider.calculateRange(
-                              startAreaId,
-                              spot.address_slug || "ikeja",
-                              "ride-hailing",
-                              spot.transport_matrix || {}
-                            );
-                        const transportEstimate = {
-                          low: range.minCost,
-                          high: range.maxCost,
-                          mode: "ride-hailing",
-                          origin: startAreaId,
-                          destination: spot.address_slug || "ikeja",
-                          departure_assumption: "off-peak",
-                          calculation_version: "2026-v1"
-                        };
+                        const transportEstimate = TransportPricingProvider.calculateEstimate(
+                          startAreaId,
+                          spot.address_slug || "ikeja",
+                          squadSize,
+                          "ride-hailing",
+                          spot.transport_matrix
+                        );
                         return (
                           <RouteCard
                             startAreaName={startArea.name}
@@ -303,7 +294,7 @@ export default function MobileLivePreviewBar({
                             venueName={spot.name}
                             venueAddress={spot.address || ""}
                             venueCoords={spot.coordinates}
-                            transportCost={range.midpointCost}
+                            transportCost={transportEstimate.midpointCost}
                             distanceKm={transport.distanceKm}
                             transportEstimate={transportEstimate}
                           />

@@ -11,12 +11,24 @@ export class BetaRepository {
       query = query.ilike("email", `%${search}%`);
     }
 
-    const { data, error } = await query.order("approved_at", { ascending: false });
+    const { data: betaRows, error } = await query.order("approved_at", { ascending: false });
 
     if (error) {
       console.error("Failed to fetch approved beta users:", error);
       return [];
     }
+
+    // Fetch profiles to correlate registration and badge status
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, email, profile_badge, created_at");
+
+    const profileMap = new Map<string, { id: string; profile_badge?: string | null; created_at?: string }>();
+    (profiles || []).forEach((p) => {
+      if (p.email) {
+        profileMap.set(p.email.toLowerCase(), p);
+      }
+    });
 
     interface BetaRow {
       email: string;
@@ -27,14 +39,21 @@ export class BetaRepository {
       notes?: string | null;
     }
 
-    return ((data as unknown as BetaRow[]) || []).map((row) => {
-      let status: "Pending" | "Accepted" | "Not Registered" = "Pending";
-      if (row.accepted_at) {
+    return ((betaRows as unknown as BetaRow[]) || []).map((row) => {
+      const cleanEmail = row.email.toLowerCase();
+      const profile = profileMap.get(cleanEmail);
+      const hasBadge = profile?.profile_badge === "founding_beta";
+
+      let status: "Active" | "Accepted" | "Registered" | "Invited" = "Invited";
+
+      if (hasBadge) {
+        status = "Active";
+      } else if (row.accepted_at) {
         status = "Accepted";
-      } else if (row.invited_at) {
-        status = "Pending";
+      } else if (profile) {
+        status = "Registered";
       } else {
-        status = "Not Registered";
+        status = "Invited";
       }
 
       return {
@@ -43,8 +62,11 @@ export class BetaRepository {
         approved_by: row.approved_by || "admin",
         invited_at: row.invited_at || undefined,
         accepted_at: row.accepted_at || undefined,
+        registered_at: profile?.created_at || undefined,
         notes: row.notes || undefined,
         status,
+        has_badge: hasBadge,
+        user_id: profile?.id || undefined,
       };
     });
   }

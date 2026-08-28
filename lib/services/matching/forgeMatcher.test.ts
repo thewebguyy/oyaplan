@@ -145,41 +145,40 @@ const BASE_INPUT: ForgeInput = {
 // ─── calculateZoneFare ────────────────────────────────────────────────────────
 
 describe('calculateZoneFare', () => {
-  it('returns ₦1,200 for same area (local trip)', () => {
-    // DN-1: same-area shortcut, distinct from same-zone.
-    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(1200);
-    expect(calculateZoneFare('yaba', 'yaba')).toBe(1200);
-    expect(calculateZoneFare('lekki-phase-1', 'lekki-phase-1')).toBe(1200);
+  it('returns ₦6,000 for same area (local trip)', () => {
+    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(6000);
+    expect(calculateZoneFare('yaba', 'yaba')).toBe(6000);
+    expect(calculateZoneFare('lekki-phase-1', 'lekki-phase-1')).toBe(6000);
   });
 
-  it('returns ₦5,000 for same zone, different area (mainland–mainland)', () => {
-    // ikeja and gbagada are both mainland
-    expect(calculateZoneFare('ikeja', 'gbagada')).toBe(5000);
+  it('returns ₦7,000 for same zone, different area (mainland–mainland)', () => {
+    // ikeja and gbagada are both mainland -> 3500 one way -> 7000 round trip
+    expect(calculateZoneFare('ikeja', 'gbagada')).toBe(7000);
   });
 
-  it('returns ₦5,000 for same zone, different area (island–island)', () => {
-    // lekki-phase-1 and vi are both island
-    expect(calculateZoneFare('lekki-phase-1', 'vi')).toBe(5000);
+  it('returns ₦7,000 for same zone, different area (island–island)', () => {
+    // lekki-phase-1 and vi are both island -> 3500 one way -> 7000 round trip
+    expect(calculateZoneFare('lekki-phase-1', 'vi')).toBe(7000);
   });
 
-  it('returns ₦5,000 for same zone, different area (central–central)', () => {
-    // yaba and surulere are both central
-    expect(calculateZoneFare('yaba', 'surulere')).toBe(5000);
+  it('returns ₦7,000 for same zone, different area (central–central)', () => {
+    // yaba and surulere are both central -> 3500 one way -> 7000 round trip
+    expect(calculateZoneFare('yaba', 'surulere')).toBe(7000);
   });
 
-  it('returns ₦7,000 for mainland ↔ central', () => {
-    expect(calculateZoneFare('ikeja', 'yaba')).toBe(7000);
-    expect(calculateZoneFare('yaba', 'ikeja')).toBe(7000);
+  it('returns ₦9,000 for mainland ↔ central', () => {
+    expect(calculateZoneFare('ikeja', 'yaba')).toBe(9000);
+    expect(calculateZoneFare('yaba', 'ikeja')).toBe(9000);
   });
 
-  it('returns ₦9,000 for central ↔ island', () => {
-    expect(calculateZoneFare('yaba', 'lekki-phase-1')).toBe(9000);
-    expect(calculateZoneFare('lekki-phase-1', 'yaba')).toBe(9000);
+  it('returns ₦11,000 for central ↔ island', () => {
+    expect(calculateZoneFare('yaba', 'lekki-phase-1')).toBe(11000);
+    expect(calculateZoneFare('lekki-phase-1', 'yaba')).toBe(11000);
   });
 
-  it('returns ₦16,000 for mainland ↔ island', () => {
-    expect(calculateZoneFare('ikeja', 'lekki-phase-1')).toBe(16000);
-    expect(calculateZoneFare('lekki-phase-1', 'ikeja')).toBe(16000);
+  it('returns ₦17,000 for mainland ↔ island', () => {
+    expect(calculateZoneFare('ikeja', 'lekki-phase-1')).toBe(17000);
+    expect(calculateZoneFare('lekki-phase-1', 'ikeja')).toBe(17000);
   });
 
   it('is symmetric — origin and destination can be swapped', () => {
@@ -195,38 +194,32 @@ describe('calculateZoneFare', () => {
   });
 
   it('applies Apapa surcharge (+₦3,000 round trip) on top of base fare', () => {
-    // apapa → central: base one-way 2500 + 1500 surcharge = 4000. Round trip = 8000.
-    expect(calculateZoneFare('apapa', 'yaba')).toBe(8000);
-    // apapa → mainland: base one-way 3500 + 1500 = 5000. Round trip = 10000.
-    expect(calculateZoneFare('apapa', 'ikeja')).toBe(10000);
-    // apapa → island: base one-way 4500 + 1500 = 6000. Round trip = 12000.
-    expect(calculateZoneFare('apapa', 'lekki-phase-1')).toBe(12000);
+    // apapa → central: base one-way 4000 + 1500 surcharge = 5500. Round trip = 11000.
+    expect(calculateZoneFare('apapa', 'yaba')).toBe(11000);
+    // apapa → mainland: base one-way 4500 + 1500 = 6000. Round trip = 12000.
+    expect(calculateZoneFare('apapa', 'ikeja')).toBe(12000);
+    // apapa → island: base one-way 6000 + 1500 = 7500. Round trip = 15000.
+    expect(calculateZoneFare('apapa', 'lekki-phase-1')).toBe(15000);
   });
 
-  it('returns rounded values (nearest ₦500) for different-area trips', () => {
-    // The same-area shortcut returns ₦1,200 (bypasses rounding — tested separately).
-    // All different-area fares go through Math.round(roundTrip / 500) × 500.
+  it('returns rounded values (nearest ₦500) for all trips', () => {
     const areas = ['ikeja', 'gbagada', 'yaba', 'surulere', 'lekki-phase-1', 'vi', 'ikoyi', 'apapa'];
     for (const a of areas) {
       for (const b of areas) {
-        if (a === b) continue; // same-area uses the ₦1,200 shortcut, not the rounding formula
         const fare = calculateZoneFare(a, b);
         expect(fare % 500).toBe(0);
       }
     }
   });
 
-  it('same-area shortcut returns ₦1,200 (not a multiple of ₦500)', () => {
-    // The early-return path bypasses the round-to-500 step.
-    // ₦1,200 represents a local intra-area trip cost.
-    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(1200);
-    expect(1200 % 500).toBe(200); // intentionally not a ₦500 multiple
+  it('same-area trip returns ₦6,000 realistic round trip', () => {
+    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(6000);
   });
 
   it('uses ikeja as default zone for unknown area slugs', () => {
     // Unknown areas fall to ZONES["unknown"] = undefined → "other" zone.
-    // "other" to mainland: (3500 + 1500) × 2 = 10000
-    expect(calculateZoneFare('unknown-area', 'ikeja')).toBe(10000);
+    // "other" to mainland: (4500 + 1500) × 2 = 12000
+    expect(calculateZoneFare('unknown-area', 'ikeja')).toBe(12000);
   });
 
   it('returns all-positive values for all known area pairs', () => {
@@ -637,7 +630,7 @@ describe('forgePlans — cost calculation', () => {
     });
     const results = forgePlans({ ...BASE_INPUT, startArea: 'ikeja', budget: 30000 }, [spot]);
     expect(results).toHaveLength(1);
-    expect(results[0].transportCost).toBe(1500);
+    expect(results[0].transportCost).toBe(6000);
   });
 
   it('totalCost equals foodCost + transportCost', () => {
@@ -722,11 +715,11 @@ describe('forgePlans — budget gate', () => {
 
   it('transport gate uses strict greater-than (> 0.35), not >=', () => {
     // transport at exactly 35% passes — confirmed above.
-    // transport at 35% + 1 fails:
+    // transport at > 35% fails:
     const overBorderSpot = makeSpot({
       id: 'a3b4c5d6-0000-0000-0000-000000000094',
       price_per_person: 1000,
-      transport_matrix: { ikeja: 17501 }, // 17501 > 17500
+      transport_matrix: { ikeja: 18000 }, // 18000 > 17500
       vibe_tags: ['Chill'],
     });
     const results = forgePlans({ ...BASE_INPUT, budget: 50000 }, [overBorderSpot]);

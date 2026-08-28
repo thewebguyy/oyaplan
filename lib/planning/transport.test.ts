@@ -36,33 +36,55 @@ describe('Transport pricing and confidence engine logic', () => {
     });
   });
 
-  describe('calculateZoneFare() fallback pricing buckets', () => {
+  describe('calculateZoneFare() fallback pricing buckets and vehicle capacity scaling', () => {
     it('calculates correct fare for Ajah to VI (same zone fallback)', () => {
-      // ajah (island fallback) to vi (island)
+      // ajah (island fallback) to vi (island) -> 3500 one way -> 7000 round trip
       const fare = calculateZoneFare('ajah', 'vi');
-      expect(fare).toBe(5000); // Same zone different area is 2500 one way -> 5000 round trip
+      expect(fare).toBe(7000);
     });
 
-    it('calculates correct fare for Chevron to Ikeja (island fallback to mainland)', () => {
-      // chevron (island fallback) to ikeja (mainland)
+    it('calculates correct fare for Chevron to Ikeja (island fallback to mainland cross-water)', () => {
+      // chevron (island fallback) to ikeja (mainland) -> 8500 one way -> 17000 round trip
       const fare = calculateZoneFare('chevron', 'ikeja');
-      expect(fare).toBe(16000); // Island to mainland is 8000 one way -> 16000 round trip
+      expect(fare).toBe(17000);
     });
 
     it('calculates correct fare for Festac to Yaba (other fallback to central)', () => {
-      // festac (other fallback) to yaba (central)
+      // festac (other fallback) to yaba (central) -> 4000 base + 1500 surcharge = 5500 one way -> 11000 round trip
       const fare = calculateZoneFare('festac', 'yaba');
-      expect(fare).toBe(8000); // Other to central is 2500 base + 1500 surcharge = 4000 one way -> 8000 round trip
+      expect(fare).toBe(11000);
+    });
+
+    it('models solo outings (partySize = 1) with full vehicle fare', () => {
+      const fare = calculateZoneFare('yaba', 'vi', 1);
+      expect(fare).toBe(11000); // Solo is non-zero
+    });
+
+    it('scales vehicle requirements for party of 6 (requires 2 vehicles)', () => {
+      const singleCarFare = calculateZoneFare('yaba', 'vi', 4);
+      const twoCarFare = calculateZoneFare('yaba', 'vi', 6);
+      expect(singleCarFare).toBe(11000);
+      expect(twoCarFare).toBe(22000); // Exactly 2x vehicle cost
     });
   });
 
-  describe('TransportPricingProvider.calculateRange()', () => {
+  describe('TransportPricingProvider.calculateRange() and calculateEstimate()', () => {
     it('produces valid fare ranges for standard Uber modes', () => {
-      const range = TransportPricingProvider.calculateRange('yaba', 'vi', 'ride-hailing');
-      // yaba (central) to vi (island) -> 4500 one way -> 9000 round trip
-      expect(range.midpointCost).toBe(9000);
+      const range = TransportPricingProvider.calculateRange('yaba', 'vi', 'ride-hailing', undefined, undefined, 2);
+      // yaba (central) to vi (island) -> 5500 one way -> 11000 round trip
+      expect(range.midpointCost).toBe(11000);
       expect(range.minCost).toBeLessThan(range.midpointCost);
       expect(range.maxCost).toBeGreaterThan(range.midpointCost);
+    });
+
+    it('produces canonical TransportEstimate with explicit domain properties', () => {
+      const estimate = TransportPricingProvider.calculateEstimate('yaba', 'vi', 6, 'ride-hailing');
+      expect(estimate.partySize).toBe(6);
+      expect(estimate.vehiclesRequired).toBe(2);
+      expect(estimate.vehicleCapacity).toBe(4);
+      expect(estimate.isCrossWater).toBe(false);
+      expect(estimate.midpointCost).toBe(22000);
+      expect(estimate.calculationVersion).toBe('2026-v2');
     });
   });
 

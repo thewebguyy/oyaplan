@@ -50,59 +50,81 @@ export function getDepartureBucket(departureAt?: Date): DepartureBucket {
 
 /**
  * Deterministic Lagos 2026 Zone Fare Formula
- * Returns round-trip base cost in Naira, rounded to nearest ₦500.
+ * Returns round-trip cost in Naira with party size vehicle capacity modeling.
  */
-export function calculateZoneFare(origin: string, destination: string): number {
-  if (origin === destination) return 1200;
+export function calculateZoneFare(origin: string, destination: string, partySize: number = 1): number {
+  const normOrigin = origin?.toLowerCase() || "ikeja";
+  const normDest = destination?.toLowerCase() || "ikeja";
 
-  const zone1 = ZONES[origin] || "other";
-  const zone2 = ZONES[destination] || "other";
+  const zone1 = ZONES[normOrigin] || (normOrigin === "anywhere" ? "anywhere" : "other");
+  const zone2 = ZONES[normDest] || "other";
 
-  let baseOneWay = 0;
+  let baseOneWayPerVehicle = 3000;
 
-  // Apapa (Other) Logic
-  if (zone1 === "other" || zone2 === "other") {
+  if (normOrigin === "anywhere") {
+    baseOneWayPerVehicle = 3500;
+  } else if (normOrigin === normDest) {
+    baseOneWayPerVehicle = 3000;
+  } else if (zone1 === "other" || zone2 === "other") {
     const nonApapaZone = zone1 === "other" ? zone2 : zone1;
     if (nonApapaZone === "other") {
-      baseOneWay = 2500;
+      baseOneWayPerVehicle = 3500;
     } else if (nonApapaZone === "central") {
-      baseOneWay = 2500;
+      baseOneWayPerVehicle = 4000;
     } else if (nonApapaZone === "mainland") {
-      baseOneWay = 3500;
+      baseOneWayPerVehicle = 4500;
     } else if (nonApapaZone === "island") {
-      baseOneWay = 4500;
+      baseOneWayPerVehicle = 6000;
     }
-    baseOneWay += 1500; // Apapa surcharge
-  }
-  // Standard Zone Logic
-  else if (zone1 === zone2) {
-    baseOneWay = 2500;
+    baseOneWayPerVehicle += 1500; // Apapa / outlying zone surcharge
+  } else if (zone1 === zone2) {
+    baseOneWayPerVehicle = 3500;
   } else if (
     (zone1 === "mainland" && zone2 === "central") ||
     (zone1 === "central" && zone2 === "mainland")
   ) {
-    baseOneWay = 3500;
+    baseOneWayPerVehicle = 4500;
   } else if (
     (zone1 === "central" && zone2 === "island") ||
     (zone1 === "island" && zone2 === "central")
   ) {
-    baseOneWay = 4500;
+    baseOneWayPerVehicle = 5500;
   } else if (
     (zone1 === "mainland" && zone2 === "island") ||
     (zone1 === "island" && zone2 === "mainland")
   ) {
-    baseOneWay = 8000;
+    baseOneWayPerVehicle = 8500;
   }
 
-  // Double for round trip and round to nearest ₦500
-  const roundTrip = baseOneWay * 2;
-  return Math.round(roundTrip / 500) * 500;
+  const vehicleCapacity = 4;
+  const vehiclesRequired = Math.max(1, Math.ceil(partySize / vehicleCapacity));
+
+  // Round trip fare = one-way * 2 * vehiclesRequired
+  const roundTripTotal = baseOneWayPerVehicle * 2 * vehiclesRequired;
+  return Math.round(roundTripTotal / 500) * 500;
 }
 
 export interface TransportRange {
   minCost: number;
   maxCost: number;
   midpointCost: number;
+}
+
+export interface TransportEstimate {
+  low: number;
+  high: number;
+  midpointCost: number;
+  mode: TransportMode;
+  origin: string;
+  destination: string;
+  partySize: number;
+  vehicleCapacity: number;
+  vehiclesRequired: number;
+  departureAssumption: DepartureBucket;
+  departure_assumption?: DepartureBucket;
+  isCrossWater: boolean;
+  calculationVersion: string;
+  calculation_version?: string;
 }
 
 export interface ConfidenceEvaluation {
@@ -117,21 +139,65 @@ export class TransportPricingProvider {
     destination: string,
     mode: TransportMode = "ride-hailing",
     defaultMatrix?: Record<string, number>,
-    departureAt?: Date
+    departureAt?: Date,
+    partySize: number = 1
   ): TransportRange {
     const profile = getTransportProfile(mode);
-    const rawBase = defaultMatrix?.[origin] ?? calculateZoneFare(origin, destination);
+    const vehicleCapacity = mode === "public-transit" ? 1 : 4;
+    const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
+
+    let rawBase = 0;
+    const hasMatrixEntry = defaultMatrix && defaultMatrix[origin] !== undefined;
+    if (hasMatrixEntry) {
+      rawBase = defaultMatrix[origin] * vehiclesRequired;
+    } else {
+      rawBase = calculateZoneFare(origin, destination, partySize);
+    }
     
-    // Scale base fare by mode multiplier, respecting ₦1,500 baseline threshold.
-    // departureAt is threaded but no multiplier applied yet (P1, pending evidence).
-    const scaledBase = Math.max(1500, rawBase * profile.multiplier);
+    // Scale base fare by mode multiplier; respect explicit 0 overrides in matrix
+    const scaledBase = hasMatrixEntry && rawBase === 0 
+      ? 0 
+      : Math.max(2000 * vehiclesRequired, rawBase * profile.multiplier);
 
     const delta = scaledBase * profile.variancePercent;
-    const minCost = Math.max(500, Math.floor((scaledBase - delta) / 500) * 500);
-    const maxCost = Math.ceil((scaledBase + delta) / 500) * 500;
-    const midpointCost = Math.round(scaledBase);
+    const minCost = scaledBase === 0 ? 0 : Math.max(1000 * vehiclesRequired, Math.floor((scaledBase - delta) / 500) * 500);
+    const maxCost = scaledBase === 0 ? 0 : Math.ceil((scaledBase + delta) / 500) * 500;
+    const midpointCost = Math.round(scaledBase / 500) * 500;
 
     return { minCost, maxCost, midpointCost };
+  }
+
+  static calculateEstimate(
+    origin: string,
+    destination: string,
+    partySize: number = 1,
+    mode: TransportMode = "ride-hailing",
+    defaultMatrix?: Record<string, number>,
+    departureAt?: Date
+  ): TransportEstimate {
+    const range = this.calculateRange(origin, destination, mode, defaultMatrix, departureAt, partySize);
+    const z1 = ZONES[origin] || "other";
+    const z2 = ZONES[destination] || "other";
+    const isCrossWater = (z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland");
+    const vehicleCapacity = mode === "public-transit" ? 1 : 4;
+    const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
+
+    return {
+      low: range.minCost,
+      high: range.maxCost,
+      midpointCost: range.midpointCost,
+      mode,
+      origin,
+      destination,
+      partySize,
+      vehicleCapacity,
+      vehiclesRequired,
+      departureAssumption: getDepartureBucket(departureAt),
+      departure_assumption: getDepartureBucket(departureAt),
+      isCrossWater,
+      calculationVersion: "2026-v2",
+      calculation_version: "2026-v2"
+    };
   }
 }
 

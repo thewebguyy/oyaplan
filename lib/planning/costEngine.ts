@@ -22,11 +22,12 @@ export class DefaultCostEngine implements CostEngine {
       if (override) {
         hasOverride = true;
         confidenceScore = Number(override.confidence);
-        // If override is present, use its low/high bounds directly
+        // If override is present, scale by vehicles required
+        const vehiclesRequired = transportMode === "public-transit" ? squadSize : Math.max(1, Math.ceil(squadSize / 4));
         range = {
-          minCost: override.low,
-          maxCost: override.high,
-          midpointCost: Math.round((override.low + override.high) / 2)
+          minCost: override.low * vehiclesRequired,
+          maxCost: override.high * vehiclesRequired,
+          midpointCost: Math.round(((override.low + override.high) / 2) * vehiclesRequired)
         };
       } else {
         range = TransportPricingProvider.calculateRange(
@@ -34,7 +35,8 @@ export class DefaultCostEngine implements CostEngine {
           destinationKey,
           transportMode,
           spot.transport_matrix,
-          context.request.departureAt
+          context.request.departureAt,
+          squadSize
         );
       }
 
@@ -53,15 +55,14 @@ export class DefaultCostEngine implements CostEngine {
       const transportCost = range.midpointCost;
       const totalCost = activityCost + transportCost;
 
-      const transportEstimate = {
-        low: range.minCost,
-        high: range.maxCost,
-        mode: transportMode,
-        origin: areaKey,
-        destination: destinationKey,
-        departure_assumption: getDepartureBucket(context.request.departureAt),
-        calculation_version: "2026-v1"
-      };
+      const transportEstimate = TransportPricingProvider.calculateEstimate(
+        areaKey,
+        destinationKey,
+        squadSize,
+        transportMode,
+        spot.transport_matrix,
+        context.request.departureAt
+      );
 
       return {
         spot,

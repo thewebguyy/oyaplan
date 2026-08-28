@@ -50,22 +50,15 @@ export async function togglePlanTransport(planId: string, hasCar: boolean) {
         .eq("id", existingPlan.spot_id)
         .single();
 
-      const range = TransportPricingProvider.calculateRange(
+      const estimate = TransportPricingProvider.calculateEstimate(
         existingPlan.start_area,
         spot?.address_slug || "ikeja",
+        existingPlan.squad_size || 1,
         "ride-hailing",
         spot?.transport_matrix || {}
       );
-      newTransportCost = range.midpointCost;
-      newTransportEstimate = {
-        low: range.minCost,
-        high: range.maxCost,
-        mode: "ride-hailing",
-        origin: existingPlan.start_area,
-        destination: spot?.address_slug || "ikeja",
-        departure_assumption: "off-peak",
-        calculation_version: "2026-v1"
-      };
+      newTransportCost = estimate.midpointCost;
+      newTransportEstimate = estimate;
       explanation.has_car = false;
     }
 
@@ -151,22 +144,15 @@ export async function switchPlanSpot(
       };
     } else {
       const mode = existingPlan.transport_estimate?.mode || "ride-hailing";
-      const range = TransportPricingProvider.calculateRange(
+      const estimate = TransportPricingProvider.calculateEstimate(
         existingPlan.start_area,
         newSpot?.address_slug || "ikeja",
+        existingPlan.squad_size || 1,
         mode,
         newSpot?.transport_matrix || {}
       );
-      newTransportCost = range.midpointCost;
-      newTransportEstimate = {
-        low: range.minCost,
-        high: range.maxCost,
-        mode,
-        origin: existingPlan.start_area,
-        destination: newSpot?.address_slug || "ikeja",
-        departure_assumption: "off-peak",
-        calculation_version: "2026-v1"
-      };
+      newTransportCost = estimate.midpointCost;
+      newTransportEstimate = estimate;
     }
 
     const newTotalCost = newFoodCost + newTransportCost + newTaxCost;

@@ -25,8 +25,8 @@ describe('Travel Domain Tests', () => {
     expect(offPeakEstimate.mode).toBe('car');
     expect(offPeakEstimate.distanceKm).toBeGreaterThan(5);
     expect(offPeakEstimate.estimatedMinutes).toBeGreaterThan(10);
-    // Yaba to Lekki zone fare is standard mainland/island (or central/island -> Yaba is central, Lekki is island -> roundtrip 9000)
-    expect(offPeakEstimate.transportCost).toBe(9000);
+    // Yaba to Lekki zone fare is central to island -> roundtrip 11000
+    expect(offPeakEstimate.transportCost).toBe(11000);
 
     // 2. Mock peak hours (e.g., 8:00 AM)
     const peakTime = new Date('2026-08-03T08:00:00Z'); // Monday 8:00 AM

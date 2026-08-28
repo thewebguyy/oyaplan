@@ -11,11 +11,18 @@ export type Area = {
 export type TransportEstimate = {
   low: number;
   high: number;
+  midpointCost?: number;
   mode: string;
   origin: string;
   destination: string;
-  departure_assumption: string;
-  calculation_version: string;
+  departure_assumption?: string;
+  calculation_version?: string;
+  partySize?: number;
+  vehicleCapacity?: number;
+  vehiclesRequired?: number;
+  departureAssumption?: string;
+  isCrossWater?: boolean;
+  calculationVersion?: string;
 };
 
 export type Spot = {

@@ -124,17 +124,17 @@ describe("Product Verification Evidence Requirements", () => {
   });
 
   it("Requirement 3: Transport estimates are dynamically calculated from origin to destination", () => {
-    // Short hop: Yaba to Yaba
+    // Short hop: Yaba to Yaba (intra-district realistic round-trip)
     const intraYabaFare = calculateZoneFare("yaba", "yaba");
-    expect(intraYabaFare).toBe(1200);
+    expect(intraYabaFare).toBe(6000);
 
     // Cross zone: Ikeja (Mainland) to Yaba (Central)
     const mainlandToCentralFare = calculateZoneFare("ikeja", "yaba");
-    expect(mainlandToCentralFare).toBe(7000);
+    expect(mainlandToCentralFare).toBe(9000);
 
     // Long distance cross-town: Ikeja (Mainland) to Lekki (Island)
     const mainlandToIslandFare = calculateZoneFare("ikeja", "lekki-phase-1");
-    expect(mainlandToIslandFare).toBe(16000);
+    expect(mainlandToIslandFare).toBe(17000);
 
     // Verify distance hierarchy: Long distance > Cross zone > Short hop
     expect(mainlandToIslandFare).toBeGreaterThan(mainlandToCentralFare);
