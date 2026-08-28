@@ -1,16 +1,31 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, ChevronUp, X, Check, ShieldCheck, Loader2 } from "lucide-react";
+import { MapPin, ChevronUp, X, Check, ShieldCheck } from "lucide-react";
 import { Spot } from "@/lib/types";
-import Link from "next/link";
 import RouteCard from "./dossier/RouteCard";
 import { LocationService } from "@/lib/services/LocationService";
 import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 import { TransportPricingProvider } from "@/lib/planning/transport";
-import { createShareablePlan } from "@/lib/actions/sharePlan";
+import { trackEvent } from "@/lib/analytics/trackClient";
+import { triggerMoment } from "@/components/ui/moment-of-delight";
+
+const VIBE_TO_URL_MAP: Record<string, string> = {
+  Dinner: "date-night",
+  Chill: "chill",
+  Foodie: "foodie",
+  Party: "party",
+  Quick: "quick-link",
+  Brunch: "brunch",
+  "date-night": "date-night",
+  "chill": "chill",
+  "foodie": "foodie",
+  "party": "party",
+  "quick-link": "quick-link",
+  "brunch": "brunch",
+};
 
 interface MobileLivePreviewBarProps {
   squadSize: number;
@@ -28,42 +43,37 @@ export default function MobileLivePreviewBar({
   startAreaId,
 }: MobileLivePreviewBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const [pendingSpotId, setPendingSpotId] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleExplorePlan = (spot: Spot) => {
-    if (isPending) return;
-    setPendingSpotId(spot.id);
-    startTransition(async () => {
-      const spotTransportCost = getSpotTransportCost(spot);
-      const spotFoodCost = (spot.price_per_person || 12000) * squadSize;
-      const spotTotalCost = spotFoodCost + spotTransportCost + Math.round(spotFoodCost * 0.1);
+  const handleGeneratePlan = (spot?: Spot) => {
+    if (!vibe) return;
 
-      const result = await createShareablePlan(
-        {
-          spot,
-          foodCost: spotFoodCost,
-          transportCost: spotTransportCost,
-          totalCost: spotTotalCost,
-          whyItFits: `Matched for ${vibe || "outing"} vibe within your budget.`,
-        },
-        {
-          startArea: startAreaId || "",
-          squadSize,
-          budget: budget || spotTotalCost,
-          vibe: vibe || "Chill",
-        }
-      );
+    const params = new URLSearchParams();
+    const urlVibe = VIBE_TO_URL_MAP[vibe] || vibe.toLowerCase();
 
-      if (result.success && result.id) {
-        setIsOpen(false);
-        router.push(`/plan/${result.id}`);
-      } else {
-        setPendingSpotId(null);
-        console.error("Failed to create plan:", result.error);
-      }
+    params.append("vibe", urlVibe);
+    params.append("squad", String(squadSize));
+    params.append("budget", String(budget || 50000));
+    if (startAreaId && startAreaId !== "anywhere") {
+      params.append("area", startAreaId);
+    }
+    if (spot?.id) {
+      params.append("pinned", spot.id);
+    }
+    params.append("fresh", "true");
+
+    trackEvent("forge_started", {
+      category: "Activation",
+      source: "mobile_live_preview_bar",
+      budget: Number(budget),
+      squad_size: Number(squadSize),
+      area: startAreaId ?? "unselected",
+      version: "1.0",
     });
+
+    triggerMoment("outing_planned");
+    setIsOpen(false);
+    router.push(`/forge?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -136,18 +146,14 @@ export default function MobileLivePreviewBar({
           </div>
 
           <button
-            onClick={() => handleExplorePlan(topSpot)}
-            disabled={isPending}
-            className="h-10 px-4 bg-white hover:bg-white/90 disabled:opacity-60 text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-colors shrink-0 shadow-sm flex items-center gap-1.5"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleGeneratePlan(topSpot);
+            }}
+            className="h-10 px-4 bg-white hover:bg-white/90 text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] shrink-0 shadow-sm flex items-center gap-1.5 cursor-pointer"
+            aria-label="Start planning and view full options"
           >
-            {isPending && pendingSpotId === topSpot.id ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#008751]" />
-                <span>Cooking…</span>
-              </>
-            ) : (
-              <span>Generate Plan</span>
-            )}
+            <span>Start Planning</span>
           </button>
         </motion.div>
       </div>
@@ -259,15 +265,11 @@ export default function MobileLivePreviewBar({
                       <div className="px-4">
                         <div className="flex flex-col gap-2">
                           <button
-                            onClick={() => handleExplorePlan(spot)}
-                            disabled={isPending}
-                            className="w-full h-10 bg-[#008751] hover:bg-[#006b41] disabled:opacity-60 text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors"
+                            onClick={() => handleGeneratePlan(spot)}
+                            className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
                           >
-                            {isPending && pendingSpotId === spot.id ? (
-                              <><Loader2 className="w-3.5 h-3.5 animate-spin" /><span>Creating Plan…</span></>
-                            ) : (
-                              <><span>Explore Full Plan</span><Check className="w-3.5 h-3.5 stroke-[3]" /></>
-                            )}
+                            <span>Start Planning for {spot.name}</span>
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
                           </button>
                         </div>
                       </div>
