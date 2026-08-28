@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { DataQualityIssue } from "@/lib/admin/types";
 import { verifySpotAction } from "@/lib/actions/adminEvidenceActions";
-import { X, ShieldCheck, Link as LinkIcon, CheckCircle2, FileText, Camera, Receipt, UserCheck, Building } from "lucide-react";
+import { X, ShieldCheck, Link as LinkIcon, CheckCircle2, Camera, Receipt, UserCheck, Building } from "lucide-react";
 
 interface EvidenceModalProps {
   issue: DataQualityIssue | null;

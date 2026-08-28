@@ -8,6 +8,8 @@ vi.mock("@/lib/supabase-server", () => ({
 
 import { createServerClient } from "@/lib/supabase-server";
 
+const mockClient = createServerClient as unknown as ReturnType<typeof vi.fn>;
+
 describe("QualityService - Trust Operations Risk Detection", () => {
   it("detects NO_PRICE_EVIDENCE (Critical) when venue has 0 approved evidence records", async () => {
     const mockSpots = [
@@ -27,7 +29,7 @@ describe("QualityService - Trust Operations Risk Detection", () => {
     const mockEvidence: unknown[] = [];
     const mockSpendReports: unknown[] = [];
 
-    (createServerClient as any).mockResolvedValue({
+    mockClient.mockResolvedValue({
       from: vi.fn((table: string) => {
         if (table === "spots") {
           return {
@@ -81,7 +83,7 @@ describe("QualityService - Trust Operations Risk Detection", () => {
       },
     ];
 
-    (createServerClient as any).mockResolvedValue({
+    mockClient.mockResolvedValue({
       from: vi.fn((table: string) => {
         if (table === "spots") {
           return {
@@ -123,7 +125,7 @@ describe("QualityService - Trust Operations Risk Detection", () => {
       },
     ];
 
-    (createServerClient as any).mockResolvedValue({
+    mockClient.mockResolvedValue({
       from: vi.fn((table: string) => {
         if (table === "spots") {
           return {
@@ -165,7 +167,7 @@ describe("QualityService - Trust Operations Risk Detection", () => {
       },
     ];
 
-    (createServerClient as any).mockResolvedValue({
+    mockClient.mockResolvedValue({
       from: vi.fn((table: string) => {
         if (table === "spots") {
           return {
@@ -204,7 +206,7 @@ describe("QualityService - Trust Operations Risk Detection", () => {
       },
     ];
 
-    (createServerClient as any).mockResolvedValue({
+    mockClient.mockResolvedValue({
       from: vi.fn((table: string) => {
         if (table === "spots") {
           return {
@@ -249,7 +251,7 @@ describe("QualityService - Trust Operations Risk Detection", () => {
       },
     ];
 
-    (createServerClient as any).mockResolvedValue({
+    mockClient.mockResolvedValue({
       from: vi.fn((table: string) => {
         if (table === "spots") {
           return {
