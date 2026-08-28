@@ -109,17 +109,17 @@ describe("QualityService - Trust Operations Risk Detection", () => {
     expect(criticalPriceIssue).toBeUndefined();
   });
 
-  it("detects TRANSPORT_GAP (High) when transport matrix is missing", async () => {
+  it("detects TRANSPORT_GAP (High) when transport engine cannot resolve destination route", async () => {
     const mockSpots = [
       {
         id: "venue-2",
-        name: "Venue Without Transport",
-        address_slug: "yaba",
+        name: "Venue Without Valid Location",
+        address_slug: null, // completely missing address slug
         price_per_person: 10000,
         verified_by: "owner_verified",
         cover_url: "/images/venues/02_rsvp_lagos_hero.jpg",
-        transport_matrix: null, // missing matrix
-        areas: { name: "Yaba", slug: "yaba", active: true },
+        transport_matrix: null,
+        areas: null, // no area fallback
       },
     ];
 
@@ -188,5 +188,84 @@ describe("QualityService - Trust Operations Risk Detection", () => {
     expect(spendIssue?.severity).toBe("high");
     expect(spendIssue?.impact_description).toContain("50%");
     expect(spendIssue?.action_label).toBe("Investigate");
+  });
+
+  it("assigns MISSING_HERO as Medium severity (honest severity calibration)", async () => {
+    const mockSpots = [
+      {
+        id: "venue-4",
+        name: "Venue Missing Photo",
+        address_slug: "vi",
+        price_per_person: 18000,
+        verified_by: "owner_verified",
+        cover_url: null, // missing photo
+        transport_matrix: { ikeja: 16000 },
+        areas: { name: "Victoria Island", slug: "vi", active: true },
+      },
+    ];
+
+    (createServerClient as any).mockResolvedValue({
+      from: vi.fn((table: string) => {
+        if (table === "spots") {
+          return {
+            select: vi.fn().mockResolvedValue({ data: mockSpots, error: null }),
+          };
+        }
+        return { select: vi.fn().mockResolvedValue({ data: [], error: null }) };
+      }),
+    });
+
+    const issues = await QualityService.getChecklist();
+    const heroIssue = issues.find((i) => i.venue_id === "venue-4" && i.issue_type === "MISSING_HERO");
+
+    expect(heroIssue).toBeDefined();
+    expect(heroIssue?.severity).toBe("medium");
+    expect(heroIssue?.action_label).toBe("Set Image");
+  });
+
+  it("prioritizes high-exposure / higher-traffic venues above low-exposure venues in the queue", async () => {
+    const mockSpots = [
+      {
+        id: "obscure-venue",
+        name: "Obscure Spot",
+        address_slug: "agege",
+        price_per_person: 5000,
+        verified_by: "seed",
+        cover_url: "/images/venues/01_slow_lagos_hero.jpg",
+        transport_matrix: { ikeja: 5000 },
+        areas: { name: "Agege", slug: "agege", active: true },
+        is_featured: false,
+      },
+      {
+        id: "high-traffic-venue",
+        name: "Playzone Yaba",
+        address_slug: "yaba",
+        price_per_person: 25000,
+        verified_by: "seed",
+        cover_url: "/images/venues/02_rsvp_lagos_hero.jpg",
+        transport_matrix: { ikeja: 9000 },
+        areas: { name: "Yaba", slug: "yaba", active: true },
+        is_featured: true,
+      },
+    ];
+
+    (createServerClient as any).mockResolvedValue({
+      from: vi.fn((table: string) => {
+        if (table === "spots") {
+          return {
+            select: vi.fn().mockResolvedValue({ data: mockSpots, error: null }),
+          };
+        }
+        return { select: vi.fn().mockResolvedValue({ data: [], error: null }) };
+      }),
+    });
+
+    const issues = await QualityService.getChecklist();
+    const priceIssues = issues.filter((i) => i.issue_type === "NO_PRICE_EVIDENCE");
+
+    expect(priceIssues).toHaveLength(2);
+    // High-traffic Playzone Yaba should be ranked first!
+    expect(priceIssues[0].venue_id).toBe("high-traffic-venue");
+    expect(priceIssues[1].venue_id).toBe("obscure-venue");
   });
 });
