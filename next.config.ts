@@ -4,17 +4,13 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      // Supabase project storage (replace <project-ref> if it differs)
       {
         protocol: 'https',
-        hostname: '*.supabase.co',
-        pathname: '/storage/v1/object/public/**',
+        hostname: '**',
       },
-      // Fallback for any other storage bucket pattern used in spot.image_url
       {
-        protocol: 'https',
-        hostname: '*.supabase.in',
-        pathname: '/storage/v1/object/public/**',
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },

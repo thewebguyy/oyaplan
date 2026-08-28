@@ -30,9 +30,16 @@ export function VenueImage({
   const [isLoading, setIsLoading] = useState(true);
 
   const cleanSrc = src?.trim();
-  const shouldRenderImage = cleanSrc && !hasError;
 
-  if (!shouldRenderImage) {
+  // Reset error state when image source changes
+  React.useEffect(() => {
+    setHasError(false);
+    setIsLoading(true);
+  }, [cleanSrc]);
+
+  const shouldRenderImage = Boolean(cleanSrc && !hasError);
+
+  if (!shouldRenderImage || !cleanSrc) {
     return (
       <div 
         className={`w-full h-full bg-[#F4F1EB] flex flex-col items-center justify-center relative overflow-hidden select-none ${className}`}
@@ -88,6 +95,7 @@ export function VenueImage({
         height={!fill ? height : undefined}
         sizes={sizes}
         priority={priority}
+        unoptimized={cleanSrc.startsWith('http')}
         className={`object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
         onLoad={() => setIsLoading(false)}
         onError={() => setHasError(true)}
