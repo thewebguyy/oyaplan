@@ -4,9 +4,11 @@ import { DataQualityIssue, TrustHealthMetrics } from "../types";
 interface QualitySpotDbRow {
   id: string;
   name: string;
+  address_slug?: string | null;
   cover_url?: string | null;
   price_per_person?: number | null;
   price_source?: string | null;
+  price_updated_at?: string | null;
   verified_by?: string | null;
   computed_confidence_score?: number | null;
   transport_matrix?: Record<string, number> | null;
@@ -14,27 +16,53 @@ interface QualitySpotDbRow {
   areas?: { name: string; slug: string; active: boolean } | null;
 }
 
+interface EvidenceDbRow {
+  id: string;
+  venue_id: string;
+  verification_status: string;
+}
+
+interface SpendReportDbRow {
+  id: string;
+  spot_id: string | null;
+  estimated_total: number;
+  actual_total: number;
+}
+
 export class QualityService {
   static async getTrustHealthMetrics(): Promise<TrustHealthMetrics> {
     const supabase = await createServerClient();
-    const { data, error } = await supabase
-      .from("spots")
-      .select("price_per_person, price_source, verified_by, transport_matrix");
+    
+    const [spotsRes, evidenceRes] = await Promise.all([
+      supabase.from("spots").select("id, price_per_person, price_source, verified_by, transport_matrix"),
+      supabase.from("price_evidence").select("id, venue_id, verification_status"),
+    ]);
 
-    if (error || !data) {
-      console.error("Failed to fetch trust health metrics:", error);
+    const data = spotsRes.data || [];
+    const evidence = (evidenceRes.data as unknown as EvidenceDbRow[]) || [];
+
+    const verifiedVenueIds = new Set<string>();
+    evidence.forEach((e) => {
+      if (e.verification_status === "approved" && e.venue_id) {
+        verifiedVenueIds.add(e.venue_id);
+      }
+    });
+
+    const total = data.length;
+    if (total === 0) {
       return {
         totalSpots: 0,
         priceCoveragePct: 0,
         priceProvenancePct: 0,
+        evidenceCoveragePct: 0,
         verifiedPct: 0,
         transportCoveragePct: 0,
+        criticalIssuesCount: 0,
+        highIssuesCount: 0,
+        mediumIssuesCount: 0,
+        lowIssuesCount: 0,
+        scannedAt: new Date().toISOString(),
       };
-    }
-
-    const total = data.length;
-    if (total === 0) {
-      return { totalSpots: 0, priceCoveragePct: 0, priceProvenancePct: 0, verifiedPct: 0, transportCoveragePct: 0 };
     }
 
     let priced = 0;
@@ -45,58 +73,107 @@ export class QualityService {
     data.forEach((spot) => {
       if (spot.price_per_person && spot.price_per_person > 0) priced++;
       if (spot.price_source && spot.price_source.trim().length > 0) provenanced++;
-      if (spot.verified_by === "owner_verified") verified++;
+      if (spot.verified_by === "owner_verified" || verifiedVenueIds.has(spot.id)) verified++;
       if (spot.transport_matrix && Object.keys(spot.transport_matrix).length > 0) transport++;
     });
+
+    const issues = await this.getChecklist();
+    const criticalCount = issues.filter((i) => i.severity === "critical").length;
+    const highCount = issues.filter((i) => i.severity === "high").length;
+    const mediumCount = issues.filter((i) => i.severity === "medium").length;
+    const lowCount = issues.filter((i) => i.severity === "low").length;
 
     return {
       totalSpots: total,
       priceCoveragePct: Math.round((priced / total) * 100),
       priceProvenancePct: Math.round((provenanced / total) * 100),
+      evidenceCoveragePct: Math.round((verifiedVenueIds.size / total) * 100),
       verifiedPct: Math.round((verified / total) * 1000) / 10,
       transportCoveragePct: Math.round((transport / total) * 100),
+      criticalIssuesCount: criticalCount,
+      highIssuesCount: highCount,
+      mediumIssuesCount: mediumCount,
+      lowIssuesCount: lowCount,
+      scannedAt: new Date().toISOString(),
     };
   }
 
   static async getChecklist(): Promise<DataQualityIssue[]> {
     const supabase = await createServerClient();
-    const { data: spots, error } = await supabase
-      .from("spots")
-      .select("id, name, cover_url, price_per_person, price_source, verified_by, computed_confidence_score, area_id, areas(name, slug, active)");
+    
+    const [spotsRes, evidenceRes, spendRes] = await Promise.all([
+      supabase.from("spots").select("id, name, address_slug, cover_url, price_per_person, price_source, price_updated_at, verified_by, computed_confidence_score, transport_matrix, area_id, areas(name, slug, active)"),
+      supabase.from("price_evidence").select("id, venue_id, verification_status"),
+      supabase.from("actual_spend_reports").select("id, spot_id, estimated_total, actual_total"),
+    ]);
 
-    if (error) {
-      console.error("Failed to fetch spots for QualityService:", error);
+    if (spotsRes.error) {
+      console.error("Failed to fetch spots for QualityService:", spotsRes.error);
       return [];
     }
 
+    const spots = (spotsRes.data as unknown as QualitySpotDbRow[]) || [];
+    const evidence = (evidenceRes.data as unknown as EvidenceDbRow[]) || [];
+    const spendReports = (spendRes.data as unknown as SpendReportDbRow[]) || [];
+
+    // Map verified evidence counts by venue_id
+    const evidenceCountMap = new Map<string, number>();
+    evidence.forEach((e) => {
+      if (e.verification_status === "approved" && e.venue_id) {
+        evidenceCountMap.set(e.venue_id, (evidenceCountMap.get(e.venue_id) || 0) + 1);
+      }
+    });
+
+    // Map actual spend discrepancies by spot_id
+    const spendDiscrepancyMap = new Map<string, { count: number; maxVariancePct: number }>();
+    spendReports.forEach((r) => {
+      if (r.spot_id && r.estimated_total > 0 && r.actual_total > 0) {
+        const variance = Math.abs(r.actual_total - r.estimated_total) / r.estimated_total;
+        if (variance > 0.20) {
+          const current = spendDiscrepancyMap.get(r.spot_id) || { count: 0, maxVariancePct: 0 };
+          current.count++;
+          current.maxVariancePct = Math.max(current.maxVariancePct, Math.round(variance * 100));
+          spendDiscrepancyMap.set(r.spot_id, current);
+        }
+      }
+    });
+
     const items: DataQualityIssue[] = [];
     const now = new Date().toISOString();
-
     const BETA_AREA_SLUGS = ["ikeja", "yaba", "vi", "lekki-phase-1"];
 
-    ((spots as unknown as QualitySpotDbRow[]) || []).forEach((spot) => {
+    spots.forEach((spot) => {
       const areaName = spot.areas?.name || "Lagos";
+      const evidenceCount = evidenceCountMap.get(spot.id) || 0;
+      const isOwnerVerified = spot.verified_by === "owner_verified";
 
-      // 1. Unverified seed spot (Trust Risk)
-      if (spot.verified_by !== "owner_verified") {
+      // ─────────────────────────────────────────────────────────────────
+      // P0 — Price Trust: NO_PRICE_EVIDENCE (Critical)
+      // ─────────────────────────────────────────────────────────────────
+      if (evidenceCount === 0 && !isOwnerVerified) {
+        const priceStr = spot.price_per_person ? `₦${spot.price_per_person.toLocaleString()}` : "unpriced";
         items.push({
-          id: `${spot.id}-unverified`,
-          issue_type: "UNVERIFIED_PRICE_SOURCE",
+          id: `${spot.id}-no-price-evidence`,
+          issue_type: "NO_PRICE_EVIDENCE",
           category: "trust_risk",
-          severity: "medium",
+          severity: "critical",
           scope: "venue",
           venue_id: spot.id,
           venue_name: spot.name,
+          venue_slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
           area_name: areaName,
-          price_source: spot.price_source || "manual",
+          price_per_person: spot.price_per_person || undefined,
+          price_source: spot.price_source || "seed",
           verified_by: spot.verified_by || "seed",
-          reason: `Pricing source is '${spot.price_source || "manual"}' (verified_by: ${spot.verified_by || "seed"}). Needs scout/owner verification.`,
+          evidence_count: 0,
+          impact_score: 95,
+          impact_description: `Customer may be misled on expected spend (${priceStr})`,
+          reason: `Venue has pricing (${priceStr}) but 0 verified price-evidence records.`,
+          action_label: "Add Evidence",
           detected_at: now,
         });
-      }
-
-      // 2. Low Confidence Score (Trust Risk)
-      if (spot.computed_confidence_score !== undefined && spot.computed_confidence_score !== null && spot.computed_confidence_score < 60) {
+      } else if (spot.computed_confidence_score !== undefined && spot.computed_confidence_score !== null && spot.computed_confidence_score < 60) {
+        // Low Confidence Score (High)
         items.push({
           id: `${spot.id}-low-confidence`,
           issue_type: "LOW_CONFIDENCE",
@@ -105,57 +182,120 @@ export class QualityService {
           scope: "venue",
           venue_id: spot.id,
           venue_name: spot.name,
+          venue_slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
           area_name: areaName,
-          price_source: spot.price_source || "manual",
+          price_per_person: spot.price_per_person || undefined,
+          price_source: spot.price_source || "seed",
           verified_by: spot.verified_by || "seed",
-          reason: `Computed confidence score is low (${spot.computed_confidence_score}/100).`,
+          evidence_count: evidenceCount,
+          impact_score: 80,
+          impact_description: `Computed confidence score is low (${spot.computed_confidence_score}/100)`,
+          reason: `Pricing model confidence is low (${spot.computed_confidence_score}/100).`,
+          action_label: "Add Evidence",
           detected_at: now,
         });
       }
 
-      // 3. Missing Hero Image (Experience Quality)
+      // ─────────────────────────────────────────────────────────────────
+      // P1 — Transport Trust: TRANSPORT_GAP (High)
+      // ─────────────────────────────────────────────────────────────────
+      const hasTransportMatrix = spot.transport_matrix && Object.keys(spot.transport_matrix).length > 0;
+      if (!hasTransportMatrix) {
+        items.push({
+          id: `${spot.id}-transport-gap`,
+          issue_type: "TRANSPORT_GAP",
+          category: "transport_risk",
+          severity: "high",
+          scope: "venue",
+          venue_id: spot.id,
+          venue_name: spot.name,
+          venue_slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          area_name: areaName,
+          impact_score: 75,
+          impact_description: "Missing calibrated fare matrix; relying on fallback bounds",
+          reason: `No custom fare matrix defined for origin districts from ${areaName}.`,
+          action_label: "Fix Transport",
+          detected_at: now,
+        });
+      }
+
+      // ─────────────────────────────────────────────────────────────────
+      // P1 — Actual Spend Discrepancy: ACTUAL_SPEND_MISMATCH (High / Med)
+      // ─────────────────────────────────────────────────────────────────
+      const spendDiscrepancy = spendDiscrepancyMap.get(spot.id);
+      if (spendDiscrepancy) {
+        const isHighVariance = spendDiscrepancy.maxVariancePct >= 35;
+        items.push({
+          id: `${spot.id}-spend-mismatch`,
+          issue_type: "ACTUAL_SPEND_MISMATCH",
+          category: "spend_discrepancy",
+          severity: isHighVariance ? "high" : "medium",
+          scope: "venue",
+          venue_id: spot.id,
+          venue_name: spot.name,
+          venue_slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          area_name: areaName,
+          impact_score: isHighVariance ? 78 : 65,
+          impact_description: `Actual spend differs by ${spendDiscrepancy.maxVariancePct}% from estimate`,
+          reason: `${spendDiscrepancy.count} post-outing report(s) show up to ${spendDiscrepancy.maxVariancePct}% variance from estimate.`,
+          action_label: "Investigate",
+          detected_at: now,
+        });
+      }
+
+      // ─────────────────────────────────────────────────────────────────
+      // P2 — Image Quality: MISSING_HERO (High)
+      // ─────────────────────────────────────────────────────────────────
       if (!spot.cover_url || spot.cover_url.trim() === "") {
         items.push({
           id: `${spot.id}-no-hero`,
           issue_type: "MISSING_HERO",
           category: "experience_quality",
-          severity: "low",
+          severity: "high",
           scope: "venue",
           venue_id: spot.id,
           venue_name: spot.name,
+          venue_slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
           area_name: areaName,
-          reason: "Venue is missing a cover image.",
+          impact_score: 60,
+          impact_description: "Poor decision confidence / missing visual verification",
+          reason: "Venue is missing a cover hero photo.",
+          action_label: "Set Image",
           detected_at: now,
         });
       }
 
-      // 4. Out-of-Bounds Area (Beta Release Gate)
+      // ─────────────────────────────────────────────────────────────────
+      // P2 — Area Bounds (Low)
+      // ─────────────────────────────────────────────────────────────────
       const areaSlug = spot.areas?.slug || "";
       const isBetaArea = BETA_AREA_SLUGS.includes(areaSlug);
-      
       if (!isBetaArea && spot.areas) {
         items.push({
           id: `${spot.id}-out-of-bounds`,
           issue_type: "OUT_OF_BOUNDS_AREA",
           category: "experience_quality",
-          severity: "medium",
+          severity: "low",
           scope: "venue",
           venue_id: spot.id,
           venue_name: spot.name,
+          venue_slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
           area_name: areaName,
-          reason: `Venue is in '${areaName}' (slug: '${areaSlug}'), which is deactivated for this beta release.`,
+          impact_score: 30,
+          impact_description: `Venue is in deactivated area '${areaName}'`,
+          reason: `Area '${areaName}' (${areaSlug}) is deactivated for beta release.`,
+          action_label: "Review Spot",
           detected_at: now,
         });
       }
     });
 
-    // Sort: trust_risk first, then by severity
-    const severityMap: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+    // Sort by severity (critical > high > medium > low), then impact_score desc
+    const severityRank: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
     items.sort((a, b) => {
-      if (a.category !== b.category) {
-        return a.category === "trust_risk" ? -1 : 1;
-      }
-      return severityMap[b.severity] - severityMap[a.severity];
+      const sevDiff = severityRank[b.severity] - severityRank[a.severity];
+      if (sevDiff !== 0) return sevDiff;
+      return (b.impact_score || 0) - (a.impact_score || 0);
     });
 
     return items;

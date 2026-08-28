@@ -105,3 +105,41 @@ export async function quickVerifySpotAction(formData: FormData) {
   revalidatePath("/admin/quality");
   revalidatePath("/admin/venues");
 }
+
+export async function quickSetCoverImageAction(formData: FormData) {
+  const admin = await assertAdminSession();
+  const venueId = formData.get("venue_id") as string;
+  const coverUrl = (formData.get("cover_url") as string)?.trim();
+
+  if (!venueId || !coverUrl) return;
+
+  const supabase = await createServerClient();
+  const now = new Date().toISOString();
+
+  const { error: venueError } = await supabase
+    .from("venues")
+    .update({
+      cover_url: coverUrl,
+      updated_at: now,
+    })
+    .eq("id", venueId);
+
+  if (venueError) {
+    console.error("Failed to update cover image in public.venues:", venueError);
+    await supabase.from("spots").update({
+      cover_url: coverUrl,
+    }).eq("id", venueId);
+  }
+
+  await ActivityRepository.logActivity(
+    admin.email,
+    "Set Venue Hero Photo",
+    "Venue",
+    venueId,
+    { cover_url: coverUrl }
+  );
+
+  revalidatePath("/admin/quality");
+  revalidatePath("/admin/venues");
+  revalidatePath(`/admin/venues/${venueId}`);
+}

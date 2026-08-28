@@ -90,21 +90,38 @@ export interface SponsoredCampaign {
 }
 
 export type IssueScope = 'system' | 'venue';
-export type QualityCategory = 'trust_risk' | 'experience_quality';
+export type QualityCategory = 'trust_risk' | 'transport_risk' | 'spend_discrepancy' | 'experience_quality';
+export type QualityIssueType = 
+  | 'NO_PRICE_EVIDENCE' 
+  | 'UNVERIFIED_PRICE_SOURCE' 
+  | 'LOW_CONFIDENCE' 
+  | 'TRANSPORT_GAP' 
+  | 'ACTUAL_SPEND_MISMATCH' 
+  | 'MISSING_HERO' 
+  | 'STALE_PRICING' 
+  | 'OUT_OF_BOUNDS_AREA';
 
 export interface DataQualityIssue {
   id: string;
-  issue_type: 'UNVERIFIED_PRICE_SOURCE' | 'LOW_CONFIDENCE' | 'MISSING_HERO' | 'STALE_PRICING' | 'OUT_OF_BOUNDS_AREA';
+  issue_type: QualityIssueType;
   category: QualityCategory;
   severity: 'critical' | 'high' | 'medium' | 'low';
   scope: IssueScope;
   venue_id?: string;
   venue_name?: string;
+  venue_slug?: string;
   area_name?: string;
+  price_per_person?: number;
   price_source?: string;
   verified_by?: string;
+  evidence_count?: number;
+  impact_score?: number;        // Customer exposure × trust risk
+  customer_exposure?: number;   // Planning request / view count hook
   reason: string;
+  impact_description: string;   // Explains the exact customer trust impact
+  action_label: string;         // 'Add Evidence' | 'Set Image' | 'Fix Transport' | 'Investigate'
   detected_at: string;
+  metadata?: Record<string, unknown>;
 }
 
 export type QualityCheckItem = DataQualityIssue;
@@ -113,8 +130,14 @@ export interface TrustHealthMetrics {
   totalSpots: number;
   priceCoveragePct: number;
   priceProvenancePct: number;
+  evidenceCoveragePct: number;
   verifiedPct: number;
   transportCoveragePct: number;
+  criticalIssuesCount: number;
+  highIssuesCount: number;
+  mediumIssuesCount: number;
+  lowIssuesCount: number;
+  scannedAt: string;
 }
 
 export interface AdminActivityItem {
