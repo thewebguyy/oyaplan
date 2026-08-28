@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 
 import { LocationService, Location } from "@/lib/services/LocationService";
 import { useTransportCost } from "@/hooks/useTransportCost";
@@ -150,17 +150,14 @@ export default function PlannerWidget({
     }
     params.append("fresh", "true");
 
-    // Track analytics using local service
-    AnalyticsService.track("forge_started", {
-      session_id: "00000000-0000-0000-0000-000000000000",
-      properties: {
-        category: "Activation",
-        source: "redesigned_hero_planner",
-        budget: Number(budget),
-        squad_size: Number(squadSize),
-        area: selectedArea?.id ?? "unselected",
-        version: "1.0",
-      },
+    // Track analytics using non-blocking client tracker with real session cookie
+    trackEvent("forge_started", {
+      category: "Activation",
+      source: "redesigned_hero_planner",
+      budget: Number(budget),
+      squad_size: Number(squadSize),
+      area: selectedArea?.id ?? "unselected",
+      version: "1.0",
     });
 
     triggerMoment("outing_planned");

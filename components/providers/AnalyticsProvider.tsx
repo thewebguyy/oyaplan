@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { AnalyticsService } from '@/lib/services/analytics/analyticsService';
+import { trackEvent } from '@/lib/analytics/trackClient';
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -11,14 +11,20 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (pathname && trackedPath.current !== pathname) {
       trackedPath.current = pathname;
-      AnalyticsService.track('page_viewed', { 
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: {
-          category: 'Engagement',
-          path: pathname,
-          version: '1.0'
-        }
+      
+      trackEvent('page_viewed', { 
+        category: 'Engagement',
+        path: pathname,
+        version: '1.0'
       });
+
+      if (pathname === '/') {
+        trackEvent('landing_page_view', {
+          category: 'Acquisition',
+          path: '/',
+          version: '1.0'
+        });
+      }
     }
   }, [pathname]);
 

@@ -1,5 +1,5 @@
 import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
-import Image from "next/image";
+import { VenueImage } from "@/components/ui/VenueImage";
 import Link from "next/link";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { TrustBadge } from "@/components/ui/trust-badge";
@@ -56,32 +56,16 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
     <div className="w-full h-full sm:w-[400px] mx-auto bg-white rounded-[32px] overflow-hidden shadow-lift-lagoon border border-border-default/40 flex flex-col relative select-none">
       {/* Full bleed image area (55% height) */}
       <div className="relative h-[55%] w-full bg-surface-grey img-zoom-container">
-        {card.heroImage ? (
-          <Image
-            src={card.heroImage}
-            alt={card.spotName}
-            fill
-            sizes="(max-width: 640px) 100vw, 400px"
-            className="object-cover img-zoom"
-            draggable={false}
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-            <div className="w-12 h-12 rounded-full bg-[#E5E0D8] flex items-center justify-center">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <path d="m21 15-5-5L5 21" />
-              </svg>
-            </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">
-              Photo coming soon
-            </span>
-          </div>
-        )}
+        <VenueImage
+          src={card.heroImage}
+          alt={card.spotName}
+          sizes="(max-width: 640px) 100vw, 400px"
+          fallbackCategory={card.category}
+          className="img-zoom"
+        />
         
         {/* Gradient overlay for text readability if we put text over image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 pointer-events-none" />
         
         <div className="absolute top-4 inset-x-4 flex justify-between items-start z-10 pointer-events-none">
           <div className="flex flex-col gap-1.5 items-start">

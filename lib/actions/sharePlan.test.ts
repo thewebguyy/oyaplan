@@ -13,6 +13,22 @@ vi.mock('../sentry', () => ({
   captureServerException: vi.fn(),
 }));
 
+vi.mock('../services/identity/sessionResolver', () => ({
+  SessionResolver: {
+    resolveIdentity: vi.fn().mockResolvedValue({
+      type: 'anonymous',
+      sessionId: '123e4567-e89b-12d3-a456-426614174000',
+      profile: null,
+    }),
+  },
+}));
+
+vi.mock('../services/identity/savedPlanService', () => ({
+  SavedPlanService: {
+    savePlan: vi.fn().mockResolvedValue({ success: true }),
+  },
+}));
+
 describe('createShareablePlan action', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -49,7 +65,7 @@ describe('createShareablePlan action', () => {
     const mockSingle = vi.fn().mockResolvedValue({ data: { id: 'new-uuid' }, error: null });
     const mockSelect = vi.fn().mockReturnValue({ single: mockSingle });
     const mockInsert = vi.fn().mockReturnValue({ select: mockSelect });
-    vi.mocked(supabase.from).mockReturnValue({ insert: mockInsert } as any);
+    vi.mocked(supabase.from).mockReturnValue({ insert: mockInsert } as unknown as ReturnType<typeof supabase.from>);
 
     const result = await createShareablePlan(validPlan, validInput);
 

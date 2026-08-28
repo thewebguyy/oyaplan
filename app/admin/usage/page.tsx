@@ -1,7 +1,9 @@
 import React from "react";
 import { UsageService } from "@/lib/admin/services/usageService";
+import { CeoAnalyticsService } from "@/lib/admin/services/ceoAnalyticsService";
 import PageHeader from "@/components/admin/PageHeader";
 import MetricCard from "@/components/admin/MetricCard";
+import CeoDashboardMetrics from "@/components/admin/CeoDashboardMetrics";
 import UsageTable from "./UsageTable";
 import { Users, BarChart3, UserX, Ghost, Download } from "lucide-react";
 
@@ -13,13 +15,16 @@ export default async function AdminUsagePage({
   searchParams: Promise<{ search?: string }>;
 }) {
   const params = await searchParams;
-  const usage = await UsageService.getAccountUsage(params.search);
+  const [usage, executiveMetrics] = await Promise.all([
+    UsageService.getAccountUsage(params.search),
+    CeoAnalyticsService.getExecutiveMetrics()
+  ]);
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Usage Report"
-        description="Accounts created and plans generated per account. Download as CSV for offline analysis."
+        title="CEO Control & Usage Report"
+        description="Core launch funnel conversion, virality metrics, and account usage breakdown."
         action={
           <a
             href="/api/v1/admin/usage-export"
@@ -31,6 +36,9 @@ export default async function AdminUsagePage({
           </a>
         }
       />
+
+      {/* CEO Executive Funnel */}
+      <CeoDashboardMetrics metrics={executiveMetrics} />
 
       {/* Summary Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

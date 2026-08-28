@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { EventSchemas, EventName, AnalyticsPayload } from './types';
 import { AnalyticsProvider, SupabaseProvider } from './providers';
 
@@ -11,21 +12,22 @@ const providers: AnalyticsProvider[] = [
  * PII Privacy Scrubber
  * Recursively removes sensitive data before analytics ingestion.
  */
-function scrubPII(obj: any): any {
+function scrubPII<T>(obj: T): T {
   if (Array.isArray(obj)) {
-    return obj.map(scrubPII);
+    return obj.map(item => scrubPII(item)) as unknown as T;
   } else if (obj !== null && typeof obj === 'object') {
-    const scrubbed = { ...obj };
+    const record = obj as Record<string, unknown>;
+    const scrubbed: Record<string, unknown> = {};
     const piiKeys = ['email', 'phone', 'password', 'token', 'lat', 'lng', 'coordinates', 'address', 'card_number'];
     
-    for (const key of Object.keys(scrubbed)) {
+    for (const key of Object.keys(record)) {
       if (piiKeys.some(pii => key.toLowerCase().includes(pii))) {
         scrubbed[key] = '[REDACTED_PII]';
       } else {
-        scrubbed[key] = scrubPII(scrubbed[key]);
+        scrubbed[key] = scrubPII(record[key]);
       }
     }
-    return scrubbed;
+    return scrubbed as unknown as T;
   }
   return obj;
 }
@@ -44,13 +46,13 @@ export class AnalyticsService {
       const schema = EventSchemas[eventName];
       if (!schema) throw new Error(`Unknown event name: ${eventName}`);
       
-      const validatedProps = schema.parse(payload.properties);
+      const validatedProps = schema.parse(payload.properties) as z.infer<(typeof EventSchemas)[T]>;
 
       // 2. Build full payload
       const fullPayload: AnalyticsPayload<T> = {
         session_id: payload.session_id,
         event_name: eventName,
-        properties: validatedProps as any,
+        properties: validatedProps,
         feature_flags: payload.feature_flags || {},
         experiments: payload.experiments || {},
         client_context: payload.client_context
@@ -62,12 +64,12 @@ export class AnalyticsService {
       // 4. Concurrent Provider Dispatch
       await Promise.all(
         providers.map(p => p.track(safePayload, userId).catch(err => {
-          console.error(`Analytics Provider Failure (${p.constructor.name}):`, err.message);
+          console.error(`Analytics Provider Failure (${p.constructor.name}):`, err instanceof Error ? err.message : String(err));
         }))
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Analytics failures must NEVER crash the user flow
-      console.error(`Analytics validation failed for ${eventName}:`, err.message);
+      console.error(`Analytics validation failed for ${eventName}:`, err instanceof Error ? err.message : String(err));
     }
   }
 

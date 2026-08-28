@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { User, ChevronRight, Share2, Bookmark, Sparkles, Pencil, LogOut } from "lucide-react";
+import { User, ChevronRight, Share2, Bookmark, Sparkles, Pencil } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { UserProfile } from "@/lib/services/identity/sessionResolver";
 import { getReferralCode } from "@/lib/actions/getReferralCode";
@@ -52,7 +52,7 @@ export default function AccountClient({
         } else {
           toast.error("We couldn't update this right now. Try again.");
         }
-      } catch(e) {
+      } catch {
         toast.error("An error occurred.");
       }
     });

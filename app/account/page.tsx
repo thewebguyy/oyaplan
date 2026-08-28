@@ -13,12 +13,13 @@ export default async function AccountPage() {
   let referralCode: string | null = null;
 
   if (isAuthenticated) {
-    const [savedPlansResult, referralCodeResult] = await Promise.all([
-      SavedPlanService.getSavedPlans(),
-      getReferralCode(identity.profile.id)
+    const userId = identity.profile.id;
+    const [savedCount, referralCodeResult] = await Promise.all([
+      SavedPlanService.getSavedPlansCount(userId),
+      getReferralCode(userId)
     ]);
 
-    savedPlansCount = savedPlansResult?.success && savedPlansResult.data ? savedPlansResult.data.length : 0;
+    savedPlansCount = savedCount;
     referralCode = referralCodeResult;
   }
 

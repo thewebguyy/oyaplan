@@ -31,6 +31,8 @@ export type Spot = {
   transport_matrix: Record<string, number>;
   is_featured: boolean;
   image_url?: string;
+  cover_url?: string;
+  logo_url?: string;
   active: boolean;
   category?: 'restaurant' | 'bar' | 'activity' | 'nature' | 'entertainment' | 'beach' | 'cafe' | 'experience';
   has_food?: boolean;

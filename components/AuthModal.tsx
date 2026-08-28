@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase';
-import { AnalyticsService } from '@/lib/services/analytics/analyticsService';
+import { trackEvent } from '@/lib/analytics/trackClient';
 
 export default function AuthModal() {
   const { isModalOpen, closeModal, modalReason, returnToPath } = useAuth();
@@ -23,14 +23,11 @@ export default function AuthModal() {
     setLoading(true);
     setError(null);
 
-    AnalyticsService.track('auth_initiated', {
-      session_id: '00000000-0000-0000-0000-000000000000',
-      properties: {
-        category: 'Activation',
-        source: 'magic_link',
-        path: window.location.pathname,
-        version: '1.0'
-      }
+    trackEvent('auth_initiated', {
+      category: 'Activation',
+      source: 'magic_link',
+      path: window.location.pathname,
+      version: '1.0'
     });
 
     const redirectUrl = new URL(window.location.origin + '/api/auth/callback');
@@ -58,14 +55,11 @@ export default function AuthModal() {
   };
 
   const handleGoogle = async () => {
-    AnalyticsService.track('auth_initiated', {
-      session_id: '00000000-0000-0000-0000-000000000000',
-      properties: {
-        category: 'Activation',
-        source: 'google',
-        path: window.location.pathname,
-        version: '1.0'
-      }
+    trackEvent('auth_initiated', {
+      category: 'Activation',
+      source: 'google',
+      path: window.location.pathname,
+      version: '1.0'
     });
 
     const redirectUrl = new URL(window.location.origin + '/api/auth/callback');

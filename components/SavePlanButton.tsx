@@ -6,7 +6,7 @@ import { savePlan } from "@/lib/actions/savePlan";
 import { Button } from "./ui/button";
 import { Bookmark, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import { triggerMoment } from "@/components/ui/moment-of-delight";
 
 export default function SavePlanButton({ planId, variant = "outline" }: { planId: string, variant?: "outline" | "ghost" | "default" | "filled" }) {
@@ -27,13 +27,10 @@ export default function SavePlanButton({ planId, variant = "outline" }: { planId
         setIsSaved(true);
         toast.success("Added to your plans.");
         triggerMoment("plan_saved");
-        AnalyticsService.track('plan_saved', {
-          session_id: '00000000-0000-0000-0000-000000000000',
-          properties: {
-            category: 'Engagement',
-            shared_plan_id: planId,
-            version: '1.0'
-          }
+        trackEvent('plan_saved', {
+          category: 'Engagement',
+          shared_plan_id: planId,
+          version: '1.0'
         });
       } else if (res.error === 'unauthorized') {
         openModal("Sign in to save plans", `/plan/${planId}`);

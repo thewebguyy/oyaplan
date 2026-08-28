@@ -10,17 +10,33 @@ import { createServerClient } from '@/lib/supabase-server';
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { event_name, properties, session_id, client_context } = body;
+    let body: Record<string, unknown>;
+    const contentType = req.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      body = await req.json();
+    } else {
+      const text = await req.text();
+      try {
+        body = JSON.parse(text);
+      } catch {
+        return NextResponse.json({ error: 'Invalid payload format' }, { status: 400 });
+      }
+    }
+
+    const event_name = body.event_name as string;
+    const properties = body.properties as Record<string, unknown>;
+    const session_id = body.session_id as string;
+    const client_context = body.client_context as import('@/lib/services/analytics/types').ClientContext | undefined;
 
     if (!event_name || !properties || !session_id) {
       return NextResponse.json({ error: 'Missing required payload fields' }, { status: 400 });
     }
 
-    // Attempt to resolve authenticated user from secure HTTP-only session
+    // Attempt to resolve authenticated user from secure session
     const supabase = await createServerClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
 
     // Attach active experiments and feature flags at ingestion time
     const feature_flags = FeatureFlagEngine.getActiveFlags(session_id, userId);
@@ -31,13 +47,13 @@ export async function POST(req: Request) {
       event_name as EventName,
       {
         session_id,
-        properties,
+        properties: properties as never,
         feature_flags,
         experiments,
         client_context
       },
       userId
-    ).catch(console.error);
+    ).catch((err) => console.error('Analytics tracking error:', err));
 
     return NextResponse.json({ status: 'queued' });
   } catch (error: unknown) {

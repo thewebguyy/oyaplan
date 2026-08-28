@@ -43,14 +43,41 @@ export class SavedPlanService {
   }
 
   /**
+   * High-performance exact count of saved plans for an authenticated user.
+   * Avoids heavy 3-table relational joins and GoTrue roundtrips.
+   */
+  static async getSavedPlansCount(userId: string): Promise<number> {
+    try {
+      const supabase = await createServerClient();
+      const { count, error } = await supabase
+        .from('user_saved_plans')
+        .select('shared_plan_id', { count: 'exact', head: true })
+        .eq('user_id', userId);
+
+      if (error) {
+        captureServerException(error);
+        return 0;
+      }
+      return count ?? 0;
+    } catch (error) {
+      captureServerException(error);
+      return 0;
+    }
+  }
+
+  /**
    * Retrieves all saved plans for the current authenticated user.
    */
-  static async getSavedPlans() {
+  static async getSavedPlans(explicitUserId?: string) {
     try {
-      const identity = await SessionResolver.resolveIdentity();
+      let targetUserId = explicitUserId;
 
-      if (identity.type !== 'authenticated') {
-        return { success: false, data: null, error: 'unauthorized' };
+      if (!targetUserId) {
+        const identity = await SessionResolver.resolveIdentity();
+        if (identity.type !== 'authenticated') {
+          return { success: false, data: null, error: 'unauthorized' };
+        }
+        targetUserId = identity.profile.id;
       }
 
       const supabase = await createServerClient();
@@ -71,7 +98,7 @@ export class SavedPlanService {
             )
           )
         `)
-        .eq('user_id', identity.profile.id)
+        .eq('user_id', targetUserId)
         .order('saved_at', { ascending: false });
 
       if (error) throw error;

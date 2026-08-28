@@ -5,7 +5,7 @@ import { MessageSquare, Link as LinkIcon, Loader2, Check } from "lucide-react";
 import { Plan, ForgeInput } from "@/lib/types";
 import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { getReferralCode } from "@/lib/actions/getReferralCode";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import { toast } from 'sonner';
 import { triggerMoment } from "@/components/ui/moment-of-delight";
 
@@ -23,8 +23,9 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
   const [linkCopied, setLinkCopied] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
-  const ensureShareUrl = async () => {
+  const ensureShareUrl = async (): Promise<string | null> => {
     if (shareUrl) return shareUrl;
+
     setSharing(true);
     try {
       const result = await createShareablePlan(plan, input);
@@ -40,14 +41,11 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
           url += `?ref=${refCode}`;
         }
         
-        AnalyticsService.track('plan_shared', {
-          session_id: '00000000-0000-0000-0000-000000000000',
-          properties: {
-            category: 'Sharing',
-            plan_id: result.id,
-            share_method: 'whatsapp',
-            version: '1.0'
-          }
+        trackEvent('plan_shared', {
+          category: 'Sharing',
+          plan_id: result.id,
+          share_method: 'whatsapp',
+          version: '1.0'
         });
 
         setShareUrl(url);

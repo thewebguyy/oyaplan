@@ -1,6 +1,5 @@
 import { captureServerException } from "@/lib/sentry";
 import { getSharedPlanWithSpot } from "@/lib/queries/plans";
-import { getForgeSpots } from "@/lib/queries/spots";
 import { getSpendSummaryForSpot } from "@/lib/queries/actualSpend";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -9,7 +8,7 @@ import PageError from "@/components/PageError";
 import ActualSpendCapture from "@/components/ActualSpendCapture";
 import PlanVoting from "@/components/PlanVoting";
 import PlanViewTracker from "@/components/PlanViewTracker";
-import Image from "next/image";
+import { VenueImage } from "@/components/ui/VenueImage";
 
 import { LedgerCard } from "@/components/dossier/LedgerCard";
 import { ReceiptStructure } from "@/components/dossier/ReceiptStructure";
@@ -81,14 +80,8 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
     planFetchError = true;
   }
 
-  let spots: Awaited<ReturnType<typeof getForgeSpots>>["data"] = [];
   let spendSummary: Awaited<ReturnType<typeof getSpendSummaryForSpot>> = null;
   try {
-    const [spotsResult] = await Promise.all([
-      getForgeSpots(),
-    ]);
-    spots = spotsResult.data || [];
-    // Fetch spend summary if we have a spot ID
     if (plan?.spot?.id) {
       spendSummary = await getSpendSummaryForSpot(plan.spot.id);
     }
@@ -118,7 +111,8 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
   const diff = (plan?.budget || 0) - (plan?.total_cost || 0);
   if (diff > 2000) budgetFitStatus = "comfortable";
   else if (diff < 0 && Math.abs(diff) <= (plan?.budget || 0) * 0.15) budgetFitStatus = "stretch";
-  else if (diff < 0) budgetFitStatus = "over";
+  // Spots fallback for action components
+  const spots: Spot[] = plan?.spot ? [plan.spot as Spot] : [];
 
   return (
     <main className="min-h-[100dvh] bg-white-sand flex flex-col antialiased">
@@ -137,16 +131,14 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
       <div className="max-w-2xl mx-auto w-full px-4 pt-12 pb-24 space-y-8">
         
         {/* Hero Photo */}
-        {plan?.spot?.image_url && (
-          <div className="w-full aspect-[16/9] relative rounded-[28px] img-zoom-container shadow-lagoon">
-            <Image 
-              src={plan.spot.image_url} 
-              alt={plan.spot?.name || "Venue"} 
-              fill 
-              className="object-cover img-zoom"
-            />
-          </div>
-        )}
+        <div className="w-full aspect-[16/9] relative rounded-[28px] overflow-hidden img-zoom-container shadow-lagoon">
+          <VenueImage 
+            src={plan?.spot?.image_url || plan?.spot?.cover_url} 
+            alt={plan?.spot?.name || "Venue"} 
+            fallbackCategory={plan?.spot?.category}
+            className="img-zoom"
+          />
+        </div>
 
         {/* Zero-Context Explainer */}
         <div className="text-center max-w-sm mx-auto mb-8">

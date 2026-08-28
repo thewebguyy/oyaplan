@@ -11,7 +11,11 @@ export const EventCategory = z.enum([
   'Retention',
   'Operations',
   'AI',
-  'Feedback'
+  'Feedback',
+  'Monetization',
+  'Reliability',
+  'Growth',
+  'Scout'
 ]);
 
 export type EventCategoryType = z.infer<typeof EventCategory>;
@@ -21,7 +25,44 @@ export type EventCategoryType = z.infer<typeof EventCategory>;
  * Every event maps to a specific product question.
  */
 export const EventSchemas = {
-  // Activation
+  // Acquisition
+  'landing_page_view': z.object({
+    category: z.literal('Acquisition'),
+    path: z.string(),
+    ref: z.string().optional(),
+    utm_source: z.string().optional(),
+    utm_medium: z.string().optional(),
+    utm_campaign: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'signup_started': z.object({
+    category: z.literal('Acquisition'),
+    source: z.string().optional(),
+    path: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'signup_completed': z.object({
+    category: z.literal('Acquisition'),
+    user_id: z.string(),
+    method: z.string().optional(),
+    source: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'deep_link_resolved': z.object({
+    category: z.literal('Acquisition'),
+    source: z.string(), // e.g. 'whatsapp', 'x', 'qr'
+    utm_campaign: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'utm_captured': z.object({
+    category: z.literal('Acquisition'),
+    utm_source: z.string().optional(),
+    utm_medium: z.string().optional(),
+    utm_campaign: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+
+  // Activation & Planning
   'forge_started': z.object({
     category: z.literal('Activation'),
     source: z.string().optional(),
@@ -42,108 +83,12 @@ export const EventSchemas = {
     duration_ms: z.number().optional(), // Answers: How long does it take?
     version: z.literal('1.0')
   }),
-  
-  // Engagement
-  'budget_modified': z.object({
-    category: z.literal('Engagement'),
-    previous_budget: z.number(),
-    new_budget: z.number(),
-    version: z.literal('1.0')
-  }),
-  'recommendation_viewed': z.object({
-    category: z.literal('Engagement'),
-    spot_id: z.string(),
-    rank: z.number(), // Answers: Which cards are clicked?
-    version: z.literal('1.0')
-  }),
-  
-  // Added in Phase 12
   'auth_initiated': z.object({
     category: z.literal('Activation'),
     source: z.string(), // e.g. "save_plan", "trust_engine"
     path: z.string(),
     version: z.literal('1.0')
   }),
-  'plan_saved': z.object({
-    category: z.literal('Engagement'),
-    shared_plan_id: z.string(),
-    spot_id: z.string().optional(),
-    total_cost: z.number().optional(),
-    version: z.literal('1.0')
-  }),
-  'spot_saved': z.object({
-    category: z.literal('Engagement'),
-    spot_id: z.string(),
-    position_in_stack: z.number().optional(),
-    area: z.string().optional(),
-    vibe: z.string().optional(),
-    version: z.literal('1.0')
-  }),
-  'page_viewed': z.object({
-    category: z.literal('Engagement'),
-    path: z.string(),
-    version: z.literal('1.0')
-  }),
-  'plan_viewed': z.object({
-    category: z.literal('Engagement'),
-    plan_id: z.string(),
-    version: z.literal('1.0')
-  }),
-
-  // Trust
-  'confidence_badge_clicked': z.object({
-    category: z.literal('Trust'),
-    spot_id: z.string(),
-    confidence_score: z.number(),
-    version: z.literal('1.0')
-  }),
-  
-  // Sharing
-  'plan_shared': z.object({
-    category: z.literal('Sharing'),
-    plan_id: z.string(),
-    share_method: z.string(), // 'whatsapp', 'copy_link'
-    version: z.literal('1.0')
-  }),
-  'shared_plan_opened': z.object({
-    category: z.literal('Sharing'),
-    plan_id: z.string(),
-    referrer: z.string().optional(),
-    version: z.literal('1.0')
-  }),
-
-  // Acquisition & Growth (Phase 9)
-  'deep_link_resolved': z.object({
-    category: z.literal('Acquisition'),
-    source: z.string(), // e.g. 'whatsapp', 'x', 'qr'
-    utm_campaign: z.string().optional(),
-    version: z.literal('1.0')
-  }),
-  'utm_captured': z.object({
-    category: z.literal('Acquisition'),
-    utm_source: z.string().optional(),
-    utm_medium: z.string().optional(),
-    utm_campaign: z.string().optional(),
-    version: z.literal('1.0')
-  }),
-  'invite_sent': z.object({
-    category: z.literal('Growth'),
-    share_method: z.string(),
-    version: z.literal('1.0')
-  }),
-  'invite_opened': z.object({
-    category: z.literal('Growth'),
-    referrer_code: z.string(),
-    version: z.literal('1.0')
-  }),
-  'referral_milestone_achieved': z.object({
-    category: z.literal('Growth'),
-    milestone: z.string(),
-    fraud_score: z.string(),
-    version: z.literal('1.0')
-  }),
-
-  // Recovery suggestions tracking
   'recovery_shown': z.object({
     category: z.literal('Activation'),
     vibe: z.string().optional(),
@@ -162,8 +107,233 @@ export const EventSchemas = {
     unlocked_venue_count: z.number(),
     version: z.literal('1.0')
   }),
+  
+  // Engagement
+  'plan_saved': z.object({
+    category: z.literal('Engagement'),
+    shared_plan_id: z.string(),
+    spot_id: z.string().optional(),
+    total_cost: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+  'spot_saved': z.object({
+    category: z.literal('Engagement'),
+    spot_id: z.string(),
+    position_in_stack: z.number().optional(),
+    area: z.string().optional(),
+    vibe: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'spot_passed': z.object({
+    category: z.literal('Engagement'),
+    spot_id: z.string(),
+    position_in_stack: z.number(),
+    area: z.string(),
+    vibe: z.string(),
+    version: z.literal('1.0')
+  }),
+  'page_viewed': z.object({
+    category: z.literal('Engagement'),
+    path: z.string(),
+    version: z.literal('1.0')
+  }),
+  'plan_viewed': z.object({
+    category: z.literal('Engagement'),
+    plan_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_viewed': z.object({
+    category: z.literal('Engagement'),
+    spot_id: z.string(),
+    rank: z.number().optional(),
+    area: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'recommendation_viewed': z.object({
+    category: z.literal('Engagement'),
+    spot_id: z.string(),
+    rank: z.number(),
+    version: z.literal('1.0')
+  }),
+  'budget_modified': z.object({
+    category: z.literal('Engagement'),
+    previous_budget: z.number(),
+    new_budget: z.number(),
+    version: z.literal('1.0')
+  }),
+  'budget_breakdown_viewed': z.object({
+    category: z.literal('Engagement'),
+    spot_id: z.string().optional(),
+    total_cost: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+  'transport_breakdown_viewed': z.object({
+    category: z.literal('Engagement'),
+    origin: z.string().optional(),
+    destination: z.string().optional(),
+    mode: z.string().optional(),
+    version: z.literal('1.0')
+  }),
 
-  // Identity
+  // Sharing
+  'plan_shared': z.object({
+    category: z.literal('Sharing'),
+    plan_id: z.string(),
+    share_method: z.string(), // 'whatsapp', 'copy_link'
+    version: z.literal('1.0')
+  }),
+  'shared_plan_opened': z.object({
+    category: z.literal('Sharing'),
+    plan_id: z.string(),
+    referrer: z.string().optional(),
+    utm_source: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'recipient_engaged': z.object({
+    category: z.literal('Sharing'),
+    plan_id: z.string(),
+    action: z.string(), // 'vote', 'save', 'plan_own', 'whatsapp_join'
+    version: z.literal('1.0')
+  }),
+
+  // Trust & Feedback
+  'confidence_badge_clicked': z.object({
+    category: z.literal('Trust'),
+    spot_id: z.string(),
+    confidence_score: z.number(),
+    version: z.literal('1.0')
+  }),
+  'actual_spend_submitted': z.object({
+    category: z.literal('Feedback'),
+    shared_plan_id: z.string(),
+    spot_id: z.string().optional(),
+    actual_total: z.number(),
+    estimated_total: z.number(),
+    version: z.literal('1.0')
+  }),
+  'plan_usefulness_rated': z.object({
+    category: z.literal('Trust'),
+    plan_id: z.string(),
+    rating: z.enum(['up', 'down']),
+    version: z.literal('1.0')
+  }),
+  'price_accuracy_reported': z.object({
+    category: z.literal('Trust'),
+    venue_id: z.string(),
+    venue_name: z.string(),
+    status: z.enum(['accurate', 'changed', 'outdated']),
+    version: z.literal('1.0')
+  }),
+  'estimate_feedback_submitted': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    feedback_text: z.string().optional(),
+    rating: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'venue_correction_submitted': z.object({
+    category: z.literal('Contribution'),
+    venue_id: z.string(),
+    field: z.string(),
+    corrected_value: z.string(),
+    version: z.literal('1.0')
+  }),
+  'transport_actual_feedback': z.object({
+    category: z.literal('Trust'),
+    mode: z.string(),
+    result: z.enum(['about_right', 'higher', 'lower']),
+    estimated_min: z.number().optional(),
+    estimated_max: z.number().optional(),
+    origin_district_id: z.string().optional(),
+    destination_district_id: z.string().optional(),
+    spot_id: z.string().optional(),
+    actual_amount: z.number().optional(),
+    departure_at: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'spot_suggested': z.object({
+    category: z.literal('Contribution'),
+    spot_name: z.string(),
+    area: z.string(),
+    rough_price: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+
+  // Monetization
+  'premium_viewed': z.object({
+    category: z.literal('Monetization'),
+    feature: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'payment_started': z.object({
+    category: z.literal('Monetization'),
+    plan_tier: z.string(),
+    amount_ngn: z.number(),
+    version: z.literal('1.0')
+  }),
+  'payment_completed': z.object({
+    category: z.literal('Monetization'),
+    reference: z.string(),
+    amount_ngn: z.number(),
+    version: z.literal('1.0')
+  }),
+
+  // Reliability
+  'plan_generation_failed': z.object({
+    category: z.literal('Reliability'),
+    start_area: z.string().optional(),
+    budget: z.number().optional(),
+    squad_size: z.number().optional(),
+    reason: z.string(),
+    version: z.literal('1.0')
+  }),
+  'account_load_failed': z.object({
+    category: z.literal('Reliability'),
+    user_id: z.string().optional(),
+    error: z.string(),
+    version: z.literal('1.0')
+  }),
+  'api_error': z.object({
+    category: z.literal('Reliability'),
+    endpoint: z.string(),
+    status_code: z.number(),
+    error_message: z.string(),
+    version: z.literal('1.0')
+  }),
+  'otp_failed': z.object({
+    category: z.literal('Reliability'),
+    reason: z.string(),
+    version: z.literal('1.0')
+  }),
+
+  // Growth & Referrals
+  'invite_sent': z.object({
+    category: z.literal('Growth'),
+    share_method: z.string(),
+    version: z.literal('1.0')
+  }),
+  'invite_opened': z.object({
+    category: z.literal('Growth'),
+    referrer_code: z.string(),
+    version: z.literal('1.0')
+  }),
+  'referral_milestone_achieved': z.object({
+    category: z.literal('Growth'),
+    milestone: z.string(),
+    fraud_score: z.string(),
+    version: z.literal('1.0')
+  }),
+  'referral_code_requested': z.object({
+    category: z.literal('Growth'),
+    version: z.literal('1.0')
+  }),
+  'referral_code_generated': z.object({
+    category: z.literal('Growth'),
+    code: z.string(),
+    version: z.literal('1.0')
+  }),
+
+  // Operations & Identity
   'identity_merge_skipped_no_session': z.object({
     category: z.literal('Operations'),
     reason: z.string(),
@@ -185,62 +355,6 @@ export const EventSchemas = {
     category: z.literal('Scout'),
     username: z.string(),
     error: z.string(),
-    version: z.literal('1.0')
-  }),
-
-  // Spot Swiping
-  'spot_passed': z.object({
-    category: z.literal('Engagement'),
-    spot_id: z.string(),
-    position_in_stack: z.number(),
-    area: z.string(),
-    vibe: z.string(),
-    version: z.literal('1.0')
-  }),
-
-  // Referral Events
-  'referral_code_requested': z.object({
-    category: z.literal('Growth'),
-    version: z.literal('1.0')
-  }),
-  'referral_code_generated': z.object({
-    category: z.literal('Growth'),
-    code: z.string(),
-    version: z.literal('1.0')
-  }),
-
-  // Micro-feedback loops
-  'plan_usefulness_rated': z.object({
-    category: z.literal('Trust'),
-    plan_id: z.string(),
-    rating: z.enum(['up', 'down']),
-    version: z.literal('1.0')
-  }),
-  'price_accuracy_reported': z.object({
-    category: z.literal('Trust'),
-    venue_id: z.string(),
-    venue_name: z.string(),
-    status: z.enum(['accurate', 'changed', 'outdated']),
-    version: z.literal('1.0')
-  }),
-  'transport_actual_feedback': z.object({
-    category: z.literal('Trust'),
-    mode: z.string(),
-    result: z.enum(['about_right', 'higher', 'lower']),
-    estimated_min: z.number().optional(),
-    estimated_max: z.number().optional(),
-    origin_district_id: z.string().optional(),
-    destination_district_id: z.string().optional(),
-    spot_id: z.string().optional(),
-    actual_amount: z.number().optional(),
-    departure_at: z.string().optional(),
-    version: z.literal('1.0')
-  }),
-  'spot_suggested': z.object({
-    category: z.literal('Contribution'),
-    spot_name: z.string(),
-    area: z.string(),
-    rough_price: z.number().optional(),
     version: z.literal('1.0')
   })
 } as const;

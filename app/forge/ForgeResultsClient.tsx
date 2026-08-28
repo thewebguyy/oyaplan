@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Spot, ForgeInput, PlanEvaluation, RecoverySuggestion } from "@/lib/types";
 import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { submitSpotSuggestion } from "@/lib/actions/submitSpotSuggestion";
-import { AnalyticsService } from "@/lib/services/analytics/analyticsService";
+import { trackEvent } from "@/lib/analytics/trackClient";
 import { formatRecoverySuggestion } from "@/lib/utils/editorialFormatter";
 import EditorialPlan from "@/components/EditorialPlan";
 import { Button } from "@/components/ui/button";
@@ -89,15 +89,12 @@ export default function ForgeResultsClient({
   // Analytics tracking on mount/change
   useEffect(() => {
     if (isRevealed) {
-      AnalyticsService.track('forge_completed', {
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: {
-          category: 'Activation',
-          plans_generated: evaluations.length,
-          vibe: forgeInput.vibe,
-          budget: forgeInput.budget,
-          version: '1.0'
-        }
+      trackEvent('forge_completed', {
+        category: 'Activation',
+        plans_generated: evaluations.length,
+        vibe: forgeInput.vibe,
+        budget: forgeInput.budget,
+        version: '1.0'
       });
     }
   }, [evaluations.length, forgeInput.vibe, forgeInput.budget, isRevealed]);
@@ -105,20 +102,17 @@ export default function ForgeResultsClient({
   // Analytics for recovery suggestions
   useEffect(() => {
     if (isRevealed && evaluations.length === 0 && recoverySuggestions.length > 0) {
-      AnalyticsService.track('recovery_shown', {
-        session_id: '00000000-0000-0000-0000-000000000000',
-        properties: {
-          category: 'Activation',
-          vibe: forgeInput.vibe,
-          budget: forgeInput.budget,
-          squad_size: forgeInput.squadSize,
-          start_area: forgeInput.startArea,
-          suggestions_count: recoverySuggestions.length,
-          version: '1.0'
-        }
+      trackEvent('recovery_shown', {
+        category: 'Activation',
+        vibe: forgeInput.vibe,
+        budget: forgeInput.budget,
+        squad_size: forgeInput.squadSize,
+        start_area: forgeInput.startArea,
+        suggestions_count: recoverySuggestions.length,
+        version: '1.0'
       });
     }
-  }, [evaluations.length, isRevealed, recoverySuggestions.length, forgeInput]);
+  }, [evaluations.length, forgeInput.budget, forgeInput.squadSize, forgeInput.startArea, forgeInput.vibe, isRevealed, recoverySuggestions.length]);
 
   // Strip 'fresh' param from URL to prevent 900ms delay on reload
   useEffect(() => {
@@ -237,17 +231,14 @@ export default function ForgeResultsClient({
   };
 
   const handleAcceptRecovery = (sug: RecoverySuggestion) => {
-    AnalyticsService.track('recovery_accepted', {
-      session_id: '00000000-0000-0000-0000-000000000000',
-      properties: {
-        category: 'Activation',
-        suggestion_type: sug.type,
-        delta_budget: sug.deltaBudget || null,
-        suggested_area: sug.suggestedArea || null,
-        suggested_vibe: sug.suggestedVibe || null,
-        unlocked_venue_count: sug.unlockedVenueCount,
-        version: '1.0'
-      }
+    trackEvent('recovery_accepted', {
+      category: 'Activation',
+      suggestion_type: sug.type,
+      delta_budget: sug.deltaBudget || null,
+      suggested_area: sug.suggestedArea || null,
+      suggested_vibe: sug.suggestedVibe || null,
+      unlocked_venue_count: sug.unlockedVenueCount,
+      version: '1.0'
     });
   };
 
