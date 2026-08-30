@@ -11,7 +11,7 @@ interface BetaUsersTableProps {
   betaUsers: ApprovedBetaUser[];
 }
 
-type FilterTab = "Active" | "Accepted" | "Registered" | "Invited" | "All";
+type FilterTab = "Active" | "Accepted" | "Registered" | "Invited" | "Revoked" | "All";
 
 export default function BetaUsersTable({ betaUsers }: BetaUsersTableProps) {
   const [selectedTab, setSelectedTab] = useState<FilterTab>("Active");
@@ -22,6 +22,7 @@ export default function BetaUsersTable({ betaUsers }: BetaUsersTableProps) {
       Accepted: betaUsers.filter((u) => u.status === "Accepted").length,
       Registered: betaUsers.filter((u) => u.status === "Registered").length,
       Invited: betaUsers.filter((u) => u.status === "Invited").length,
+      Revoked: betaUsers.filter((u) => u.status === "Revoked").length,
       All: betaUsers.length,
     };
   }, [betaUsers]);
@@ -88,7 +89,7 @@ export default function BetaUsersTable({ betaUsers }: BetaUsersTableProps) {
     <div className="space-y-4">
       {/* Lifecycle Filter Bar */}
       <div className="flex items-center gap-2 border-b border-gray-200 pb-2 overflow-x-auto">
-        {(["Active", "Accepted", "Registered", "Invited", "All"] as FilterTab[]).map((tab) => {
+        {(["Active", "Accepted", "Registered", "Invited", "Revoked", "All"] as FilterTab[]).map((tab) => {
           const isActive = selectedTab === tab;
           return (
             <button

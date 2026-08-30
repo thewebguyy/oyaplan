@@ -37,6 +37,7 @@ export class BetaRepository {
       invited_at?: string | null;
       accepted_at?: string | null;
       notes?: string | null;
+      revoked_at?: string | null;
     }
 
     return ((betaRows as unknown as BetaRow[]) || []).map((row) => {
@@ -44,9 +45,11 @@ export class BetaRepository {
       const profile = profileMap.get(cleanEmail);
       const hasBadge = profile?.profile_badge === "founding_beta";
 
-      let status: "Active" | "Accepted" | "Registered" | "Invited" = "Invited";
+      let status: "Active" | "Accepted" | "Registered" | "Invited" | "Revoked" = "Invited";
 
-      if (hasBadge) {
+      if (row.revoked_at) {
+        status = "Revoked";
+      } else if (hasBadge) {
         status = "Active";
       } else if (row.accepted_at) {
         status = "Accepted";
@@ -67,6 +70,7 @@ export class BetaRepository {
         status,
         has_badge: hasBadge,
         user_id: profile?.id || undefined,
+        revoked_at: row.revoked_at || undefined,
       };
     });
   }
@@ -122,7 +126,10 @@ export class BetaRepository {
     const supabase = await createServerClient();
     const cleanEmail = email.trim().toLowerCase();
 
-    const { error } = await supabase.from("approved_beta_users").delete().eq("email", cleanEmail);
+    const { error } = await supabase
+      .from("approved_beta_users")
+      .update({ revoked_at: new Date().toISOString() })
+      .eq("email", cleanEmail);
 
     if (error) {
       console.error("Failed to remove beta email:", error);

@@ -53,7 +53,8 @@ export function mapPlanToCardViewModel(plan: ExplainedPlan): DecisionCardViewMod
 
   return {
     title: plan.title,
-    heroImage: plan.spot.image_url,
+    heroImage: plan.spot.cover_url || plan.spot.image_url,
+    galleryUrls: plan.spot.gallery_urls,
     venueCost: plan.activityCost,
     transportCost: plan.transportCost,
     transportMinCost: plan.transportMinCost,

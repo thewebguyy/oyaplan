@@ -28,7 +28,7 @@ const venueSchema = z.object({
   'Times Mentioned': z.number().optional(),
   'vibe_tags': z.array(z.string()).min(1, 'vibe_tags is required and cannot be empty'),
   'transport_matrix': z.record(z.string(), z.number()).nullable().optional()
-});
+}).passthrough();
 
 const venuesArraySchema = z.array(venueSchema);
 
@@ -125,6 +125,18 @@ async function main() {
     const price = parsePrice(venue['Budget / Price'], venue['Price Range']);
     const category = mapCategory(venue['Category']);
 
+    const galleryUrls: string[] = [];
+    for (let i = 1; i <= 20; i++) {
+      const url = (venue as Record<string, any>)[`Image ${i} URL`];
+      if (typeof url === 'string' && url.trim() !== '') {
+        galleryUrls.push(url.trim());
+      }
+    }
+    
+    // De-duplicate gallery URLs while preserving order
+    const uniqueGalleryUrls = Array.from(new Set(galleryUrls));
+    const coverUrl = uniqueGalleryUrls.length > 0 ? uniqueGalleryUrls[0] : undefined;
+
     const spotRecord = {
       name: venueName,
       address: venue['Full Address'],
@@ -138,7 +150,9 @@ async function main() {
       price_source: 'crowd',
       category: category,
       verified_by: 'seed',
-      zone: venue['Island or Mainland'].toLowerCase().includes('island') ? 'island' : 'mainland'
+      zone: venue['Island or Mainland'].toLowerCase().includes('island') ? 'island' : 'mainland',
+      cover_url: coverUrl,
+      gallery_urls: uniqueGalleryUrls
     };
 
     const submissionRecord = {

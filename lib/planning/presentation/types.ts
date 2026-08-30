@@ -9,6 +9,7 @@ export interface TrustIndicator {
 export interface DecisionCardViewModel {
   title: string;
   heroImage?: string;
+  galleryUrls?: string[];
   venueCost: number;
   transportCost: number;
   transportMinCost?: number;

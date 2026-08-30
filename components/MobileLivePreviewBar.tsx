@@ -107,11 +107,27 @@ export default function MobileLivePreviewBar({
   const topSpot = recommendedSpots[0];
   const spotsToUse = recommendedSpots.slice(0, 3);
 
-  const transportCost = getSpotTransportCost(topSpot);
+  const getSpotTransportEstimate = (spot: Spot) => {
+    const origin = startAreaId || "anywhere";
+    const dest = spot.address_slug || "ikeja";
+    return TransportPricingProvider.calculateEstimate(
+      origin,
+      dest,
+      squadSize,
+      "ride-hailing",
+      spot.transport_matrix
+    );
+  };
+
+  const topEstimate = getSpotTransportEstimate(topSpot);
+  const transportCost = topEstimate.status === "unavailable" ? 0 : topEstimate.midpointCost;
   const foodCost = (topSpot.price_per_person || 12000) * squadSize;
   const taxCost = Math.round(foodCost * 0.1);
   const totalCost = foodCost + transportCost + taxCost;
   const perPersonCost = Math.ceil(totalCost / squadSize);
+  const displayCostStr = topEstimate.status === "unavailable" 
+    ? `~₦${perPersonCost.toLocaleString()} + transport`
+    : `~₦${perPersonCost.toLocaleString()}`;
 
   return (
     <>
@@ -141,7 +157,7 @@ export default function MobileLivePreviewBar({
                 {topSpot.name} {spotsToUse.length > 1 ? `& ${spotsToUse.length - 1} more` : ""}
               </p>
               <p className="text-[11px] text-white/70">
-                <strong className="text-white font-bold">~₦{perPersonCost.toLocaleString()}</strong> / person
+                <strong className="text-white font-bold">{displayCostStr}</strong> / person
               </p>
             </div>
           </div>
@@ -204,7 +220,9 @@ export default function MobileLivePreviewBar({
               {/* Render each spot */}
               <div className="space-y-6 px-6 py-6">
                 {spotsToUse.map((spot, idx) => {
-                  const sTransportCost = getSpotTransportCost(spot);
+                  const sEstimate = getSpotTransportEstimate(spot);
+                  const isUnavailable = sEstimate.status === "unavailable";
+                  const sTransportCost = isUnavailable ? 0 : sEstimate.midpointCost;
                   const sFoodCost = (spot.price_per_person || 12000) * squadSize;
                   const sTaxCost = Math.round(sFoodCost * 0.1);
                   const sTotalCost = sFoodCost + sTransportCost + sTaxCost;
@@ -244,8 +262,8 @@ export default function MobileLivePreviewBar({
                           <span className="text-gray-600 font-medium flex items-center gap-1">
                             Estimated Uber Transport
                           </span>
-                          <span className="font-bold text-[#1A1A1A]">
-                            ₦{sTransportCost.toLocaleString()}
+                          <span className={`font-bold ${isUnavailable ? "text-amber-600" : "text-[#1A1A1A]"}`}>
+                            {isUnavailable ? "Unavailable" : `₦${sTransportCost.toLocaleString()}`}
                           </span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -258,7 +276,9 @@ export default function MobileLivePreviewBar({
                         </div>
                         <div className="flex justify-between items-center pt-2 font-black text-base text-black">
                           <span className="uppercase tracking-wide">Total Estimated Cost</span>
-                          <span className="text-[#008751]">₦{sTotalCost.toLocaleString()}</span>
+                          <span className="text-[#008751]">
+                            {isUnavailable ? `₦${sTotalCost.toLocaleString()} + transport` : `₦${sTotalCost.toLocaleString()}`}
+                          </span>
                         </div>
                       </div>
 

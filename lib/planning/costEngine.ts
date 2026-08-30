@@ -12,33 +12,18 @@ export class DefaultCostEngine implements CostEngine {
       
       const destinationKey = spot.address_slug || "ikeja";
 
-      // 1. Resolve route override from the contextual routeOverrides dictionary using spot's area_id
-      const override = context.request.routeOverrides?.[spot.area_id];
-
-      let range;
-      let hasOverride = false;
-      let confidenceScore: number | undefined = undefined;
-
-      if (override) {
-        hasOverride = true;
-        confidenceScore = Number(override.confidence);
-        // If override is present, scale by vehicles required
-        const vehiclesRequired = transportMode === "public-transit" ? squadSize : Math.max(1, Math.ceil(squadSize / 4));
-        range = {
-          minCost: override.low * vehiclesRequired,
-          maxCost: override.high * vehiclesRequired,
-          midpointCost: Math.round(((override.low + override.high) / 2) * vehiclesRequired)
-        };
-      } else {
-        range = TransportPricingProvider.calculateRange(
-          areaKey,
-          destinationKey,
-          transportMode,
-          spot.transport_matrix,
-          context.request.departureAt,
-          squadSize
-        );
-      }
+      // Route overrides (legacy fake precision) have been removed per launch mandate.
+      // We rely 100% on the canonical TransportPricingProvider.
+      const range = TransportPricingProvider.calculateRange(
+        areaKey,
+        destinationKey,
+        transportMode,
+        spot.transport_matrix,
+        context.request.departureAt,
+        squadSize
+      );
+      const hasOverride = false;
+      const confidenceScore: number | undefined = undefined;
 
       const confidence = TransportConfidenceProvider.evaluate(
         areaKey,

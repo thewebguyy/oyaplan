@@ -105,12 +105,16 @@ export function calculateZoneFare(origin: string, destination: string, partySize
 }
 
 export interface TransportRange {
+  status: "available" | "unavailable";
+  reason?: "NO_ROUTE_DATA";
   minCost: number;
   maxCost: number;
   midpointCost: number;
 }
 
 export interface TransportEstimate {
+  status: "available" | "unavailable";
+  reason?: "NO_ROUTE_DATA";
   low: number;
   high: number;
   midpointCost: number;
@@ -146,8 +150,25 @@ export class TransportPricingProvider {
     const vehicleCapacity = mode === "public-transit" ? 1 : 4;
     const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
 
-    let rawBase = 0;
+    const normOrigin = origin?.toLowerCase() || "ikeja";
+    const normDest = destination?.toLowerCase() || "ikeja";
+    const zone1 = ZONES[normOrigin];
+    const zone2 = ZONES[normDest];
+
     const hasMatrixEntry = defaultMatrix && defaultMatrix[origin] !== undefined;
+
+    // If no explicit matrix entry exists, and we lack geographical zone mapping for either point, it's missing data.
+    if (!hasMatrixEntry && (normOrigin === "anywhere" || !zone1 || !zone2)) {
+      return {
+        status: "unavailable",
+        reason: "NO_ROUTE_DATA",
+        minCost: 0,
+        maxCost: 0,
+        midpointCost: 0
+      };
+    }
+
+    let rawBase = 0;
     if (hasMatrixEntry) {
       rawBase = defaultMatrix[origin] * vehiclesRequired;
     } else {
@@ -157,14 +178,14 @@ export class TransportPricingProvider {
     // Scale base fare by mode multiplier; respect explicit 0 overrides in matrix
     const scaledBase = hasMatrixEntry && rawBase === 0 
       ? 0 
-      : Math.max(2000 * vehiclesRequired, rawBase * profile.multiplier);
+      : rawBase * profile.multiplier;
 
     const delta = scaledBase * profile.variancePercent;
-    const minCost = scaledBase === 0 ? 0 : Math.max(1000 * vehiclesRequired, Math.floor((scaledBase - delta) / 500) * 500);
+    const minCost = scaledBase === 0 ? 0 : Math.floor((scaledBase - delta) / 500) * 500;
     const maxCost = scaledBase === 0 ? 0 : Math.ceil((scaledBase + delta) / 500) * 500;
     const midpointCost = Math.round(scaledBase / 500) * 500;
 
-    return { minCost, maxCost, midpointCost };
+    return { status: "available", minCost, maxCost, midpointCost };
   }
 
   static calculateEstimate(
@@ -183,6 +204,8 @@ export class TransportPricingProvider {
     const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
 
     return {
+      status: range.status,
+      reason: range.reason,
       low: range.minCost,
       high: range.maxCost,
       midpointCost: range.midpointCost,

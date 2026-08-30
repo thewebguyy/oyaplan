@@ -50,7 +50,7 @@ export interface MediaItem {
   is_hero?: boolean;
 }
 
-export type BetaLifecycleStatus = 'Active' | 'Accepted' | 'Registered' | 'Invited' | 'Pending' | 'Not Registered';
+export type BetaLifecycleStatus = 'Active' | 'Accepted' | 'Registered' | 'Invited' | 'Pending' | 'Not Registered' | 'Revoked';
 
 export interface ApprovedBetaUser {
   email: string;

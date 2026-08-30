@@ -9,6 +9,8 @@ export type Area = {
 };
 
 export type TransportEstimate = {
+  status?: "available" | "unavailable";
+  reason?: "NO_ROUTE_DATA" | string;
   low: number;
   high: number;
   midpointCost?: number;
@@ -39,6 +41,7 @@ export type Spot = {
   is_featured: boolean;
   image_url?: string;
   cover_url?: string;
+  gallery_urls?: string[];
   logo_url?: string;
   active: boolean;
   category?: 'restaurant' | 'bar' | 'activity' | 'nature' | 'entertainment' | 'beach' | 'cafe' | 'experience';
@@ -228,6 +231,7 @@ export interface Venue {
   instagram_handle: string | null;
   is_featured: boolean;
   active: boolean;
+  gallery_urls: string[];
   
   // Tax details
   vat_pct: number;

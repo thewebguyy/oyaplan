@@ -75,17 +75,39 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
 
           <div className="pt-2 border-t border-black/5 flex flex-wrap items-center gap-2">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block w-full mb-0.5">
-              Verified information
+              Trust & Data Quality
             </span>
-            <span className="px-2.5 py-1 bg-emerald-600/10 text-emerald-800 border border-emerald-600/20 rounded-full text-xs font-bold flex items-center gap-1">
-              ✓ Menu prices
-            </span>
-            <span className="px-2.5 py-1 bg-emerald-600/10 text-emerald-800 border border-emerald-600/20 rounded-full text-xs font-bold flex items-center gap-1">
-              ✓ Opening hours
-            </span>
-            <span className="px-2.5 py-1 bg-blue-600/10 text-blue-800 border border-blue-600/20 rounded-full text-xs font-bold flex items-center gap-1">
-              🚗 Transport estimate
-            </span>
+            {plan.spot.confidence_reasons && plan.spot.confidence_reasons.length > 0 ? (
+              plan.spot.confidence_reasons.map((reason, idx) => {
+                const isWarning = reason.startsWith("⚠") || reason.startsWith("✖");
+                return (
+                  <span 
+                    key={idx}
+                    className={`px-2.5 py-1 border rounded-full text-xs font-bold flex items-center gap-1 ${
+                      isWarning 
+                        ? 'bg-amber-600/10 text-amber-800 border-amber-600/20' 
+                        : 'bg-emerald-600/10 text-emerald-800 border-emerald-600/20'
+                    }`}
+                  >
+                    {reason}
+                  </span>
+                );
+              })
+            ) : (
+              <span className="px-2.5 py-1 bg-amber-600/10 text-amber-800 border border-amber-600/20 rounded-full text-xs font-bold flex items-center gap-1">
+                ⚠ Limited pricing evidence
+              </span>
+            )}
+            
+            {plan.transportEstimate?.status === "unavailable" ? (
+              <span className="px-2.5 py-1 bg-amber-600/10 text-amber-800 border border-amber-600/20 rounded-full text-xs font-bold flex items-center gap-1">
+                ⚠ Transport estimate unavailable
+              </span>
+            ) : (
+              <span className="px-2.5 py-1 bg-blue-600/10 text-blue-800 border border-blue-600/20 rounded-full text-xs font-bold flex items-center gap-1">
+                🚗 Transport modeled
+              </span>
+            )}
           </div>
         </div>
       </div>

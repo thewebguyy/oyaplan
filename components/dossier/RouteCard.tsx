@@ -44,8 +44,9 @@ export default function RouteCard({
   distanceKm,
   transportEstimate,
 }: RouteCardProps) {
-  const minCostToDisplay = transportEstimate ? transportEstimate.low : Math.max(1500, Math.round((transportCost * 0.85) / 500) * 500);
-  const maxCostToDisplay = transportEstimate ? transportEstimate.high : Math.round((transportCost * 1.15) / 500) * 500;
+  const isUnavailable = transportEstimate?.status === "unavailable" || (!transportEstimate && transportCost === 0);
+  const minCostToDisplay = transportEstimate ? transportEstimate.low : transportCost;
+  const maxCostToDisplay = transportEstimate ? transportEstimate.high : transportCost;
 
   const startPos = ZONE_POSITIONS[startAreaSlug] ?? DEFAULT_START;
   const venuePos = venueCoords
@@ -195,10 +196,12 @@ export default function RouteCard({
               ~{distanceKm.toFixed(1)} km
             </span>
           )}
-          <span className="text-sm font-black text-[#1A1A1A] leading-tight">
-            ₦{minCostToDisplay.toLocaleString()} – ₦{maxCostToDisplay.toLocaleString()}
+          <span className={`text-sm font-black leading-tight ${isUnavailable ? "text-amber-600" : "text-[#1A1A1A]"}`}>
+            {isUnavailable ? "Fare Unavailable" : `₦${minCostToDisplay.toLocaleString()} – ₦${maxCostToDisplay.toLocaleString()}`}
           </span>
-          <span className="text-[9px] text-[#6B7280] font-medium font-mono">Est. Fare Range (Uber/Bolt)</span>
+          <span className="text-[9px] text-[#6B7280] font-medium font-mono">
+            {isUnavailable ? "Need location match" : "Est. Fare Range (Uber/Bolt)"}
+          </span>
         </div>
 
         {/* From/To label */}

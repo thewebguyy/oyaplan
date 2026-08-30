@@ -3,6 +3,7 @@ import { VenueImage } from "@/components/ui/VenueImage";
 import Link from "next/link";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { TrustBadge } from "@/components/ui/trust-badge";
+import { CTA_LABELS } from "@/components/ui/ctaVocabulary";
 
 interface VenueCardProps {
   card: DecisionCardViewModel;
@@ -95,6 +96,22 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
             />
           </div>
         </div>
+
+        {/* Progressive Disclosure: Visual Evidence Gallery (Thumbnails) */}
+        {card.galleryUrls && card.galleryUrls.length > 1 && (
+          <div className="absolute bottom-4 left-4 right-4 flex gap-2 z-10 pointer-events-auto overflow-x-auto snap-x hide-scrollbar">
+            {card.galleryUrls.slice(0, 4).map((url, i) => (
+              <div key={i} className="relative w-12 h-12 rounded-lg border-2 border-white/80 shadow-md overflow-hidden shrink-0 snap-start bg-black/20">
+                <VenueImage src={url} alt={`Gallery image ${i+1}`} fill={true} sizes="48px" className="object-cover" />
+              </div>
+            ))}
+            {card.galleryUrls.length > 4 && (
+              <div className="relative w-12 h-12 rounded-lg border-2 border-white/80 shadow-md shrink-0 snap-start bg-black/60 flex flex-col items-center justify-center backdrop-blur-sm text-white font-bold text-xs">
+                +{card.galleryUrls.length - 4}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Info area (45% height) */}
@@ -133,7 +150,11 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
             </div>
             <div className="flex justify-between text-xs font-bold text-text-secondary">
               <span>Estimated Transport</span>
-              <span>₦{card.transportCost.toLocaleString('en-NG')}</span>
+              <span className={card.transportEstimate?.status === "unavailable" ? "text-amber-600" : ""}>
+                {card.transportEstimate?.status === "unavailable" 
+                  ? "Unavailable" 
+                  : `₦${card.transportCost.toLocaleString('en-NG')}`}
+              </span>
             </div>
           </div>
 
@@ -178,7 +199,7 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
           
           <Link href={`/forge?${forgeParams.toString()}`} className="flex-1 block">
             <button className="w-full bg-[#0A0A0A] text-white type-ui-label text-sm uppercase font-extrabold px-5 py-3.5 rounded-xl btn-intent-snaps cursor-pointer">
-              Start Planning →
+              {CTA_LABELS.start_planning} →
             </button>
           </Link>
         </div>

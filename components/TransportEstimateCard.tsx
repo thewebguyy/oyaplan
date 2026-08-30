@@ -38,9 +38,14 @@ export default function TransportEstimateCard({
   const [showWhyModal, setShowWhyModal] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<string | null>(null);
 
-  const displayMin = minCost ?? Math.max(1000, Math.round((transportCost * 0.85) / 500) * 500);
-  const displayMax = maxCost ?? Math.round((transportCost * 1.15) / 500) * 500;
-  const rangeCopy = TransportDisplayFormatter.formatRange(displayMin, displayMax);
+  // Do not fabricate fake precision. Rely on the canonical engine output.
+  const isUnavailable = !minCost && !maxCost && (!transportCost || transportCost === 0);
+  const displayMin = minCost ?? transportCost;
+  const displayMax = maxCost ?? transportCost;
+  
+  const rangeCopy = isUnavailable 
+    ? "Unavailable for this route" 
+    : TransportDisplayFormatter.formatRange(displayMin, displayMax);
 
   const formattedAssumptions = assumptions || `${mode === "public-transit" ? "Public transport" : mode === "driving" ? "Personal car" : "Ride-hailing"} estimate • Leaving from ${startAreaName}`;
 
