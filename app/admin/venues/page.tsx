@@ -2,6 +2,7 @@ import React from "react";
 import { VenueService } from "@/lib/admin/services/venueService";
 import PageHeader from "@/components/admin/PageHeader";
 import VenuesTable from "./VenuesTable";
+import BulkMediaUploadButton from "./BulkMediaUploadButton";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ export default async function AdminVenuesPage({
       <PageHeader
         title="Venues Catalog"
         description={`Managing ${total} Lagos outing spots and venues.`}
+        action={<BulkMediaUploadButton />}
       />
 
       <VenuesTable venues={venues} />
