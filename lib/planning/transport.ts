@@ -229,12 +229,12 @@ export class TransportConfidenceProvider {
     origin: string,
     destination: string,
     mode: TransportMode,
-    _hasVenueOverride: boolean = false,
+    hasVenueOverride: boolean = false,
     departureAt?: Date,
     overrideScore?: number
   ): ConfidenceEvaluation {
     if (overrideScore !== undefined) {
-      const score = Math.min(100, Math.max(10, overrideScore));
+      const score = Math.min(100, Math.max(10, overrideScore + (hasVenueOverride ? 5 : 0)));
       if (score >= 80) {
         return { score, label: "High confidence", badgeColor: "green" };
       } else if (score >= 50) {

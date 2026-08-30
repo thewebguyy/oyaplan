@@ -127,7 +127,7 @@ async function main() {
 
     const galleryUrls: string[] = [];
     for (let i = 1; i <= 20; i++) {
-      const url = (venue as Record<string, any>)[`Image ${i} URL`];
+      const url = (venue as Record<string, string | undefined>)[`Image ${i} URL`];
       if (typeof url === 'string' && url.trim() !== '') {
         galleryUrls.push(url.trim());
       }
@@ -199,8 +199,9 @@ async function main() {
       console.log(`[SUCCESS] Inserted ${venueName}`);
       successCount++;
 
-    } catch (e: any) {
-      console.error(`[ERROR] Unexpected error processing ${venueName}:`, e.message);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.error(`[ERROR] Unexpected error processing ${venueName}:`, message);
     }
   }
 
