@@ -46,17 +46,17 @@ export function calculateTypicalOutingCost(
   if (category === 'restaurant') {
     // 1 Main Course + 1 Drink
     const typicalMain = mains.length > 0 ? getMedian(mains) : getMedian(allPrices);
-    const typicalDrink = allDrinks.length > 0 ? getMedian(allDrinks) : 3500; // default drink cost
+    const typicalDrink = allDrinks.length > 0 ? getMedian(allDrinks) : 0;
     subtotal = typicalMain + typicalDrink;
   } else if (category === 'bar') {
     // 2 Drinks + 1 Starter/Bite
-    const typicalDrink = alcoholDrinks.length > 0 ? getMedian(alcoholDrinks) : (allDrinks.length > 0 ? getMedian(allDrinks) : 4500);
-    const typicalStarter = starters.length > 0 ? getMedian(starters) : (mains.length > 0 ? getMedian(mains) * 0.6 : 5000);
+    const typicalDrink = alcoholDrinks.length > 0 ? getMedian(alcoholDrinks) : (allDrinks.length > 0 ? getMedian(allDrinks) : 0);
+    const typicalStarter = starters.length > 0 ? getMedian(starters) : (mains.length > 0 ? getMedian(mains) * 0.6 : 0);
     subtotal = (2 * typicalDrink) + typicalStarter;
   } else if (category === 'activity') {
     // 1 Entry Fee + 1 Soft Drink
     const typicalFee = activityFees.length > 0 ? getMedian(activityFees) : getMedian(allPrices);
-    const typicalSoftDrink = softDrinks.length > 0 ? getMedian(softDrinks) : 1500;
+    const typicalSoftDrink = softDrinks.length > 0 ? getMedian(softDrinks) : 0;
     subtotal = typicalFee + typicalSoftDrink;
   } else {
     // Generic default category average

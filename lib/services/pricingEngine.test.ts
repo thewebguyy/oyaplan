@@ -96,10 +96,10 @@ describe('calculateTypicalOutingCost', () => {
       const availableOnly: MenuItem[] = [
         { id: '1', venue_id: 'v1', category: 'main', price: 10000, name: 'Dish A', is_available: true },
       ];
-      // Median main = 10000, no drink present → default ₦3500
-      // Subtotal = 10000 + 3500 = 13500, no tax → 13500
+      // Median main = 10000, no drink present → 0
+      // Subtotal = 10000 + 0 = 10000, no tax → 10000
       const cost = calculateTypicalOutingCost(availableOnly, 'restaurant', NO_TAX);
-      expect(cost).toBe(13500);
+      expect(cost).toBe(10000);
     });
   });
 });

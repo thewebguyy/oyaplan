@@ -121,7 +121,7 @@ export default function MobileLivePreviewBar({
 
   const topEstimate = getSpotTransportEstimate(topSpot);
   const transportCost = topEstimate.status === "unavailable" ? 0 : topEstimate.midpointCost;
-  const foodCost = (topSpot.price_per_person || 12000) * squadSize;
+  const foodCost = (topSpot.price_per_person || 0) * squadSize;
   const taxCost = Math.round(foodCost * 0.1);
   const totalCost = foodCost + transportCost + taxCost;
   const perPersonCost = Math.ceil(totalCost / squadSize);
@@ -223,7 +223,7 @@ export default function MobileLivePreviewBar({
                   const sEstimate = getSpotTransportEstimate(spot);
                   const isUnavailable = sEstimate.status === "unavailable";
                   const sTransportCost = isUnavailable ? 0 : sEstimate.midpointCost;
-                  const sFoodCost = (spot.price_per_person || 12000) * squadSize;
+                  const sFoodCost = (spot.price_per_person || 0) * squadSize;
                   const sTaxCost = Math.round(sFoodCost * 0.1);
                   const sTotalCost = sFoodCost + sTransportCost + sTaxCost;
                   

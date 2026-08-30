@@ -73,8 +73,8 @@ export default function LivePreviewCard({
   };
 
   // Math Allocation Calculations
-  const transportCost = squadSize === 1 ? 0 : squadSize > 4 ? 10000 : 5000;
-  const foodCost = spot.price_per_person * squadSize;
+  const transportCost = squadSize > 4 ? 10000 : 5000;
+  const foodCost = (spot.price_per_person || 0) * squadSize;
   const taxCost = Math.round((foodCost * 0.1) / 100) * 100;
   const totalCost = foodCost + transportCost + taxCost;
   const remainingBuffer = Math.max(0, budget - totalCost);

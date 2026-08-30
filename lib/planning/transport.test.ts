@@ -68,6 +68,44 @@ describe('Transport pricing and confidence engine logic', () => {
     });
   });
 
+  describe('Missing route data and no fake fallback handling', () => {
+    it('returns status unavailable and reason NO_ROUTE_DATA when route cannot be resolved', () => {
+      // "anywhere" is a reserved string that means origin is unknown
+      const range = TransportPricingProvider.calculateRange('anywhere', 'vi');
+      expect(range.status).toBe('unavailable');
+      expect(range.reason).toBe('NO_ROUTE_DATA');
+      expect(range.midpointCost).toBe(0);
+    });
+
+    it('returns status unavailable for completely unknown zones without matrix entry', () => {
+      // "moon" is not in the zones and we don't have a matrix
+      const range = TransportPricingProvider.calculateRange('moon', 'mars');
+      expect(range.status).toBe('unavailable');
+      expect(range.reason).toBe('NO_ROUTE_DATA');
+      expect(range.midpointCost).toBe(0);
+    });
+
+    it('returns unavailable instead of fabricating a 1500 or 5000 fallback', () => {
+      const estimate = TransportPricingProvider.calculateEstimate('unknown', 'unknown', 2);
+      expect(estimate.status).toBe('unavailable');
+      expect(estimate.midpointCost).toBe(0);
+    });
+  });
+
+  describe('Vehicle capacity scaling invariants', () => {
+    it('scales correctly for edge case party sizes', () => {
+      const estimateOne = TransportPricingProvider.calculateEstimate('yaba', 'vi', 1);
+      const estimateFour = TransportPricingProvider.calculateEstimate('yaba', 'vi', 4);
+      const estimateFive = TransportPricingProvider.calculateEstimate('yaba', 'vi', 5);
+      const estimateEight = TransportPricingProvider.calculateEstimate('yaba', 'vi', 8);
+
+      expect(estimateOne.vehiclesRequired).toBe(1);
+      expect(estimateFour.vehiclesRequired).toBe(1);
+      expect(estimateFive.vehiclesRequired).toBe(2);
+      expect(estimateEight.vehiclesRequired).toBe(2);
+    });
+  });
+
   describe('TransportPricingProvider.calculateRange() and calculateEstimate()', () => {
     it('produces valid fare ranges for standard Uber modes', () => {
       const range = TransportPricingProvider.calculateRange('yaba', 'vi', 'ride-hailing', undefined, undefined, 2);
