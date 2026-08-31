@@ -2,7 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { ActivityRepository } from "@/lib/admin/repositories/activityRepository";
-import { auth } from "@/auth";
+import { isAuthorizedAdmin } from "@/lib/admin/permissions";
 
 const getSupabaseAdmin = () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -40,8 +40,8 @@ export interface BulkMediaUploadResult {
 }
 
 export async function previewBulkMediaUpload(records: { venueName: string; imageUrls: string[] }[]): Promise<BulkMediaPreviewResult> {
-  const session = await auth();
-  if (!session?.user || (session.user.role !== "admin" && session.user.role !== "owner")) {
+  const auth = await isAuthorizedAdmin();
+  if (!auth.authorized) {
     throw new Error("Unauthorized");
   }
 
@@ -108,12 +108,12 @@ export async function previewBulkMediaUpload(records: { venueName: string; image
 }
 
 export async function executeBulkMediaUpload(previewRows: BulkMediaPreviewResult['previewRows']): Promise<BulkMediaUploadResult> {
-  const session = await auth();
-  if (!session?.user || (session.user.role !== "admin" && session.user.role !== "owner")) {
+  const auth = await isAuthorizedAdmin();
+  if (!auth.authorized) {
     throw new Error("Unauthorized");
   }
   
-  const actorEmail = session.user.email || "admin";
+  const actorEmail = auth.email || "admin";
   const supabase = getSupabaseAdmin();
 
   const result: BulkMediaUploadResult = {

@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { previewBulkMediaUpload, executeBulkMediaUpload } from './actions';
 
 // Mock dependencies
-vi.mock('@/auth', () => ({
-  auth: vi.fn()
+vi.mock('@/lib/admin/permissions', () => ({
+  isAuthorizedAdmin: vi.fn()
 }));
 
 vi.mock('@supabase/supabase-js', () => {
@@ -18,7 +18,7 @@ vi.mock('@/lib/admin/repositories/activityRepository', () => ({
   }
 }));
 
-import { auth } from '@/auth';
+import { isAuthorizedAdmin } from '@/lib/admin/permissions';
 import { createClient } from '@supabase/supabase-js';
 import { ActivityRepository } from '@/lib/admin/repositories/activityRepository';
 
@@ -29,8 +29,8 @@ describe('Bulk Venue Media Upload', () => {
     vi.clearAllMocks();
     
     // Setup Admin Auth
-    (auth as any).mockResolvedValue({
-      user: { email: 'admin@oyaplan.com', role: 'admin' }
+    (isAuthorizedAdmin as any).mockResolvedValue({
+      authorized: true, email: 'admin@oyaplan.com', role: 'admin'
     });
 
     // Setup Supabase Mock
@@ -83,7 +83,7 @@ describe('Bulk Venue Media Upload', () => {
     });
 
     it('should reject non-admin users', async () => {
-      (auth as any).mockResolvedValue({ user: { role: 'user' } });
+      (isAuthorizedAdmin as any).mockResolvedValue({ authorized: false });
       await expect(previewBulkMediaUpload([])).rejects.toThrow('Unauthorized');
     });
   });
