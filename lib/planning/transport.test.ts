@@ -138,8 +138,8 @@ describe('Transport pricing and confidence engine logic', () => {
     });
 
     it('respects override confidence directly if passed', () => {
-      const confidence = TransportConfidenceProvider.evaluate('yaba', 'vi', 'ride-hailing', true, undefined, 90);
-      expect(confidence.score).toBe(90);
+      const confidence = TransportConfidenceProvider.evaluate('yaba', 'vi', 'ride-hailing', true, undefined, 95);
+      expect(confidence.score).toBe(95);
       expect(confidence.label).toBe('High confidence');
       expect(confidence.badgeColor).toBe('green');
     });
