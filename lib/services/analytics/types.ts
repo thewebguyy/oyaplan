@@ -203,6 +203,12 @@ export const EventSchemas = {
     confidence_score: z.number(),
     version: z.literal('1.0')
   }),
+  'feedback_prompt_eligible': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    spot_id: z.string(),
+    version: z.literal('1.0')
+  }),
   'feedback_prompt_shown': z.object({
     category: z.literal('Feedback'),
     plan_id: z.string(),

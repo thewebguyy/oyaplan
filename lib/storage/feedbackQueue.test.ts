@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   enqueueFeedback,
   getEligibleFeedback,
@@ -10,16 +10,28 @@ import {
 const QUEUE_KEY = 'oyaplan_pending_feedback';
 
 describe('feedbackQueue State Machine', () => {
+  let mockStorage: Record<string, string> = {};
+
   beforeEach(() => {
-    // Clear localStorage before each test
-    window.localStorage.clear();
-    // Mock Date.now() to a fixed timestamp
+    mockStorage = {};
+    global.window = {
+      localStorage: {
+        getItem: (key: string) => mockStorage[key] || null,
+        setItem: (key: string, value: string) => { mockStorage[key] = value; },
+        removeItem: (key: string) => { delete mockStorage[key]; },
+        clear: () => { mockStorage = {}; },
+        length: 0,
+        key: () => null
+      }
+    } as any;
+    
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-08-31T10:00:00.000Z'));
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    delete (global as any).window;
   });
 
   const getRawQueue = (): PendingFeedbackItem[] => {

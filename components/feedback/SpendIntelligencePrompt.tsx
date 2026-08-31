@@ -10,8 +10,15 @@ import {
   dismissFeedback,
   PendingFeedbackItem
 } from '@/lib/storage/feedbackQueue';
-import { formatNaira } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+
+const formatNaira = (amount: number) => {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    maximumFractionDigits: 0
+  }).format(amount);
+};
 
 export function SpendIntelligencePrompt() {
   const [mounted, setMounted] = useState(false);
@@ -30,6 +37,14 @@ export function SpendIntelligencePrompt() {
     const eligible = getEligibleFeedback();
     if (eligible) {
       setItem(eligible);
+      
+      trackEvent('feedback_prompt_eligible', {
+        category: 'Feedback',
+        plan_id: eligible.planId,
+        spot_id: eligible.spotId,
+        version: '1.0'
+      });
+      
       setStage('stage1');
       trackEvent('feedback_prompt_shown', {
         category: 'Feedback',
@@ -141,6 +156,17 @@ export function SpendIntelligencePrompt() {
   const parsedActual = parseInt(actualSpend.replace(/\D/g, ''), 10);
   const difference = !isNaN(parsedActual) ? parsedActual - item.estimatedTotal : null;
 
+  let varianceText = null;
+  if (difference !== null) {
+    if (difference === 0 || Math.abs(difference) <= 500) {
+      varianceText = <span className="text-text-secondary">About the same</span>;
+    } else if (difference > 0) {
+      varianceText = <span className="text-red-600">{formatNaira(difference)} more than estimated</span>;
+    } else {
+      varianceText = <span className="text-brand-green">{formatNaira(Math.abs(difference))} less than estimated</span>;
+    }
+  }
+
   return (
     <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100vw-32px)] md:w-[380px] bg-white rounded-[16px] shadow-2xl border border-surface-grey z-50 overflow-hidden flex flex-col pointer-events-auto transition-all animate-in slide-in-from-bottom-8">
       {/* Header */}
@@ -181,14 +207,17 @@ export function SpendIntelligencePrompt() {
         {/* STAGE 2: Spend Collection */}
         {stage === 'stage2' && (
           <>
+            <p className="text-text-primary text-[15px] leading-relaxed mb-1">
+              Nice. Did our estimate match what you actually spent?
+            </p>
             <div className="bg-[#FAFAF8] rounded-[12px] p-4 flex flex-col gap-1">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-text-secondary">OyaPlan estimated:</span>
                 <span className="font-mono font-medium text-text-primary">{formatNaira(item.estimatedTotal)}</span>
               </div>
-              <div className="flex justify-between items-center text-sm mt-2">
-                <span className="text-text-primary font-medium">You actually spent:</span>
-                <div className="relative w-1/2">
+              <div className="flex justify-between items-center text-sm mt-3">
+                <span className="text-text-primary font-medium">What did you actually spend?</span>
+                <div className="relative w-[120px]">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">₦</span>
                   <input 
                     type="text" 
@@ -200,12 +229,9 @@ export function SpendIntelligencePrompt() {
                 </div>
               </div>
               
-              {difference !== null && (
-                <div className="flex justify-between items-center text-xs mt-2 pt-2 border-t border-border-default">
-                  <span className="text-text-secondary">Difference:</span>
-                  <span className={`font-mono font-medium ${difference > 0 ? 'text-red-600' : difference < 0 ? 'text-brand-green' : 'text-text-secondary'}`}>
-                    {difference > 0 ? '+' : ''}{formatNaira(difference)}
-                  </span>
+              {varianceText && (
+                <div className="flex justify-end items-center text-xs mt-1">
+                  <span className="font-medium text-right">{varianceText}</span>
                 </div>
               )}
             </div>
