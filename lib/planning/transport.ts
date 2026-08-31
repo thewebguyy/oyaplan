@@ -234,7 +234,7 @@ export class TransportConfidenceProvider {
     overrideScore?: number
   ): ConfidenceEvaluation {
     if (overrideScore !== undefined) {
-      const score = Math.min(100, Math.max(10, overrideScore + (hasVenueOverride ? 5 : 0)));
+      const score = overrideScore;
       if (score >= 80) {
         return { score, label: "High confidence", badgeColor: "green" };
       } else if (score >= 50) {
