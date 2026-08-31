@@ -11,6 +11,7 @@ import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { trackEvent } from "@/lib/analytics/trackClient";
 import WhatsAppCopyButton from "../WhatsAppCopyButton";
 import { triggerMoment } from "@/components/ui/moment-of-delight";
+import { enqueueFeedback } from "@/lib/storage/feedbackQueue";
 
 export function PlanActions({
   plan,
@@ -64,6 +65,13 @@ export function PlanActions({
             spot_id: plan.spot.id,
             total_cost: plan.totalCost,
             version: '1.0'
+          });
+          
+          enqueueFeedback({
+            planId: currentPlanId,
+            spotId: plan.spot.id,
+            spotName: plan.spot.name,
+            estimatedTotal: plan.totalCost
           });
         }
       }

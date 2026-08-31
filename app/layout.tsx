@@ -51,6 +51,7 @@ import ClientOnly from "@/components/ClientOnly";
 import BetaDiagnostics from "@/components/BetaDiagnostics";
 import { OriginProvider } from "@/lib/location/OriginContext";
 import { MomentOfDelight } from "@/components/ui/moment-of-delight";
+import { SpendIntelligencePrompt } from "@/components/feedback/SpendIntelligencePrompt";
 
 export default function RootLayout({
   children,
@@ -87,6 +88,7 @@ export default function RootLayout({
                 <MomentOfDelight triggerKey="outing_planned" message="First outing planned!" />
                 <MomentOfDelight triggerKey="venue_suggested" message="You're officially a Scout!" />
                 <MomentOfDelight triggerKey="plan_shared" message="Plan shared!" />
+                <SpendIntelligencePrompt />
               </ClientOnly>
             </OriginProvider>
           </AuthProvider>

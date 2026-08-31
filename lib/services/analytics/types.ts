@@ -203,12 +203,55 @@ export const EventSchemas = {
     confidence_score: z.number(),
     version: z.literal('1.0')
   }),
+  'feedback_prompt_shown': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    spot_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'feedback_prompt_dismissed': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    spot_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'outing_confirmed': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    spot_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'outing_not_yet': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    spot_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'outing_not_happened': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    spot_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'actual_spend_started': z.object({
+    category: z.literal('Feedback'),
+    plan_id: z.string(),
+    spot_id: z.string(),
+    version: z.literal('1.0')
+  }),
   'actual_spend_submitted': z.object({
     category: z.literal('Feedback'),
     shared_plan_id: z.string(),
     spot_id: z.string().optional(),
     actual_total: z.number(),
     estimated_total: z.number(),
+    version: z.literal('1.0')
+  }),
+  'actual_spend_submission_failed': z.object({
+    category: z.literal('Feedback'),
+    shared_plan_id: z.string(),
+    spot_id: z.string().optional(),
+    error: z.string(),
     version: z.literal('1.0')
   }),
   'plan_usefulness_rated': z.object({
