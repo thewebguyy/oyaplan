@@ -31,6 +31,7 @@ const forgeParamsSchema = z.object({
   fresh: z.string().optional(),
   mode: z.enum(["ride-hailing", "public-transit", "driving"]).optional(),
   departureAt: z.string().optional(),
+  group: z.string().uuid().optional(),
 });
 
 function isBotRequest(userAgent: string | null): boolean {
@@ -194,6 +195,7 @@ export default async function ForgePage({
     originDistrictId,
     userId,
     sessionId,
+    groupId: parsed.data.group,
   };
 
   // Run Matching/Pricing Engine: 2-Pass Matching (gated by area presence)

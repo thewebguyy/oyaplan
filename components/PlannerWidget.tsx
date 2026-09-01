@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackEvent } from "@/lib/analytics/trackClient";
 
@@ -9,6 +9,7 @@ import { LocationService, Location } from "@/lib/services/LocationService";
 import { useTransportCost } from "@/hooks/useTransportCost";
 import { useOrigin } from "@/lib/location/OriginContext";
 import { triggerMoment } from "@/components/ui/moment-of-delight";
+import OyaSquadSelector from "@/components/squad/OyaSquadSelector";
 
 import { Spot } from "@/lib/types";
 
@@ -61,6 +62,8 @@ export default function PlannerWidget({
   setSelectedArea: _setControlledArea,
 }: PlannerWidgetProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [groupId, setGroupId] = useState<string | null>(() => searchParams.get("group"));
   const [showMoreVibes, setShowMoreVibes] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -147,6 +150,16 @@ export default function PlannerWidget({
     params.append("budget", String(budget));
     if (selectedArea) {
       params.append("area", selectedArea.id);
+    }
+    if (groupId) {
+      params.append("group", groupId);
+      trackEvent("group_plan_started", {
+        category: "Planning",
+        group_id: groupId,
+        squad_size: Number(squadSize),
+        is_repeat_plan: false,
+        version: "1.0",
+      });
     }
     params.append("fresh", "true");
 
@@ -296,6 +309,13 @@ export default function PlannerWidget({
               background: `linear-gradient(to right, #008751 ${squadPct}%, #F3F4F6 ${squadPct}%)`,
             }}
             aria-label={`Squad size: current value ${squadSize === 1 ? "Just me" : squadSize === 8 ? "8+ people" : `${squadSize} people`}. Choose between 1 (Just me) and 8+ people.`}
+          />
+          <OyaSquadSelector
+            selectedGroupId={groupId}
+            onSelectSquad={(gId, count) => {
+              setGroupId(gId);
+              if (count > 0) setSquadSize(Math.min(8, count));
+            }}
           />
         </div>
 

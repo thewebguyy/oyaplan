@@ -86,7 +86,39 @@ export type ForgeInput = {
   originDistrictId?: string;
   userId?: string;
   sessionId?: string;
+  groupId?: string;
 };
+
+// OyaSquad Domain Types
+export interface PlanningGroup {
+  id: string;
+  owner_id: string;
+  name: string;
+  emoji: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PlanningGroupMember {
+  id: string;
+  group_id: string;
+  user_id: string | null;
+  display_name: string;
+  created_at: string;
+}
+
+export interface OyaSquadSummary extends PlanningGroup {
+  member_count: number;
+  members: Array<{ id: string; display_name: string }>;
+  plans_count: number;
+  last_outing?: {
+    venue_name: string;
+    total_cost: number;
+    cost_per_person: number;
+    date: string;
+    shared_plan_id: string;
+  } | null;
+}
 
 export interface PlanExplanation {
   budget_fit: string;

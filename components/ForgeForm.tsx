@@ -7,6 +7,7 @@ import { trackEvent } from "@/lib/analytics/trackClient";
 import { Button } from "@/components/ui/button";
 import { Heart, Coffee, Utensils, Music, Zap, Sun } from "lucide-react";
 import { getAvailableOptions } from "@/lib/services/matching/forgeMatcher";
+import OyaSquadSelector from "@/components/squad/OyaSquadSelector";
 
 interface ForgeFormProps {
   areas: Area[];
@@ -101,6 +102,7 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
       budget: searchParams.get("budget") || "",
       startArea: searchParams.get("area") || searchParams.get("startArea") || "",
       pinnedSpotId: searchParams.get("pinned") || searchParams.get("pinnedSpotId") || "",
+      groupId: searchParams.get("group") || searchParams.get("groupId") || "",
     };
   };
 
@@ -219,6 +221,9 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
     if (formData.pinnedSpotId) {
       params.append("pinned", formData.pinnedSpotId);
     }
+    if (formData.groupId) {
+      params.append("group", formData.groupId);
+    }
     
     trackEvent('forge_started', {
       category: 'Activation',
@@ -328,25 +333,47 @@ export default function ForgeForm({ areas, spots }: ForgeFormProps) {
           </div>
         )}
 
-        {/* Step 1: Squad (Large Pills - Always selectable for user flexibility) */}
+        {/* Step 1: Squad */}
         {currentStep.id === 'squad' && (
-          <div className="flex flex-col gap-3">
-            {SQUAD_OPTIONS.map((o) => {
-              const isSelected = formData.squadSize === o.value;
-              return (
-                <button
-                  key={o.value}
-                  onClick={() => handleSelect('squadSize', o.value)}
-                  className={`w-full text-left px-6 py-5 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 ${
-                    isSelected
-                      ? "bg-midnight-lagoon border-midnight-lagoon text-white"
-                      : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
-                  }`}
-                >
-                  <span className="type-venue-name">{o.label}</span>
-                </button>
-              );
-            })}
+          <div className="flex flex-col gap-4">
+            <OyaSquadSelector
+              selectedGroupId={formData.groupId || null}
+              onSelectSquad={(gId, count) => {
+                setFormData(prev => ({
+                  ...prev,
+                  groupId: gId || '',
+                  squadSize: String(count)
+                }));
+                if (currentStepIndex < STEPS.length - 1) {
+                  setTimeout(() => setCurrentStepIndex(prev => prev + 1), 300);
+                }
+              }}
+            />
+
+            <div className="flex flex-col gap-3 pt-1">
+              <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">
+                Or choose squad size
+              </span>
+              {SQUAD_OPTIONS.map((o) => {
+                const isSelected = formData.squadSize === o.value && !formData.groupId;
+                return (
+                  <button
+                    key={o.value}
+                    onClick={() => {
+                      setFormData(prev => ({ ...prev, groupId: '' }));
+                      handleSelect('squadSize', o.value);
+                    }}
+                    className={`w-full text-left px-6 py-5 rounded-[8px] transition-[colors,border-color,box-shadow] duration-[var(--duration-hover)] tap-feedback border-2 ${
+                      isSelected
+                        ? "bg-midnight-lagoon border-midnight-lagoon text-white"
+                        : "bg-white-sand border-transparent text-text-primary hover:bg-midnight-lagoon hover:text-white hover:border-midnight-lagoon"
+                    }`}
+                  >
+                    <span className="type-venue-name">{o.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
 

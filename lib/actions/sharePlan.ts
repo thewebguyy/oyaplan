@@ -19,7 +19,8 @@ const sharePlanSchema = z.object({
     startArea: z.string().max(100),
     squadSize: z.number().int().positive(),
     budget: z.number().int().positive(),
-    vibe: z.string().max(100)
+    vibe: z.string().max(100),
+    groupId: z.string().uuid().optional().nullable(),
   }).passthrough()
 });
 
@@ -53,6 +54,7 @@ export async function createShareablePlan(plan: Plan, input: ForgeInput): Promis
         explanation: plan.explanation || null,
         user_id: userId,
         session_id: sessionId,
+        group_id: input.groupId || null,
       })
       .select('id')
       .single();

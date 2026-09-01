@@ -405,6 +405,48 @@ export const EventSchemas = {
     username: z.string(),
     error: z.string(),
     version: z.literal('1.0')
+  }),
+
+  // OyaSquad / Planning Groups
+  'group_created': z.object({
+    category: z.literal('Planning'),
+    group_id: z.string(),
+    member_count: z.number(),
+    version: z.literal('1.0')
+  }),
+  'group_member_added': z.object({
+    category: z.literal('Planning'),
+    group_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'group_member_removed': z.object({
+    category: z.literal('Planning'),
+    group_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'group_selected': z.object({
+    category: z.literal('Planning'),
+    group_id: z.string(),
+    member_count: z.number(),
+    version: z.literal('1.0')
+  }),
+  'group_plan_started': z.object({
+    category: z.literal('Planning'),
+    group_id: z.string(),
+    squad_size: z.number(),
+    is_repeat_plan: z.boolean(),
+    version: z.literal('1.0')
+  }),
+  'group_plan_shared': z.object({
+    category: z.literal('Planning'),
+    group_id: z.string(),
+    shared_plan_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'group_plan_repeated': z.object({
+    category: z.literal('Planning'),
+    group_id: z.string(),
+    version: z.literal('1.0')
   })
 } as const;
 
