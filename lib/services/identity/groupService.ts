@@ -118,7 +118,14 @@ export class GroupService {
 
       // Fetch shared plans counts and latest outings for these groups
       const groupIds = groups.map((g) => g.id);
-      let plansByGroup: Record<string, any[]> = {};
+      let plansByGroup: Record<string, Array<{
+        id: string;
+        group_id: string | null;
+        total_cost: number;
+        squad_size: number;
+        created_at: string;
+        spot: { name: string } | Array<{ name: string }> | null;
+      }>> = {};
 
       if (groupIds.length > 0) {
         const { data: plans } = await supabase
@@ -138,14 +145,28 @@ export class GroupService {
           plansByGroup = plans.reduce((acc, p) => {
             if (!p.group_id) return acc;
             if (!acc[p.group_id]) acc[p.group_id] = [];
-            acc[p.group_id].push(p);
+            acc[p.group_id].push(p as unknown as {
+              id: string;
+              group_id: string | null;
+              total_cost: number;
+              squad_size: number;
+              created_at: string;
+              spot: { name: string } | Array<{ name: string }> | null;
+            });
             return acc;
-          }, {} as Record<string, any[]>);
+          }, {} as Record<string, Array<{
+            id: string;
+            group_id: string | null;
+            total_cost: number;
+            squad_size: number;
+            created_at: string;
+            spot: { name: string } | Array<{ name: string }> | null;
+          }>>);
         }
       }
 
       const summaries: OyaSquadSummary[] = groups.map((g) => {
-        const members = (g.planning_group_members || []).map((m: any) => ({
+        const members = (g.planning_group_members || []).map((m: { id: string; display_name: string }) => ({
           id: m.id,
           display_name: m.display_name,
         }));
@@ -200,7 +221,16 @@ export class GroupService {
     data?: {
       group: PlanningGroup;
       members: PlanningGroupMember[];
-      plans: any[];
+      plans: Array<{
+        id: string;
+        total_cost: number;
+        food_cost: number;
+        transport_cost: number;
+        squad_size: number;
+        vibe?: string;
+        created_at: string;
+        spot: { name: string; category?: string; address?: string } | null;
+      }>;
     };
     error?: string;
   }> {
@@ -250,7 +280,16 @@ export class GroupService {
         data: {
           group,
           members: membersRes.data || [],
-          plans: plansRes.data || [],
+          plans: (plansRes.data || []) as unknown as Array<{
+            id: string;
+            total_cost: number;
+            food_cost: number;
+            transport_cost: number;
+            squad_size: number;
+            vibe?: string;
+            created_at: string;
+            spot: { name: string; category?: string; address?: string } | null;
+          }>,
         },
       };
     } catch (error) {
@@ -272,7 +311,7 @@ export class GroupService {
         return { success: false, error: 'unauthorized' };
       }
 
-      const payload: Record<string, any> = {
+      const payload: Record<string, string> = {
         updated_at: new Date().toISOString(),
       };
 

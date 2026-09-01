@@ -36,7 +36,7 @@ describe('linkPlanToSquadAction', () => {
   });
 
   it('rejects unauthenticated user', async () => {
-    (SessionResolver.resolveIdentity as any).mockResolvedValue({
+    vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
       type: 'anonymous',
       sessionId: 'anon-123',
       profile: null,
@@ -53,7 +53,7 @@ describe('linkPlanToSquadAction', () => {
 
   it('rejects invalid inputs', async () => {
     const res = await linkPlanToSquadAction({
-      sharedPlanId: 'not-a-uuid',
+      sharedPlanId: '',
       squadName: '',
     });
 
@@ -62,18 +62,29 @@ describe('linkPlanToSquadAction', () => {
   });
 
   it('creates squad and updates shared_plans table with group_id', async () => {
-    (SessionResolver.resolveIdentity as any).mockResolvedValue({
+    vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
       type: 'authenticated',
       sessionId: 'sess-123',
-      profile: { id: 'user-1' },
+      profile: {
+        id: 'user-1',
+        role: 'planner',
+        email: 'user@test.com',
+        display_name: 'User 1',
+        profile_badge: null,
+        beta_joined_at: null,
+        beta_onboarding_complete: true,
+      },
     });
 
-    (GroupService.createGroup as any).mockResolvedValue({
+    vi.mocked(GroupService.createGroup).mockResolvedValue({
       success: true,
       data: {
         id: 'new-group-uuid',
+        owner_id: 'user-1',
         name: 'Friday Squad',
         emoji: '⚡',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
     });
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Users, Sparkles, Check, Plus, X, Loader2 } from 'lucide-react';
+import { Plus, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { linkPlanToSquadAction } from '@/lib/actions/linkPlanToSquadAction';
 import { trackEvent } from '@/lib/analytics/trackClient';
@@ -65,10 +65,10 @@ export default function SaveAsSquadPrompt({
     e.preventDefault();
     if (!squadName.trim()) return;
 
-    let finalMembers = [...members];
-    if (memberInput.trim() && !finalMembers.includes(memberInput.trim())) {
-      finalMembers.push(memberInput.trim());
-    }
+    const finalMembers =
+      memberInput.trim() && !members.includes(memberInput.trim())
+        ? [...members, memberInput.trim()]
+        : [...members];
 
     setIsSubmitting(true);
     try {

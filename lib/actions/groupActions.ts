@@ -1,6 +1,7 @@
 'use server';
 
 import { GroupService } from '@/lib/services/identity/groupService';
+import { PlanningGroup, PlanningGroupMember } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
@@ -25,7 +26,7 @@ export async function createGroupAction(input: {
   name: string;
   emoji?: string;
   memberNames?: string[];
-}): Promise<{ success: boolean; data?: any; error?: string }> {
+}): Promise<{ success: boolean; data?: PlanningGroup; error?: string }> {
   const parsed = createGroupSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: 'Invalid group data' };
@@ -87,7 +88,7 @@ export async function deleteGroupAction(groupId: string): Promise<{ success: boo
 export async function addMemberAction(input: {
   groupId: string;
   displayName: string;
-}): Promise<{ success: boolean; data?: any; error?: string }> {
+}): Promise<{ success: boolean; data?: PlanningGroupMember; error?: string }> {
   const parsed = memberSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: 'Invalid member name' };

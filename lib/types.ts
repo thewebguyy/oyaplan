@@ -221,6 +221,8 @@ export type SharedPlanRow = {
   explanation?: PlanExplanation;
   saved_at?: string;
   transport_estimate?: TransportEstimate;
+  group_id?: string | null;
+  group?: { id: string; name: string; emoji?: string } | Array<{ id: string; name: string; emoji?: string }> | null;
 };
 
 // Phase 2 Normalized Architecture Types

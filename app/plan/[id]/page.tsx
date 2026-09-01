@@ -183,15 +183,15 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           foodCost={plan?.food_cost || 0}
           transportCost={plan?.transport_cost || 0}
           totalCost={plan?.total_cost || 0}
-          squadName={Array.isArray((plan as any)?.group) ? (plan as any)?.group[0]?.name : (plan as any)?.group?.name}
+          squadName={Array.isArray(plan?.group) ? plan?.group[0]?.name : plan?.group?.name}
         />
 
         {/* Post-Plan OyaSquad Intent Prompt */}
         <SaveAsSquadPrompt
           sharedPlanId={plan?.id || id}
           squadSize={plan?.squad_size || 1}
-          existingGroupId={(plan as any)?.group_id}
-          initialSquadName={Array.isArray((plan as any)?.group) ? (plan as any)?.group[0]?.name : (plan as any)?.group?.name}
+          existingGroupId={plan?.group_id}
+          initialSquadName={Array.isArray(plan?.group) ? plan?.group[0]?.name : plan?.group?.name}
         />
 
         {/* Squad Voting Consensus builder */}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Users, Plus, Check, X, Loader2 } from 'lucide-react';
 import { OyaSquadSummary } from '@/lib/types';
 import { createGroupAction } from '@/lib/actions/groupActions';
@@ -24,13 +24,6 @@ export default function OyaSquadSelector({
   const [members, setMembers] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If initial squads not passed, fetch them client-side if user is logged in
-  useEffect(() => {
-    if (initialSquads.length > 0) {
-      setSquads(initialSquads);
-    }
-  }, [initialSquads]);
-
   const handleAddMember = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = memberInput.trim();
@@ -44,10 +37,10 @@ export default function OyaSquadSelector({
     e.preventDefault();
     if (!name.trim()) return;
 
-    let finalMembers = [...members];
-    if (memberInput.trim() && !finalMembers.includes(memberInput.trim())) {
-      finalMembers.push(memberInput.trim());
-    }
+    const finalMembers =
+      memberInput.trim() && !members.includes(memberInput.trim())
+        ? [...members, memberInput.trim()]
+        : [...members];
 
     setIsSubmitting(true);
     try {

@@ -2,16 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Users, Calendar, ArrowRight, Sparkles, MapPin } from 'lucide-react';
+import { Users, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OyaSquadSummary } from '@/lib/types';
 
 interface OyaSquadCardProps {
   squad: OyaSquadSummary;
-  onDelete?: (id: string) => void;
 }
 
-export default function OyaSquadCard({ squad, onDelete }: OyaSquadCardProps) {
+export default function OyaSquadCard({ squad }: OyaSquadCardProps) {
   const memberList = squad.members || [];
   const displayMembers = memberList.slice(0, 4);
   const remainingCount = memberList.length - displayMembers.length;

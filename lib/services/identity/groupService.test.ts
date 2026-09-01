@@ -25,8 +25,12 @@ vi.mock('../../supabase-server', () => ({
 describe('GroupService (OyaSquad Domain Service)', () => {
   const mockUser = {
     id: 'user-123-abc',
-    role: 'planner',
+    role: 'planner' as const,
     email: 'user@example.com',
+    display_name: 'Test User',
+    profile_badge: null,
+    beta_joined_at: null,
+    beta_onboarding_complete: true,
   };
 
   beforeEach(() => {
@@ -35,7 +39,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
 
   describe('createGroup', () => {
     it('rejects unauthenticated user', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'anonymous',
         sessionId: 'anon-123',
         profile: null,
@@ -47,7 +51,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
     });
 
     it('rejects empty or whitespace-only group name', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'authenticated',
         sessionId: 'session-123',
         profile: mockUser,
@@ -59,7 +63,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
     });
 
     it('rejects group name exceeding 60 characters', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'authenticated',
         sessionId: 'session-123',
         profile: mockUser,
@@ -72,7 +76,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
     });
 
     it('enforces maximum 10 OyaSquads per user limit', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'authenticated',
         sessionId: 'session-123',
         profile: mockUser,
@@ -90,7 +94,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
     });
 
     it('successfully creates an OyaSquad and inserts initial members', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'authenticated',
         sessionId: 'session-123',
         profile: mockUser,
@@ -105,24 +109,21 @@ describe('GroupService (OyaSquad Domain Service)', () => {
         updated_at: new Date().toISOString(),
       };
 
-      // 1. count check -> returns 2
-      const mockCountQuery = {
-        eq: vi.fn().mockResolvedValueOnce({ count: 2, error: null }),
-      };
-      // 2. group insert -> returns mockCreatedGroup
-      const mockInsertGroupQuery = {
-        select: vi.fn().mockReturnValueOnce({
-          single: vi.fn().mockResolvedValueOnce({ data: mockCreatedGroup, error: null }),
+      const mockInsertGroupQuery = vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: mockCreatedGroup, error: null }),
         }),
-      };
-      // 3. members insert
-      const mockInsertMembersQuery = vi.fn().mockResolvedValueOnce({ error: null });
+      });
+
+      const mockInsertMembersQuery = vi.fn().mockResolvedValue({ error: null });
 
       mockFrom.mockImplementation((table: string) => {
         if (table === 'planning_groups') {
           return {
-            select: vi.fn().mockReturnValue(mockCountQuery),
-            insert: vi.fn().mockReturnValue(mockInsertGroupQuery),
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockResolvedValue({ count: 2, error: null }),
+            }),
+            insert: mockInsertGroupQuery,
           };
         }
         if (table === 'planning_group_members') {
@@ -141,7 +142,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
 
   describe('getUserGroups', () => {
     it('returns empty array when unauthenticated', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'anonymous',
         sessionId: 'anon-123',
         profile: null,
@@ -153,7 +154,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
     });
 
     it('fetches groups with member counts and plan statistics', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'authenticated',
         sessionId: 'session-123',
         profile: mockUser,
@@ -220,7 +221,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
 
   describe('addMember and removeMember', () => {
     it('enforces maximum 20 members limit per group', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'authenticated',
         sessionId: 'session-123',
         profile: mockUser,
@@ -254,7 +255,7 @@ describe('GroupService (OyaSquad Domain Service)', () => {
     });
 
     it('rejects member addition if group is not owned by the caller', async () => {
-      (SessionResolver.resolveIdentity as any).mockResolvedValue({
+      vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
         type: 'authenticated',
         sessionId: 'session-123',
         profile: mockUser,

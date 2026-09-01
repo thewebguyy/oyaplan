@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Users, Plus, Sparkles, X, Loader2 } from 'lucide-react';
+import { Plus, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OyaSquadSummary } from '@/lib/types';
 import OyaSquadCard from './OyaSquadCard';
@@ -42,10 +42,10 @@ export default function OyaSquadList({ initialSquads }: OyaSquadListProps) {
     if (!name.trim()) return;
 
     // If there is un-added text in the member input, add it
-    let finalMembers = [...members];
-    if (memberInput.trim() && !finalMembers.includes(memberInput.trim())) {
-      finalMembers.push(memberInput.trim());
-    }
+    const finalMembers =
+      memberInput.trim() && !members.includes(memberInput.trim())
+        ? [...members, memberInput.trim()]
+        : [...members];
 
     setIsSubmitting(true);
     try {
