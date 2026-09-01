@@ -22,6 +22,7 @@ import { BudgetFitStatus } from "@/components/ui/budget-fit-badge";
 import { SharedPlanRow, Spot } from "@/lib/types";
 import { TrendingUp } from "lucide-react";
 import RecommendationFeedback from "@/components/RecommendationFeedback";
+import SaveAsSquadPrompt from "@/components/squad/SaveAsSquadPrompt";
 
 export const dynamic = "force-dynamic";
 
@@ -182,6 +183,15 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           foodCost={plan?.food_cost || 0}
           transportCost={plan?.transport_cost || 0}
           totalCost={plan?.total_cost || 0}
+          squadName={Array.isArray((plan as any)?.group) ? (plan as any)?.group[0]?.name : (plan as any)?.group?.name}
+        />
+
+        {/* Post-Plan OyaSquad Intent Prompt */}
+        <SaveAsSquadPrompt
+          sharedPlanId={plan?.id || id}
+          squadSize={plan?.squad_size || 1}
+          existingGroupId={(plan as any)?.group_id}
+          initialSquadName={Array.isArray((plan as any)?.group) ? (plan as any)?.group[0]?.name : (plan as any)?.group?.name}
         />
 
         {/* Squad Voting Consensus builder */}

@@ -21,6 +21,7 @@ interface PlanCTAsProps {
   foodCost: number;
   transportCost: number;
   totalCost: number;
+  squadName?: string;
 }
 
 export function PlanCTAs({
@@ -35,7 +36,8 @@ export function PlanCTAs({
   currentSpotId,
   foodCost,
   transportCost,
-  totalCost
+  totalCost,
+  squadName,
 }: PlanCTAsProps) {
   const router = useRouter();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -79,7 +81,9 @@ export function PlanCTAs({
 
   const cleanAddress = address ? address.split(",")[0] : startArea || "Lagos";
 
-  const shareText = `Yo! 🎉
+  const greeting = squadName ? `⚡ Oya ${squadName}!` : "Yo! 🎉";
+
+  const shareText = `${greeting}
 
 Planned our linkup at ${venueName} using OyaPlan.
 

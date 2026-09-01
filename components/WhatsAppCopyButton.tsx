@@ -13,9 +13,10 @@ interface WhatsAppCopyButtonProps {
   plan: Plan;
   input: ForgeInput;
   variant?: 'filled' | 'outlined';
+  squadName?: string;
 }
 
-export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: WhatsAppCopyButtonProps) {
+export default function WhatsAppCopyButton({ plan, input, variant = 'filled', squadName }: WhatsAppCopyButtonProps) {
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
@@ -47,6 +48,15 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
           share_method: 'whatsapp',
           version: '1.0'
         });
+
+        if (input.groupId) {
+          trackEvent('group_plan_shared', {
+            category: 'Planning',
+            group_id: input.groupId,
+            shared_plan_id: result.id,
+            version: '1.0',
+          });
+        }
 
         setShareUrl(url);
         return url;
@@ -88,7 +98,9 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled' }: 
     }
     const perPersonCost = Math.round(plan.totalCost / input.squadSize);
     
-    const text = `🥂 *The Plan: ${plan.spot.name}* 
+    const header = squadName ? `⚡ *Oya ${squadName} — The Plan: ${plan.spot.name}*` : `🥂 *The Plan: ${plan.spot.name}*`;
+
+    const text = `${header} 
 
 *The Vibe:* ${input.vibe}
 *Estimated Spend:* ₦${perPersonCost.toLocaleString()} per person

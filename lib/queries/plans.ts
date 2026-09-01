@@ -86,7 +86,7 @@ export async function getSharedPlanWithSpot(id: string): Promise<{
   try {
     const { data, error } = await supabase
       .from('shared_plans')
-      .select('*, spot:spots(*)')
+      .select('*, spot:spots(*), group:planning_groups(id, name, emoji)')
       .eq('id', id)
       .single();
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PlannerWidget from "./PlannerWidget";
 import LivePreviewCard from "./LivePreviewCard";
@@ -127,15 +127,17 @@ export default function HeroSection({ spots }: HeroSectionProps) {
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 lg:gap-8">
           {/* Left Column: Planner Widget (62% width on desktop) */}
           <div id="planner-widget" className="w-full md:w-[62%]">
-            <PlannerWidget
-              squadSize={squadSize}
-              setSquadSize={setSquadSize}
-              budget={budget}
-              setBudget={setBudget}
-              vibe={vibe}
-              setVibe={setVibe}
-              recommendedSpots={recommendedSpots}
-            />
+            <Suspense fallback={<div className="bg-white rounded-[16px] border border-[#E5E7EB] p-6 h-[480px] animate-pulse" />}>
+              <PlannerWidget
+                squadSize={squadSize}
+                setSquadSize={setSquadSize}
+                budget={budget}
+                setBudget={setBudget}
+                vibe={vibe}
+                setVibe={setVibe}
+                recommendedSpots={recommendedSpots}
+              />
+            </Suspense>
           </div>
 
           {/* Right Column: Live Recommendation Card (34% width on desktop) - hidden on mobile */}

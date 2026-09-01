@@ -286,37 +286,112 @@ export default function PlannerWidget({
           )}
         </div>
 
-        {/* INPUT: Squad Size Slider */}
+        {/* INPUT: Progressive Social Presets (Who's going?) */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <label htmlFor="squad-size-input" className="text-sm font-semibold text-[#6B7280]">
+            <span className="text-sm font-semibold text-[#6B7280]">
               Who&apos;s going?
-            </label>
-            <span className="text-base font-bold text-[#1A1A1A]">
-              {squadSize === 1 ? "Just me" : squadSize === 8 ? "8+ people" : `${squadSize} people`}
+            </span>
+            <span className="text-xs font-bold text-brand-green bg-brand-green/10 px-2.5 py-0.5 rounded-full">
+              {squadSize === 1
+                ? "Solo Outing"
+                : squadSize === 2
+                ? "Date / Plus One"
+                : `${squadSize} people`}
             </span>
           </div>
-          <input
-            id="squad-size-input"
-            type="range"
-            min="1"
-            max="8"
-            step="1"
-            value={squadSize}
-            onChange={(e) => setSquadSize(Number(e.target.value))}
-            className="premium-range-slider"
-            style={{
-              background: `linear-gradient(to right, #008751 ${squadPct}%, #F3F4F6 ${squadPct}%)`,
-            }}
-            aria-label={`Squad size: current value ${squadSize === 1 ? "Just me" : squadSize === 8 ? "8+ people" : `${squadSize} people`}. Choose between 1 (Just me) and 8+ people.`}
-          />
-          <OyaSquadSelector
-            selectedGroupId={groupId}
-            onSelectSquad={(gId, count) => {
-              setGroupId(gId);
-              if (count > 0) setSquadSize(Math.min(8, count));
-            }}
-          />
+
+          {/* Top Tier: Solo / Date / Squad */}
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSquadSize(1);
+                setGroupId(null);
+              }}
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback ${
+                squadSize === 1 && !groupId
+                  ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
+                  : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
+              }`}
+            >
+              <span className="text-base mb-0.5">👤</span>
+              <span>Just Me</span>
+              <span className="text-[10px] opacity-75 font-normal">1 person</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSquadSize(2);
+                setGroupId(null);
+              }}
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback ${
+                squadSize === 2 && !groupId
+                  ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
+                  : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
+              }`}
+            >
+              <span className="text-base mb-0.5">💕</span>
+              <span>Date / +1</span>
+              <span className="text-[10px] opacity-75 font-normal">2 people</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (squadSize < 3) setSquadSize(4);
+              }}
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback ${
+                squadSize >= 3 || groupId
+                  ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
+                  : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
+              }`}
+            >
+              <span className="text-base mb-0.5">👥</span>
+              <span>Squad</span>
+              <span className="text-[10px] opacity-75 font-normal">3+ people</span>
+            </button>
+          </div>
+
+          {/* Secondary Layer: Squad Details (only if squadSize >= 3 or groupId selected) */}
+          {(squadSize >= 3 || groupId) && (
+            <div className="p-3 bg-surface-grey/60 rounded-2xl border border-border-default/60 space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
+                  Squad Size
+                </span>
+                <div className="flex gap-1.5">
+                  {[3, 4, 6, 8].map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => {
+                        setSquadSize(size);
+                        setGroupId(null);
+                      }}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        squadSize === size && !groupId
+                          ? "bg-brand-green text-white shadow-xs"
+                          : "bg-white text-text-secondary hover:bg-white/80 border border-border-default/60"
+                      }`}
+                    >
+                      {size === 8 ? "8+" : size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* OyaSquad Selector */}
+              <OyaSquadSelector
+                selectedGroupId={groupId}
+                onSelectSquad={(gId, count) => {
+                  setGroupId(gId);
+                  if (count > 0) setSquadSize(Math.min(8, count));
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* INPUT: Budget Slider */}
