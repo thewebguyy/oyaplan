@@ -20,8 +20,8 @@ export async function POST(req: Request) {
     }
 
     const supabase = await createServerClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
 
     // We do not trust client IPs, we resolve it server-side.
     const ip_address = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || undefined;
