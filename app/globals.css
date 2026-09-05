@@ -984,17 +984,6 @@
    Homepage Creative Upgrade (Hero, Trust, FAQ)
    ========================================== */
 
-/* Hero Section Breathing Background */
-@keyframes breathingGradient {
-  0% {
-    background: linear-gradient(135deg, #FFFFFF 0%, #FFF9E6 50%, #FFFBF0 100%);
-  }
-  50% {
-    background: linear-gradient(135deg, #FFFFFF 0%, #FFFBF0 50%, #FFF9E6 100%);
-  }
-  100% {
-    background: linear-gradient(135deg, #FFFFFF 0%, #FFF9E6 50%, #FFFBF0 100%);
-  }
 .hero-background {
   background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF5 50%, #FAF9F6 100%);
   opacity: 0.95;
