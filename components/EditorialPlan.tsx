@@ -199,40 +199,48 @@ export default function EditorialPlan({
         )}
 
         {/* 8. Transport Range & Route Evidence */}
-        <TransportEstimateCard
-          minCost={plan.transportMinCost}
-          maxCost={plan.transportMaxCost}
-          transportCost={plan.transportCost}
-          mode={plan.transportMode || input.transportMode || "ride-hailing"}
-          confidenceScore={plan.transportConfidenceScore}
-          confidenceLabel={plan.transportConfidenceLabel || "Typical estimate"}
-          badgeColor={plan.transportConfidenceBadgeColor || "yellow"}
-          assumptions={plan.transportAssumptions}
-          startAreaName={input.startArea && input.startArea !== "anywhere" ? input.startArea : "Yaba"}
-          originDistrictId={input.originDistrictId}
-          destinationDistrictId={plan.spot.area_id}
-          spotId={plan.spot.id}
-          departureAt={input.departureAt}
-        />
+        {(() => {
+          const startAreaKey = input.startArea;
+          const resolvedStartAreaName = startAreaKey && startAreaKey !== "anywhere"
+            ? (LocationService.getAllAreas().find((a) => a.id === startAreaKey || a.name.toLowerCase() === startAreaKey.toLowerCase())?.name ||
+               startAreaKey.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '))
+            : "Lagos";
 
-        {/* Route Card — only when we have a start area and venue coordinates */}
-        {input.startArea && input.startArea !== "anywhere" && plan.spot.coordinates && (() => {
-          const startArea = LocationService.getVerifiedAreas().find(
-            (a) => a.id === input.startArea
-          );
-          if (!startArea) return null;
-          const transport = calculateTransportTime(input.startArea, plan.spot.coordinates, input.departureAt);
           return (
-            <RouteCard
-              startAreaName={startArea.name}
-              startAreaSlug={input.startArea}
-              venueName={plan.spot.name}
-              venueAddress={plan.spot.address}
-              venueCoords={plan.spot.coordinates}
-              transportCost={plan.transportCost}
-              distanceKm={transport.distanceKm}
-              transportEstimate={plan.transportEstimate}
-            />
+            <>
+              <TransportEstimateCard
+                minCost={plan.transportMinCost}
+                maxCost={plan.transportMaxCost}
+                transportCost={plan.transportCost}
+                mode={plan.transportMode || input.transportMode || "ride-hailing"}
+                confidenceScore={plan.transportConfidenceScore}
+                confidenceLabel={plan.transportConfidenceLabel || "Typical estimate"}
+                badgeColor={plan.transportConfidenceBadgeColor || "yellow"}
+                assumptions={plan.transportAssumptions}
+                startAreaName={resolvedStartAreaName}
+                originDistrictId={input.originDistrictId}
+                destinationDistrictId={plan.spot.area_id}
+                spotId={plan.spot.id}
+                departureAt={input.departureAt}
+              />
+
+              {/* Route Card — only when we have a start area and venue coordinates */}
+              {input.startArea && input.startArea !== "anywhere" && plan.spot.coordinates && (() => {
+                const transport = calculateTransportTime(input.startArea, plan.spot.coordinates, input.departureAt);
+                return (
+                  <RouteCard
+                    startAreaName={resolvedStartAreaName}
+                    startAreaSlug={input.startArea}
+                    venueName={plan.spot.name}
+                    venueAddress={plan.spot.address}
+                    venueCoords={plan.spot.coordinates}
+                    transportCost={plan.transportCost}
+                    distanceKm={transport.distanceKm}
+                    transportEstimate={plan.transportEstimate}
+                  />
+                );
+              })()}
+            </>
           );
         })()}
 

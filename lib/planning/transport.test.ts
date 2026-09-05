@@ -6,6 +6,7 @@ import {
   TransportConfidenceProvider, 
   TransportDisplayFormatter 
 } from './transport';
+import { calculateTransportTime, getAreaCoordinates } from '@/lib/utils/calculateTransportTime';
 
 describe('Transport pricing and confidence engine logic', () => {
 
@@ -151,6 +152,64 @@ describe('Transport pricing and confidence engine logic', () => {
       const str = TransportDisplayFormatter.formatAssumptions('yaba', 'ride-hailing', peakTime);
       expect(str).toContain('Peak-time');
       expect(str).toContain('Yaba');
+    });
+  });
+
+  describe('Comprehensive Lagos neighborhood and corridor coverage', () => {
+    it('resolves valid fare ranges for previously unmapped neighborhoods', () => {
+      // Oshodi (mainland) to VI (island) cross-water
+      const oshodiToVi = TransportPricingProvider.calculateEstimate('oshodi', 'vi', 2);
+      expect(oshodiToVi.status).toBe('available');
+      expect(oshodiToVi.isCrossWater).toBe(true);
+      expect(oshodiToVi.midpointCost).toBe(17000); // 8500 * 2 round trip
+
+      // Bariga (mainland) to Ikeja (mainland) same zone
+      const barigaToIkeja = TransportPricingProvider.calculateEstimate('bariga', 'ikeja', 2);
+      expect(barigaToIkeja.status).toBe('available');
+      expect(barigaToIkeja.isCrossWater).toBe(false);
+      expect(barigaToIkeja.midpointCost).toBe(7000); // 3500 * 2 round trip
+
+      // Sangotedo (island) to Lekki Phase 1 (island) same zone
+      const sangotedoToLekki = TransportPricingProvider.calculateEstimate('sangotedo', 'lekki-phase-1', 2);
+      expect(sangotedoToLekki.status).toBe('available');
+      expect(sangotedoToLekki.isCrossWater).toBe(false);
+      expect(sangotedoToLekki.midpointCost).toBe(7000);
+
+      // Lagos Island to Yaba (island to central)
+      const islandToYaba = TransportPricingProvider.calculateEstimate('lagos-island', 'yaba', 2);
+      expect(islandToYaba.status).toBe('available');
+      expect(islandToYaba.midpointCost).toBe(11000); // 5500 * 2 round trip
+    });
+
+    it('handles casing and whitespace gracefully', () => {
+      const estimate = TransportPricingProvider.calculateEstimate('  Oshodi  ', 'VI', 1);
+      expect(estimate.status).toBe('available');
+      expect(estimate.isCrossWater).toBe(true);
+      expect(estimate.midpointCost).toBe(17000);
+    });
+  });
+
+  describe('calculateTransportTime() route distance and timing precision', () => {
+    it('resolves actual coordinates for newly mapped neighborhoods', () => {
+      const oshodiCoords = getAreaCoordinates('oshodi');
+      expect(oshodiCoords.lat).toBeCloseTo(6.5559, 3);
+      expect(oshodiCoords.lng).toBeCloseTo(3.3381, 3);
+
+      const sangotedoCoords = getAreaCoordinates('sangotedo');
+      expect(sangotedoCoords.lat).toBeCloseTo(6.4406, 3);
+      expect(sangotedoCoords.lng).toBeCloseTo(3.6221, 3);
+    });
+
+    it('calculates short distance for close mainland trips without defaulting to Lekki', () => {
+      // Venue in Ikeja: lat 6.6018, lng 3.3515
+      const ikejaVenueCoords = { lat: 6.6018, lng: 3.3515 };
+      // Departure from Maryland (adjacent to Ikeja)
+      const estimate = calculateTransportTime('maryland', ikejaVenueCoords);
+
+      // Distance from Maryland to Ikeja should be ~5-7km, NOT 25km (which was the old Lekki fallback)
+      expect(estimate.distanceKm).toBeLessThan(10);
+      expect(estimate.distanceKm).toBeGreaterThan(1);
+      expect(estimate.estimatedMinutes).toBeLessThan(45);
     });
   });
 

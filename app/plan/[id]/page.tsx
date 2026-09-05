@@ -23,6 +23,9 @@ import { SharedPlanRow, Spot } from "@/lib/types";
 import { TrendingUp } from "lucide-react";
 import RecommendationFeedback from "@/components/RecommendationFeedback";
 import SaveAsSquadPrompt from "@/components/squad/SaveAsSquadPrompt";
+import RouteCard from "@/components/dossier/RouteCard";
+import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
+import { LocationService } from "@/lib/services/LocationService";
 
 export const dynamic = "force-dynamic";
 
@@ -165,6 +168,33 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           budget={plan?.budget || plan?.total_cost || 0}
           transportEstimate={plan?.transport_estimate}
         />
+
+        {/* Route Card & Map Directions */}
+        {plan?.spot?.coordinates && (() => {
+          const areaSlug = plan.start_area || "ikeja";
+          const startAreaMatch = LocationService.getAllAreas().find(
+            (a) => a.id === areaSlug || a.name.toLowerCase() === areaSlug.toLowerCase()
+          );
+          const startAreaName = startAreaMatch?.name || (
+            areaSlug !== "anywhere"
+              ? areaSlug.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+              : "Lagos"
+          );
+          const transport = calculateTransportTime(areaSlug, plan.spot.coordinates);
+
+          return (
+            <RouteCard
+              startAreaName={startAreaName}
+              startAreaSlug={areaSlug}
+              venueName={plan.spot.name}
+              venueAddress={plan.spot.address || ""}
+              venueCoords={plan.spot.coordinates}
+              transportCost={plan.transport_cost || 0}
+              distanceKm={transport.distanceKm}
+              transportEstimate={plan.transport_estimate || undefined}
+            />
+          );
+        })()}
 
         {/* Action CTAs */}
         <PlanCTAs 

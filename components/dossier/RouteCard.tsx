@@ -15,6 +15,8 @@ interface RouteCardProps {
   transportEstimate?: TransportEstimate;
 }
 
+import { DISPLAY_LOCATIONS } from "@/lib/location/data/lagos_locations";
+
 // Lagos zone label positions in the SVG viewport (600x240)
 const ZONE_POSITIONS: Record<string, { x: number; y: number; label: string }> = {
   lekki:       { x: 490, y: 140, label: "Lekki" },
@@ -28,6 +30,14 @@ const ZONE_POSITIONS: Record<string, { x: number; y: number; label: string }> = 
 
 const DEFAULT_START = { x: 120, y: 110, label: "Your Area" };
 const DEFAULT_VENUE = { x: 440, y: 155, label: "Venue" };
+
+function coordsToSvg(coords: { lat: number; lng: number }): { x: number; y: number } {
+  // Map real-world coords to SVG space (Lagos bounding box)
+  // lat: 6.38–6.65, lng: 3.30–3.55 → SVG 0–600, 0–240
+  const x = Math.round(((coords.lng - 3.30) / (3.55 - 3.30)) * 580 + 10);
+  const y = Math.round((1 - (coords.lat - 6.38) / (6.65 - 6.38)) * 220 + 10);
+  return { x: Math.min(Math.max(x, 20), 580), y: Math.min(Math.max(y, 20), 220) };
+}
 
 function getMapsUrl(coords: { lat: number; lng: number }, label: string): string {
   // Works for both Google Maps (Android/web) and Apple Maps (iOS via universal link)
@@ -48,15 +58,22 @@ export default function RouteCard({
   const minCostToDisplay = transportEstimate ? transportEstimate.low : transportCost;
   const maxCostToDisplay = transportEstimate ? transportEstimate.high : transportCost;
 
-  const startPos = ZONE_POSITIONS[startAreaSlug] ?? DEFAULT_START;
+  const normSlug = (startAreaSlug || "").toLowerCase().trim();
+  const startPos = ZONE_POSITIONS[normSlug]
+    ? { ...ZONE_POSITIONS[normSlug], label: startAreaName }
+    : (() => {
+        const found = DISPLAY_LOCATIONS.find(
+          (l) => l.slug.toLowerCase() === normSlug || l.name.toLowerCase() === normSlug
+        );
+        if (found) {
+          const svgCoords = coordsToSvg(found.coordinates);
+          return { x: svgCoords.x, y: svgCoords.y, label: startAreaName };
+        }
+        return { ...DEFAULT_START, label: startAreaName };
+      })();
+
   const venuePos = venueCoords
-    ? (() => {
-        // Map real-world coords to SVG space (Lagos bounding box)
-        // lat: 6.38–6.65, lng: 3.30–3.55 → SVG 0–600, 0–240
-        const x = Math.round(((venueCoords.lng - 3.30) / (3.55 - 3.30)) * 580 + 10);
-        const y = Math.round((1 - (venueCoords.lat - 6.38) / (6.65 - 6.38)) * 220 + 10);
-        return { x: Math.min(Math.max(x, 20), 580), y: Math.min(Math.max(y, 20), 220), label: venueName };
-      })()
+    ? { ...coordsToSvg(venueCoords), label: venueName }
     : DEFAULT_VENUE;
 
   // Bezier control point midway between start and venue

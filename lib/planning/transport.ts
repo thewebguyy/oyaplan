@@ -2,23 +2,46 @@ import { TransportProvider } from './types';
 import { getTransportProfile, TransportMode } from './transportProfiles';
 
 const ZONES: Record<string, string> = {
+  // Mainland
   ikeja: "mainland",
   gbagada: "mainland",
   ogudu: "mainland",
   agege: "mainland",
   maryland: "mainland",
+  alimosho: "mainland",
+  oshodi: "mainland",
+  ogba: "mainland",
+  ketu: "mainland",
+  ojodu: "mainland",
+  mushin: "mainland",
+  bariga: "mainland",
+  shomolu: "mainland",
+
+  // Central
   yaba: "central",
   surulere: "central",
   "ebute-metta": "central",
+
+  // Island
   "lekki-phase-1": "island",
+  lekki: "island",
+  "lekki-phase-2": "island",
   vi: "island",
+  "victoria-island": "island",
   ikoyi: "island",
-  apapa: "other",
-  // Fallback pricing buckets only — not geographic identity assertions.
-  // Used when no route-specific override exists.
+  "lagos-island": "island",
+  "isale-eko": "island",
   ajah: "island",
   chevron: "island",
+  sangotedo: "island",
+  "eti-osa": "island",
+
+  // Other / Outlying
+  apapa: "other",
   festac: "other",
+  ikorodu: "other",
+  badagry: "other",
+  epe: "other",
 };
 
 /**
@@ -53,8 +76,8 @@ export function getDepartureBucket(departureAt?: Date): DepartureBucket {
  * Returns round-trip cost in Naira with party size vehicle capacity modeling.
  */
 export function calculateZoneFare(origin: string, destination: string, partySize: number = 1): number {
-  const normOrigin = origin?.toLowerCase() || "ikeja";
-  const normDest = destination?.toLowerCase() || "ikeja";
+  const normOrigin = origin?.toLowerCase().trim() || "ikeja";
+  const normDest = destination?.toLowerCase().trim() || "ikeja";
 
   const zone1 = ZONES[normOrigin] || (normOrigin === "anywhere" ? "anywhere" : "other");
   const zone2 = ZONES[normDest] || "other";
@@ -150,8 +173,8 @@ export class TransportPricingProvider {
     const vehicleCapacity = mode === "public-transit" ? 1 : 4;
     const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
 
-    const normOrigin = origin?.toLowerCase() || "ikeja";
-    const normDest = destination?.toLowerCase() || "ikeja";
+    const normOrigin = origin?.toLowerCase().trim() || "ikeja";
+    const normDest = destination?.toLowerCase().trim() || "ikeja";
     const zone1 = ZONES[normOrigin];
     const zone2 = ZONES[normDest];
 
@@ -197,8 +220,10 @@ export class TransportPricingProvider {
     departureAt?: Date
   ): TransportEstimate {
     const range = this.calculateRange(origin, destination, mode, defaultMatrix, departureAt, partySize);
-    const z1 = ZONES[origin] || "other";
-    const z2 = ZONES[destination] || "other";
+    const normOrigin = origin?.toLowerCase().trim() || "ikeja";
+    const normDest = destination?.toLowerCase().trim() || "ikeja";
+    const z1 = ZONES[normOrigin] || "other";
+    const z2 = ZONES[normDest] || "other";
     const isCrossWater = (z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland");
     const vehicleCapacity = mode === "public-transit" ? 1 : 4;
     const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
@@ -245,10 +270,12 @@ export class TransportConfidenceProvider {
     }
 
     let score = 75; // Baseline typical score
-    const z1 = ZONES[origin] || "other";
-    const z2 = ZONES[destination] || "other";
+    const normOrigin = origin?.toLowerCase().trim() || "ikeja";
+    const normDest = destination?.toLowerCase().trim() || "ikeja";
+    const z1 = ZONES[normOrigin] || "other";
+    const z2 = ZONES[normDest] || "other";
 
-    if (origin === destination) {
+    if (normOrigin === normDest) {
       score += 20; // Same area: high certainty
     } else if (z1 === z2) {
       score += 10; // Same zone

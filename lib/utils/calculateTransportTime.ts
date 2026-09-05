@@ -1,4 +1,5 @@
 import { LocationService } from "@/lib/services/LocationService";
+import { DISPLAY_LOCATIONS } from "@/lib/location/data/lagos_locations";
 
 export interface TransportTimeEstimate {
   distanceKm: number;
@@ -7,15 +8,31 @@ export interface TransportTimeEstimate {
   displayCopy: string;
 }
 
-const AREA_CENTERS: Record<string, { lat: number; lng: number }> = {
+const LOCATION_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  ...Object.fromEntries(
+    DISPLAY_LOCATIONS.map((loc) => [loc.slug.toLowerCase(), loc.coordinates])
+  ),
   lekki: { lat: 6.4474, lng: 3.4723 },
   "lekki-phase-1": { lat: 6.4474, lng: 3.4723 },
-  yaba: { lat: 6.5095, lng: 3.3711 },
-  ikeja: { lat: 6.6018, lng: 3.3515 },
+  "victoria-island": { lat: 6.4281, lng: 3.4219 },
   vi: { lat: 6.4281, lng: 3.4219 },
-  ikoyi: { lat: 6.4549, lng: 3.4347 },
-  surulere: { lat: 6.4969, lng: 3.354 },
+  ogudu: { lat: 6.5786, lng: 3.3916 },
 };
+
+export function getAreaCoordinates(areaSlugOrName: string): { lat: number; lng: number } {
+  const norm = areaSlugOrName.toLowerCase().trim();
+  if (LOCATION_COORDINATES[norm]) {
+    return LOCATION_COORDINATES[norm];
+  }
+  const match = DISPLAY_LOCATIONS.find(
+    (l) => l.slug.toLowerCase() === norm || l.name.toLowerCase() === norm
+  );
+  if (match) {
+    return match.coordinates;
+  }
+  // Central Lagos geographic fallback if entirely unmapped
+  return { lat: 6.5095, lng: 3.3711 };
+}
 
 export function calculateTransportTime(
   fromArea: string | undefined | null,
@@ -31,8 +48,7 @@ export function calculateTransportTime(
     };
   }
 
-  const normalizedArea = fromArea.toLowerCase().trim();
-  const fromCoords = AREA_CENTERS[normalizedArea] || AREA_CENTERS["lekki"];
+  const fromCoords = getAreaCoordinates(fromArea);
 
   const distanceKm = LocationService.calculateDistance(fromCoords, toVenueCoordinates);
 
