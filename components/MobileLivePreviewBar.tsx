@@ -44,7 +44,36 @@ export default function MobileLivePreviewBar({
   startAreaId,
 }: MobileLivePreviewBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitVisible, setIsSubmitVisible] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const submitBtn = document.getElementById("planner-submit-btn");
+    if (!submitBtn) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsSubmitVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(submitBtn);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const handleGeneratePlan = (spot?: Spot) => {
     if (!vibe) return;
@@ -77,17 +106,6 @@ export default function MobileLivePreviewBar({
     router.push(`/forge?${params.toString()}`);
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
   const getSpotTransportCost = (spot: Spot) => {
     const origin = startAreaId || "anywhere";
     const dest = spot.address_slug || "ikeja";
@@ -103,28 +121,11 @@ export default function MobileLivePreviewBar({
   };
 
   if (!recommendedSpots || recommendedSpots.length === 0 || !vibe) return null;
+  // Hide sticky bar if user has scrolled down to the main submit button to avoid UI collisions
+  if (isSubmitVisible && !isOpen) return null;
   
   const topSpot = recommendedSpots[0];
   const spotsToUse = recommendedSpots.slice(0, 3);
-
-  const [isSubmitVisible, setIsSubmitVisible] = useState(false);
-
-  useEffect(() => {
-    const submitBtn = document.getElementById("planner-submit-btn");
-    if (!submitBtn) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsSubmitVisible(entry.isIntersecting);
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(submitBtn);
-    return () => observer.disconnect();
-  }, []);
 
   const getSpotTransportEstimate = (spot: Spot) => {
     const origin = startAreaId || "anywhere";

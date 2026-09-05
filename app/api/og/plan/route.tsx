@@ -58,9 +58,18 @@ export async function GET(req: NextRequest) {
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                  <span style={{ color: 'white', fontSize: 80, fontWeight: 900, lineHeight: 1 }}>
-                    ₦{budgetNum.toLocaleString()}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                      <path d="M5 4v16" />
+                      <path d="M5 4l14 16" />
+                      <path d="M19 4v16" />
+                      <path d="M2 10h20" />
+                      <path d="M2 14h20" />
+                    </svg>
+                    <span style={{ color: 'white', fontSize: 80, fontWeight: 900, lineHeight: 1 }}>
+                      {budgetNum.toLocaleString()}
+                    </span>
+                  </div>
                   <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 32, marginTop: 10 }}>
                     Budget for {squadNum} {squadNum === 1 ? 'person' : 'people'}
                   </span>
@@ -104,7 +113,7 @@ export async function GET(req: NextRequest) {
         (
           <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', backgroundColor: '#008751', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
             <h1 style={{ color: 'white', fontSize: 60, fontWeight: 900 }}>OyaPlan</h1>
-            <p style={{ color: '#E4F4EC', fontSize: 30 }}>Know exactly where to go—and what it'll really cost.</p>
+            <p style={{ color: '#E4F4EC', fontSize: 30 }}>Know what you&apos;ll probably spend before you leave home.</p>
           </div>
         ),
         { 
@@ -120,19 +129,19 @@ export async function GET(req: NextRequest) {
     // Fetch plan data from Supabase
     const { data: sharedPlan, error } = await supabase
       .from('shared_plans')
-      .select('plan_data')
+      .select('*, spot:spots(*)')
       .eq('id', planId)
       .single();
 
-    if (error || !sharedPlan || !sharedPlan.plan_data) {
+    if (error || !sharedPlan) {
       throw new Error('Plan not found');
     }
 
-    const plan = sharedPlan.plan_data as any;
-    const spotName = plan.spot?.name || 'A great spot';
-    const totalCost = plan.totalCost || 0;
-    const squadSize = plan.input?.squadSize || 2;
-    const vibe = plan.spot?.vibe_tags?.[0] || 'Chill';
+    const spot = sharedPlan.spot as { name?: string; vibe_tags?: string[] } | null;
+    const spotName = spot?.name || 'A great spot';
+    const totalCost = sharedPlan.total_cost || 0;
+    const squadSize = sharedPlan.squad_size || 2;
+    const vibe = sharedPlan.vibe || spot?.vibe_tags?.[0] || 'Chill';
 
     return new ImageResponse(
       (
@@ -163,9 +172,18 @@ export async function GET(req: NextRequest) {
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <span style={{ color: 'white', fontSize: 80, fontWeight: 900, lineHeight: 1 }}>
-                ₦{totalCost.toLocaleString()}
-              </span>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                    <path d="M5 4v16" />
+                    <path d="M5 4l14 16" />
+                    <path d="M19 4v16" />
+                    <path d="M2 10h20" />
+                    <path d="M2 14h20" />
+                  </svg>
+                  <span style={{ color: 'white', fontSize: 80, fontWeight: 900, lineHeight: 1 }}>
+                    {totalCost.toLocaleString()}
+                  </span>
+                </div>
               <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 32, marginTop: 10 }}>
                 Total for {squadSize} {squadSize === 1 ? 'person' : 'people'}
               </span>
@@ -189,7 +207,7 @@ export async function GET(req: NextRequest) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
               <span style={{ color: '#F7C325', fontSize: 40, fontWeight: 700 }}>OyaPlan</span>
               <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 40 }}>|</span>
-              <span style={{ color: 'white', fontSize: 30 }}>The exact cost of your next outing.</span>
+              <span style={{ color: 'white', fontSize: 30 }}>Real venue prices. Transport estimated.</span>
             </div>
           </div>
         </div>
@@ -202,7 +220,8 @@ export async function GET(req: NextRequest) {
         }
       }
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
+    console.error('OG Image generation error:', e);
     return new ImageResponse(
       (
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', backgroundColor: '#008751', alignItems: 'center', justifyContent: 'center' }}>

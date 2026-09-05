@@ -117,19 +117,13 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
 
   return (
     <main className="min-h-[100dvh] bg-white-sand flex flex-col antialiased">
-      {/* Clean Top Nav */}
-      <div className="w-full bg-white-sand border-b border-border-default py-4 px-6 flex items-center justify-between">
-        <Link href="/" className="inline-block tap-feedback">
-          <span className="text-xl font-black tracking-tighter uppercase text-black">
-            OyaPlan
+      <div className="max-w-2xl mx-auto w-full px-4 pt-6 pb-24 space-y-8">
+        {/* Shared Plan Origin Badge */}
+        <div className="flex items-center justify-between">
+          <span className="type-ui-label text-text-secondary text-[11px] bg-white border border-border-default/80 px-3 py-1 rounded-full font-bold shadow-xs">
+            Shared Plan
           </span>
-        </Link>
-        <span className="type-ui-label text-text-secondary text-[11px] bg-white border border-border-default/50 px-3 py-1 rounded-full font-bold">
-          Shared Plan
-        </span>
-      </div>
-
-      <div className="max-w-2xl mx-auto w-full px-4 pt-12 pb-24 space-y-8">
+        </div>
         
         {/* Hero Photo */}
         <div className="w-full aspect-[16/9] relative rounded-[28px] overflow-hidden img-zoom-container shadow-lagoon">

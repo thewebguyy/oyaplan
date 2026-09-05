@@ -37,13 +37,14 @@ export default function NavBar() {
             <ChevronLeft className="w-6 h-6" />
           </button>
         )}
-        <Link href="/" className="flex items-center tap-feedback">
+        <Link href="/" className="flex items-center shrink-0 tap-feedback">
           <Image
             src="/logo.png"
             alt="OyaPlan"
             width={610}
             height={143}
-            className="h-7 w-auto"
+            className="h-7 w-auto object-contain shrink-0"
+            style={{ width: "auto", height: "28px" }}
             priority
           />
         </Link>
