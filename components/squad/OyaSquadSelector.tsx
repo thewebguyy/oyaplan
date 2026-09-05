@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Plus, Check, X, Loader2 } from 'lucide-react';
 import { OyaSquadSummary } from '@/lib/types';
-import { createGroupAction } from '@/lib/actions/groupActions';
+import { createGroupAction, getUserGroupsAction } from '@/lib/actions/groupActions';
 import { trackEvent } from '@/lib/analytics/trackClient';
 
 interface OyaSquadSelectorProps {
@@ -23,6 +23,24 @@ export default function OyaSquadSelector({
   const [memberInput, setMemberInput] = useState('');
   const [members, setMembers] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    if (initialSquads.length === 0) {
+      getUserGroupsAction()
+        .then((res) => {
+          if (mounted && res.success && res.data && res.data.length > 0) {
+            setSquads(res.data);
+          }
+        })
+        .catch(() => {
+          // anonymous or network error - silently ignore
+        });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [initialSquads.length]);
 
   const handleAddMember = (e?: React.FormEvent) => {
     if (e) e.preventDefault();

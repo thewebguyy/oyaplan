@@ -492,7 +492,7 @@ export default function PlannerWidget({
             <button
               type="button"
               onClick={() => setShowMoreVibes(!showMoreVibes)}
-              className="text-sm font-bold text-[#008751] hover:underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#008751]/20 rounded px-1 -ml-1 transition-all"
+              className="text-sm font-bold text-[#008751] hover:underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#008751]/20 rounded px-2.5 py-3 min-h-[44px] inline-flex items-center -ml-2 transition-all tap-feedback"
             >
               {showMoreVibes ? "Less vibes" : "More vibes >"}
             </button>
@@ -518,6 +518,7 @@ export default function PlannerWidget({
 
       {/* Primary CTA Submit Button */}
       <button
+        id="planner-submit-btn"
         type="submit"
         className="w-full h-14 bg-[#008751] text-white font-bold text-lg rounded-[12px] flex items-center justify-center cursor-pointer shadow-sm hover:brightness-90 active:scale-[0.98] active:shadow-md transition-all duration-150 outline-none focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#008751] focus-visible:outline-offset-2"
         aria-label="Submit criteria and view plan"

@@ -85,10 +85,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
       transition={{ type: "spring", stiffness: 100, damping: 15, duration: 0.8 }}
       className="relative w-full bg-[#FAF9F6] pt-20 pb-16 px-4 sm:px-8 md:px-16 border-b border-[#F3F4F6] overflow-hidden"
     >
-      {/* Animated breathing gradient background & floating shapes */}
+      {/* Subtle hero background */}
       <div className="hero-background" aria-hidden="true" />
-      <div className="floating-element circle-1" aria-hidden="true" />
-      <div className="floating-element circle-2" aria-hidden="true" />
 
       <div className="max-w-5xl mx-auto flex flex-col gap-10 md:gap-12 text-left relative z-10">
         {/* Header and Subhead Area */}
@@ -147,6 +145,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
               budget={budget}
               vibe={vibe}
               recommendedSpots={recommendedSpots}
+              topPlan={plans[0] || null}
+              startAreaId={selectedArea?.id ?? null}
             />
           </div>
         </div>

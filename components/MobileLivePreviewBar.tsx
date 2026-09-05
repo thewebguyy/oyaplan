@@ -107,6 +107,25 @@ export default function MobileLivePreviewBar({
   const topSpot = recommendedSpots[0];
   const spotsToUse = recommendedSpots.slice(0, 3);
 
+  const [isSubmitVisible, setIsSubmitVisible] = useState(false);
+
+  useEffect(() => {
+    const submitBtn = document.getElementById("planner-submit-btn");
+    if (!submitBtn) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsSubmitVisible(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(submitBtn);
+    return () => observer.disconnect();
+  }, []);
+
   const getSpotTransportEstimate = (spot: Spot) => {
     const origin = startAreaId || "anywhere";
     const dest = spot.address_slug || "ikeja";
@@ -121,13 +140,15 @@ export default function MobileLivePreviewBar({
 
   const topEstimate = getSpotTransportEstimate(topSpot);
   const transportCost = topEstimate.status === "unavailable" ? 0 : topEstimate.midpointCost;
-  const foodCost = (topSpot.price_per_person || 0) * squadSize;
-  const taxCost = Math.round(foodCost * 0.1);
-  const totalCost = foodCost + transportCost + taxCost;
+  const foodCost = Math.round(((topSpot.price_per_person || 12000) * squadSize) / 100) * 100;
+  const totalCost = foodCost + transportCost;
   const perPersonCost = Math.ceil(totalCost / squadSize);
   const displayCostStr = topEstimate.status === "unavailable" 
     ? `~₦${perPersonCost.toLocaleString()} + transport`
     : `~₦${perPersonCost.toLocaleString()}`;
+
+  // Hide sticky bar if user has scrolled down to the main submit button to avoid UI collisions
+  if (isSubmitVisible && !isOpen) return null;
 
   return (
     <>
@@ -136,6 +157,7 @@ export default function MobileLivePreviewBar({
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 20, opacity: 0 }}
           className="bg-[#111827] text-white rounded-2xl p-3 shadow-2xl border border-white/10 flex items-center justify-between backdrop-blur-xl"
         >
           <div 
@@ -223,9 +245,8 @@ export default function MobileLivePreviewBar({
                   const sEstimate = getSpotTransportEstimate(spot);
                   const isUnavailable = sEstimate.status === "unavailable";
                   const sTransportCost = isUnavailable ? 0 : sEstimate.midpointCost;
-                  const sFoodCost = (spot.price_per_person || 0) * squadSize;
-                  const sTaxCost = Math.round(sFoodCost * 0.1);
-                  const sTotalCost = sFoodCost + sTransportCost + sTaxCost;
+                  const sFoodCost = Math.round(((spot.price_per_person || 12000) * squadSize) / 100) * 100;
+                  const sTotalCost = sFoodCost + sTransportCost;
                   
                   return (
                     <div key={spot.id || idx} className="space-y-3 pb-6 border-b border-gray-200 last:border-b-0 last:pb-0">
@@ -252,7 +273,7 @@ export default function MobileLivePreviewBar({
                       <div className="border border-[#E5E7EB] bg-[#FAFAF8]/40 p-4 rounded-2xl space-y-2.5 text-xs sm:text-sm">
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                           <span className="text-gray-600 font-medium">
-                            Food & Drinks ({squadSize}x)
+                            Food &amp; Dining ({squadSize}x)
                           </span>
                           <span className="font-bold text-[#1A1A1A]">
                             ₦{sFoodCost.toLocaleString()}
@@ -260,22 +281,14 @@ export default function MobileLivePreviewBar({
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                           <span className="text-gray-600 font-medium flex items-center gap-1">
-                            Estimated Uber Transport
+                            Estimated Transport (Round-trip)
                           </span>
                           <span className={`font-bold ${isUnavailable ? "text-amber-600" : "text-[#1A1A1A]"}`}>
                             {isUnavailable ? "Unavailable" : `₦${sTransportCost.toLocaleString()}`}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="text-gray-600 font-medium">
-                            Taxes & Service Charge
-                          </span>
-                          <span className="font-bold text-[#1A1A1A]">
-                            ₦{sTaxCost.toLocaleString()}
-                          </span>
-                        </div>
                         <div className="flex justify-between items-center pt-2 font-black text-base text-black">
-                          <span className="uppercase tracking-wide">Total Estimated Cost</span>
+                          <span className="uppercase tracking-wide">Total Expected Cost</span>
                           <span className="text-[#008751]">
                             {isUnavailable ? `₦${sTotalCost.toLocaleString()} + transport` : `₦${sTotalCost.toLocaleString()}`}
                           </span>

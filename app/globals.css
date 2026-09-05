@@ -995,11 +995,9 @@
   100% {
     background: linear-gradient(135deg, #FFFFFF 0%, #FFF9E6 50%, #FFFBF0 100%);
   }
-}
-
 .hero-background {
-  animation: breathingGradient 12s ease-in-out infinite;
-  opacity: 0.9;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF5 50%, #FAF9F6 100%);
+  opacity: 0.95;
   position: absolute;
   top: 0;
   left: 0;
@@ -1008,39 +1006,15 @@
   z-index: -1;
 }
 
-@keyframes floatCircle {
-  0%, 100% {
-    transform: translateY(0px);
-    opacity: 0.05;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  50% {
-    transform: translateY(-20px);
-    opacity: 0.08;
-  }
-}
-
-.floating-element {
-  position: absolute;
-  animation: floatCircle 30s ease-in-out infinite;
-  mix-blend-mode: multiply;
-}
-
-.circle-1 {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: #E6F5F0; /* Light green */
-  top: 10%;
-  right: 5%;
-}
-
-.circle-2 {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #FFF4D6; /* Light yellow */
-  top: 60%;
-  left: 10%;
 }
 
 /* Hide floating animations on mobile/tablet to save battery/CPU */

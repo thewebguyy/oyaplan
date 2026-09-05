@@ -114,28 +114,49 @@ function ProgressBar({
   );
 }
 
+import { Plan } from "@/lib/types";
+import { ExplainedPlan } from "@/lib/planning/types";
+import { TransportPricingProvider } from "@/lib/planning/transport";
+
 interface VerificationReceiptLoaderProps {
   forgeInput: ForgeInput;
   spot: Spot | null;
+  plan?: Plan | ExplainedPlan | null;
   onComplete: () => void;
 }
 
 export default function VerificationReceiptLoader({
   forgeInput,
   spot,
+  plan,
   onComplete,
 }: VerificationReceiptLoaderProps) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [screen, setScreen] = useState(1); // 1 = Vetting, 2 = Scorecard
 
-  // Calculate actual plan figures dynamically based on match rules
+  // Calculate canonical plan figures - strictly consistent with DefaultCostEngine
   const squadSize = forgeInput.squadSize;
   const budget = forgeInput.budget;
-  const transportCost = squadSize === 1 ? 0 : squadSize > 4 ? 10000 : 5000;
-  const foodCost = spot ? spot.price_per_person * squadSize : 12000 * squadSize;
-  const taxCost = Math.round((foodCost * 0.1) / 100) * 100;
-  const totalCost = foodCost + transportCost + taxCost;
+
+  const foodCost = plan 
+    ? ('activityCost' in plan && typeof (plan as ExplainedPlan).activityCost === 'number'
+        ? (plan as ExplainedPlan).activityCost 
+        : (plan as Plan).foodCost)
+    : (spot ? Math.round(((spot.price_per_person || 12000) * squadSize) / 100) * 100 : 12000 * squadSize);
+
+  const fallbackTransportRange = TransportPricingProvider.calculateRange(
+    forgeInput.startArea || "anywhere",
+    spot?.address_slug || "ikeja",
+    "ride-hailing",
+    spot?.transport_matrix,
+    forgeInput.departureAt ? new Date(forgeInput.departureAt) : undefined,
+    squadSize
+  );
+
+  const transportCost = plan ? plan.transportCost : fallbackTransportRange.midpointCost;
+  const totalCost = plan ? plan.totalCost : (foodCost + transportCost);
   const remainingBuffer = Math.max(0, budget - totalCost);
+  const taxCost = Math.max(0, totalCost - foodCost - transportCost);
 
   useEffect(() => {
     const startTime = performance.now();

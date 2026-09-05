@@ -379,6 +379,7 @@ export default function ForgeResultsClient({
       <VerificationReceiptLoader
         forgeInput={forgeInput}
         spot={evaluations[0]?.plan?.spot || null}
+        plan={evaluations[0]?.plan || null}
         onComplete={() => setIsRevealed(true)}
       />
     );

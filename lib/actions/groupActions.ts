@@ -1,7 +1,7 @@
 'use server';
 
 import { GroupService } from '@/lib/services/identity/groupService';
-import { PlanningGroup, PlanningGroupMember } from '@/lib/types';
+import { OyaSquadSummary, PlanningGroup, PlanningGroupMember } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
@@ -123,3 +123,12 @@ export async function removeMemberAction(input: {
 
   return res;
 }
+
+export async function getUserGroupsAction(): Promise<{
+  success: boolean;
+  data: OyaSquadSummary[];
+  error?: string;
+}> {
+  return await GroupService.getUserGroups();
+}
+

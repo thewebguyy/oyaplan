@@ -47,7 +47,15 @@ export default function TransportEstimateCard({
     ? "Unavailable for this route" 
     : TransportDisplayFormatter.formatRange(displayMin, displayMax);
 
-  const formattedAssumptions = assumptions || `${mode === "public-transit" ? "Public transport" : mode === "driving" ? "Personal car" : "Ride-hailing"} estimate • Leaving from ${startAreaName}`;
+  const modeLabel = mode === "public-transit" 
+    ? "Public transit round-trip" 
+    : mode === "driving" 
+    ? "Personal car fuel round-trip" 
+    : "Ride-hailing round-trip";
+
+  const formattedAssumptions = assumptions 
+    ? (assumptions.toLowerCase().includes("round-trip") ? assumptions : `${assumptions} • Round-trip`)
+    : `${modeLabel} • Leaving from ${startAreaName}`;
 
   const getBadgeStyle = () => {
     switch (badgeColor) {
@@ -96,7 +104,7 @@ export default function TransportEstimateCard({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-xs font-black uppercase text-text-muted tracking-wider">
-              Est. Transport Range
+              Est. Transport Range (Round-trip)
             </span>
             <button
               onClick={() => setShowWhyModal(true)}

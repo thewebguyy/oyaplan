@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { motion, Variants, AnimatePresence } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Spot } from "@/lib/types";
+import { ExplainedPlan } from "@/lib/planning/types";
+import { TransportPricingProvider } from "@/lib/planning/transport";
 
 interface LivePreviewCardProps {
   squadSize: number;
   budget: number;
   vibe: string | null;
   recommendedSpots: Spot[];
+  topPlan?: ExplainedPlan | null;
+  startAreaId?: string | null;
 }
 
 const containerVariants: Variants = {
@@ -35,7 +39,7 @@ const itemVariants: Variants = {
   },
 };
 
-const DEFAULT_FALLBACK_SPOT: Spot = {
+export const DEFAULT_FALLBACK_SPOT: Spot = {
   id: "fallback-grill",
   name: "Lekki Grill",
   address: "Lekki Phase 1",
@@ -53,6 +57,8 @@ export default function LivePreviewCard({
   budget,
   vibe,
   recommendedSpots,
+  topPlan,
+  startAreaId,
 }: LivePreviewCardProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -72,11 +78,23 @@ export default function LivePreviewCard({
     }).format(val).replace("NGN", "₦");
   };
 
-  // Math Allocation Calculations
-  const transportCost = squadSize > 4 ? 10000 : 5000;
-  const foodCost = (spot.price_per_person || 0) * squadSize;
-  const taxCost = Math.round((foodCost * 0.1) / 100) * 100;
-  const totalCost = foodCost + transportCost + taxCost;
+  // Canonical pricing calculations - single source of truth
+  const isMatchingTopPlan = topPlan && topPlan.spot.id === spot.id;
+  const foodCost = isMatchingTopPlan 
+    ? topPlan.activityCost 
+    : Math.round(((spot.price_per_person || 12000) * squadSize) / 100) * 100;
+
+  const transportRange = TransportPricingProvider.calculateRange(
+    startAreaId || "surulere",
+    spot.address_slug || "ikeja",
+    "ride-hailing",
+    spot.transport_matrix,
+    undefined,
+    squadSize
+  );
+
+  const transportCost = isMatchingTopPlan ? topPlan.transportCost : transportRange.midpointCost;
+  const totalCost = isMatchingTopPlan ? topPlan.totalCost : (foodCost + transportCost);
   const remainingBuffer = Math.max(0, budget - totalCost);
 
   // Percentage of overall budget consumed by transport
@@ -91,15 +109,15 @@ export default function LivePreviewCard({
       return `⚠️ Transport is consuming ${Math.round(transportRatio)}% of your budget. Consider reducing squad size.`;
     }
     if (remainingBuffer / budget >= 0.15) {
-      return "✓ Great balance. You still have enough remaining buffer for dessert.";
+      return "✓ Great balance. You still have enough remaining buffer for extra orders.";
     }
     return "✓ Great balance. Most users choose this range.";
   };
 
   const getSavingsTip = () => {
     if (squadSize > 1 && totalCost <= budget) {
-      const perPersonSavings = spot.price_per_person + Math.round(spot.price_per_person * 0.1);
-      return `💡 Reducing squad size by one saves approximately ${formatCurrency(perPersonSavings)} in food & taxes.`;
+      const perPersonSavings = Math.round((spot.price_per_person || 12000));
+      return `💡 Reducing squad size by one saves approximately ${formatCurrency(perPersonSavings)} in food costs.`;
     }
     return null;
   };
@@ -175,19 +193,15 @@ export default function LivePreviewCard({
           </div>
           <div className="space-y-1.5 text-xs text-[#1A1A1A] font-mono">
             <div className="flex justify-between">
-              <span className="text-[#6B7280] font-sans">Food &amp; Drinks:</span>
+              <span className="text-[#6B7280] font-sans">Food &amp; Dining:</span>
               <span className="font-semibold">{formatCurrency(foodCost)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[#6B7280] font-sans">Estimated Transport:</span>
+              <span className="text-[#6B7280] font-sans">Transport (Round-trip):</span>
               <span className="font-semibold">{formatCurrency(transportCost)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-[#6B7280] font-sans">Taxes &amp; Fees:</span>
-              <span className="font-semibold">{formatCurrency(taxCost)}</span>
-            </div>
             <div className="flex justify-between border-t border-dashed border-[#EAE8E3] pt-1.5 mt-1 font-bold font-sans text-[13px]">
-              <span>Total Estimated Cost:</span>
+              <span>Total Expected Cost:</span>
               <span className="text-[#008751] font-mono">{formatCurrency(totalCost)}</span>
             </div>
             <div className="flex justify-between pt-1 border-t border-dashed border-[#F3F4F6] font-bold font-sans">

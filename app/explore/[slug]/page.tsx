@@ -58,19 +58,18 @@ function mapSpotToDiscoveryCard(
   const confidenceScore = spot.computed_confidence_score || 50;
   const venueCost = (spot.price_per_person || 12000) * squadCount;
   
-  // Calculate real transport cost if startArea is provided
+  // Calculate real transport cost using canonical TransportPricingProvider
   let transportCost = 0;
-  if (startArea && startArea !== "anywhere" && squadCount > 1) {
+  if (startArea && squadCount > 1) {
     const range = TransportPricingProvider.calculateRange(
       startArea,
       spot.address_slug || "ikeja",
       "ride-hailing",
-      spot.transport_matrix || {}
+      spot.transport_matrix || {},
+      undefined,
+      squadCount
     );
     transportCost = range.midpointCost;
-  } else if (startArea === "anywhere" && squadCount > 1) {
-    // General city-wide average fallback
-    transportCost = squadCount > 4 ? 10000 : 5000;
   }
 
   const taxCost = Math.round(venueCost * 0.1);

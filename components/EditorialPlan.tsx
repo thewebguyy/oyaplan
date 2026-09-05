@@ -50,23 +50,35 @@ export default function EditorialPlan({
     if (isTopPick) {
       return "border-none shadow-[0px_28px_56px_-10px_rgba(1,5,40,0.15),0px_4px_0px_0px_rgba(0,135,81,0.9)] rounded-[32px] bg-white";
     }
-    // Alternative 1: Yellow style
+    // Alternative 1: Subtle warm accent
     if (alternativeIndex === 0) {
-      return "bg-[#FEFCE8] border-2 border-[#FCC630] shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
+      return "bg-[#FEFCE8] border border-[#FCC630]/60 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
     }
-    // Alternative 2: Purple style
-    return "bg-[#FAF5FF] border-2 border-[#A855F7]/40 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
+    // Alternative 2: Clean neutral style
+    return "bg-white border border-border-default shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
   };
 
   return (
     <div className={`w-full transition-[colors,box-shadow,transform] overflow-hidden ${getCardClasses()}`} style={{ transitionDuration: 'var(--duration-editorial)' }}>
       
+      {/* 1. Venue & Experience Header */}
       <PlanHeader input={input} plan={plan} isTopPick={isTopPick} alternativeIndex={alternativeIndex} />
 
       <div className="w-full h-px bg-border-default/50" />
 
       <div className={`${isTopPick ? 'px-6 sm:px-10 py-10 bg-white' : 'px-6 sm:px-10 py-8 bg-transparent'} space-y-6`}>
-        {/* Decision Summary Callout */}
+        {/* 2. Total Expected Landed Cost & Spend Comparison (WHERE + HOW MUCH first) */}
+        <BudgetConfidenceCard plan={plan} originalBudget={originalBudget || plan.totalCost} />
+
+        {/* 3. Primary Actions (WhatsApp Share / Save) */}
+        <div className="flex items-center justify-between flex-wrap gap-3 pb-2 border-b border-border-default/40">
+          <span className="text-xs font-bold text-text-muted">
+            Ready to lock it in with your squad?
+          </span>
+          <PlanActions plan={plan} input={input} initialPlanId={initialPlanId} />
+        </div>
+
+        {/* 4. Decision Summary Callout */}
         {plan.decisionSummary && (
           <div className="bg-[#FAFAF8] border border-border-default/50 rounded-[20px] p-6 shadow-xs relative overflow-hidden flex items-start gap-4">
             <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#008751]" />
@@ -79,7 +91,7 @@ export default function EditorialPlan({
           </div>
         )}
 
-        {/* Decision Confidence Scorecard */}
+        {/* 5. Decision Confidence Scorecard & Evidence */}
         <div className="bg-[#FAFAF8] border border-border-default/80 rounded-[20px] p-6 space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -114,7 +126,7 @@ export default function EditorialPlan({
           )}
         </div>
 
-        {/* Why this plan? Section */}
+        {/* 6. Why this plan? Section */}
         <div className="bg-white border border-border-default/60 rounded-[20px] p-6 space-y-3">
           <h4 className="type-ui-label font-bold text-midnight-lagoon uppercase tracking-wider text-xs">Why we picked {plan.spot.name} for you</h4>
           <ul className="space-y-2.5">
@@ -158,7 +170,7 @@ export default function EditorialPlan({
           </ul>
         </div>
 
-        {/* Things to Know — Surfacing Trade-Offs */}
+        {/* 7. Things to Know — Surfacing Trade-Offs */}
         {(explanation.things_to_know || []).length > 0 && (
           <div className="bg-amber-500/5 border border-amber-500/20 rounded-[20px] p-5 space-y-2">
             <h4 className="text-xs font-black uppercase text-amber-800 tracking-wider flex items-center gap-1.5">
@@ -175,7 +187,7 @@ export default function EditorialPlan({
           </div>
         )}
 
-        {/* Transport Range & Confidence Card */}
+        {/* 8. Transport Range & Route Evidence */}
         <TransportEstimateCard
           minCost={plan.transportMinCost}
           maxCost={plan.transportMaxCost}
@@ -216,9 +228,6 @@ export default function EditorialPlan({
         <ChangeSummary changes={evaluation.changes} />
 
         <ExclusionList exclusions={evaluation.exclusions} />
-
-        {/* Pricing Reassurance & Controls (Subordinated to curational narrative) */}
-        <BudgetConfidenceCard plan={plan} originalBudget={originalBudget} />
 
         <AdjustmentPanel 
           input={input} 

@@ -13,15 +13,15 @@ interface FAQItem {
 const PRODUCT_COLORS = [
   "var(--pastel-cream)",
   "var(--pastel-yellow)",
-  "var(--pastel-blue)",
-  "var(--pastel-pink)",
+  "var(--pastel-cream)",
+  "var(--pastel-yellow)",
 ];
 
 const FAQ_ITEMS: FAQItem[] = [
   {
     id: "accuracy",
     question: "How accurate is the pricing?",
-    answer: "We verify every menu and check real Uber fares daily. Pricing is exact to the naira. No markup, no hidden fees. What you see is what you'll pay.",
+    answer: "We audit venue menus directly and estimate real-time ride-hailing corridors with zone modeling. Verified menu baseline + estimated transport corridor. Zero markup, zero hidden fees.",
     color: PRODUCT_COLORS[0],
   },
   {
