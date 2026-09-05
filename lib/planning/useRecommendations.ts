@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Spot } from "@/lib/types";
 import { useOrigin } from "@/lib/location/OriginContext";
+import { LocationService } from "@/lib/services/LocationService";
 import { PlanningEngine, createPlanningContext, PlanningDependencies, DEFAULT_PLANNING_DEPS } from "./planningEngine";
 import { PlanningRequest, ExplainedPlan } from "./types";
 
@@ -20,8 +21,9 @@ export function useRecommendations({
   const { origin, status } = useOrigin();
 
   return useMemo(() => {
-    // Build request with startArea set purely based on active origin
-    const startArea = origin?.planningAreaSlug || "surulere";
+    // Build request with startArea set purely based on active origin or active verified area
+    const defaultArea = LocationService.getVerifiedAreas()[0]?.id || "ikeja";
+    const startArea = origin?.planningAreaSlug || defaultArea;
 
     const fullRequest: PlanningRequest = {
       ...request,

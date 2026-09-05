@@ -17,6 +17,9 @@ interface ReceiptStructureProps {
   transportToggleNode: React.ReactNode;
   budget: number;
   transportEstimate?: TransportEstimate;
+  hasFood?: boolean;
+  category?: string;
+  freshnessText?: string;
 }
 
 export function ReceiptStructure({ 
@@ -28,7 +31,10 @@ export function ReceiptStructure({
   hasCar,
   transportToggleNode,
   budget,
-  transportEstimate
+  transportEstimate,
+  hasFood = true,
+  category,
+  freshnessText
 }: ReceiptStructureProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -39,7 +45,8 @@ export function ReceiptStructure({
   const perPersonFoodCost = Math.round(squadFoodCost / squadSize);
   const avgEntree = Math.round((perPersonFoodCost * 0.75) / 100) * 100;
   const avgDrink = Math.round((perPersonFoodCost * 0.25) / 100) * 100;
-  const taxesCost = Math.round((squadFoodCost * 0.1) / 100) * 100;
+  // Non-food spots (parks, nature, beaches) don't have restaurant dining VAT/service surcharge
+  const taxesCost = hasFood ? Math.round((squadFoodCost * 0.1) / 100) * 100 : 0;
 
   const totalCost = squadFoodCost + transportCost + taxesCost;
   const perPersonTotal = Math.round(totalCost / squadSize);
@@ -92,33 +99,54 @@ export function ReceiptStructure({
                 <h3 className="font-black text-[#111827] text-lg uppercase tracking-tight font-sans">{venueName}</h3>
                 <div className="flex items-center gap-1.5 text-xs text-[#008751] font-bold font-sans">
                   <ShieldCheck className="w-4 h-4" />
-                  <span>Verified Menu: Updated 48 hours ago</span>
+                  <span>
+                    {hasFood
+                      ? (freshnessText ? `Verified Menu • ${freshnessText}` : "Verified Menu Pricing")
+                      : (freshnessText ? `Verified Entry • ${freshnessText}` : "Verified Admission Fee")}
+                  </span>
                 </div>
               </div>
               <BudgetFitBadge status={budgetFitStatus} size="sm" className="shrink-0" />
             </div>
           </div>
 
-          {/* Food & Drinks Section */}
+          {/* Venue Chop / Entry Section */}
           <div className="p-5 border-b border-[#111827] space-y-2.5 bg-[#FAFAF8]">
             <div className="flex justify-between font-bold text-[#111827] uppercase">
-              <span>Food &amp; Drinks</span>
+              <span>{hasFood ? "Food & Drinks" : "Admission / Entry Fee"}</span>
               <span>₦{squadFoodCost.toLocaleString()}</span>
             </div>
-            <div className="pl-4 text-xs text-[#6B7280] space-y-1.5">
-              <div className="flex justify-between">
-                <span>└─ Average entrée:</span>
-                <span className="font-semibold text-[#111827]">₦{avgEntree.toLocaleString()}</span>
+            {hasFood ? (
+              <div className="pl-4 text-xs text-[#6B7280] space-y-1.5">
+                <div className="flex justify-between">
+                  <span>└─ Average entrée:</span>
+                  <span className="font-semibold text-[#111827]">₦{avgEntree.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>└─ Average drink:</span>
+                  <span className="font-semibold text-[#111827]">₦{avgDrink.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>└─ Recommended spend:</span>
+                  <span className="font-semibold text-[#111827]">₦{perPersonFoodCost.toLocaleString()} / person</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>└─ Average drink:</span>
-                <span className="font-semibold text-[#111827]">₦{avgDrink.toLocaleString()}</span>
+            ) : (
+              <div className="pl-4 text-xs text-[#6B7280] space-y-1.5">
+                <div className="flex justify-between">
+                  <span>└─ Standard entry rate:</span>
+                  <span className="font-semibold text-[#111827]">₦{perPersonFoodCost.toLocaleString()} / person</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>└─ Total squad entry ({squadSize} {squadSize === 1 ? 'person' : 'people'}):</span>
+                  <span className="font-semibold text-[#111827]">₦{squadFoodCost.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>└─ Experience category:</span>
+                  <span className="font-semibold text-[#111827] capitalize">{category || "Activity / Nature"}</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>└─ Recommended spend:</span>
-                <span className="font-semibold text-[#111827]">₦{perPersonFoodCost.toLocaleString()} / person</span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Transport Section */}
@@ -174,8 +202,10 @@ export function ReceiptStructure({
           {/* Taxes & Service */}
           <div className="flex justify-between items-center p-5 border-b border-[#111827]">
             <div className="space-y-0.5">
-              <span className="font-bold text-[#111827] uppercase">Taxes &amp; Service Charge</span>
-              <div className="text-[10px] text-[#6B7280] font-sans">VAT 7.5% + venue service fee 2.5%</div>
+              <span className="font-bold text-[#111827] uppercase">{hasFood ? "Taxes & Service Charge" : "Taxes & Access Levies"}</span>
+              <div className="text-[10px] text-[#6B7280] font-sans">
+                {hasFood ? "VAT 7.5% + venue service fee 2.5%" : "Included in entry & access rate"}
+              </div>
             </div>
             <span className="font-bold text-[#111827]">₦{taxesCost.toLocaleString()}</span>
           </div>

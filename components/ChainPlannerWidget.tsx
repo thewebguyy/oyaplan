@@ -19,6 +19,8 @@ export default function ChainPlannerWidget({
   const [startArea, setStartArea] = useState("lekki");
   const [squadSize, setSquadSize] = useState(3);
   const [budget, setBudget] = useState(100000);
+  const [rawSquadSize, setRawSquadSize] = useState("3");
+  const [rawBudget, setRawBudget] = useState("100000");
   const [sequenceKey, setSequenceKey] = useState("date_night");
 
   // Selected venues for the chain stops
@@ -30,16 +32,16 @@ export default function ChainPlannerWidget({
     if (selectedSpots.includes(spotId)) return;
     const newSpots = [...selectedSpots, spotId];
     setSelectedSpots(newSpots);
-    triggerPlan(newSpots);
+    triggerPlan(newSpots, budget, squadSize);
   };
 
   const handleRemoveStop = (index: number) => {
     const newSpots = selectedSpots.filter((_, i) => i !== index);
     setSelectedSpots(newSpots);
-    triggerPlan(newSpots);
+    triggerPlan(newSpots, budget, squadSize);
   };
 
-  const triggerPlan = (currentSpots: string[]) => {
+  const triggerPlan = (currentSpots: string[], currentBudget: number = budget, currentSquad: number = squadSize) => {
     if (currentSpots.length === 0) {
       setPlanResult(null);
       return;
@@ -51,10 +53,10 @@ export default function ChainPlannerWidget({
 
     const result = generateChainPlan(
       startArea,
-      budget,
+      currentBudget,
       sequenceKey,
       spotsObjects,
-      squadSize
+      currentSquad
     );
     setPlanResult(result);
   };
@@ -102,10 +104,27 @@ export default function ChainPlannerWidget({
               type="number"
               min="1"
               max="20"
-              value={squadSize}
+              value={rawSquadSize}
               onChange={(e) => {
-                setSquadSize(parseInt(e.target.value) || 1);
-                triggerPlan(selectedSpots);
+                const valStr = e.target.value;
+                setRawSquadSize(valStr);
+                const parsed = parseInt(valStr, 10);
+                if (!isNaN(parsed) && parsed >= 1 && parsed <= 20) {
+                  setSquadSize(parsed);
+                  triggerPlan(selectedSpots, budget, parsed);
+                }
+              }}
+              onBlur={() => {
+                const parsed = parseInt(rawSquadSize, 10);
+                if (isNaN(parsed) || parsed < 1) {
+                  setRawSquadSize("1");
+                  setSquadSize(1);
+                  triggerPlan(selectedSpots, budget, 1);
+                } else if (parsed > 20) {
+                  setRawSquadSize("20");
+                  setSquadSize(20);
+                  triggerPlan(selectedSpots, budget, 20);
+                }
               }}
               className="w-full h-11 px-3 bg-surface-grey border border-border-default rounded-[10px] text-sm focus:outline-none"
             />
@@ -118,11 +137,23 @@ export default function ChainPlannerWidget({
             </label>
             <input
               type="text"
-              value={budget}
+              value={rawBudget}
               onChange={(e) => {
-                const val = parseInt(e.target.value.replace(/[^0-9]/g, "")) || 0;
-                setBudget(val);
-                triggerPlan(selectedSpots);
+                const cleaned = e.target.value.replace(/[^0-9]/g, "");
+                setRawBudget(cleaned);
+                const parsed = parseInt(cleaned, 10);
+                if (!isNaN(parsed) && parsed > 0) {
+                  setBudget(parsed);
+                  triggerPlan(selectedSpots, parsed, squadSize);
+                }
+              }}
+              onBlur={() => {
+                const parsed = parseInt(rawBudget, 10);
+                if (isNaN(parsed) || parsed <= 0) {
+                  setRawBudget("50000");
+                  setBudget(50000);
+                  triggerPlan(selectedSpots, 50000, squadSize);
+                }
               }}
               className="w-full h-11 px-3 bg-surface-grey border border-border-default rounded-[10px] text-sm font-bold focus:outline-none"
             />

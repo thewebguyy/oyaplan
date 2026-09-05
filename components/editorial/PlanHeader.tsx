@@ -80,7 +80,7 @@ export function PlanHeader({
             📍 {areaLabel}
           </span>
           <span className="bg-[#008751] text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-md">
-            Verified Menu
+            {plan.spot.has_food === false ? "Verified Admission" : "Verified Menu"}
           </span>
         </div>
       </div>

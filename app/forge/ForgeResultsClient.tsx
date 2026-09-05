@@ -51,11 +51,18 @@ export default function ForgeResultsClient({
   const [isRevealed, setIsRevealed] = useState(evaluations.length === 0);
   const [isAdjustingInline, setIsAdjustingInline] = useState(false);
   const [isAdjacentExpanded, setIsAdjacentExpanded] = useState(false);
-  const [tempBudget, setTempBudget] = useState(forgeInput.budget);
-  const [tempSquadSize, setTempSquadSize] = useState(forgeInput.squadSize);
+  const [tempBudget, setTempBudget] = useState(String(forgeInput.budget));
+  const [tempSquadSize, setTempSquadSize] = useState(String(forgeInput.squadSize));
   const [tempVibe, setTempVibe] = useState(forgeInput.vibe);
   const [tempArea, setTempArea] = useState(forgeInput.startArea || "anywhere");
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTempBudget(String(forgeInput.budget));
+    setTempSquadSize(String(forgeInput.squadSize));
+    setTempVibe(forgeInput.vibe);
+    setTempArea(forgeInput.startArea || "anywhere");
+  }, [forgeInput.budget, forgeInput.squadSize, forgeInput.vibe, forgeInput.startArea]);
 
   const handleViewAdjacentPlan = async (e: React.MouseEvent, evalItem: PlanEvaluation) => {
     e.preventDefault();
@@ -172,8 +179,10 @@ export default function ForgeResultsClient({
 
     const params = new URLSearchParams();
     params.set("vibe", urlVibe);
-    params.set("squad", tempSquadSize.toString());
-    params.set("budget", tempBudget.toString());
+    const parsedSquad = Math.max(1, Math.min(20, parseInt(tempSquadSize, 10) || forgeInput.squadSize));
+    const parsedBudget = Math.max(0, parseInt(tempBudget.replace(/[^0-9]/g, ""), 10) || forgeInput.budget);
+    params.set("squad", parsedSquad.toString());
+    params.set("budget", parsedBudget.toString());
     if (tempArea && tempArea !== "anywhere") {
       params.set("area", tempArea);
     }
@@ -437,7 +446,12 @@ export default function ForgeResultsClient({
               <input
                 type="text"
                 value={tempBudget}
-                onChange={(e) => setTempBudget(parseInt(e.target.value.replace(/[^0-9]/g, "")) || 0)}
+                onChange={(e) => setTempBudget(e.target.value.replace(/[^0-9]/g, ""))}
+                onBlur={() => {
+                  if (!tempBudget || parseInt(tempBudget, 10) <= 0) {
+                    setTempBudget(String(forgeInput.budget));
+                  }
+                }}
                 className="w-full h-10 px-3 bg-surface-grey border border-border-default rounded-[8px] text-xs font-bold focus:outline-none"
               />
             </div>
@@ -448,7 +462,15 @@ export default function ForgeResultsClient({
                 min="1"
                 max="20"
                 value={tempSquadSize}
-                onChange={(e) => setTempSquadSize(parseInt(e.target.value) || 1)}
+                onChange={(e) => setTempSquadSize(e.target.value)}
+                onBlur={() => {
+                  const val = parseInt(tempSquadSize, 10);
+                  if (isNaN(val) || val < 1) {
+                    setTempSquadSize("1");
+                  } else if (val > 20) {
+                    setTempSquadSize("20");
+                  }
+                }}
                 className="w-full h-10 px-3 bg-surface-grey border border-border-default rounded-[8px] text-xs focus:outline-none"
               />
             </div>

@@ -41,13 +41,17 @@ export default function HeroSection({ spots }: HeroSectionProps) {
   const [squadSize, setSquadSize] = useState<number>(3);
   const [budget, setBudget] = useState<number>(50000);
   const [vibe, setVibe] = useState<string | null>(null);
+  const [manualArea, setManualArea] = useState<Location | null>(null);
 
   const { origin } = useOrigin();
 
   const selectedArea = useMemo(() => {
-    const slug = origin?.planningAreaSlug || "surulere";
-    return LocationService.getVerifiedAreas().find(a => a.id === slug) || LocationService.getVerifiedAreas()[0];
-  }, [origin]);
+    if (manualArea) return manualArea;
+    if (origin) {
+      return LocationService.getVerifiedAreas().find(a => a.id === origin.planningAreaSlug) || null;
+    }
+    return LocationService.getVerifiedAreas()[0];
+  }, [manualArea, origin]);
 
   const [phraseIndex, setPhraseIndex] = useState(0);
 
@@ -92,11 +96,10 @@ export default function HeroSection({ spots }: HeroSectionProps) {
         {/* Header and Subhead Area */}
         <div className="max-w-3xl">
           <h1 className="text-[32px] sm:text-[40px] md:text-[50px] font-black text-[#1A1A1A] leading-[1.1] tracking-[-1px]">
-            Decide where to go in Lagos with{" "}
-            <span className="highlight-green">budget confidence.</span>
+            Plan an outing you can actually afford.
           </h1>
           <p className="text-base sm:text-lg leading-relaxed text-[#6B7280] font-semibold max-w-[600px] mt-2">
-            Real venue prices. Transport estimated. Zero surprise costs.
+            See the venue, its verified price, and your estimated round-trip transport before you leave home.
           </p>
           <div className="relative flex items-center gap-1.5 text-sm md:text-base text-[#6B7280] font-semibold mt-3 h-[24px] overflow-hidden w-full">
             <span>Planning:</span>
@@ -134,6 +137,8 @@ export default function HeroSection({ spots }: HeroSectionProps) {
                 vibe={vibe}
                 setVibe={setVibe}
                 recommendedSpots={recommendedSpots}
+                selectedArea={selectedArea}
+                setSelectedArea={setManualArea}
               />
             </Suspense>
           </div>

@@ -56,7 +56,7 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
         <span className="text-xs font-bold text-[#6B7280]">All-Inclusive</span>
       </div>
 
-      <div className="flex flex-row justify-between mb-6">
+      <div className="flex flex-row justify-between mb-4">
         <div>
           <p className="type-caption text-[#6B7280] mb-1 font-semibold">Your Budget Target</p>
           <p className="text-xl font-bold line-through text-[#9CA3AF]">
@@ -70,6 +70,37 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
           </p>
         </div>
       </div>
+
+      {/* Itemized Cost Breakdown: VENUE/ACTIVITY -> TRANSPORT -> TAXES */}
+      {(() => {
+        const hasFood = plan.spot.has_food !== false;
+        const venueCost = plan.foodCost;
+        const transportCost = plan.transportCost;
+        const taxesCost = Math.max(0, plan.totalCost - (venueCost + transportCost));
+
+        return (
+          <div className="py-3 px-4 bg-black/[0.02] border border-black/5 rounded-xl mb-6 space-y-2 text-xs font-mono">
+            <div className="flex justify-between items-center text-[#4B5563]">
+              <span className="font-sans font-semibold">
+                {hasFood ? "🍽️ Food & Drinks (Squad)" : "🎟️ Admission / Venue (Squad)"}
+              </span>
+              <span className="font-bold text-[#111827]">₦{venueCost.toLocaleString("en-NG")}</span>
+            </div>
+            <div className="flex justify-between items-center text-[#4B5563]">
+              <span className="font-sans font-semibold">🚗 Round-trip Transport</span>
+              <span className="font-bold text-[#111827]">
+                {transportCost === 0 ? "₦0 (Driving/Walking)" : `₦${transportCost.toLocaleString("en-NG")}`}
+              </span>
+            </div>
+            {taxesCost > 0 && (
+              <div className="flex justify-between items-center text-[#4B5563]">
+                <span className="font-sans font-semibold">🧾 Taxes &amp; Service</span>
+                <span className="font-bold text-[#111827]">₦{taxesCost.toLocaleString("en-NG")}</span>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div className={`pt-6 border-t ${cfg.divider} flex items-start gap-3`}>
         {cfg.icon}

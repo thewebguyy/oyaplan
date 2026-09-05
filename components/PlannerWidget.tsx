@@ -59,7 +59,7 @@ export default function PlannerWidget({
   recommendedSpots,
   prefilledLocation,
   selectedArea: controlledArea,
-  setSelectedArea: _setControlledArea,
+  setSelectedArea: setControlledArea,
 }: PlannerWidgetProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -82,12 +82,12 @@ export default function PlannerWidget({
   const { origin, status, requestCurrentLocation, setManualOrigin, resetStatus } = useOrigin();
 
   const selectedArea = useMemo(() => {
-    if (controlledArea !== undefined) return controlledArea;
+    if (controlledArea !== undefined && controlledArea !== null) return controlledArea;
     if (internalArea) return internalArea;
     if (!prefilledLocation && origin) {
       return LocationService.getVerifiedAreas().find((a) => a.id === origin.planningAreaSlug) || null;
     }
-    return null;
+    return LocationService.getVerifiedAreas()[0] || null;
   }, [controlledArea, internalArea, prefilledLocation, origin]);
 
   // Dynamic transport estimate using Location-Aware Hook
@@ -232,7 +232,7 @@ export default function PlannerWidget({
               <span>📍 Starting Location{selectedArea ? ` (${selectedArea.name})` : ""}</span>
               {(status === "permission-denied" || status === "unsupported" || status === "error") && (
                 <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                  Defaulted to Surulere (tap to change)
+                  Defaulted to {selectedArea?.name || "Lagos"} (tap to change)
                 </span>
               )}
             </label>
@@ -262,6 +262,9 @@ export default function PlannerWidget({
                   type="button"
                   onClick={() => {
                     setManualOrigin(area.id);
+                    if (setControlledArea) {
+                      setControlledArea(area);
+                    }
                   }}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                     isSelected

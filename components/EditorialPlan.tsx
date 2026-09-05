@@ -67,18 +67,10 @@ export default function EditorialPlan({
       <div className="w-full h-px bg-border-default/50" />
 
       <div className={`${isTopPick ? 'px-6 sm:px-10 py-10 bg-white' : 'px-6 sm:px-10 py-8 bg-transparent'} space-y-6`}>
-        {/* 2. Total Expected Landed Cost & Spend Comparison (WHERE + HOW MUCH first) */}
+        {/* 2. Total Expected Landed Cost & Itemized Spend Breakdown & Status/Reason */}
         <BudgetConfidenceCard plan={plan} originalBudget={originalBudget || plan.totalCost} />
 
-        {/* 3. Primary Actions (WhatsApp Share / Save) */}
-        <div className="flex items-center justify-between flex-wrap gap-3 pb-2 border-b border-border-default/40">
-          <span className="text-xs font-bold text-text-muted">
-            Ready to lock it in with your squad?
-          </span>
-          <PlanActions plan={plan} input={input} initialPlanId={initialPlanId} />
-        </div>
-
-        {/* 4. Decision Summary Callout */}
+        {/* 3. Decision Summary Callout */}
         {plan.decisionSummary && (
           <div className="bg-[#FAFAF8] border border-border-default/50 rounded-[20px] p-6 shadow-xs relative overflow-hidden flex items-start gap-4">
             <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#008751]" />
@@ -91,7 +83,7 @@ export default function EditorialPlan({
           </div>
         )}
 
-        {/* 5. Verified Landed Guarantee Proof Seal */}
+        {/* 4. Verified Landed Guarantee Proof Seal */}
         <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-[24px] p-6 sm:p-7 space-y-4">
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
             <div className="flex items-center gap-3">
@@ -114,7 +106,7 @@ export default function EditorialPlan({
               <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
                 <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
               </div>
-              <span>Real menu &amp; cocktail prices</span>
+              <span>{plan.spot.has_food === false ? "Verified admission & entry rate" : "Real menu & drink prices"}</span>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
               <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
@@ -126,13 +118,13 @@ export default function EditorialPlan({
               <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
                 <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
               </div>
-              <span>VAT 7.5% &amp; service charges included</span>
+              <span>{plan.spot.has_food === false ? "Access & gate fees accounted for" : "VAT 7.5% & service charges included"}</span>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
               <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
                 <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
               </div>
-              <span>Zero hidden cover or table fees</span>
+              <span>Zero hidden cover or surprise fees</span>
             </div>
           </div>
         </div>
@@ -243,6 +235,14 @@ export default function EditorialPlan({
             </>
           );
         })()}
+
+        {/* Squad Actions (WhatsApp Share / Save Plan) */}
+        <div className="flex items-center justify-between flex-wrap gap-3 py-4 border-t border-b border-border-default/40">
+          <span className="text-xs font-bold text-text-muted">
+            Ready to lock it in with your squad?
+          </span>
+          <PlanActions plan={plan} input={input} initialPlanId={initialPlanId} />
+        </div>
 
         <ChangeSummary changes={evaluation.changes} />
 

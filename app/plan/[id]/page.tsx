@@ -144,7 +144,7 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
             Squad Outing at {plan?.spot?.name}
           </h2>
           <p className="type-body text-[#4B5563] text-sm sm:text-base leading-relaxed">
-            Verified plan for a squad of <strong>{plan?.squad_size}</strong>. Real menu prices, round-trip rides, and taxes accounted for upfront. Zero Instagram billing surprises.
+            Verified plan for a squad of <strong>{plan?.squad_size}</strong>. {plan?.spot?.has_food === false ? "Real admission fees" : "Real menu prices"}, round-trip rides, and taxes accounted for upfront. Zero Instagram billing surprises.
           </p>
         </div>
 
@@ -167,6 +167,9 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           transportToggleNode={<TransportToggle planId={plan?.id || id} hasCar={hasCar} />}
           budget={plan?.budget || plan?.total_cost || 0}
           transportEstimate={plan?.transport_estimate}
+          hasFood={plan?.spot?.has_food}
+          category={plan?.spot?.category}
+          freshnessText={explanation.freshness}
         />
 
         {/* Route Card & Map Directions */}
