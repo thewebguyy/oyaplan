@@ -3,7 +3,7 @@ import { Spot } from "@/lib/types";
 import { useOrigin } from "@/lib/location/OriginContext";
 import { LocationService } from "@/lib/services/LocationService";
 import { PlanningEngine, createPlanningContext, PlanningDependencies, DEFAULT_PLANNING_DEPS } from "./planningEngine";
-import { PlanningRequest, ExplainedPlan } from "./types";
+import { PlanningRequest } from "./types";
 
 interface UseRecommendationsProps {
   spots: Spot[];

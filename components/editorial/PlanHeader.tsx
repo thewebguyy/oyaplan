@@ -1,5 +1,4 @@
 import { ForgeInput, Plan } from "@/lib/types";
-import { CheckCircle } from "lucide-react";
 import { VenueImage } from "@/components/ui/VenueImage";
 
 export function PlanHeader({

@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { LocationService } from "../services/LocationService";
-import { generateChainPlan } from "../services/chainPlanner";
 import { Spot } from "../types";
 
 describe("P0 Input Handling and Backspace Regression Tests", () => {

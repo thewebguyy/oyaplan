@@ -57,12 +57,19 @@ export default function ForgeResultsClient({
   const [tempArea, setTempArea] = useState(forgeInput.startArea || "anywhere");
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const [prevForgeInput, setPrevForgeInput] = useState(forgeInput);
+  if (
+    prevForgeInput.budget !== forgeInput.budget ||
+    prevForgeInput.squadSize !== forgeInput.squadSize ||
+    prevForgeInput.vibe !== forgeInput.vibe ||
+    prevForgeInput.startArea !== forgeInput.startArea
+  ) {
+    setPrevForgeInput(forgeInput);
     setTempBudget(String(forgeInput.budget));
     setTempSquadSize(String(forgeInput.squadSize));
     setTempVibe(forgeInput.vibe);
     setTempArea(forgeInput.startArea || "anywhere");
-  }, [forgeInput.budget, forgeInput.squadSize, forgeInput.vibe, forgeInput.startArea]);
+  }
 
   const handleViewAdjacentPlan = async (e: React.MouseEvent, evalItem: PlanEvaluation) => {
     e.preventDefault();

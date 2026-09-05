@@ -51,7 +51,7 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
       <div className="flex items-center justify-between mb-6">
         <div>
           <span className="text-[10px] font-black uppercase tracking-widest text-[#008751] block">Anti-Instagram Deception</span>
-          <h3 className="type-heading text-lg font-black text-[#111827]">What You'll Actually Spend</h3>
+          <h3 className="type-heading text-lg font-black text-[#111827]">What You&apos;ll Actually Spend</h3>
         </div>
         <span className="text-xs font-bold text-[#6B7280]">All-Inclusive</span>
       </div>
