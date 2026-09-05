@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, Variants } from "framer-motion";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Spot } from "@/lib/types";
 import { ExplainedPlan } from "@/lib/planning/types";
 import { TransportPricingProvider } from "@/lib/planning/transport";
+import { VenueImage } from "./ui/VenueImage";
+import { trackEvent } from "@/lib/analytics/trackClient";
 
 interface LivePreviewCardProps {
   squadSize: number;
@@ -60,6 +64,7 @@ export default function LivePreviewCard({
   topPlan,
   startAreaId,
 }: LivePreviewCardProps) {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
 
   // Fallback if empty array
@@ -70,12 +75,7 @@ export default function LivePreviewCard({
 
   // Format numbers to standard Naira format
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(val).replace("NGN", "₦");
+    return `₦${val.toLocaleString("en-NG")}`;
   };
 
   // Canonical pricing calculations - single source of truth
@@ -96,136 +96,138 @@ export default function LivePreviewCard({
   const transportCost = isMatchingTopPlan ? topPlan.transportCost : transportRange.midpointCost;
   const totalCost = isMatchingTopPlan ? topPlan.totalCost : (foodCost + transportCost);
   const remainingBuffer = Math.max(0, budget - totalCost);
+  const perPersonCost = Math.round(totalCost / squadSize);
 
-  // Percentage of overall budget consumed by transport
-  const transportRatio = budget > 0 ? (transportCost / budget) * 100 : 0;
+  const handleLaunchForge = () => {
+    const params = new URLSearchParams();
+    params.set("vibe", vibe?.toLowerCase() || "chill");
+    params.set("squad", String(squadSize));
+    params.set("budget", String(budget || 50000));
+    if (startAreaId && startAreaId !== "anywhere") {
+      params.set("area", startAreaId);
+    }
+    if (spot?.id) {
+      params.set("pinned", spot.id);
+    }
+    params.set("fresh", "true");
 
-  // Deterministic mathematical advice
-  const getMathGuidance = () => {
-    if (totalCost > budget) {
-      return "⚠️ Budget exceeded. Try reducing squad size or increasing budget to fit venue prices.";
-    }
-    if (transportRatio > 30) {
-      return `⚠️ Transport is consuming ${Math.round(transportRatio)}% of your budget. Consider reducing squad size.`;
-    }
-    if (remainingBuffer / budget >= 0.15) {
-      return "✓ Great balance. You still have enough remaining buffer for extra orders.";
-    }
-    return "✓ Great balance. Most users choose this range.";
-  };
+    trackEvent("forge_started", {
+      category: "Activation",
+      source: "live_preview_card",
+      budget: Number(budget),
+      squad_size: Number(squadSize),
+      area: startAreaId ?? "unselected",
+      version: "1.0",
+    });
 
-  const getSavingsTip = () => {
-    if (squadSize > 1 && totalCost <= budget) {
-      const perPersonSavings = Math.round((spot.price_per_person || 12000));
-      return `💡 Reducing squad size by one saves approximately ${formatCurrency(perPersonSavings)} in food costs.`;
-    }
-    return null;
+    router.push(`/forge?${params.toString()}`);
   };
 
   return (
-    <div className="bg-white rounded-[16px] border border-[#EAE8E3] p-5 text-left font-sans text-xs text-[#1A1A1A] space-y-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-      <motion.div
-        key={`${squadSize}-${budget}-${vibe}-${spot.id}`}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-4"
-      >
-        {/* Recommended Venue Header & Navigation */}
-        <div className="flex items-start justify-between">
-          <motion.div variants={itemVariants} className="space-y-0.5 max-w-[75%]">
-            <div className="text-[10px] uppercase tracking-wider text-[#6B7280] font-bold font-sans">
-              Top Matches
-            </div>
-            <h2 className="text-base font-extrabold text-[#1A1A1A] leading-tight truncate">
-              {spot.name}
-            </h2>
-            <div className="text-[11px] text-[#6B7280] font-semibold">
-              📍 {spot.address || "Lekki, Lagos"} {vibe ? `• ${vibe}` : ""}
-            </div>
-          </motion.div>
+    <div className="bg-white rounded-[24px] border-2 border-[#111827] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.06),0_4px_0_0_#111827] text-left font-sans text-xs text-[#111827] space-y-0">
+      
+      {/* Visual Appetizing Image Header */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100">
+        <VenueImage
+          src={spot.image_url || spot.cover_url}
+          alt={spot.name}
+          fallbackCategory={spot.category}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+        
+        {/* Top Badges */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-white text-[10px] font-black uppercase tracking-wider">
+          <span className="bg-[#FCC630] text-[#111827] px-2.5 py-1 rounded-full shadow-xs">
+            ★ Top Match
+          </span>
+          <span className="bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-full border border-white/20">
+            {vibe || "Date Night"}
+          </span>
+        </div>
 
-          {spotsToUse.length > 1 && (
-            <motion.div variants={itemVariants} className="flex gap-1">
+        {/* Bottom Image Metadata */}
+        <div className="absolute bottom-3 left-3 right-3 text-white">
+          <h3 className="text-lg font-black leading-tight truncate font-sans drop-shadow-sm">
+            {spot.name}
+          </h3>
+          <p className="text-[11px] text-white/80 font-medium">
+            📍 {spot.address || spot.address_slug || "Lagos"}
+          </p>
+        </div>
+      </div>
+
+      <div className="p-5 space-y-4">
+        {/* Carousel Pagination */}
+        {spotsToUse.length > 1 && (
+          <div className="flex items-center justify-between border-b border-[#F3F4F6] pb-3">
+            <span className="text-[10px] uppercase tracking-wider text-[#6B7280] font-bold">
+              Option {currentSpotIndex + 1} of {spotsToUse.length}
+            </span>
+            <div className="flex gap-1.5">
               {spotsToUse.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveIndex(idx)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    idx === currentSpotIndex ? "bg-[#008751] w-4" : "bg-gray-300 hover:bg-gray-400"
+                  className={`h-2 rounded-full transition-all ${
+                    idx === currentSpotIndex ? "bg-[#008751] w-5" : "bg-gray-200 w-2 hover:bg-gray-300"
                   }`}
-                  aria-label={`View recommendation ${idx + 1}`}
+                  aria-label={`View match ${idx + 1}`}
                 />
               ))}
-            </motion.div>
-          )}
+            </div>
+          </div>
+        )}
+
+        {/* Tactile Mini Receipt Breakdown */}
+        <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-xl p-3.5 space-y-2 font-mono text-xs">
+          <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-[#6B7280] font-sans font-bold border-b border-dashed border-gray-200 pb-1.5">
+            <span>Verified Live Estimate</span>
+            <span className="text-[#008751] flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3" /> Real Prices
+            </span>
+          </div>
+
+          <div className="flex justify-between font-sans text-xs">
+            <span className="text-[#4B5563]">Dining ({squadSize}x):</span>
+            <span className="font-bold text-[#111827] font-mono">{formatCurrency(foodCost)}</span>
+          </div>
+          <div className="flex justify-between font-sans text-xs">
+            <span className="text-[#4B5563]">Round-Trip Rides:</span>
+            <span className="font-bold text-[#111827] font-mono">{formatCurrency(transportCost)}</span>
+          </div>
+
+          <div className="flex justify-between border-t border-[#111827]/15 pt-2 font-sans font-black text-sm text-[#111827]">
+            <span>Total Expected:</span>
+            <span className="text-[#008751] font-mono">{formatCurrency(totalCost)}</span>
+          </div>
+
+          <div className="flex justify-between text-[11px] text-[#6B7280] font-sans font-medium pt-0.5">
+            <span>Per person ({squadSize} {squadSize === 1 ? "person" : "pax"}):</span>
+            <span className="font-bold text-[#111827] font-mono">{formatCurrency(perPersonCost)} / each</span>
+          </div>
         </div>
 
-        {/* Why it Fits Explanations */}
-        <motion.div variants={itemVariants} className="space-y-1.5 border-t border-b border-[#F3F4F6] py-3.5 font-sans">
-          <div className="text-[10px] text-[#6B7280] font-bold uppercase tracking-wider mb-1">
-            Why this fits
-          </div>
-          <ul className="space-y-1.5 text-[#1A1A1A]">
-            <li className="flex items-center gap-2">
-              <span className="text-[#008751] font-bold">✓</span>
-              <span>Matches selected {vibe || "Date Night"} vibe</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[#008751] font-bold">✓</span>
-              <span>Fits {formatCurrency(budget)} budget</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[#008751] font-bold">✓</span>
-              <span>{squadSize === 1 ? "Supports solo planner" : `Supports ${squadSize} people`}</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[#008751] font-bold">✓</span>
-              <span>Transport remains under {Math.round(transportRatio)}% of spend</span>
-            </li>
-          </ul>
-        </motion.div>
+        {/* Quick Reassurance Pill */}
+        <div className="text-[11px] text-[#4B5563] flex items-center gap-1.5 bg-[#008751]/8 border border-[#008751]/15 px-3 py-2 rounded-xl font-medium">
+          <span className="text-[#008751] font-black">✓</span>
+          <span>
+            {totalCost <= budget 
+              ? `Fits your ₦${budget.toLocaleString()} budget with ₦${remainingBuffer.toLocaleString()} buffer.`
+              : `Slight stretch past budget. Consider ₦${Math.abs(budget - totalCost).toLocaleString()} flex.`
+            }
+          </span>
+        </div>
 
-        {/* Precise Cost Breakdown (Ledger style) */}
-        <motion.div variants={itemVariants} className="space-y-2">
-          <div className="text-[10px] text-[#6B7280] font-bold font-sans uppercase tracking-wider">
-            Cost Breakdown
-          </div>
-          <div className="space-y-1.5 text-xs text-[#1A1A1A] font-mono">
-            <div className="flex justify-between">
-              <span className="text-[#6B7280] font-sans">Food &amp; Dining:</span>
-              <span className="font-semibold">{formatCurrency(foodCost)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[#6B7280] font-sans">Transport (Round-trip):</span>
-              <span className="font-semibold">{formatCurrency(transportCost)}</span>
-            </div>
-            <div className="flex justify-between border-t border-dashed border-[#EAE8E3] pt-1.5 mt-1 font-bold font-sans text-[13px]">
-              <span>Total Expected Cost:</span>
-              <span className="text-[#008751] font-mono">{formatCurrency(totalCost)}</span>
-            </div>
-            <div className="flex justify-between pt-1 border-t border-dashed border-[#F3F4F6] font-bold font-sans">
-              <span>Remaining Buffer:</span>
-              <span className="text-[#1A1A1A] bg-[#FCC630] px-2 py-0.5 rounded font-mono text-xs">
-                {formatCurrency(remainingBuffer)}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Deterministic Mathematical Guidance */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-[#FAF9F6] rounded-lg p-3 border border-[#EAE8E3] text-[11px] text-[#1A1A1A] space-y-1.5 font-sans"
+        {/* 1-Click Interactive CTA Button */}
+        <button
+          onClick={handleLaunchForge}
+          className="w-full bg-[#111827] hover:bg-black text-white font-black uppercase text-xs tracking-wider h-12 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer group"
         >
-          <div className="font-bold leading-normal">{getMathGuidance()}</div>
-          {getSavingsTip() && (
-            <div className="text-[#6B7280] text-[10px] leading-relaxed pt-1.5 border-t border-dashed border-[#EAE8E3]">
-              {getSavingsTip()}
-            </div>
-          )}
-        </motion.div>
-      </motion.div>
+          <span>Lock In This Plan</span>
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </button>
+      </div>
     </div>
   );
 }

@@ -91,39 +91,50 @@ export default function EditorialPlan({
           </div>
         )}
 
-        {/* 5. Decision Confidence Scorecard & Evidence */}
-        <div className="bg-[#FAFAF8] border border-border-default/80 rounded-[20px] p-6 space-y-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <Shield className={`w-5 h-5 ${
-                plan.decisionConfidence?.level === "Very High" || plan.decisionConfidence?.level === "High"
-                  ? "text-[#008751]"
-                  : "text-amber-500"
-              }`} />
+        {/* 5. Verified Landed Guarantee Proof Seal */}
+        <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-[24px] p-6 sm:p-7 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#008751]/10 flex items-center justify-center text-[#008751]">
+                <Shield className="w-5 h-5 stroke-[2.5]" />
+              </div>
               <div>
-                <span className="text-[10px] uppercase tracking-wider font-bold text-text-muted block">Decision Confidence</span>
-                <p className="text-base font-black text-midnight-lagoon">{plan.decisionConfidence?.level || "High"} Confidence</p>
+                <span className="text-[10px] uppercase tracking-widest font-black text-[#008751] block">Anti-Deception Check</span>
+                <h4 className="text-base font-black text-[#111827]">Lagos Landed Price Guarantee</h4>
               </div>
             </div>
-            {plan.spot.computed_confidence_score !== undefined && (
-              <span className="text-3xl font-black text-midnight-lagoon">{Math.round(plan.spot.computed_confidence_score)}%</span>
-            )}
+            <span className="text-xs font-black text-[#008751] bg-[#008751]/10 px-3 py-1 rounded-full uppercase tracking-wider">
+              100% Transparent
+            </span>
           </div>
 
-          {plan.decisionConfidence?.evidenceList && plan.decisionConfidence.evidenceList.length > 0 && (
-            <div className="space-y-3 pt-4 border-t border-border-default/45">
-              {plan.decisionConfidence.evidenceList.map((ev, i) => (
-                <div key={i} className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-full bg-palm-green/10 flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 text-[#008751] stroke-[3]" />
-                  </div>
-                  <span className="text-xs text-text-secondary font-medium">
-                    {formatConfidenceEvidence(ev, plan.spot.price_updated_at)}
-                  </span>
-                </div>
-              ))}
+          {/* Tangible Proof Items */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+              </div>
+              <span>Real menu &amp; cocktail prices</span>
             </div>
-          )}
+            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+              </div>
+              <span>Round-trip ride-hailing covered</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+              </div>
+              <span>VAT 7.5% &amp; service charges included</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+              </div>
+              <span>Zero hidden cover or table fees</span>
+            </div>
+          </div>
         </div>
 
         {/* 6. Why this plan? Section */}

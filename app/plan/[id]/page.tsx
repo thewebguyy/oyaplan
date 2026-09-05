@@ -136,9 +136,12 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
         </div>
 
         {/* Zero-Context Explainer */}
-        <div className="text-center max-w-sm mx-auto mb-8">
-          <p className="type-body text-midnight-lagoon/80 leading-relaxed text-sm sm:text-base">
-            Someone built a plan for <strong>{plan?.squad_size} people</strong> going to <strong>{plan?.spot?.name}</strong>. We did the math so you can just enjoy the night. No unexpected billing.
+        <div className="text-center max-w-md mx-auto mb-6">
+          <h2 className="text-xl sm:text-2xl font-black text-[#111827] tracking-tight mb-2">
+            Squad Outing at {plan?.spot?.name}
+          </h2>
+          <p className="type-body text-[#4B5563] text-sm sm:text-base leading-relaxed">
+            Verified plan for a squad of <strong>{plan?.squad_size}</strong>. Real menu prices, round-trip rides, and taxes accounted for upfront. Zero Instagram billing surprises.
           </p>
         </div>
 

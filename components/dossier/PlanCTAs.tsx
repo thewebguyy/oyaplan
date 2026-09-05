@@ -83,20 +83,22 @@ export function PlanCTAs({
 
   const greeting = squadName ? `⚡ Oya ${squadName}!` : "Yo! 🎉";
 
+  const perPersonTotal = Math.round(totalCost / squadSize);
+
   const shareText = `${greeting}
 
-Planned our linkup at ${venueName} using OyaPlan.
+Check our outing plan for ${venueName} 🔥
 
 📍 ${venueName} (${cleanAddress})
-💰 Total est. cost: ₦${totalCost.toLocaleString()}
-👥 ${squadSize} ${squadSize === 1 ? "person" : "people"}
+💰 Total Landed Cost: ₦${totalCost.toLocaleString()} (~₦${perPersonTotal.toLocaleString()} each)
+👥 Squad of ${squadSize}
 
-Here's the full breakdown:
+Zero hidden charges:
 🍽️ Food & Drinks: ₦${foodCost.toLocaleString()}
-🚗 Transport (Uber): ₦${transportCost.toLocaleString()}
-💸 Taxes & Fees: ₦${taxesCost.toLocaleString()}
+🚗 Round-Trip Uber: ₦${transportCost.toLocaleString()}
+💸 VAT & Service: ₦${taxesCost.toLocaleString()}
 
-See the verified breakdown:
+See verified receipt & who dey pay split:
 🔗 ${shareUrl}
 
 Are you in? 👇`;
@@ -111,6 +113,16 @@ Are you in? 👇`;
     setCopied(true);
     toast.success("Plan link copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleForkPlan = () => {
+    const params = new URLSearchParams();
+    if (vibe) params.set("vibe", vibe);
+    if (squadSize) params.set("squad", String(squadSize));
+    if (budget) params.set("budget", String(budget));
+    if (startArea) params.set("area", startArea);
+    if (currentSpotId) params.set("pinned", currentSpotId);
+    router.push(`/?${params.toString()}`);
   };
 
   const handleSwitchSpot = async (newSpotId: string, newSpotPrice: number, newSpotName: string) => {
@@ -134,38 +146,50 @@ Are you in? 👇`;
   return (
     <div className="w-full">
       {/* Sticky Bottom Actions on Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border-default/80 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:hidden flex gap-3 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#111827]/10 px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] md:hidden flex gap-2.5 shadow-[0_-8px_24px_rgba(0,0,0,0.08)]">
         <button
           onClick={() => setIsShareModalOpen(true)}
-          className="flex-1 bg-[#008751] hover:bg-[#007043] text-white font-black uppercase text-xs h-12 rounded-[12px] flex items-center justify-center gap-2 tap-feedback border-none outline-none"
+          className="flex-1 bg-[#008751] hover:bg-[#007043] text-white font-black uppercase text-xs h-12 rounded-[14px] flex items-center justify-center gap-2 tap-feedback border-none outline-none shadow-sm"
         >
           <Share2 className="w-4 h-4" />
           Share Plan
         </button>
         <button
+          onClick={handleForkPlan}
+          className="flex-1 bg-[#FCC630] hover:bg-[#e0ae27] text-[#111827] font-black uppercase text-xs h-12 rounded-[14px] flex items-center justify-center gap-1.5 tap-feedback border-none shadow-sm"
+        >
+          <span>⚡</span> My Squad
+        </button>
+        <button
           onClick={() => setIsModifyOpen(!isModifyOpen)}
-          className="flex-1 bg-white border-2 border-black text-black font-black uppercase text-xs h-12 rounded-[12px] flex items-center justify-center gap-2 tap-feedback"
+          className="w-12 h-12 bg-white border border-[#E5E7EB] text-[#111827] font-black rounded-[14px] flex items-center justify-center tap-feedback shrink-0"
+          aria-label="Tweak options"
         >
           <Settings2 className="w-4 h-4" />
-          Quick Tweak
         </button>
       </div>
 
       {/* Desktop Buttons Layout */}
-      <div className="hidden md:flex items-center gap-4 w-full max-w-lg mx-auto mt-8">
+      <div className="hidden md:flex items-center gap-3 w-full max-w-lg mx-auto mt-8">
         <button
           onClick={() => setIsShareModalOpen(true)}
-          className="flex-1 bg-[#008751] hover:bg-[#007043] text-white font-black uppercase tracking-wider text-xs h-14 rounded-[12px] flex items-center justify-center gap-2 shadow-[0_4px_0_0_#1A1A1A] border-2 border-black tap-feedback"
+          className="flex-1 bg-[#008751] hover:bg-[#007043] text-white font-black uppercase tracking-wider text-xs h-14 rounded-[14px] flex items-center justify-center gap-2 shadow-sm tap-feedback transition-all"
         >
           <Share2 className="w-4 h-4" />
-          Share Now
+          Share to WhatsApp
+        </button>
+        <button
+          onClick={handleForkPlan}
+          className="flex-1 bg-[#FCC630] hover:bg-[#e0ae27] text-[#111827] font-black uppercase tracking-wider text-xs h-14 rounded-[14px] flex items-center justify-center gap-2 shadow-sm tap-feedback transition-all"
+        >
+          <span>⚡</span> Plan Your Squad's Version
         </button>
         <button
           onClick={() => setIsModifyOpen(!isModifyOpen)}
-          className="flex-1 bg-white border-2 border-[#1A1A1A] text-[#1A1A1A] font-black uppercase tracking-wider text-xs h-14 rounded-[12px] flex items-center justify-center gap-2 hover:bg-[#FAFAF8] shadow-[0_4px_0_0_#1A1A1A] tap-feedback"
+          className="h-14 px-4 bg-white border border-[#E5E7EB] text-[#111827] font-black uppercase tracking-wider text-xs rounded-[14px] flex items-center justify-center gap-1.5 hover:bg-[#FAFAF8] tap-feedback"
         >
           <Settings2 className="w-4 h-4" />
-          Quick Modify
+          Modify
         </button>
       </div>
 

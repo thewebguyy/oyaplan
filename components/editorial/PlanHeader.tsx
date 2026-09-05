@@ -44,59 +44,67 @@ export function PlanHeader({
     return alternativeIndex === 0 ? "Option B: Different Vibe 🔮" : "Option C: Alternative Spot 📍";
   };
 
+  const priceTier = (plan.spot.price_per_person || 12000) > 25000 ? "₦₦₦" : (plan.spot.price_per_person || 12000) > 15000 ? "₦₦" : "₦";
+  const areaLabel = plan.spot.address_slug 
+    ? plan.spot.address_slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    : input.area || "Lagos";
+
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
       {isTopPick ? (
-        <div className="mb-6 flex items-center gap-2 bg-[#F6C642]/12 border border-[#F6C642]/30 text-[#7A5D00] px-4 py-1.5 rounded-full">
-          <span className="text-[11px] font-black uppercase tracking-[0.12em]">★ Our top pick</span>
+        <div className="mb-6 flex items-center gap-2 bg-[#F6C642]/15 border border-[#F6C642]/40 text-[#7A5D00] px-4 py-1.5 rounded-full shadow-xs">
+          <span className="text-[11px] font-black uppercase tracking-[0.14em]">★ Top Vibe Match</span>
         </div>
       ) : (
-        <div className="mb-6 flex items-center gap-2 bg-[#008751]/10 border border-[#008751]/20 text-[#008751] px-4 py-1.5 rounded-full">
-          <span className="text-[11px] font-black uppercase tracking-[0.12em]">
+        <div className="mb-6 flex items-center gap-2 bg-[#008751]/10 border border-[#008751]/25 text-[#008751] px-4 py-1.5 rounded-full shadow-xs">
+          <span className="text-[11px] font-black uppercase tracking-[0.14em]">
             {getAlternativeLabel()}
           </span>
         </div>
       )}
-      <div className="w-full max-w-2xl aspect-[16/9] mb-8 rounded-[20px] overflow-hidden img-zoom-container shadow-lagoon relative">
+
+      {/* Resy/OpenTable High-Converting Image Frame */}
+      <div className="w-full max-w-2xl aspect-[16/9] mb-8 rounded-[24px] overflow-hidden img-zoom-container shadow-2xl relative border border-black/5">
         <VenueImage 
           src={plan.spot.image_url || plan.spot.cover_url} 
           alt={plan.spot.name} 
           fallbackCategory={plan.spot.category}
           className="img-zoom"
         />
+        {/* Subtle Dark Vignette & Live Badge Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+        
+        {/* Bottom Floating Pill Indicators */}
+        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-bold pointer-events-none">
+          <span className="bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] uppercase tracking-wider">
+            📍 {areaLabel}
+          </span>
+          <span className="bg-[#008751] text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-md">
+            Verified Menu
+          </span>
+        </div>
       </div>
 
-      <h2 className="type-display-product text-midnight-lagoon uppercase tracking-tight text-xl sm:text-2xl font-black mb-2">
+      <h2 className="type-display-product text-[#111827] uppercase tracking-tight text-xl sm:text-3xl font-black mb-2">
         {plan.title || getHeadline()}
       </h2>
-      <div className={`flex items-center gap-2 justify-center ${isTopPick ? "flex-col sm:flex-row" : "flex-col"}`}>
-        <p className="type-tagline text-text-muted text-lg font-medium">
+      <div className="flex items-center gap-2 justify-center flex-col sm:flex-row">
+        <p className="type-tagline text-[#4B5563] text-lg font-semibold">
           {plan.subtitle || `at ${plan.spot.name}`}
         </p>
-        
-        {plan.spot.computed_confidence_score !== undefined && plan.spot.computed_confidence_score > 70 && (
-          <div className="flex items-center gap-1 bg-palm-green/10 text-palm-green px-2.5 py-0.5 rounded-full mt-2 sm:mt-0 shadow-xs">
-            <CheckCircle className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              {plan.spot.computed_confidence_score}% Planning Confidence
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* Structured Category Badges */}
-      <div className="flex flex-wrap gap-2 justify-center mt-3 select-none">
-        <span className="px-2.5 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[10px] font-extrabold uppercase tracking-wider">
-          Primary: {plan.spot.category || 'Restaurant'}
+      {/* Resy Structured Data Badges */}
+      <div className="flex flex-wrap gap-2 justify-center mt-4 select-none">
+        <span className="px-3 py-1 bg-[#111827]/5 border border-[#111827]/10 text-[#111827] rounded-full text-[11px] font-black uppercase tracking-wider">
+          {plan.spot.category || 'Restaurant'}
         </span>
-        {plan.spot.secondary_experience && (
-          <span className="px-2.5 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[10px] font-extrabold uppercase tracking-wider">
-            Experience: {plan.spot.secondary_experience}
-          </span>
-        )}
+        <span className="px-3 py-1 bg-[#008751]/10 border border-[#008751]/20 text-[#008751] rounded-full text-[11px] font-black tracking-wider">
+          Price Tier: {priceTier}
+        </span>
         {plan.spot.food_type && (
-          <span className="px-2.5 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[10px] font-extrabold uppercase tracking-wider">
-            Food: {plan.spot.food_type}
+          <span className="px-3 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[11px] font-bold uppercase tracking-wider">
+            Chop: {plan.spot.food_type}
           </span>
         )}
       </div>

@@ -48,18 +48,24 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
       className={`${cfg.card} rounded-[24px] p-6 sm:p-8 border mb-6 transition-[colors,box-shadow]`}
       style={{ transitionDuration: "var(--duration-editorial)" }}
     >
-      <h3 className="type-heading text-lg mb-6">Can You Afford It?</h3>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#008751] block">Anti-Instagram Deception</span>
+          <h3 className="type-heading text-lg font-black text-[#111827]">What You'll Actually Spend</h3>
+        </div>
+        <span className="text-xs font-bold text-[#6B7280]">All-Inclusive</span>
+      </div>
 
       <div className="flex flex-row justify-between mb-6">
         <div>
-          <p className="type-caption text-text-muted mb-1">Your budget</p>
-          <p className="text-xl font-bold line-through text-text-muted">
+          <p className="type-caption text-[#6B7280] mb-1 font-semibold">Your Budget Target</p>
+          <p className="text-xl font-bold line-through text-[#9CA3AF]">
             ₦{originalBudget.toLocaleString("en-NG")}
           </p>
         </div>
         <div className="text-right">
-          <p className="type-caption text-text-muted mb-1">Estimated spend</p>
-          <p className="text-4xl font-black text-midnight-lagoon tabular-nums">
+          <p className="type-caption text-[#008751] mb-1 font-bold">Estimated Landed Spend</p>
+          <p className="text-4xl font-black text-[#111827] tabular-nums font-mono">
             ₦<NumericCounter value={plan.totalCost} />
           </p>
         </div>
@@ -69,8 +75,8 @@ export function BudgetConfidenceCard({ plan, originalBudget }: { plan: Plan; ori
         {cfg.icon}
         <div className="space-y-3 w-full">
           <div>
-            <p className="font-bold text-lg leading-tight">{cfg.headline}</p>
-            <p className="text-text-muted text-sm">{cfg.sub(diff)}</p>
+            <p className="font-black text-lg leading-tight text-[#111827]">{cfg.headline}</p>
+            <p className="text-[#4B5563] text-sm font-medium mt-0.5">{cfg.sub(diff)}</p>
           </div>
 
           <div className="pt-2 border-t border-black/5 flex flex-wrap items-center gap-2">
