@@ -47,7 +47,7 @@ export function PlanHeader({
   const priceTier = (plan.spot.price_per_person || 12000) > 25000 ? "₦₦₦" : (plan.spot.price_per_person || 12000) > 15000 ? "₦₦" : "₦";
   const areaLabel = plan.spot.address_slug 
     ? plan.spot.address_slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-    : input.area || "Lagos";
+    : input.startArea || "Lagos";
 
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
