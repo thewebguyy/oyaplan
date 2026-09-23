@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   Building2, 
   CheckCircle2, 
@@ -20,32 +21,34 @@ export const metadata: Metadata = {
 
 export default function ForBusinessPage() {
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAF8] text-[#010528] antialiased selection:bg-[#008751]/10 selection:text-[#008751]">
+    <div className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon antialiased selection:bg-brand-green/10 selection:text-brand-green">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-40 bg-[#FAFAF8]/90 backdrop-blur-md border-b border-border-default/60">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border-default">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/for-business" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-xl bg-[#008751] text-white flex items-center justify-center font-black text-sm shadow-xs transition-transform group-hover:scale-105">
-              O
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-black text-base text-[#010528] tracking-tight">OyaPlan</span>
-              <span className="text-[11px] font-bold text-[#008751] uppercase tracking-wider bg-[#EAFDF3] px-2 py-0.5 rounded-md border border-[#A3F3C6]/60">
-                for Business
-              </span>
-            </div>
+          <Link href="/for-business" className="flex items-center gap-2.5 tap-feedback">
+            <Image
+              src="/logo.png"
+              alt="OyaPlan"
+              width={610}
+              height={143}
+              className="h-6 w-auto object-contain shrink-0"
+              priority
+            />
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider px-2 py-0.5 rounded bg-surface-grey border border-border-default/60">
+              for Business
+            </span>
           </Link>
 
           <div className="flex items-center gap-3">
             <Link
               href="/account?next=/business"
-              className="text-xs font-bold text-[#010528] hover:text-[#008751] px-3 py-2 rounded-xl transition-colors"
+              className="text-xs font-semibold text-text-secondary hover:text-midnight-lagoon px-3 py-2 rounded-xl transition-colors"
             >
               Sign In
             </Link>
             <Link
               href="/business/claim"
-              className="h-10 px-4 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              className="h-10 px-4 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer tap-feedback"
             >
               <span>Claim Business</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -57,103 +60,103 @@ export default function ForBusinessPage() {
       {/* Hero Section */}
       <section className="py-14 sm:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-[#008751] text-xs font-black uppercase tracking-wider">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Supply Relationship Layer</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-[#0A7C3F] text-xs font-bold">
+            <ShieldCheck className="w-4 h-4" />
+            <span>Lagos Supply Relationship Layer</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-[#010528] uppercase tracking-tight leading-[1.1]">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-midnight-lagoon tracking-tight leading-[1.15]">
             Help people confidently choose your business.
           </h1>
 
-          <p className="text-base sm:text-lg text-text-secondary leading-relaxed max-w-2xl mx-auto font-medium">
-            OyaPlan helps people discover businesses, understand what they&apos;ll probably spend, and plan real outings. Keep your information accurate and see how people are planning to spend.
+          <p className="text-base sm:text-lg text-text-muted leading-relaxed max-w-2xl mx-auto font-normal">
+            OyaPlan helps Lagos squads discover spots, understand what they&apos;ll probably spend, and plan real outings. Keep your details accurate and see how people plan around your space.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/business/claim" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto h-13 px-8 bg-[#008751] hover:bg-[#007043] text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer">
+              <button className="w-full sm:w-auto h-12 px-7 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback">
                 <span>Claim Your Business</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
             <Link href="/account?next=/business" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto h-13 px-7 bg-white hover:bg-gray-50 border border-border-default text-[#010528] text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-xs">
+              <button className="w-full sm:w-auto h-12 px-6 bg-white hover:bg-gray-50 border border-border-default text-midnight-lagoon text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-xs tap-feedback">
                 Sign In to Business Portal
               </button>
             </Link>
           </div>
 
-          <p className="text-[11px] text-text-muted">
+          <p className="text-xs text-text-muted">
             Free to claim. We do not charge listing fees or mandatory subscriptions.
           </p>
         </div>
       </section>
 
       {/* 4 Concrete Value Pillars */}
-      <section className="py-12 px-4 sm:px-6 bg-white border-y border-border-default/60">
+      <section className="py-14 px-4 sm:px-6 bg-white border-y border-border-default">
         <div className="max-w-5xl mx-auto space-y-10">
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <span className="type-ui-label text-xs font-black text-[#008751] uppercase tracking-wider">
+          <div className="text-center space-y-1.5 max-w-xl mx-auto">
+            <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
               Why OyaPlan for Business
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#010528] uppercase tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
               Built around your recurring operational needs
             </h2>
             <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
-              We don&apos;t build generic restaurant software. We solve the specific problems that prevent customers from choosing you.
+              We solve the specific ambiguity that prevents customers from deciding to leave home and choose you.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Pillar 1 */}
-            <div className="p-7 rounded-3xl bg-[#FAFAF8] border border-border-default space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shadow-xs">
+            <div className="p-6 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-[#EAFDF3] text-[#0A7C3F] flex items-center justify-center border border-[#A3F3C6]">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#010528] uppercase tracking-tight">
+              <h3 className="text-base font-bold text-midnight-lagoon">
                 Keep your information accurate
               </h3>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-normal">
-                Prices and mandatory fees change. Update menu prices, opening hours, VAT, service charges, corkage, and temporary operational changes in under 60 seconds from your phone.
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+                Prices and mandatory fees change. Update menu items, opening hours, VAT, service charges, corkage, and temporary operational changes in under 60 seconds from your phone.
               </p>
             </div>
 
             {/* Pillar 2 */}
-            <div className="p-7 rounded-3xl bg-[#FAFAF8] border border-border-default space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center shadow-xs">
+            <div className="p-6 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
                 <Receipt className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#010528] uppercase tracking-tight">
+              <h3 className="text-base font-bold text-midnight-lagoon">
                 Help customers know what to expect
               </h3>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-normal">
-                Customers hesitate when pricing is uncertain. OyaPlan makes your typical spend transparent before people leave home, so planners arrive ready to spend with budget confidence.
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+                Customers hesitate when pricing is uncertain. OyaPlan makes typical spend transparent before people leave home, so planners arrive ready to spend with budget confidence.
               </p>
             </div>
 
             {/* Pillar 3 */}
-            <div className="p-7 rounded-3xl bg-[#FAFAF8] border border-border-default space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center shadow-xs">
+            <div className="p-6 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-200">
                 <Users className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#010528] uppercase tracking-tight">
+              <h3 className="text-base font-bold text-midnight-lagoon">
                 See real planning demand
               </h3>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-normal">
-                Understand when Lagos squads are including your venue in outings, what group sizes they have, and what budgets they are planning around. Honest data without fabricated vanity metrics.
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+                Understand when Lagos squads include your venue in outings, what group sizes they have, and what budgets they are planning around. Honest signals without fabricated vanity metrics.
               </p>
             </div>
 
             {/* Pillar 4 */}
-            <div className="p-7 rounded-3xl bg-[#FAFAF8] border border-border-default space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-[#008751] flex items-center justify-center shadow-xs">
+            <div className="p-6 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#0A7C3F] flex items-center justify-center border border-emerald-200">
                 <Eye className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-black text-[#010528] uppercase tracking-tight">
+              <h3 className="text-base font-bold text-midnight-lagoon">
                 See how customers see you
               </h3>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
                 Never wonder what information is circulating online. One click opens your public OyaPlan listing, showing you exactly what planners see on their screens.
               </p>
             </div>
@@ -161,123 +164,83 @@ export default function ForBusinessPage() {
         </div>
       </section>
 
-      {/* Mutual Value Loop Section */}
+      {/* The OyaPlan Trust Loop */}
       <section className="py-14 sm:py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto space-y-10">
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <span className="type-ui-label text-xs font-black text-[#008751] uppercase tracking-wider">
+          <div className="text-center space-y-1.5 max-w-xl mx-auto">
+            <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
               The OyaPlan Trust Loop
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#010528] uppercase tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
               How accurate information drives better outings
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2 text-center sm:text-left">
-              <span className="text-xs font-black text-[#008751] font-mono">01</span>
-              <h4 className="font-bold text-sm text-[#010528] uppercase">Accurate Data</h4>
+            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2">
+              <span className="text-xs font-bold text-brand-green font-mono">01</span>
+              <h4 className="font-bold text-sm text-midnight-lagoon">Accurate Data</h4>
               <p className="text-xs text-text-muted leading-relaxed">
                 Venue confirms prices, hours, and mandatory charges.
               </p>
             </div>
 
-            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2 text-center sm:text-left">
-              <span className="text-xs font-black text-[#008751] font-mono">02</span>
-              <h4 className="font-bold text-sm text-[#010528] uppercase">Cost Confidence</h4>
+            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2">
+              <span className="text-xs font-bold text-brand-green font-mono">02</span>
+              <h4 className="font-bold text-sm text-midnight-lagoon">Cost Confidence</h4>
               <p className="text-xs text-text-muted leading-relaxed">
                 Planners know what they will spend before leaving home.
               </p>
             </div>
 
-            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2 text-center sm:text-left">
-              <span className="text-xs font-black text-[#008751] font-mono">03</span>
-              <h4 className="font-bold text-sm text-[#010528] uppercase">Real Outings</h4>
+            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2">
+              <span className="text-xs font-bold text-brand-green font-mono">03</span>
+              <h4 className="font-bold text-sm text-midnight-lagoon">Real Outings</h4>
               <p className="text-xs text-text-muted leading-relaxed">
                 Squads visit and spend without unexpected budget friction.
               </p>
             </div>
 
-            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2 text-center sm:text-left">
-              <span className="text-xs font-black text-[#008751] font-mono">04</span>
-              <h4 className="font-bold text-sm text-[#010528] uppercase">Visible Demand</h4>
+            <div className="p-5 bg-white rounded-2xl border border-border-default space-y-2">
+              <span className="text-xs font-bold text-brand-green font-mono">04</span>
+              <h4 className="font-bold text-sm text-midnight-lagoon">Useful Demand</h4>
               <p className="text-xs text-text-muted leading-relaxed">
-                Venue sees actual planning demand and squad dynamics.
+                Venue sees genuine planning intent and verified spend data.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* WhatsApp First-Class Pathway */}
-      <section className="py-12 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-border-default p-8 sm:p-10 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-lg">
-              <div className="inline-flex items-center gap-1.5 text-xs font-black text-[#008751] uppercase tracking-wider">
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>Direct Partner Support</span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-black text-[#010528] uppercase tracking-tight">
-                Prefer WhatsApp over a portal?
-              </h3>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                We understand how Lagos hospitality runs. Our partner team is accessible on WhatsApp to help you claim your venue, update prices, or answer questions.
-              </p>
-            </div>
-
+      {/* Lagos WhatsApp Support Channel */}
+      <section className="py-12 px-4 sm:px-6 bg-white border-t border-border-default">
+        <div className="max-w-2xl mx-auto text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#EAFDF3] text-brand-green flex items-center justify-center mx-auto border border-[#A3F3C6]">
+            <MessageSquare className="w-6 h-6" />
+          </div>
+          <h3 className="text-xl sm:text-2xl font-extrabold text-midnight-lagoon tracking-tight">
+            Prefer to chat on WhatsApp?
+          </h3>
+          <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+            Our Lagos operations team works directly with managers and owners over WhatsApp to verify listings, update menus, and assist with claim verification.
+          </p>
+          <div className="pt-2">
             <a
-              href="https://wa.me/2348000000000?text=Hi%20OyaPlan,%20I%20manage%20a%20venue%20in%20Lagos%20and%20would%20like%20to%20claim%20my%20listing"
+              href="https://wa.me/2348000000000?text=Hi%20OyaPlan%2C%20I%20own%20a%20venue%20in%20Lagos%20and%20want%20to%20learn%20more%20about%20listing%20accuracy."
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 h-12 px-6 bg-[#EAFDF3] hover:bg-[#d5f9e3] text-[#008751] border border-[#A3F3C6] font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-green hover:bg-[#007043] text-white text-xs font-bold uppercase tracking-wider transition-all tap-feedback"
             >
-              <span>Chat on WhatsApp</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <MessageSquare className="w-4 h-4" />
+              <span>Message OyaPlan on WhatsApp</span>
             </a>
           </div>
         </div>
       </section>
 
-      {/* Bottom CTA Banner */}
-      <section className="py-16 px-4 sm:px-6 bg-[#010528] text-white">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight">
-            Take control of how people plan around your venue.
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-300 max-w-xl mx-auto leading-relaxed">
-            Review your pre-populated listing, confirm your pricing, and connect with people making real spending decisions.
-          </p>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link href="/business/claim" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto h-12 px-8 bg-[#008751] hover:bg-[#007043] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer">
-                Claim Your Business Listing
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="py-8 px-4 sm:px-6 border-t border-border-default/60 text-center text-xs text-text-muted">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-[#010528]">OyaPlan for Business</span>
-            <span>·</span>
-            <span>Lagos, Nigeria</span>
-          </div>
-          <div className="flex items-center gap-4 text-xs font-semibold">
-            <Link href="/explore" className="hover:text-[#010528] transition-colors">
-              Explore Venues
-            </Link>
-            <Link href="/account" className="hover:text-[#010528] transition-colors">
-              Planner Account
-            </Link>
-            <Link href="/business/claim" className="hover:text-[#010528] transition-colors">
-              Claim Venue
-            </Link>
-          </div>
-        </div>
+      <footer className="py-8 px-4 sm:px-6 bg-[#FAF7F2] border-t border-border-default text-center text-xs text-text-muted">
+        <p>© {new Date().getFullYear()} OyaPlan Supply Network · Lagos, Nigeria</p>
       </footer>
     </div>
   );

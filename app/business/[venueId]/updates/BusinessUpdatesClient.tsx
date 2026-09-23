@@ -9,10 +9,7 @@ import {
   CheckCircle2,
   Loader2,
   Calendar,
-  Sparkles,
   Info,
-  Clock,
-  ShieldCheck,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -94,122 +91,124 @@ export function BusinessUpdatesClient({ venue }: BusinessUpdatesClientProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl border border-border-default p-6 sm:p-7 shadow-xs">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="type-ui-label text-xs font-black text-brand-green uppercase tracking-wider">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl border border-border-default p-5 sm:p-6 shadow-xs">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
               Operational Status
             </span>
             <span className="text-gray-300">·</span>
             <span className="text-xs text-text-muted">Real-Time Reliability</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon uppercase tracking-tight">
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
             Availability &amp; Operational Updates
           </h1>
-          <p className="text-xs text-text-muted mt-1 max-w-xl leading-relaxed">
+
+          <p className="text-xs sm:text-sm text-text-muted max-w-xl leading-relaxed">
             Keep Lagos planners informed so squads never arrive at locked gates or during private buyouts.
           </p>
         </div>
 
         <div className="shrink-0">
           {isClosed ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
-              <AlertTriangle className="w-4 h-4 text-amber-600" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
+              <AlertTriangle className="w-3.5 h-3.5 text-[#7A3E1D]" />
               Temporarily Closed
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
-              <CheckCircle2 className="w-4 h-4 text-[#008751]" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand-green" />
               Open for Planning
             </span>
           )}
         </div>
       </div>
 
-      {/* Messages */}
+      {/* Status Messages */}
       {errorMessage && (
-        <div className="bg-red-50 border border-red-200 p-4 rounded-2xl text-xs text-red-700 font-medium">
+        <div className="bg-red-50 border border-red-200 p-4 rounded-xl text-xs text-red-700 font-medium">
           {errorMessage}
         </div>
       )}
 
       {successMessage && (
-        <div className="bg-[#EAFDF3] border border-[#A3F3C6] p-4 rounded-2xl text-xs text-[#064E26] font-bold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-[#008751] shrink-0" />
+        <div className="bg-[#EAFDF3] border border-[#A3F3C6] p-4 rounded-xl text-xs text-[#064E26] font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0" />
           <span>{successMessage}</span>
         </div>
       )}
 
-      {/* Current Status Card */}
-      {isClosed ? (
-        <div className="bg-amber-50/60 border border-amber-200 rounded-3xl p-6 sm:p-7 space-y-4">
+      {/* Active Closure Card */}
+      {isClosed && (
+        <div className="bg-[#FAF7F2] border border-[#EAE4DC] rounded-2xl p-5 sm:p-6 space-y-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-[#7A3E1D] shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <h2 className="text-base font-black text-amber-950 uppercase">
+              <h2 className="text-sm font-bold text-midnight-lagoon">
                 Your venue is currently marked as temporarily unavailable
               </h2>
-              <p className="text-xs text-amber-900 leading-relaxed max-w-xl">
-                Reason on file: <strong className="font-bold">{venue.temporary_closure_reason || selectedReason}</strong>.
+              <p className="text-xs text-text-muted leading-relaxed">
+                Reason on file: <strong className="text-text-primary">{venue.temporary_closure_reason || selectedReason}</strong>.
                 {venue.temporary_closure_end ? ` Expected reopening: ${venue.temporary_closure_end}.` : ' No reopening date set.'}
               </p>
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-1">
             <button
               onClick={handleReopen}
               disabled={isSubmitting}
-              className="h-11 px-5 bg-midnight-lagoon hover:bg-[#00041f] text-white text-xs font-bold uppercase tracking-wider rounded-xl inline-flex items-center gap-2 transition-all cursor-pointer tap-feedback shadow-xs disabled:opacity-50"
+              className="h-10 px-5 bg-midnight-lagoon hover:bg-[#00041f] text-white text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all cursor-pointer tap-feedback shadow-xs disabled:opacity-50"
             >
               {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>Reopen Venue for Planning</span>
             </button>
           </div>
         </div>
-      ) : null}
+      )}
 
       {/* Closure Reporting Form */}
-      <form onSubmit={handleSubmitClosure} className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-5 shadow-xs">
-        <div className="border-b border-border-default/60 pb-3">
-          <h2 className="text-base font-black text-midnight-lagoon uppercase tracking-tight">
+      <form onSubmit={handleSubmitClosure} className="bg-white rounded-2xl border border-border-default p-5 sm:p-6 space-y-4 shadow-xs">
+        <div className="border-b border-border-default pb-3">
+          <h2 className="text-base font-bold text-midnight-lagoon">
             Report Scheduled Closure or Private Buyout
           </h2>
           <p className="text-xs text-text-muted mt-0.5">
-            Set expected closure dates so planners booking ahead can plan around your schedule.
+            Set closure dates so squads building advance plans are guided to available dates.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-text-secondary uppercase">Closure Start Date *</label>
+            <label className="text-[11px] font-bold text-text-secondary">Closure Start Date *</label>
             <input
               type="date"
               required
               value={startDate}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-bold text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
+              className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs font-bold text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-text-secondary uppercase">Estimated Reopening Date (Optional)</label>
+            <label className="text-[11px] font-bold text-text-secondary">Estimated Reopening Date (Optional)</label>
             <input
               type="date"
               value={endDate}
               min={startDate}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
-              className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-bold text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
+              className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs font-bold text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
             />
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold text-text-secondary uppercase">Reason for Closure *</label>
+          <label className="text-[11px] font-bold text-text-secondary">Reason for Closure *</label>
           <select
             value={selectedReason}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedReason(e.target.value)}
-            className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-bold text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
+            className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs font-bold text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
           >
             {CLOSURE_REASONS.map((r) => (
               <option key={r} value={r}>{r}</option>
@@ -219,14 +218,14 @@ export function BusinessUpdatesClient({ venue }: BusinessUpdatesClientProps) {
 
         {selectedReason === 'Other Operational Reason' && (
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-text-secondary uppercase">Custom Reason Description *</label>
+            <label className="text-[11px] font-bold text-text-secondary">Custom Reason Description *</label>
             <input
               type="text"
               required
               value={customReason}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomReason(e.target.value)}
               placeholder="e.g. Electrical maintenance on power generators"
-              className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-bold text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
+              className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs font-medium text-midnight-lagoon focus:bg-white focus:outline-none focus:border-brand-green"
             />
           </div>
         )}
@@ -235,7 +234,7 @@ export function BusinessUpdatesClient({ venue }: BusinessUpdatesClientProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="h-11 px-6 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold uppercase tracking-wider rounded-xl inline-flex items-center gap-2 transition-all cursor-pointer tap-feedback shadow-xs disabled:opacity-50"
+            className="h-10 px-6 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all cursor-pointer tap-feedback shadow-xs disabled:opacity-50"
           >
             {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             <span>Update Availability Status</span>
@@ -243,8 +242,8 @@ export function BusinessUpdatesClient({ venue }: BusinessUpdatesClientProps) {
         </div>
       </form>
 
-      {/* Explainer Card */}
-      <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-3 shadow-xs">
+      {/* Explainer */}
+      <div className="bg-white rounded-2xl border border-border-default p-5 sm:p-6 space-y-2 shadow-xs">
         <div className="flex items-center gap-2">
           <Info className="w-4 h-4 text-brand-green" />
           <h3 className="font-bold text-xs uppercase tracking-wider text-midnight-lagoon">

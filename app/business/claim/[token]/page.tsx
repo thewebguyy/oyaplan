@@ -3,6 +3,7 @@ import { getInvitationPreviewAction } from '@/lib/actions/businessInvitationActi
 import { SessionResolver } from '@/lib/services/identity/sessionResolver';
 import { BusinessTokenClaimClient } from '@/components/business/BusinessTokenClaimClient';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, AlertCircle, MessageSquare, Search } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -42,46 +43,49 @@ export default async function BusinessTokenClaimPage({ params }: Props) {
   // Invalid / Expired / Consumed state
   if (!res.success || !res.preview) {
     return (
-      <main className="min-h-[100dvh] bg-[#FAFAF8] antialiased py-12 px-4 sm:px-6 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-border-default p-8 text-center space-y-6 shadow-sm">
-          <div className="w-14 h-14 bg-amber-50 text-amber-700 rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
-            <AlertCircle className="w-7 h-7" />
+      <main className="min-h-[100dvh] bg-[#FAF7F2] antialiased py-12 px-4 sm:px-6 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white rounded-2xl border border-border-default p-6 sm:p-8 text-center space-y-6 shadow-xs">
+          <div className="w-12 h-12 bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC] rounded-xl flex items-center justify-center mx-auto">
+            <AlertCircle className="w-6 h-6" />
           </div>
 
-          <div className="space-y-2">
-            <h1 className="text-xl font-black text-midnight-lagoon uppercase tracking-tight">
+          <div className="space-y-1.5">
+            <h1 className="text-xl font-extrabold text-midnight-lagoon tracking-tight">
               Invitation Link Unavailable
             </h1>
-            <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
+            <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
               {res.error || 'This invitation link has expired, has already been used, or is invalid.'}
             </p>
           </div>
 
-          <div className="p-4 bg-surface-grey rounded-2xl text-xs text-text-muted text-left space-y-2">
-            <span className="font-bold text-midnight-lagoon block uppercase text-[10px]">What can you do?</span>
-            <p className="leading-relaxed">
-              If your team was already invited, you can sign in to view your portal, search for your venue manually, or reach out to our Lagos partner team on WhatsApp.
-            </p>
+          <div className="p-4 bg-[#FAF7F2] border border-[#EAE4DC]/60 rounded-xl text-xs text-text-muted text-left space-y-1.5">
+            <span className="font-bold text-midnight-lagoon block">What should I do?</span>
+            <p>1. If you already completed this claim, sign in to your Business Portal.</p>
+            <p>2. If you need a new invitation token, reach out to our Lagos team on WhatsApp.</p>
           </div>
 
-          <div className="space-y-2.5 pt-1">
-            <Link href="/business/claim" className="block w-full">
-              <button className="w-full h-12 bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer">
-                <Search className="w-3.5 h-3.5" />
-                <span>Search Listed Venues</span>
+          <div className="space-y-2 pt-2">
+            <Link href="/account?next=/business" className="block">
+              <button className="w-full h-11 bg-midnight-lagoon hover:bg-[#00041f] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer tap-feedback">
+                Sign In to Business Portal
+              </button>
+            </Link>
+
+            <Link href="/business/claim" className="block">
+              <button className="w-full h-11 bg-surface-grey hover:bg-gray-100 text-midnight-lagoon text-xs font-bold uppercase tracking-wider rounded-xl border border-border-default transition-all flex items-center justify-center gap-1.5 tap-feedback">
+                <Search className="w-3.5 h-3.5 text-text-muted" />
+                <span>Search for Your Venue</span>
               </button>
             </Link>
 
             <a
-              href="https://wa.me/2348000000000?text=Hi%20OyaPlan,%20my%20invitation%20link%20has%20expired%20or%20is%20not%20working"
+              href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20my%20invitation%20link%20expired%20or%20failed."
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full"
+              className="w-full h-11 bg-[#EAFDF3] hover:bg-[#D5F9E4] text-[#0A7C3F] border border-[#A3F3C6] text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all tap-feedback"
             >
-              <button className="w-full h-12 bg-white hover:bg-gray-50 border border-border-default text-midnight-lagoon font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all shadow-2xs cursor-pointer">
-                <MessageSquare className="w-3.5 h-3.5 text-brand-green" />
-                <span>Request New Link via WhatsApp</span>
-              </button>
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Contact OyaPlan Operations</span>
             </a>
           </div>
         </div>
@@ -90,8 +94,8 @@ export default async function BusinessTokenClaimPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-[#FAFAF8] antialiased py-10 px-4 sm:px-6">
-      <div className="max-w-2xl mx-auto mb-6">
+    <main className="min-h-[100dvh] bg-[#FAF7F2] antialiased py-8 sm:py-12 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto mb-6 flex items-center justify-between">
         <Link
           href="/for-business"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-text-muted hover:text-midnight-lagoon uppercase tracking-wider transition-colors tap-feedback"
@@ -99,6 +103,14 @@ export default async function BusinessTokenClaimPage({ params }: Props) {
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to OyaPlan for Business</span>
         </Link>
+
+        <Image
+          src="/logo.png"
+          alt="OyaPlan"
+          width={610}
+          height={143}
+          className="h-5 w-auto object-contain shrink-0 opacity-80"
+        />
       </div>
 
       <BusinessTokenClaimClient

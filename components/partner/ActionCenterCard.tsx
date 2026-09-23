@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Venue, MenuItem } from '@/lib/types';
-import { AlertTriangle, Clock, Camera, CalendarX, CheckCircle2, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Clock, Camera, CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface ActionCenterCardProps {
   venue: Venue;
@@ -37,17 +37,17 @@ export function ActionCenterCard({ venue, menuItems, baseRoute = 'partner' }: Ac
       description: 'Add your representative menu items and charges so OyaPlan can estimate outing costs.',
       ctaLabel: 'Add menu items',
       ctaHref: pricingPath,
-      icon: <AlertTriangle className="w-5 h-5 text-amber-600" />,
+      icon: <AlertTriangle className="w-4 h-4 text-amber-600" />,
       severity: 'warning',
     });
   } else if (daysSincePriceUpdate > 30) {
     actions.push({
       id: 'stale_pricing',
       title: 'Pricing needs confirmation',
-      description: `Prices were last confirmed ${daysSincePriceUpdate} days ago. Confirm current prices to maintain Verified badge.`,
+      description: `Prices were last confirmed ${daysSincePriceUpdate} days ago. Confirm current prices to maintain verified status.`,
       ctaLabel: 'Review prices',
       ctaHref: pricingPath,
-      icon: <AlertTriangle className="w-5 h-5 text-amber-600" />,
+      icon: <AlertTriangle className="w-4 h-4 text-amber-600" />,
       severity: 'warning',
     });
   }
@@ -61,7 +61,7 @@ export function ActionCenterCard({ venue, menuItems, baseRoute = 'partner' }: Ac
       description: 'Squads need to know when you are open before heading out.',
       ctaLabel: 'Update hours',
       ctaHref: `${venueEditorPath}?step=1`,
-      icon: <Clock className="w-5 h-5 text-indigo-600" />,
+      icon: <Clock className="w-4 h-4 text-[#7A3E1D]" />,
       severity: 'info',
     });
   }
@@ -75,50 +75,50 @@ export function ActionCenterCard({ venue, menuItems, baseRoute = 'partner' }: Ac
       description: 'Upload at least 3 photos (cover, interior, food) to showcase your space before squads choose you.',
       ctaLabel: 'Add photos',
       ctaHref: `${venueEditorPath}?step=4`,
-      icon: <Camera className="w-5 h-5 text-emerald-600" />,
+      icon: <Camera className="w-4 h-4 text-brand-green" />,
       severity: 'info',
     });
   }
 
   return (
-    <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-4 shadow-xs">
+    <div className="bg-white rounded-2xl border border-border-default p-5 sm:p-6 space-y-4 shadow-xs">
       <div className="flex items-center justify-between border-b border-border-default/60 pb-3">
-        <h3 className="text-base sm:text-lg font-black text-midnight-lagoon uppercase tracking-tight flex items-center gap-2">
-          <span>Needs your attention</span>
+        <h3 className="text-base font-bold text-midnight-lagoon flex items-center gap-2">
+          <span>Needs Your Attention</span>
         </h3>
-        <span className="text-xs font-bold text-text-muted">
-          {actions.length === 0 ? 'All caught up' : `${actions.length} action${actions.length > 1 ? 's' : ''}`}
+        <span className="text-xs font-semibold text-text-muted">
+          {actions.length === 0 ? 'All caught up' : `${actions.length} item${actions.length > 1 ? 's' : ''}`}
         </span>
       </div>
 
       {actions.length > 0 ? (
         <div className="divide-y divide-gray-100">
           {actions.map((act) => (
-            <div key={act.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div key={act.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 shrink-0">{act.icon}</div>
                 <div>
-                  <h4 className="font-bold text-text-primary text-sm">{act.title}</h4>
+                  <h4 className="font-bold text-midnight-lagoon text-xs sm:text-sm">{act.title}</h4>
                   <p className="text-xs text-text-muted mt-0.5 leading-relaxed">{act.description}</p>
                 </div>
               </div>
 
               <Link
                 href={act.ctaHref}
-                className="self-start sm:self-auto h-9 px-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-surface-grey hover:bg-black/5 text-midnight-lagoon border border-border-default flex items-center gap-1.5 transition-colors tap-feedback shrink-0"
+                className="self-start sm:self-auto h-9 px-4 rounded-xl text-xs font-bold text-midnight-lagoon bg-surface-grey hover:bg-gray-100 border border-border-default flex items-center gap-1.5 transition-colors tap-feedback shrink-0"
               >
                 <span>{act.ctaLabel}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 text-text-muted" />
               </Link>
             </div>
           ))}
         </div>
       ) : (
-        <div className="py-4 flex items-center gap-3 text-emerald-800 bg-[#EAFDF3] p-4 rounded-2xl border border-[#A3F3C6]">
-          <CheckCircle2 className="w-5 h-5 text-[#008751] shrink-0" />
+        <div className="py-3 flex items-center gap-3 text-[#064E26] bg-[#EAFDF3] p-4 rounded-xl border border-[#A3F3C6]">
+          <CheckCircle2 className="w-5 h-5 text-brand-green shrink-0" />
           <div className="text-xs">
-            <span className="font-bold block">Your venue information is in great shape!</span>
-            <p className="text-emerald-700">Pricing and core details are confirmed. OyaPlan is actively using your data for outing plans.</p>
+            <span className="font-bold block">Your venue information is in great shape</span>
+            <p className="text-[#0A7C3F] mt-0.5">Pricing and core details are confirmed. OyaPlan is actively using your data for outing plans.</p>
           </div>
         </div>
       )}

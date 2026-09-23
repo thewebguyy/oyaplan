@@ -44,6 +44,11 @@
   --color-palm-green: #008751;
   --color-white-sand: #FAFAF8;
   --color-charcoal: #1D1D1F;
+  --color-lagos-earth: #4E2D15;
+  --color-lagos-earth-subtle: #F7F3EE;
+  --color-lagos-clay: #7A3E1D;
+  --color-lagos-warm-surface: #FAF7F2;
+  --color-lagos-warm-border: #EAE4DC;
 
   /* New Tokens */
   --radius-sm: var(--radius-sm);
@@ -98,6 +103,12 @@
   
   --error: #D72638;             /* Red Rail */
   --success: #008751;
+
+  --lagos-earth: #4E2D15;
+  --lagos-earth-subtle: #F7F3EE;
+  --lagos-clay: #7A3E1D;
+  --lagos-warm-surface: #FAF7F2;
+  --lagos-warm-border: #EAE4DC;
 
   --background: #FAFAF8;        /* White Sand default page background */
   --foreground: #010528;        /* Midnight Lagoon */
