@@ -54,7 +54,7 @@ export async function generateVenueInvitationAction(
       .from('venue_claims')
       .update({ status: 'revoked' })
       .eq('venue_id', venueId)
-      .in('status', ['invited', 'opened']);
+      .in('status', ['invited', 'opened', 'authenticated']);
 
     // 3. Cryptographically secure random token (32 bytes hex = 64 characters)
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -137,7 +137,7 @@ export async function revokeVenueInvitationAction(
       return { success: false, error: 'Invitation record not found' };
     }
 
-    if (!['invited', 'opened'].includes(claim.status)) {
+    if (!['invited', 'opened', 'authenticated'].includes(claim.status)) {
       return { success: false, error: `Cannot revoke invitation in status '${claim.status}'` };
     }
 
@@ -181,7 +181,33 @@ export async function getInvitationPreviewAction(
     const tokenHash = crypto.createHash('sha256').update(rawToken.trim()).digest('hex');
     const supabase = await createServerClient();
 
-    // 1. Fetch claim matching token hash
+    // 1. Try secure Postgres RPC function first
+    const { data: rpcRows, error: rpcError } = await supabase
+      .rpc('get_invitation_by_token_hash', { p_token_hash: tokenHash });
+
+    if (!rpcError && rpcRows && rpcRows.length > 0) {
+      const row = rpcRows[0];
+      // Mark as opened via RPC
+      await supabase.rpc('mark_invitation_opened', { p_token_hash: tokenHash });
+
+      const preview: InvitationPreview = {
+        claimId: row.claim_id,
+        venueId: row.venue_id,
+        venueName: row.venue_name || 'Venue',
+        venueAddress: row.venue_address || '',
+        venueCategory: row.venue_category || 'restaurant',
+        hasCover: Boolean(row.has_cover),
+        menuItemCount: Number(row.menu_item_count) || 0,
+        claimantEmail: row.claimant_email,
+        claimantRole: row.claimant_role as ClaimantRole,
+        status: row.status === 'invited' ? 'opened' : row.status,
+        tokenExpiresAt: row.token_expires_at || '',
+      };
+
+      return { success: true, preview };
+    }
+
+    // 2. Fallback: Direct query with identical strict invariants
     const { data: claim, error: fetchError } = await supabase
       .from('venue_claims')
       .select(`
@@ -207,7 +233,7 @@ export async function getInvitationPreviewAction(
       return { success: false, error: 'This invitation was not found or the link is invalid.' };
     }
 
-    // 2. Check if already consumed
+    // Check if already consumed or revoked
     if (claim.consumed_at || !['invited', 'opened', 'authenticated'].includes(claim.status)) {
       return { 
         success: false, 
@@ -217,9 +243,8 @@ export async function getInvitationPreviewAction(
       };
     }
 
-    // 3. Check expiration
+    // Check expiration
     if (claim.token_expires_at && new Date(claim.token_expires_at).getTime() < Date.now()) {
-      // Mark expired in database
       await supabase
         .from('venue_claims')
         .update({ status: 'expired' })
@@ -228,7 +253,7 @@ export async function getInvitationPreviewAction(
       return { success: false, error: 'This invitation link has expired. Please contact OyaPlan for a new link.' };
     }
 
-    // 4. Mark opened if currently 'invited'
+    // Mark opened if currently 'invited'
     if (claim.status === 'invited') {
       await supabase
         .from('venue_claims')
@@ -239,7 +264,6 @@ export async function getInvitationPreviewAction(
         .eq('id', claim.id);
     }
 
-    // 5. Count menu items
     const { count: menuItemCount } = await supabase
       .from('menu_items')
       .select('*', { count: 'exact', head: true })
@@ -267,10 +291,63 @@ export async function getInvitationPreviewAction(
 }
 
 /**
+ * markInvitationAuthenticatedAction
+ * Transitions an opened invitation to 'authenticated' once the operator logs in,
+ * linking their user_id while preserving unconsumed state until final submission.
+ */
+export async function markInvitationAuthenticatedAction(
+  rawToken: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (!rawToken || rawToken.trim().length !== 64) {
+      return { success: false, error: 'Invalid invitation token format' };
+    }
+
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: 'Authentication required' };
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(rawToken.trim()).digest('hex');
+
+    // 1. Try RPC
+    const { error: rpcError } = await supabase.rpc('mark_invitation_authenticated', {
+      p_token_hash: tokenHash,
+      p_user_id: user.id
+    });
+
+    if (!rpcError) {
+      return { success: true };
+    }
+
+    // 2. Direct fallback
+    const { error: updateError } = await supabase
+      .from('venue_claims')
+      .update({
+        status: 'authenticated',
+        user_id: user.id
+      })
+      .eq('invitation_token_hash', tokenHash)
+      .in('status', ['invited', 'opened'])
+      .is('consumed_at', null);
+
+    if (updateError) {
+      return { success: false, error: updateError.message };
+    }
+
+    return { success: true };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to update invitation state' };
+  }
+}
+
+/**
  * claimWithInvitationAction
  * Completes the invitation claim.
- * Requires an authenticated user session, transitions status to 'pending',
- * and invalidates the token by setting consumed_at = NOW().
+ * Race-condition safe: Atomic database conditional update ensures single-use consumption.
+ * Transitions status to 'pending' awaiting OyaPlan Ops review.
  */
 export async function claimWithInvitationAction(
   rawToken: string,
@@ -305,29 +382,35 @@ export async function claimWithInvitationAction(
 
     const tokenHash = crypto.createHash('sha256').update(rawToken.trim()).digest('hex');
 
-    // 1. Fetch and lock active claim record
-    const { data: claim, error: fetchError } = await supabase
-      .from('venue_claims')
-      .select('id, venue_id, status, token_expires_at, consumed_at')
-      .eq('invitation_token_hash', tokenHash)
-      .single();
+    // 1. Try atomic Postgres RPC function first (guarantees row-locked single execution)
+    const { data: rpcResult, error: rpcError } = await supabase.rpc('consume_invitation_claim', {
+      p_token_hash: tokenHash,
+      p_user_id: user.id,
+      p_claimant_name: claimantName.trim(),
+      p_claimant_role: claimantRole,
+      p_claimant_phone: claimantPhone.trim(),
+      p_claimant_email: claimantEmail.trim().toLowerCase(),
+      p_relationship_notes: relationshipNotes?.trim() || ''
+    });
 
-    if (fetchError || !claim) {
-      return { success: false, error: 'Invitation not found or invalid' };
+    if (!rpcError && rpcResult && rpcResult.length > 0) {
+      const consumedClaim = rpcResult[0];
+      revalidatePath(`/venue/${consumedClaim.venue_id}`);
+      revalidatePath('/admin/venues/claims');
+
+      return { 
+        success: true, 
+        claimId: consumedClaim.claim_id, 
+        venueId: consumedClaim.venue_id 
+      };
     }
 
-    if (claim.consumed_at || !['invited', 'opened', 'authenticated'].includes(claim.status)) {
-      return { success: false, error: 'This invitation has already been used or revoked' };
-    }
-
-    if (claim.token_expires_at && new Date(claim.token_expires_at).getTime() < Date.now()) {
-      await supabase.from('venue_claims').update({ status: 'expired' }).eq('id', claim.id);
-      return { success: false, error: 'This invitation link has expired' };
-    }
-
-    // 2. Consume token and transition claim to 'pending'
+    // 2. Direct Fallback: Atomic conditional UPDATE with strict WHERE clauses
+    // In PostgreSQL, UPDATE on a specific row acquires a row lock.
+    // The WHERE clause guarantees that ONLY the first concurrent request matching
+    // consumed_at IS NULL can update; subsequent concurrent requests update 0 rows.
     const nowIso = new Date().toISOString();
-    const { error: updateError } = await supabase
+    const { data: updatedClaim, error: updateError } = await supabase
       .from('venue_claims')
       .update({
         user_id: user.id,
@@ -340,26 +423,34 @@ export async function claimWithInvitationAction(
         consumed_at: nowIso,
         claimed_at: nowIso,
       })
-      .eq('id', claim.id);
+      .eq('invitation_token_hash', tokenHash)
+      .is('consumed_at', null)
+      .in('status', ['invited', 'opened', 'authenticated'])
+      .gt('token_expires_at', nowIso)
+      .select('id, venue_id')
+      .maybeSingle();
 
-    if (updateError) {
-      return { success: false, error: updateError.message };
+    if (updateError || !updatedClaim) {
+      return { 
+        success: false, 
+        error: 'This invitation has already been claimed, revoked, or has expired.' 
+      };
     }
 
-    // 3. Transition venue partner_state to claim_pending if currently unclaimed
+    // Transition venue partner_state to claim_pending if currently unclaimed
     await supabase
       .from('venues')
       .update({ partner_state: 'claim_pending' })
-      .eq('id', claim.venue_id)
+      .eq('id', updatedClaim.venue_id)
       .eq('partner_state', 'unclaimed');
 
-    revalidatePath(`/venue/${claim.venue_id}`);
+    revalidatePath(`/venue/${updatedClaim.venue_id}`);
     revalidatePath('/admin/venues/claims');
 
     return { 
       success: true, 
-      claimId: claim.id, 
-      venueId: claim.venue_id 
+      claimId: updatedClaim.id, 
+      venueId: updatedClaim.venue_id 
     };
   } catch (err: unknown) {
     return { success: false, error: err instanceof Error ? err.message : 'Claim submission failed' };

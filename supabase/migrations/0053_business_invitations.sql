@@ -1,7 +1,7 @@
 -- Migration 0053: Business Invitations & Secure Claim Tokens
 -- Establishes primitives for OyaPlan for Business claim invitations.
 -- Implements hashed single-use tokens, explicit expiration, ops funnel tracking,
--- and safe non-privileged invitation preview lookups.
+-- race-condition-free atomic consumption, and safe non-privileged invitation preview lookups.
 
 -- ============================================================
 -- 1. Make user_id nullable on venue_claims
@@ -117,3 +117,94 @@ BEGIN
   RETURN FOUND;
 END;
 $$;
+
+CREATE OR REPLACE FUNCTION public.mark_invitation_authenticated(p_token_hash TEXT, p_user_id UUID)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE public.venue_claims
+  SET 
+    status = CASE WHEN status IN ('invited', 'opened') THEN 'authenticated' ELSE status END,
+    user_id = COALESCE(user_id, p_user_id)
+  WHERE invitation_token_hash = p_token_hash
+    AND status IN ('invited', 'opened')
+    AND (token_expires_at IS NULL OR token_expires_at > NOW())
+    AND consumed_at IS NULL;
+
+  RETURN FOUND;
+END;
+$$;
+
+-- Atomic, race-condition-free invitation consumption
+CREATE OR REPLACE FUNCTION public.consume_invitation_claim(
+  p_token_hash TEXT,
+  p_user_id UUID,
+  p_claimant_name TEXT,
+  p_claimant_role TEXT,
+  p_claimant_phone TEXT,
+  p_claimant_email TEXT,
+  p_relationship_notes TEXT
+)
+RETURNS TABLE (
+  claim_id UUID,
+  venue_id UUID
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_claim_id UUID;
+  v_venue_id UUID;
+BEGIN
+  -- Row-level locked atomic update:
+  -- Only succeeds if matching token hash, unconsumed, unexpired, and in active invitation state
+  UPDATE public.venue_claims
+  SET 
+    user_id = p_user_id,
+    status = 'pending',
+    claimant_name = trim(p_claimant_name),
+    claimant_role = p_claimant_role,
+    claimant_phone = trim(p_claimant_phone),
+    claimant_email = lower(trim(p_claimant_email)),
+    relationship_notes = NULLIF(trim(p_relationship_notes), ''),
+    consumed_at = NOW(),
+    claimed_at = NOW()
+  WHERE invitation_token_hash = p_token_hash
+    AND status IN ('invited', 'opened', 'authenticated')
+    AND consumed_at IS NULL
+    AND (token_expires_at IS NULL OR token_expires_at > NOW())
+  RETURNING id, venue_claims.venue_id INTO v_claim_id, v_venue_id;
+
+  -- If 0 rows matched (e.g. concurrent race condition or token expired), abort
+  IF v_claim_id IS NULL THEN
+    RETURN;
+  END IF;
+
+  -- Transition venue to claim_pending if currently unclaimed
+  UPDATE public.venues
+  SET partner_state = 'claim_pending'
+  WHERE id = v_venue_id
+    AND partner_state = 'unclaimed';
+
+  RETURN QUERY SELECT v_claim_id, v_venue_id;
+END;
+$$;
+
+-- ============================================================
+-- 5. Least-Privilege EXECUTE Grants
+-- ============================================================
+REVOKE ALL ON FUNCTION public.get_invitation_by_token_hash(TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_invitation_by_token_hash(TEXT) TO anon, authenticated;
+
+REVOKE ALL ON FUNCTION public.mark_invitation_opened(TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.mark_invitation_opened(TEXT) TO anon, authenticated;
+
+REVOKE ALL ON FUNCTION public.mark_invitation_authenticated(TEXT, UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.mark_invitation_authenticated(TEXT, UUID) TO authenticated;
+
+REVOKE ALL ON FUNCTION public.consume_invitation_claim(TEXT, UUID, TEXT, TEXT, TEXT, TEXT, TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.consume_invitation_claim(TEXT, UUID, TEXT, TEXT, TEXT, TEXT, TEXT) TO authenticated;
