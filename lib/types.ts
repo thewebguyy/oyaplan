@@ -253,6 +253,23 @@ export interface District {
   created_at?: string;
 }
 
+export type VenueCategory = 
+  | 'restaurant' 
+  | 'bar' 
+  | 'activity' 
+  | 'nature' 
+  | 'entertainment' 
+  | 'beach' 
+  | 'cafe' 
+  | 'experience'
+  | 'rooftop'
+  | 'arts_culture'
+  | 'club'
+  | 'cinema'
+  | 'spa';
+
+export type SpotCategory = VenueCategory;
+
 export interface Venue {
   id: string;
   district_id: string;
@@ -260,7 +277,7 @@ export interface Venue {
   address: string;
   description?: string;
   vibe_tags: string[];
-  category: 'restaurant' | 'bar' | 'activity' | 'nature' | 'entertainment' | 'beach' | 'cafe' | 'experience';
+  category: VenueCategory;
   subcategory: string | null;
   typical_duration_hours: number;
   instagram_handle: string | null;
@@ -489,11 +506,12 @@ export interface VenuePhoto {
   photo_type: PhotoType;
   caption?: string | null;
   status: PhotoStatus;
+  is_primary?: boolean;
   rejection_reason?: string | null;
   submitted_by?: string | null;
   approved_by?: string | null;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 export interface ProfileHealthItem {

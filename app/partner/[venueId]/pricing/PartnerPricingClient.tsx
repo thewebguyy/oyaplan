@@ -19,14 +19,14 @@ export function PartnerPricingClient({
   initialMenuItems,
 }: PartnerPricingClientProps) {
   const router = useRouter();
-  const [menuItems, setMenuItems] = useState(initialMenuItems);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
   const [selectedItemForEdit, setSelectedItemForEdit] = useState<MenuItem | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // New item state
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItemName, setNewItemName] = useState('');
-  const [newItemCategory, setNewItemCategory] = useState<any>('main');
+  const [newItemCategory, setNewItemCategory] = useState<string>('main');
   const [newItemPrice, setNewItemPrice] = useState('');
   const [addingLoading, setAddingLoading] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
@@ -48,45 +48,39 @@ export function PartnerPricingClient({
     setIsEditModalOpen(true);
   };
 
+  const handlePriceUpdated = (updatedItem: MenuItem) => {
+    setMenuItems(prev => prev.map((i: MenuItem) => (i.id === updatedItem.id ? updatedItem : i)));
+    router.refresh();
+  };
+
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
-    const priceNum = parseInt(newItemPrice.replace(/[^0-9]/g, ''), 10);
+    setAddError(null);
+    const priceNum = parseInt(newItemPrice, 10);
     if (!newItemName.trim() || isNaN(priceNum) || priceNum <= 0) {
-      setAddError('Please enter a valid item name and price.');
+      setAddError('Please enter a valid item name and positive price.');
       return;
     }
 
     setAddingLoading(true);
-    setAddError(null);
-
     const res = await addMenuItemAction({
       venueId: venue.id,
       name: newItemName.trim(),
-      category: newItemCategory,
+      category: newItemCategory as any,
       price: priceNum,
     });
-
     setAddingLoading(false);
 
-    if (res.success && res.menuItemId) {
-      setMenuItems([
-        ...menuItems,
-        {
-          id: res.menuItemId,
-          venue_id: venue.id,
-          name: newItemName.trim(),
-          category: newItemCategory,
-          price: priceNum,
-          is_available: true,
-          last_updated_at: new Date().toISOString(),
-        }
-      ]);
+    if (!res.success) {
+      setAddError(res.error || 'Failed to add item');
+    } else {
+      if (res.item) {
+        setMenuItems(prev => [...prev, res.item!]);
+      }
       setNewItemName('');
       setNewItemPrice('');
       setIsAddingItem(false);
       router.refresh();
-    } else {
-      setAddError(res.error || 'Failed to add item');
     }
   };
 
@@ -94,7 +88,7 @@ export function PartnerPricingClient({
     if (!confirm('Are you sure you want to remove this item? An audit entry will be logged.')) return;
     const res = await deleteMenuItemAction(venue.id, itemId);
     if (res.success) {
-      setMenuItems(menuItems.filter(i => i.id !== itemId));
+      setMenuItems(prev => prev.filter((i: MenuItem) => i.id !== itemId));
       router.refresh();
     }
   };
@@ -123,74 +117,82 @@ export function PartnerPricingClient({
   };
 
   // Group items
-  const foodItems = menuItems.filter(i => ['main', 'starter', 'dessert'].includes(i.category));
-  const drinkItems = menuItems.filter(i => ['cocktail', 'wine', 'beer', 'spirits', 'soft_drink'].includes(i.category));
-  const activityItems = menuItems.filter(i => i.category === 'activity_fee');
-  const otherItems = menuItems.filter(i => !['main', 'starter', 'dessert', 'cocktail', 'wine', 'beer', 'spirits', 'soft_drink', 'activity_fee'].includes(i.category));
+  const foodItems = menuItems.filter((i: MenuItem) => ['main', 'starter', 'dessert'].includes(i.category));
+  const drinkItems = menuItems.filter((i: MenuItem) => ['cocktail', 'wine', 'beer', 'spirits', 'soft_drink'].includes(i.category));
+  const activityItems = menuItems.filter((i: MenuItem) => i.category === 'activity_fee');
+  const otherItems = menuItems.filter((i: MenuItem) => !['main', 'starter', 'dessert', 'cocktail', 'wine', 'beer', 'spirits', 'soft_drink', 'activity_fee'].includes(i.category));
 
   return (
     <div className="min-h-[100dvh] bg-[#FAFAF8] antialiased pb-24 space-y-6">
       <PartnerHeader venue={venue} />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-2 shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <span className="type-ui-label text-xs font-black text-brand-green uppercase tracking-wider block">
-                Price Management
+        {/* Header Strip */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl border border-border-default p-6 sm:p-7 shadow-xs">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="type-ui-label text-xs font-black text-brand-green uppercase tracking-wider">
+                Price Transparency Engine
               </span>
-              <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon uppercase tracking-tight mt-0.5">
-                Your Prices on OyaPlan
-              </h1>
+              <span className="text-gray-300">·</span>
+              <span className="text-xs text-text-muted">
+                {priceFreshness.text}
+              </span>
             </div>
-
-            <div className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 bg-surface-grey border border-border-default rounded-full text-xs font-bold text-text-secondary">
-              <ShieldCheck className="w-4 h-4 text-[#008751]" />
-              <span>{priceFreshness}</span>
-            </div>
+            <h1 className="type-h3 text-midnight-lagoon font-black uppercase">
+              Menu Pricing &amp; Charges
+            </h1>
+            <p className="type-body text-xs text-text-muted mt-1 max-w-xl">
+              Changes you make here immediately protect Lagos planners from bill shock. Every update logs an auditable entry and is reviewed by OyaPlan for verified confidence.
+            </p>
           </div>
-
-          <p className="type-body text-xs sm:text-sm text-text-muted leading-relaxed">
-            Customers use this information to understand what an outing at your venue may cost. Keeping it current helps OyaPlan send the right customers to your venue.
-          </p>
-        </div>
-
-        {/* Action Header: Add Item */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-black text-midnight-lagoon uppercase tracking-tight">
-            Menu Items ({menuItems.length})
-          </h2>
 
           <button
             onClick={() => setIsAddingItem(!isAddingItem)}
-            className="h-10 px-4 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center gap-1.5 transition-all tap-feedback cursor-pointer shadow-xs"
+            className="h-11 px-5 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback shrink-0 shadow-xs"
           >
             <Plus className="w-4 h-4" />
-            <span>{isAddingItem ? 'Cancel' : 'Add Item'}</span>
+            <span>Add Menu Item</span>
           </button>
         </div>
 
-        {/* Add Item Card */}
+        {/* Audit Transparency Callout */}
+        <div className="bg-amber-50 border border-amber-200/80 rounded-2xl p-4 sm:p-5 flex items-start gap-3">
+          <Info className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-900 space-y-1">
+            <span className="font-bold block">Non-Destructive Pricing Guarantee</span>
+            <p className="leading-relaxed">
+              When you adjust a price, OyaPlan never deletes your previous menu records. It registers your change under <span className="font-mono font-bold">price_audit_logs</span> and presents it as a partner-confirmed rate while queueing evidence verification.
+            </p>
+          </div>
+        </div>
+
+        {/* Add Item Form Drawer */}
         {isAddingItem && (
-          <form
-            onSubmit={handleAddItem}
-            className="bg-white rounded-2xl border border-brand-green/40 p-5 space-y-4 shadow-sm"
-          >
-            <h3 className="text-xs font-black uppercase text-brand-green tracking-wider">
-              Add New Menu Item
-            </h3>
+          <form onSubmit={handleAddItem} className="bg-white rounded-3xl border-2 border-brand-green/30 p-6 space-y-4 shadow-sm animate-in fade-in duration-200">
+            <div className="flex items-center justify-between">
+              <h3 className="type-h4 text-midnight-lagoon font-bold text-sm uppercase">Add New Menu Item</h3>
+              <button
+                type="button"
+                onClick={() => setIsAddingItem(false)}
+                className="text-xs text-text-muted hover:text-midnight-lagoon"
+              >
+                Cancel
+              </button>
+            </div>
 
-            {addError && <p className="text-xs text-red-600 font-bold">{addError}</p>}
+            {addError && (
+              <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg font-medium">{addError}</p>
+            )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1 sm:col-span-1">
                 <label className="font-bold text-text-secondary uppercase text-[10px]">Item Name *</label>
                 <input
                   type="text"
                   required
                   value={newItemName}
-                  onChange={(e) => setNewItemName(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItemName(e.target.value)}
                   placeholder="e.g. Asun Platter"
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
                 />
@@ -200,7 +202,7 @@ export function PartnerPricingClient({
                 <label className="font-bold text-text-secondary uppercase text-[10px]">Category *</label>
                 <select
                   value={newItemCategory}
-                  onChange={(e) => setNewItemCategory(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewItemCategory(e.target.value)}
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
                 >
                   <option value="main">Main Course</option>
@@ -222,7 +224,7 @@ export function PartnerPricingClient({
                   type="number"
                   required
                   value={newItemPrice}
-                  onChange={(e) => setNewItemPrice(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItemPrice(e.target.value)}
                   placeholder="e.g. 8500"
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-mono font-bold focus:bg-white focus:outline-none focus:border-brand-green"
                 />
@@ -241,7 +243,7 @@ export function PartnerPricingClient({
           </form>
         )}
 
-        {/* Menu Items Table / Cards */}
+        {/* Current Items Inventory */}
         <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-6 shadow-xs">
           {/* Food */}
           {foodItems.length > 0 && (
@@ -250,7 +252,7 @@ export function PartnerPricingClient({
                 Food &amp; Dining
               </h3>
               <div className="divide-y divide-gray-100">
-                {foodItems.map((item) => (
+                {foodItems.map((item: MenuItem) => (
                   <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
                     <div>
                       <span className="font-bold text-text-primary text-sm block">{item.name}</span>
@@ -291,7 +293,7 @@ export function PartnerPricingClient({
                 Drinks &amp; Beverages
               </h3>
               <div className="divide-y divide-gray-100">
-                {drinkItems.map((item) => (
+                {drinkItems.map((item: MenuItem) => (
                   <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
                     <div>
                       <span className="font-bold text-text-primary text-sm block">{item.name}</span>
@@ -332,7 +334,7 @@ export function PartnerPricingClient({
                 Activities &amp; Other
               </h3>
               <div className="divide-y divide-gray-100">
-                {[...activityItems, ...otherItems].map((item) => (
+                {[...activityItems, ...otherItems].map((item: MenuItem) => (
                   <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
                     <div>
                       <span className="font-bold text-text-primary text-sm block">{item.name}</span>
@@ -365,44 +367,42 @@ export function PartnerPricingClient({
           )}
 
           {menuItems.length === 0 && (
-            <div className="p-8 text-center space-y-3 bg-[#FAFAF8] rounded-2xl">
-              <Tag className="w-8 h-8 text-gray-400 mx-auto" />
-              <div className="space-y-1">
-                <h4 className="font-bold text-midnight-lagoon text-sm">No menu items recorded</h4>
-                <p className="text-xs text-text-muted max-w-sm mx-auto">
-                  Add representative food and drink items above so OyaPlan can estimate squad outing costs.
-                </p>
-              </div>
+            <div className="text-center py-10 space-y-2">
+              <p className="text-sm font-bold text-midnight-lagoon">No individual menu items entered yet.</p>
+              <p className="text-xs text-text-muted">
+                Add a few representative food and drink items so planners can gauge real outing costs.
+              </p>
             </div>
           )}
         </div>
 
         {/* Structured Mandatory Charges Card */}
-        <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-4 shadow-xs">
-          <div className="flex items-center justify-between border-b border-border-default/60 pb-3">
-            <div className="flex items-center gap-2">
-              <Info className="w-5 h-5 text-brand-green" />
-              <h3 className="text-base sm:text-lg font-black text-midnight-lagoon uppercase tracking-tight">
-                Mandatory Charges &amp; Fees
-              </h3>
-            </div>
-            {chargesSuccess && (
-              <span className="text-xs font-bold text-[#008751] flex items-center gap-1 bg-[#EAFDF3] px-2.5 py-0.5 rounded-full">
-                <CheckCircle2 className="w-3 h-3" />
-                <span>Saved</span>
-              </span>
-            )}
+        <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-6 shadow-xs">
+          <div>
+            <span className="type-ui-label text-xs font-black text-midnight-lagoon uppercase tracking-wider">
+              Mandatory Fees &amp; Structured Charges
+            </span>
+            <p className="text-xs text-text-muted mt-0.5">
+              These rates are automatically calculated into user outing budgets. Keep them accurate to prevent bill shock.
+            </p>
           </div>
 
-          <form onSubmit={handleSaveCharges} className="space-y-4 text-xs font-semibold text-text-primary">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {chargesSuccess && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl text-xs flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-brand-green" />
+              <span>Mandatory charges updated successfully.</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSaveCharges} className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-1">
                 <label className="text-text-muted uppercase text-[10px] block">VAT (%)</label>
                 <input
                   type="number"
                   step="0.1"
                   value={vatPct}
-                  onChange={(e) => setVatPct(parseFloat(e.target.value) || 0)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVatPct(parseFloat(e.target.value) || 0)}
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-mono"
                 />
               </div>
@@ -413,7 +413,7 @@ export function PartnerPricingClient({
                   type="number"
                   step="0.1"
                   value={serviceChargePct}
-                  onChange={(e) => setServiceChargePct(parseFloat(e.target.value) || 0)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setServiceChargePct(parseFloat(e.target.value) || 0)}
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-mono"
                 />
               </div>
@@ -423,7 +423,7 @@ export function PartnerPricingClient({
                 <input
                   type="number"
                   value={minimumSpend}
-                  onChange={(e) => setMinimumSpend(parseInt(e.target.value, 10) || 0)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMinimumSpend(parseInt(e.target.value, 10) || 0)}
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-mono"
                 />
               </div>
@@ -433,7 +433,7 @@ export function PartnerPricingClient({
                 <input
                   type="number"
                   value={corkageFee}
-                  onChange={(e) => setCorkageFee(parseInt(e.target.value, 10) || 0)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCorkageFee(parseInt(e.target.value, 10) || 0)}
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-mono"
                 />
               </div>
@@ -443,7 +443,7 @@ export function PartnerPricingClient({
                 <input
                   type="number"
                   value={entranceFee}
-                  onChange={(e) => setEntranceFee(parseInt(e.target.value, 10) || 0)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEntranceFee(parseInt(e.target.value, 10) || 0)}
                   className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs font-mono"
                 />
               </div>
@@ -454,7 +454,7 @@ export function PartnerPricingClient({
               <input
                 type="text"
                 value={weekendNotes}
-                onChange={(e) => setWeekendNotes(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWeekendNotes(e.target.value)}
                 placeholder="e.g. ₦10,000 entrance fee applies after 10pm on Fridays & Saturdays"
                 className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs"
               />
@@ -479,10 +479,7 @@ export function PartnerPricingClient({
         item={selectedItemForEdit}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onSuccess={() => {
-          setIsEditModalOpen(false);
-          router.refresh();
-        }}
+        onPriceUpdated={handlePriceUpdated}
       />
     </div>
   );

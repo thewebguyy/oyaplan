@@ -24,12 +24,15 @@ export default async function PartnerClosurePage({ params }: Props) {
 
   if (identity.type !== 'authenticated' || !identity.profile) {
     redirect(`/account?next=/partner/${venueId}/closure`);
+    return null;
   }
 
-  const { data: venue, error } = await getPartnerVenue(venueId, identity.profile.id);
+  const profile = identity.profile;
+  const { data: venue, error } = await getPartnerVenue(venueId, profile.id);
 
   if (error || !venue) {
     notFound();
+    return null;
   }
 
   return <ClosureClient venue={venue} />;

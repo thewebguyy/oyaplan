@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Venue } from '@/lib/types';
 import { reportTemporaryClosureAction, reopenVenueAction } from '@/lib/actions/partnerClosureActions';
-import { ArrowLeft, Calendar, AlertTriangle, CheckCircle2, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -35,7 +35,7 @@ export function ClosureClient({ venue }: ClosureClientProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleSubmitClosure = async (e: React.FormEvent) => {
+  const handleSubmitClosure = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
@@ -180,7 +180,7 @@ export function ClosureClient({ venue }: ClosureClientProps) {
                     type="date"
                     required
                     value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   />
                 </div>
@@ -192,7 +192,7 @@ export function ClosureClient({ venue }: ClosureClientProps) {
                   <input
                     type="date"
                     value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   />
                   <span className="text-[11px] text-stone-500 mt-1 block">
@@ -207,7 +207,7 @@ export function ClosureClient({ venue }: ClosureClientProps) {
                 </label>
                 <select
                   value={selectedReason}
-                  onChange={(e) => setSelectedReason(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedReason(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                 >
                   {CLOSURE_REASONS.map((r) => (
@@ -227,7 +227,7 @@ export function ClosureClient({ venue }: ClosureClientProps) {
                     type="text"
                     required
                     value={customReason}
-                    onChange={(e) => setCustomReason(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomReason(e.target.value)}
                     placeholder="e.g. Electrical upgrades"
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   />

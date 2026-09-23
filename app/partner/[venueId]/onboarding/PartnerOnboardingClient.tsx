@@ -39,7 +39,7 @@ const CATEGORIES: { value: SpotCategory; label: string }[] = [
   { value: 'spa', label: 'Spa & Wellness' },
 ];
 
-const OCCASIONS = [
+const OCCASIONS: string[] = [
   'Date night',
   'Dinner',
   'Brunch',
@@ -52,7 +52,7 @@ const OCCASIONS = [
   'Recreation',
 ];
 
-const AUDIENCES = [
+const AUDIENCES: string[] = [
   'Couples',
   'Friends',
   'Small groups',
@@ -108,14 +108,14 @@ export function PartnerOnboardingClient({
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const toggleOccasion = (item: string) => {
-    setVibeTags(prev => 
-      prev.includes(item) ? prev.filter(t => t !== item) : [...prev, item]
+    setVibeTags((prev: string[]) => 
+      prev.includes(item) ? prev.filter((t: string) => t !== item) : [...prev, item]
     );
   };
 
   const toggleAudience = (item: string) => {
-    setAudienceTags(prev => 
-      prev.includes(item) ? prev.filter(t => t !== item) : [...prev, item]
+    setAudienceTags((prev: string[]) => 
+      prev.includes(item) ? prev.filter((t: string) => t !== item) : [...prev, item]
     );
   };
 
@@ -189,7 +189,7 @@ export function PartnerOnboardingClient({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleAddPhoto = async (e: React.FormEvent) => {
+  const handleAddPhoto = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newPhotoUrl.trim()) return;
 
@@ -213,10 +213,10 @@ export function PartnerOnboardingClient({
         status: 'uploaded',
         is_primary: false,
         submitted_by: null,
-        verified_by: null,
+        approved_by: null,
         created_at: new Date().toISOString(),
       };
-      setPhotos(prev => [addedPhoto, ...prev]);
+      setPhotos((prev: VenuePhoto[]) => [addedPhoto, ...prev]);
       setNewPhotoUrl('');
       setNewPhotoCaption('');
     } else {
@@ -275,7 +275,7 @@ export function PartnerOnboardingClient({
       {/* Top sticky progress */}
       <OnboardingStepIndicator
         currentStep={currentStep}
-        onStepClick={(step) => {
+        onStepClick={(step: number) => {
           if (step < currentStep) {
             setCurrentStep(step);
           } else {
@@ -316,7 +316,7 @@ export function PartnerOnboardingClient({
           <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
               <Building2 className="w-5 h-5 text-[#008751]" />
-              <h2 className="font-semibold text-stone-900">Step 1: Business Information & Operations</h2>
+              <h2 className="font-semibold text-stone-900">Step 1: Business Information &amp; Operations</h2>
             </div>
 
             <div className="space-y-4">
@@ -327,7 +327,7 @@ export function PartnerOnboardingClient({
                 <input
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   placeholder="e.g. The House Lagos"
                 />
@@ -340,10 +340,10 @@ export function PartnerOnboardingClient({
                   </label>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value as SpotCategory)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value as SpotCategory)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   >
-                    {CATEGORIES.map((c) => (
+                    {CATEGORIES.map((c: { value: SpotCategory; label: string }) => (
                       <option key={c.value} value={c.value}>
                         {c.label}
                       </option>
@@ -357,12 +357,12 @@ export function PartnerOnboardingClient({
                   </label>
                   <select
                     value={indoorOutdoor}
-                    onChange={(e) => setIndoorOutdoor(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setIndoorOutdoor(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   >
                     <option value="indoor">Indoor Only</option>
                     <option value="outdoor">Outdoor Only</option>
-                    <option value="both">Both Indoor & Outdoor</option>
+                    <option value="both">Both Indoor &amp; Outdoor</option>
                   </select>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export function PartnerOnboardingClient({
                 <textarea
                   rows={3}
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   className="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   placeholder="Tell planners what kind of experience and hospitality to expect..."
                 />
@@ -382,12 +382,12 @@ export function PartnerOnboardingClient({
 
               <div>
                 <label className="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1">
-                  Full Street Address & Area <span className="text-red-500">*</span>
+                  Full Street Address &amp; Area <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   placeholder="e.g. 4 AJ Marinho Drive, Victoria Island, Lagos"
                 />
@@ -401,7 +401,7 @@ export function PartnerOnboardingClient({
                   <input
                     type="text"
                     value={contactNumber}
-                    onChange={(e) => setContactNumber(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactNumber(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="e.g. +234 801 234 5678"
                   />
@@ -414,7 +414,7 @@ export function PartnerOnboardingClient({
                   <input
                     type="email"
                     value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactEmail(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="manager@venue.com"
                   />
@@ -427,7 +427,7 @@ export function PartnerOnboardingClient({
                   <input
                     type="text"
                     value={instagramHandle}
-                    onChange={(e) => setInstagramHandle(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInstagramHandle(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="@thehouselagos"
                   />
@@ -441,7 +441,7 @@ export function PartnerOnboardingClient({
                   </label>
                   <select
                     value={hasParking ? 'yes' : 'no'}
-                    onChange={(e) => setHasParking(e.target.value === 'yes')}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setHasParking(e.target.value === 'yes')}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   >
                     <option value="yes">Dedicated Parking / Valet available</option>
@@ -455,7 +455,7 @@ export function PartnerOnboardingClient({
                   </label>
                   <select
                     value={dressCode}
-                    onChange={(e) => setDressCode(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDressCode(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   >
                     <option value="Casual">Casual</option>
@@ -475,7 +475,7 @@ export function PartnerOnboardingClient({
                 className="bg-[#010528] hover:bg-[#008751] text-white py-3 px-6 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors disabled:opacity-50"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Save & Continue to Pricing <ArrowRight className="w-4 h-4" />
+                Save &amp; Continue to Pricing <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -486,7 +486,7 @@ export function PartnerOnboardingClient({
           <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
               <Receipt className="w-5 h-5 text-[#008751]" />
-              <h2 className="font-semibold text-stone-900">Step 2: Transparent Pricing & Mandatory Charges</h2>
+              <h2 className="font-semibold text-stone-900">Step 2: Transparent Pricing &amp; Mandatory Charges</h2>
             </div>
 
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-900 leading-relaxed">
@@ -508,7 +508,7 @@ export function PartnerOnboardingClient({
                     min="0"
                     max="100"
                     value={vatPct}
-                    onChange={(e) => setVatPct(parseFloat(e.target.value) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVatPct(parseFloat(e.target.value) || 0)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="7.5"
                   />
@@ -525,7 +525,7 @@ export function PartnerOnboardingClient({
                     min="0"
                     max="100"
                     value={serviceChargePct}
-                    onChange={(e) => setServiceChargePct(parseFloat(e.target.value) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setServiceChargePct(parseFloat(e.target.value) || 0)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="10"
                   />
@@ -543,7 +543,7 @@ export function PartnerOnboardingClient({
                     step="1000"
                     min="0"
                     value={minimumSpend}
-                    onChange={(e) => setMinimumSpend(parseInt(e.target.value, 10) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMinimumSpend(parseInt(e.target.value, 10) || 0)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="0"
                   />
@@ -559,7 +559,7 @@ export function PartnerOnboardingClient({
                     step="1000"
                     min="0"
                     value={corkageFee}
-                    onChange={(e) => setCorkageFee(parseInt(e.target.value, 10) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCorkageFee(parseInt(e.target.value, 10) || 0)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="0"
                   />
@@ -575,7 +575,7 @@ export function PartnerOnboardingClient({
                     step="500"
                     min="0"
                     value={entranceFee}
-                    onChange={(e) => setEntranceFee(parseInt(e.target.value, 10) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEntranceFee(parseInt(e.target.value, 10) || 0)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="0"
                   />
@@ -590,7 +590,7 @@ export function PartnerOnboardingClient({
                 <input
                   type="text"
                   value={weekendPricingNotes}
-                  onChange={(e) => setWeekendPricingNotes(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWeekendPricingNotes(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   placeholder="e.g. Minimum spend of ₦50k applies to VIP cabanas on Sunday nights"
                 />
@@ -630,7 +630,7 @@ export function PartnerOnboardingClient({
                 className="bg-[#010528] hover:bg-[#008751] text-white py-3 px-6 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors disabled:opacity-50"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Save & Continue to Experience <ArrowRight className="w-4 h-4" />
+                Save &amp; Continue to Experience <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -641,7 +641,7 @@ export function PartnerOnboardingClient({
           <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
               <Sparkles className="w-5 h-5 text-[#008751]" />
-              <h2 className="font-semibold text-stone-900">Step 3: Experience Fit & Suitability</h2>
+              <h2 className="font-semibold text-stone-900">Step 3: Experience Fit &amp; Suitability</h2>
             </div>
 
             <p className="text-xs text-stone-600 leading-relaxed">
@@ -654,7 +654,7 @@ export function PartnerOnboardingClient({
                   Best For Occasions
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {OCCASIONS.map((tag) => {
+                  {OCCASIONS.map((tag: string) => {
                     const isSelected = vibeTags.includes(tag);
                     return (
                       <button
@@ -679,7 +679,7 @@ export function PartnerOnboardingClient({
                   Suitable For Groups
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {AUDIENCES.map((tag) => {
+                  {AUDIENCES.map((tag: string) => {
                     const isSelected = audienceTags.includes(tag);
                     return (
                       <button
@@ -709,7 +709,7 @@ export function PartnerOnboardingClient({
                     min="1"
                     max="100"
                     value={groupMin}
-                    onChange={(e) => setGroupMin(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGroupMin(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="1"
                   />
@@ -724,7 +724,7 @@ export function PartnerOnboardingClient({
                     min="1"
                     max="500"
                     value={groupMax}
-                    onChange={(e) => setGroupMax(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGroupMax(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     placeholder="20"
                   />
@@ -747,7 +747,7 @@ export function PartnerOnboardingClient({
                 className="bg-[#010528] hover:bg-[#008751] text-white py-3 px-6 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors disabled:opacity-50"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Save & Continue to Photos <ArrowRight className="w-4 h-4" />
+                Save &amp; Continue to Photos <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -758,7 +758,7 @@ export function PartnerOnboardingClient({
           <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
               <Camera className="w-5 h-5 text-[#008751]" />
-              <h2 className="font-semibold text-stone-900">Step 4: Photography & Atmosphere</h2>
+              <h2 className="font-semibold text-stone-900">Step 4: Photography &amp; Atmosphere</h2>
             </div>
 
             <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 text-xs text-stone-700 space-y-1">
@@ -774,7 +774,7 @@ export function PartnerOnboardingClient({
                 <input
                   type="url"
                   value={coverUrl}
-                  onChange={(e) => setCoverUrl(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCoverUrl(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                   placeholder="https://images.unsplash.com/..."
                 />
@@ -793,18 +793,18 @@ export function PartnerOnboardingClient({
                     <input
                       type="url"
                       value={newPhotoUrl}
-                      onChange={(e) => setNewPhotoUrl(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPhotoUrl(e.target.value)}
                       placeholder="Photo image URL..."
                       className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     />
                     <select
                       value={newPhotoType}
-                      onChange={(e) => setNewPhotoType(e.target.value as any)}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewPhotoType(e.target.value as any)}
                       className="w-full px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     >
                       <option value="interior">Interior</option>
                       <option value="exterior">Exterior</option>
-                      <option value="food">Food & Drinks</option>
+                      <option value="food">Food &amp; Drinks</option>
                       <option value="experience">Experience / Crowd</option>
                     </select>
                   </div>
@@ -812,7 +812,7 @@ export function PartnerOnboardingClient({
                     <input
                       type="text"
                       value={newPhotoCaption}
-                      onChange={(e) => setNewPhotoCaption(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPhotoCaption(e.target.value)}
                       placeholder="Caption (optional, e.g. Sunday Sunset Terrace)"
                       className="flex-1 px-3.5 py-2 bg-white border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
                     />
@@ -835,13 +835,13 @@ export function PartnerOnboardingClient({
                     Submitted Photos ({photos.length})
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {photos.map((p) => (
+                    {photos.map((p: VenuePhoto) => (
                       <div key={p.id} className="relative rounded-xl overflow-hidden border border-stone-200 aspect-video bg-stone-100 group">
                         <img
                           src={p.url}
                           alt={p.caption || 'Venue photo'}
                           className="w-full h-full object-cover"
-                          onError={(e) => {
+                          onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                             (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80';
                           }}
                         />
@@ -874,7 +874,7 @@ export function PartnerOnboardingClient({
                 className="bg-[#010528] hover:bg-[#008751] text-white py-3 px-6 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors disabled:opacity-50"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                Review & Submit <ArrowRight className="w-4 h-4" />
+                Review &amp; Submit <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -885,7 +885,7 @@ export function PartnerOnboardingClient({
           <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-2 border-b border-stone-100 pb-3">
               <CheckCircle2 className="w-5 h-5 text-[#008751]" />
-              <h2 className="font-semibold text-stone-900">Step 5: Review & Submit for Verification</h2>
+              <h2 className="font-semibold text-stone-900">Step 5: Review &amp; Submit for Verification</h2>
             </div>
 
             <div className="space-y-4">
@@ -901,7 +901,7 @@ export function PartnerOnboardingClient({
                 <div className="py-2.5 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#008751]" />
-                    <span className="text-sm font-semibold text-stone-800">Pricing & Mandatory Charges</span>
+                    <span className="text-sm font-semibold text-stone-800">Pricing &amp; Mandatory Charges</span>
                   </div>
                   <span className="text-xs text-stone-600">VAT {vatPct}% · Service {serviceChargePct}%</span>
                 </div>

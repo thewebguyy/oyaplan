@@ -24,12 +24,15 @@ export default async function PartnerOnboardingPage({ params }: Props) {
 
   if (identity.type !== 'authenticated' || !identity.profile) {
     redirect(`/account?next=/partner/${venueId}/onboarding`);
+    return null;
   }
 
-  const { data: venue, error } = await getPartnerVenue(venueId, identity.profile.id);
+  const profile = identity.profile;
+  const { data: venue, error } = await getPartnerVenue(venueId, profile.id);
 
   if (error || !venue) {
     notFound();
+    return null;
   }
 
   const [menuItems, photos] = await Promise.all([

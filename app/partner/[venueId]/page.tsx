@@ -31,13 +31,16 @@ export default async function PartnerHomePage({ params }: Props) {
 
   if (identity.type !== 'authenticated' || !identity.profile) {
     redirect(`/account?next=/partner/${venueId}`);
+    return null;
   }
 
-  const { data: venue, error } = await getPartnerVenue(venueId, identity.profile.id);
+  const profile = identity.profile;
+  const { data: venue, error } = await getPartnerVenue(venueId, profile.id);
 
   if (error || !venue) {
     // If venue doesn't exist or unauthorized
     notFound();
+    return null;
   }
 
   const [menuItems, photos, activity, insights] = await Promise.all([

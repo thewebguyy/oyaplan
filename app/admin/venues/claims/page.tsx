@@ -5,14 +5,14 @@ import PageHeader from '@/components/admin/PageHeader';
 import { getAdminVenueClaims, getAdminVenuePipelineStats } from '@/lib/queries/partner';
 import { ClaimsModerationTable } from '@/components/admin/ClaimsModerationTable';
 import Link from 'next/link';
-import { 
-  Building2, 
-  ShieldCheck, 
-  Clock, 
-  FileText, 
-  AlertCircle, 
-  CheckCircle2, 
-  ArrowLeft 
+import {
+  Building2,
+  ShieldCheck,
+  Clock,
+  FileText,
+  AlertCircle,
+  CheckCircle2,
+  ArrowLeft
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -114,18 +114,16 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
             <Link
               key={tab.key}
               href={`/admin/venues/claims?status=${tab.key}`}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                isActive
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap ${isActive
                   ? 'bg-[#010528] text-white shadow-sm'
                   : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
-              }`}
+                }`}
             >
               {tab.label}
               {tab.badge !== undefined && tab.badge > 0 && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                    isActive ? 'bg-[#FCC630] text-[#010528]' : 'bg-stone-200 text-stone-700'
-                  }`}
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive ? 'bg-[#FCC630] text-[#010528]' : 'bg-stone-200 text-stone-700'
+                    }`}
                 >
                   {tab.badge}
                 </span>

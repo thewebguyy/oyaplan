@@ -3,18 +3,18 @@
 import React, { useState } from 'react';
 import { VenueClaim } from '@/lib/types';
 import { reviewVenueClaimAction } from '@/lib/actions/venueClaimActions';
-import { 
-  CheckCircle2, 
-  XCircle, 
-  HelpCircle, 
-  ExternalLink, 
-  Phone, 
-  Mail, 
-  Clock, 
-  User, 
-  Building2, 
-  Loader2, 
-  AlertCircle 
+import {
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  ExternalLink,
+  Phone,
+  Mail,
+  Clock,
+  User,
+  Building2,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -297,9 +297,8 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
             </div>
 
             {feedback && (
-              <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
-                feedback.type === 'success' ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'
-              }`}>
+              <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${feedback.type === 'success' ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'
+                }`}>
                 {feedback.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
                 {feedback.text}
               </div>
@@ -361,11 +360,10 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className={`px-5 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 transition-colors ${
-                    modalMode === 'reject'
+                  className={`px-5 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 transition-colors ${modalMode === 'reject'
                       ? 'bg-rose-600 hover:bg-rose-700'
                       : 'bg-[#008751] hover:bg-[#007043]'
-                  }`}
+                    }`}
                 >
                   {isProcessing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Confirm Decision
