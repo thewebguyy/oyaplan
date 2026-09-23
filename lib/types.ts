@@ -440,13 +440,24 @@ export type PartnerState =
 
 export type ClaimantRole = 'owner' | 'manager' | 'marketing' | 'operations' | 'other';
 
+export type VenueClaimStatus = 
+  | 'invited'
+  | 'opened'
+  | 'authenticated'
+  | 'pending'
+  | 'approved'
+  | 'rejected'
+  | 'needs_more_information'
+  | 'revoked'
+  | 'expired';
+
 export interface VenueClaim {
   id: string;
   venue_id: string;
-  user_id: string;
+  user_id?: string | null;
   verification_method: 'business_document' | 'email_domain' | 'phone' | 'manual';
   document_url?: string | null;
-  status: 'pending' | 'approved' | 'rejected' | 'needs_more_information';
+  status: VenueClaimStatus;
   claimant_name?: string | null;
   claimant_role?: ClaimantRole | null;
   claimant_phone?: string | null;
@@ -458,6 +469,13 @@ export interface VenueClaim {
   reviewed_at?: string | null;
   claimed_at: string;
   approved_at?: string | null;
+  // Invitation Funnel Fields
+  invitation_token_hash?: string | null;
+  token_expires_at?: string | null;
+  invitation_sent_at?: string | null;
+  invitation_opened_at?: string | null;
+  consumed_at?: string | null;
+  created_by?: string | null;
   venues?: {
     id: string;
     name: string;
@@ -543,4 +561,32 @@ export interface VenuePlanningInsights {
   hasEnoughData: boolean;
   totalPlansAnalyzed: number;
 }
+
+// ============================================================
+// Business Invitations & Metric Confidence Primitives
+// ============================================================
+
+export interface InvitationPreview {
+  claimId: string;
+  venueId: string;
+  venueName: string;
+  venueAddress: string;
+  venueCategory: string;
+  hasCover: boolean;
+  menuItemCount: number;
+  claimantEmail?: string | null;
+  claimantRole?: ClaimantRole | null;
+  status: VenueClaimStatus;
+  tokenExpiresAt: string;
+}
+
+export type ConfidenceTier = 'unavailable' | 'emerging' | 'supported';
+
+export interface MetricConfidence<T> {
+  value: T | null;
+  tier: ConfidenceTier;
+  sampleCount: number;
+  explanation?: string;
+}
+
 

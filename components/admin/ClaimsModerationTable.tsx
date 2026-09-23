@@ -14,7 +14,8 @@ import {
   User,
   Building2,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Send
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -224,6 +225,26 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
                       {claim.status === 'needs_more_information' && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
                           <HelpCircle className="w-3 h-3 text-blue-600" /> Needs Info
+                        </span>
+                      )}
+                      {claim.status === 'invited' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-purple-100 text-purple-800">
+                          <Send className="w-3 h-3 text-purple-600" /> Invited
+                        </span>
+                      )}
+                      {claim.status === 'opened' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-indigo-100 text-indigo-800">
+                          <ExternalLink className="w-3 h-3 text-indigo-600" /> Link Opened
+                        </span>
+                      )}
+                      {claim.status === 'revoked' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-600">
+                          Revoked
+                        </span>
+                      )}
+                      {claim.status === 'expired' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-600">
+                          Expired
                         </span>
                       )}
                     </td>

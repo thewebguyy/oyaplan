@@ -511,6 +511,7 @@ export async function getAdminVenuePipelineStats(): Promise<{
   onboardingVenues: number;
   unclaimedVenues: number;
   pendingChangeRequests: number;
+  activeInvitations: number;
 }> {
   try {
     const supabase = await createServerClient();
@@ -523,6 +524,7 @@ export async function getAdminVenuePipelineStats(): Promise<{
       { count: onboardingVenues },
       { count: unclaimedVenues },
       { count: pendingChangeRequests },
+      { count: activeInvitations },
     ] = await Promise.all([
       supabase.from('venue_claims').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
       supabase.from('venue_claims').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
@@ -531,6 +533,7 @@ export async function getAdminVenuePipelineStats(): Promise<{
       supabase.from('venues').select('*', { count: 'exact', head: true }).eq('partner_state', 'onboarding'),
       supabase.from('venues').select('*', { count: 'exact', head: true }).eq('partner_state', 'unclaimed'),
       supabase.from('venue_change_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('venue_claims').select('*', { count: 'exact', head: true }).in('status', ['invited', 'opened']),
     ]);
 
     return {
@@ -541,6 +544,7 @@ export async function getAdminVenuePipelineStats(): Promise<{
       onboardingVenues: onboardingVenues || 0,
       unclaimedVenues: unclaimedVenues || 0,
       pendingChangeRequests: pendingChangeRequests || 0,
+      activeInvitations: activeInvitations || 0,
     };
   } catch (err) {
     console.error('Error fetching pipeline stats:', err);
@@ -552,6 +556,7 @@ export async function getAdminVenuePipelineStats(): Promise<{
       onboardingVenues: 0,
       unclaimedVenues: 0,
       pendingChangeRequests: 0,
+      activeInvitations: 0,
     };
   }
 }

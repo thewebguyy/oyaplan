@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { VenueClaimStatus } from "@/lib/types";
 
 export interface VenueRole {
   venue_id: string;
@@ -32,7 +33,7 @@ export async function getVenueClaimsByUser(userId: string): Promise<
   Array<{
     id: string;
     venue_id: string;
-    status: "pending" | "approved" | "rejected";
+    status: VenueClaimStatus;
     claimed_at: string;
     venues: { name: string };
   }>

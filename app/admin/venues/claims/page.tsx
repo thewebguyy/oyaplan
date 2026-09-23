@@ -37,6 +37,7 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
 
   const filterTabs = [
     { key: 'all', label: 'All Claims' },
+    { key: 'invited', label: 'Invitations', badge: stats.activeInvitations },
     { key: 'pending', label: 'Pending Review', badge: stats.pendingClaims },
     { key: 'needs_more_information', label: 'Needs Info' },
     { key: 'approved', label: 'Approved', badge: stats.approvedClaims },
