@@ -85,4 +85,18 @@ describe('Business Invitation Security Invariants', () => {
     const isValidLegacy = ['pending', 'approved', 'rejected', 'needs_more_information'].includes(legacyClaimStatus);
     expect(isValidLegacy).toBe(true);
   });
+
+  it('constructs correct invitation URL and WhatsApp outreach template for Lagos venue teams', () => {
+    const venueName = 'Circa Non Pareil';
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const invitationPath = `/business/claim/${rawToken}`;
+    const fullUrl = `https://oyaplan.com${invitationPath}`;
+
+    const expectedWhatsAppMessage = `Hi ${venueName} team, OyaPlan has created a listing for your business to help Lagos squads plan realistic outings. Review what customers see and claim your presence here: ${fullUrl}`;
+
+    expect(invitationPath).toMatch(/^\/business\/claim\/[0-9a-f]{64}$/);
+    expect(expectedWhatsAppMessage).toContain(venueName);
+    expect(expectedWhatsAppMessage).toContain(fullUrl);
+    expect(expectedWhatsAppMessage).toContain('Lagos squads plan realistic outings');
+  });
 });

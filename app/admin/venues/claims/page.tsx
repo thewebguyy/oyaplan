@@ -2,7 +2,7 @@ import React from 'react';
 import { isAuthorizedAdmin } from '@/lib/admin/permissions';
 import { redirect } from 'next/navigation';
 import PageHeader from '@/components/admin/PageHeader';
-import { getAdminVenueClaims, getAdminVenuePipelineStats } from '@/lib/queries/partner';
+import { getAdminVenueClaims, getAdminVenuePipelineStats, getVenuesForInvitation } from '@/lib/queries/partner';
 import { ClaimsModerationTable } from '@/components/admin/ClaimsModerationTable';
 import Link from 'next/link';
 import {
@@ -30,9 +30,10 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
 
   const { status = 'all' } = await searchParams;
 
-  const [stats, claims] = await Promise.all([
+  const [stats, claims, venues] = await Promise.all([
     getAdminVenuePipelineStats(),
     getAdminVenueClaims(status),
+    getVenuesForInvitation(),
   ]);
 
   const filterTabs = [
@@ -136,7 +137,7 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
       </div>
 
       {/* Moderation Table */}
-      <ClaimsModerationTable claims={claims} />
+      <ClaimsModerationTable claims={claims} venues={venues} />
     </div>
   );
 }

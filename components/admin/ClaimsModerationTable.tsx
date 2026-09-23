@@ -1,8 +1,8 @@
-'use client';
-
 import React, { useState } from 'react';
 import { VenueClaim } from '@/lib/types';
 import { reviewVenueClaimAction } from '@/lib/actions/venueClaimActions';
+import { revokeVenueInvitationAction } from '@/lib/actions/businessInvitationActions';
+import { InviteVenueModal, VenueOption } from '@/components/admin/InviteVenueModal';
 import {
   CheckCircle2,
   XCircle,
@@ -15,7 +15,8 @@ import {
   Building2,
   Loader2,
   AlertCircle,
-  Send
+  Send,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -28,17 +29,32 @@ interface ClaimWithVenue extends VenueClaim {
 
 interface ClaimsModerationTableProps {
   claims: ClaimWithVenue[];
+  venues?: VenueOption[];
 }
 
-export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
+export function ClaimsModerationTable({ claims, venues = [] }: ClaimsModerationTableProps) {
   const [activeClaimId, setActiveClaimId] = useState<string | null>(null);
   const [modalMode, setModalMode] = useState<'approve' | 'reject' | 'request_info' | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [revokingClaimId, setRevokingClaimId] = useState<string | null>(null);
 
   const selectedClaim = claims.find(c => c.id === activeClaimId);
+
+  const handleRevokeInvitation = async (claimId: string) => {
+    if (!confirm('Are you sure you want to revoke this invitation? The recipient will no longer be able to use the link.')) {
+      return;
+    }
+    setRevokingClaimId(claimId);
+    const res = await revokeVenueInvitationAction(claimId);
+    setRevokingClaimId(null);
+    if (!res.success) {
+      alert(res.error || 'Failed to revoke invitation');
+    }
+  };
 
   const handleOpenAction = (claimId: string, mode: 'approve' | 'reject' | 'request_info') => {
     setActiveClaimId(claimId);
@@ -92,18 +108,54 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
 
   if (claims.length === 0) {
     return (
-      <div className="bg-white border border-stone-200 rounded-2xl p-12 text-center text-stone-500">
-        <Building2 className="w-12 h-12 stroke-[1.5] text-stone-400 mx-auto mb-3" />
-        <h3 className="text-base font-semibold text-stone-800">No claims found</h3>
-        <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
-          No venue operator claims match the selected filter criteria.
-        </p>
-      </div>
+      <>
+        <div className="bg-white border border-stone-200 rounded-2xl p-12 text-center text-stone-500 space-y-3">
+          <Building2 className="w-12 h-12 stroke-[1.5] text-stone-400 mx-auto mb-1" />
+          <h3 className="text-base font-semibold text-stone-800">No claims found</h3>
+          <p className="text-xs text-stone-500 max-w-sm mx-auto">
+            No venue operator claims match the selected filter criteria.
+          </p>
+          {venues && venues.length > 0 && (
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setIsInviteModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 shadow-sm transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Invite a Venue
+              </button>
+            </div>
+          )}
+        </div>
+
+        <InviteVenueModal
+          venues={venues}
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+        />
+      </>
     );
   }
 
   return (
     <>
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-stone-500 font-medium">
+          Showing <span className="font-semibold text-stone-800">{claims.length}</span> record{claims.length === 1 ? '' : 's'}
+        </div>
+        {venues && venues.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setIsInviteModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 shadow-sm transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Invite Venue
+          </button>
+        )}
+      </div>
+
       <div className="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -197,12 +249,53 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
                       )}
                     </td>
 
-                    {/* Submission Date */}
+                    {/* Submission Date / Invitation Funnel */}
                     <td className="px-5 py-4 whitespace-nowrap text-stone-500">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-stone-400" />
-                        {dateStr}
-                      </div>
+                      {['invited', 'opened', 'authenticated'].includes(claim.status) ? (
+                        <div className="space-y-1 text-[11px]">
+                          <div className="flex items-center gap-1 text-stone-700">
+                            <Send className="w-3 h-3 text-purple-500" />
+                            <span>
+                              Sent:{' '}
+                              {claim.invitation_sent_at
+                                ? new Date(claim.invitation_sent_at).toLocaleDateString('en-GB', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                  })
+                                : dateStr}
+                            </span>
+                          </div>
+                          {claim.invitation_opened_at && (
+                            <div className="flex items-center gap-1 text-indigo-700 font-medium">
+                              <ExternalLink className="w-3 h-3 text-indigo-500" />
+                              <span>
+                                Opened:{' '}
+                                {new Date(claim.invitation_opened_at).toLocaleDateString('en-GB', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                })}
+                              </span>
+                            </div>
+                          )}
+                          {claim.token_expires_at && (
+                            <div className="flex items-center gap-1 text-stone-400">
+                              <Clock className="w-3 h-3" />
+                              <span>
+                                Expires:{' '}
+                                {new Date(claim.token_expires_at).toLocaleDateString('en-GB', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                })}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-stone-400" />
+                          {dateStr}
+                        </div>
+                      )}
                     </td>
 
                     {/* Status */}
@@ -237,6 +330,11 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
                           <ExternalLink className="w-3 h-3 text-indigo-600" /> Link Opened
                         </span>
                       )}
+                      {claim.status === 'authenticated' && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-cyan-100 text-cyan-800">
+                          <CheckCircle2 className="w-3 h-3 text-cyan-600" /> Authenticated
+                        </span>
+                      )}
                       {claim.status === 'revoked' && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-600">
                           Revoked
@@ -251,7 +349,21 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
 
                     {/* Action buttons */}
                     <td className="px-5 py-4 text-right whitespace-nowrap">
-                      {claim.status === 'pending' || claim.status === 'needs_more_information' ? (
+                      {['invited', 'opened', 'authenticated'].includes(claim.status) ? (
+                        <button
+                          type="button"
+                          onClick={() => handleRevokeInvitation(claim.id)}
+                          disabled={revokingClaimId === claim.id}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 disabled:opacity-50 transition-colors"
+                        >
+                          {revokingClaimId === claim.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <XCircle className="w-3 h-3 text-rose-500" />
+                          )}
+                          Revoke Invite
+                        </button>
+                      ) : claim.status === 'pending' || claim.status === 'needs_more_information' ? (
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
@@ -394,6 +506,12 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
           </div>
         </div>
       )}
+      {/* Invite Venue Modal */}
+      <InviteVenueModal
+        venues={venues}
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+      />
     </>
   );
 }

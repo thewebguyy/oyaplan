@@ -561,3 +561,28 @@ export async function getAdminVenuePipelineStats(): Promise<{
   }
 }
 
+/**
+ * getVenuesForInvitation
+ * Fetches list of venues eligible for invitations
+ */
+export async function getVenuesForInvitation(): Promise<Array<{
+  id: string;
+  name: string;
+  category?: string;
+  address?: string;
+  partner_state?: string;
+}>> {
+  try {
+    const supabase = await createServerClient();
+    const { data, error } = await supabase
+      .from('venues')
+      .select('id, name, category, address, partner_state')
+      .order('name', { ascending: true });
+
+    if (error || !data) return [];
+    return data;
+  } catch (err) {
+    console.error('Error fetching venues for invitation:', err);
+    return [];
+  }
+}
