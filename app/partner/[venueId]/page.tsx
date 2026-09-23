@@ -10,6 +10,7 @@ import {
   getVenuePlanningInsights 
 } from '@/lib/queries/partner';
 import { PartnerHomeClient } from './PartnerHomeClient';
+import type { VenuePhoto } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 

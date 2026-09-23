@@ -1,6 +1,6 @@
 import React from 'react';
 import { Venue } from '@/lib/types';
-import { Clock, MapPin, Car, Shirt, Phone, Instagram, Calendar } from 'lucide-react';
+import { Clock, MapPin, Car, Shirt, Phone, Calendar, AtSign } from 'lucide-react';
 
 interface PublicOverviewSectionProps {
   venue: Venue;
@@ -97,7 +97,7 @@ export function PublicOverviewSection({ venue }: PublicOverviewSectionProps) {
             <div className="p-3 bg-surface-grey rounded-xl space-y-1">
               <div className="flex items-center gap-1.5 text-text-muted font-bold">
                 {venue.instagram_handle ? (
-                  <Instagram className="w-3.5 h-3.5 text-brand-green" />
+                  <AtSign className="w-3.5 h-3.5 text-brand-green" />
                 ) : (
                   <Phone className="w-3.5 h-3.5 text-brand-green" />
                 )}

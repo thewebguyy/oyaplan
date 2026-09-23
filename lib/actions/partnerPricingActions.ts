@@ -3,6 +3,7 @@
 import { createServerClient } from '@/lib/supabase-server';
 import { checkVenueAuthorization } from '@/lib/queries/partner';
 import { revalidatePath } from 'next/cache';
+import { MenuItem } from '@/lib/types';
 
 export interface UpdatePriceInput {
   venueId: string;
@@ -121,9 +122,20 @@ export interface AddMenuItemInput {
   price: number;
 }
 
+export type AddMenuItemResult =
+  | {
+      success: true;
+      menuItemId: string;
+      item: MenuItem;
+    }
+  | {
+      success: false;
+      error: string;
+    };
+
 export async function addMenuItemAction(
   input: AddMenuItemInput
-): Promise<{ success: boolean; menuItemId?: string; error?: string }> {
+): Promise<AddMenuItemResult> {
   try {
     const { venueId, name, category, price } = input;
 
@@ -153,7 +165,7 @@ export async function addMenuItemAction(
         is_available: true,
         last_updated_at: new Date().toISOString(),
       })
-      .select('id')
+      .select('*')
       .single();
 
     if (error) return { success: false, error: error.message };
@@ -183,7 +195,7 @@ export async function addMenuItemAction(
     revalidatePath(`/partner/${venueId}/pricing`);
     revalidatePath(`/venue/${venueId}`);
 
-    return { success: true, menuItemId: newItem.id };
+    return { success: true, menuItemId: newItem.id, item: newItem as MenuItem };
   } catch (err: unknown) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to add item' };
   }

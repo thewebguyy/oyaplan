@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Store, ShieldAlert, FileText, Loader2, ArrowRight, CheckCircle } from "lucide-react";
 import { VenueRole, submitVenueClaim } from "@/lib/queries/operator";
-import { Spot } from "@/lib/types";
+import { Spot, VenueClaimStatus } from "@/lib/types";
 import Link from "next/link";
 
 interface OperatorDashboardClientProps {
@@ -12,7 +12,7 @@ interface OperatorDashboardClientProps {
   initialClaims: Array<{
     id: string;
     venue_id: string;
-    status: "pending" | "approved" | "rejected";
+    status: VenueClaimStatus;
     claimed_at: string;
     venues: { name: string };
   }>;

@@ -12,6 +12,7 @@ interface PriceUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  onPriceUpdated?: (item: MenuItem) => void;
 }
 
 const REASONS = [
@@ -29,6 +30,7 @@ export function PriceUpdateModal({
   isOpen,
   onClose,
   onSuccess,
+  onPriceUpdated,
 }: PriceUpdateModalProps) {
   const [newPrice, setNewPrice] = useState('');
   const [reason, setReason] = useState(REASONS[0]);
@@ -71,6 +73,13 @@ export function PriceUpdateModal({
       if (res.success) {
         setSubmitted(true);
         if (onSuccess) onSuccess();
+        if (onPriceUpdated && item) {
+          onPriceUpdated({
+            ...item,
+            price: parsedPrice,
+            last_updated_at: new Date().toISOString(),
+          });
+        }
       } else {
         setError(res.error || 'Failed to update price');
       }

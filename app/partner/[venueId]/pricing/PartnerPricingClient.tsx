@@ -73,15 +73,14 @@ export function PartnerPricingClient({
 
     if (!res.success) {
       setAddError(res.error || 'Failed to add item');
-    } else {
-      if (res.item) {
-        setMenuItems(prev => [...prev, res.item!]);
-      }
-      setNewItemName('');
-      setNewItemPrice('');
-      setIsAddingItem(false);
-      router.refresh();
+      return;
     }
+
+    setMenuItems(prev => [...prev, res.item]);
+    setNewItemName('');
+    setNewItemPrice('');
+    setIsAddingItem(false);
+    router.refresh();
   };
 
   const handleDeleteItem = async (itemId: string) => {
@@ -136,7 +135,7 @@ export function PartnerPricingClient({
               </span>
               <span className="text-gray-300">·</span>
               <span className="text-xs text-text-muted">
-                {priceFreshness.text}
+                {priceFreshness}
               </span>
             </div>
             <h1 className="type-h3 text-midnight-lagoon font-black uppercase">
