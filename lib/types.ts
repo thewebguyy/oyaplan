@@ -258,6 +258,7 @@ export interface Venue {
   district_id: string;
   name: string;
   address: string;
+  description?: string;
   vibe_tags: string[];
   category: 'restaurant' | 'bar' | 'activity' | 'nature' | 'entertainment' | 'beach' | 'cafe' | 'experience';
   subcategory: string | null;
@@ -265,14 +266,34 @@ export interface Venue {
   instagram_handle: string | null;
   is_featured: boolean;
   active: boolean;
+  cover_url?: string;
+  logo_url?: string;
   gallery_urls: string[];
+  contact_number?: string;
+  contact_email?: string;
+  opening_hours?: Record<string, string>;
   
-  // Tax details
+  // Tax & Fee details
   vat_pct: number;
   service_charge_pct: number;
   minimum_spend: number;
+  corkage_fee?: number;
+  entrance_fee?: number;
+  reservation_fee?: number;
+  weekend_pricing_notes?: string;
+
+  // Partner Relationship State
+  partner_state: PartnerState;
+  claimed_by?: string | null;
+  claimed_at?: string | null;
+
+  // Operational Availability & Temporary Closure
+  is_temporarily_closed?: boolean;
+  temporary_closure_start?: string | null;
+  temporary_closure_end?: string | null;
+  temporary_closure_reason?: string | null;
   
-  // Operational Status
+  // Operational Status & Confidence
   operational_status: 'fresh' | 'stale' | 'needs_review' | 'verified' | 'community_verified';
   
   // Materialized Derived Statistics
@@ -281,7 +302,21 @@ export interface Venue {
   computed_confidence_score: number;
   confidence_reasons: string[];
   
+  last_price_updated_at?: string;
+  last_price_source?: string;
+  
+  // Intelligence classifications
+  audience_tags?: string[];
+  activity_tags?: string[];
+  indoor_outdoor?: 'indoor' | 'outdoor' | 'mixed';
+  dress_code?: 'casual' | 'smart_casual' | 'formal' | 'nightlife';
+  date_suitability?: boolean;
+  group_suitability_min?: number | null;
+  group_suitability_max?: number | null;
+  has_parking?: boolean;
+
   created_at?: string;
+  updated_at?: string;
 }
 
 export interface MenuItem {
@@ -371,5 +406,123 @@ export interface PendingEvidenceDbRow {
   submitted_by: string;
   venues: { name: string } | Array<{ name: string }> | null;
   menu_items: { name: string } | Array<{ name: string }> | null;
+}
+
+// ============================================================
+// OyaPlan Venue Partner Domain Types (Supply-Side Relationship Layer)
+// ============================================================
+
+export type PartnerState = 
+  | 'unclaimed'
+  | 'claim_pending'
+  | 'claimed'
+  | 'onboarding'
+  | 'verification_pending'
+  | 'verified_partner'
+  | 'strategic_partner';
+
+export type ClaimantRole = 'owner' | 'manager' | 'marketing' | 'operations' | 'other';
+
+export interface VenueClaim {
+  id: string;
+  venue_id: string;
+  user_id: string;
+  verification_method: 'business_document' | 'email_domain' | 'phone' | 'manual';
+  document_url?: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'needs_more_information';
+  claimant_name?: string | null;
+  claimant_role?: ClaimantRole | null;
+  claimant_phone?: string | null;
+  claimant_email?: string | null;
+  relationship_notes?: string | null;
+  admin_notes?: string | null;
+  rejection_reason?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  claimed_at: string;
+  approved_at?: string | null;
+  venues?: {
+    id: string;
+    name: string;
+    address: string;
+    category?: string;
+  };
+}
+
+export type ChangeRequestCategory = 
+  | 'wrong_price'
+  | 'wrong_hours'
+  | 'wrong_location'
+  | 'wrong_photo'
+  | 'wrong_category'
+  | 'wrong_description'
+  | 'closed_temporarily'
+  | 'permanently_closed'
+  | 'other';
+
+export interface VenueChangeRequest {
+  id: string;
+  venue_id: string;
+  submitter_id?: string | null;
+  submitter_name?: string | null;
+  submitter_email?: string | null;
+  submitter_phone?: string | null;
+  category: ChangeRequestCategory;
+  details: string;
+  status: 'pending' | 'under_review' | 'resolved' | 'dismissed';
+  admin_notes?: string | null;
+  resolved_by?: string | null;
+  resolved_at?: string | null;
+  created_at: string;
+  venues?: {
+    name: string;
+  };
+}
+
+export type PhotoType = 'cover' | 'interior' | 'food' | 'experience' | 'exterior';
+export type PhotoStatus = 'uploaded' | 'under_review' | 'approved' | 'rejected';
+
+export interface VenuePhoto {
+  id: string;
+  venue_id: string;
+  url: string;
+  photo_type: PhotoType;
+  caption?: string | null;
+  status: PhotoStatus;
+  rejection_reason?: string | null;
+  submitted_by?: string | null;
+  approved_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProfileHealthItem {
+  id: string;
+  label: string;
+  completed: boolean;
+  actionLabel?: string;
+  actionHref?: string;
+}
+
+export interface ProfileHealth {
+  percentage: number;
+  label: 'Needs attention' | 'Getting there' | 'Good' | 'Excellent';
+  completedItems: ProfileHealthItem[];
+  missingItems: ProfileHealthItem[];
+}
+
+export interface VenueDemandActivity {
+  plansFeaturingCount: number;
+  plansSharedCount: number;
+  reportedOutingsCount: number;
+  hasEnoughData: boolean;
+}
+
+export interface VenuePlanningInsights {
+  mostCommonOccasion?: string | null;
+  mostCommonGroupSize?: string | null;
+  typicalBudgetRange?: string | null;
+  hasEnoughData: boolean;
+  totalPlansAnalyzed: number;
 }
 

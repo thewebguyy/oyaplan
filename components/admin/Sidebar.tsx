@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   MapPin,
+  ShieldCheck,
   Image as ImageIcon,
   Award,
   FileSpreadsheet,
@@ -31,6 +32,7 @@ export function Sidebar({ userEmail = "admin@oyaplan.com", role = "admin" }: Sid
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Venues", href: "/admin/venues", icon: MapPin },
+    { name: "Partner Claims", href: "/admin/venues/claims", icon: ShieldCheck },
     { name: "Media", href: "/admin/media", icon: ImageIcon },
     { name: "Beta Users", href: "/admin/beta-users", icon: Award },
     { name: "Usage", href: "/admin/usage", icon: BarChart3 },

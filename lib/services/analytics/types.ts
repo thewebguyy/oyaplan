@@ -447,6 +447,88 @@ export const EventSchemas = {
     category: z.literal('Planning'),
     group_id: z.string(),
     version: z.literal('1.0')
+  }),
+
+  // Venue Partner Supply-Side Events
+  'venue_claim_started': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_claim_submitted': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    claim_id: z.string().optional(),
+    role: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'venue_claim_approved': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    claim_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_claim_rejected': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    claim_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_onboarding_started': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_onboarding_step_completed': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    step: z.number(),
+    version: z.literal('1.0')
+  }),
+  'venue_onboarding_completed': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_verification_submitted': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_pricing_viewed': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_pricing_updated': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    menu_item_id: z.string().optional(),
+    price: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+  'venue_photo_uploaded': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    photo_type: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'venue_change_reported': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    category_type: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'venue_closure_reported': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    version: z.literal('1.0')
+  }),
+  'venue_partner_home_viewed': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    partner_state: z.string().optional(),
+    version: z.literal('1.0')
   })
 } as const;
 
