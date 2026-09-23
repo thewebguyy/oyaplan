@@ -1,4 +1,4 @@
--- Migration 0052: Venue Partner Experience (Supply-Side Relationship Layer)
+-- Migration 0052: Venue Partner Experience
 -- Adds explicit partner states, structured fees, temporary closures,
 -- enhanced claim records with claimant contact/role, change requests queue,
 -- and venue photos moderation.

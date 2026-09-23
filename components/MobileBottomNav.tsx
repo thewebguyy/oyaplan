@@ -17,8 +17,15 @@ export default function MobileBottomNav() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Hide on standalone forms / dedicated pages
+  // Hide on business pages and standalone forms
+  const isBusinessRoute =
+    pathname === "/for-business" ||
+    pathname === "/business" ||
+    pathname?.startsWith("/business/") ||
+    pathname?.startsWith("/partner");
+
   if (
+    isBusinessRoute ||
     pathname === "/feedback" ||
     pathname === "/list-your-spot" ||
     pathname === "/suggest-a-spot"

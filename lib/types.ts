@@ -426,7 +426,7 @@ export interface PendingEvidenceDbRow {
 }
 
 // ============================================================
-// OyaPlan Venue Partner Domain Types (Supply-Side Relationship Layer)
+// OyaPlan Venue Partner Domain Types
 // ============================================================
 
 export type PartnerState = 

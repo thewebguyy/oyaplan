@@ -5,9 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
-import { ChevronLeft, User, LogOut, Bookmark } from "lucide-react";
+import { ChevronLeft, User, LogOut, Bookmark, Building2 } from "lucide-react";
 import { useAuth } from "./providers/AuthProvider";
 import ClientOnly from "./ClientOnly";
+import { BusinessHeader } from "./business/BusinessHeader";
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -17,6 +18,16 @@ export default function NavBar() {
 
   // Hide on feedback and list-your-spot pages (if standalone)
   if (pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot") return null;
+
+  // Venue management workspace has its own internal BusinessShell layout and header
+  const isBusinessWorkspace = pathname?.startsWith("/business/") && !pathname?.startsWith("/business/claim");
+  if (isBusinessWorkspace) return null;
+
+  // Business public & claim routes get the dedicated BusinessHeader
+  const isPublicBusiness = pathname === "/for-business" || pathname === "/business" || pathname?.startsWith("/business/claim") || pathname?.startsWith("/partner");
+  if (isPublicBusiness) {
+    return <BusinessHeader />;
+  }
 
   const centerLinks = [
     { name: "Plan", href: "/" },
@@ -135,6 +146,13 @@ export default function NavBar() {
                   <Link href="/dashboard" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center gap-2">
                     <Bookmark className="w-4 h-4 text-text-muted" />
                     My Plans
+                  </Link>
+                  <Link href="/for-business" role="menuitem" className="w-full text-left px-4 py-2 type-body text-text-primary hover:bg-surface-grey flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-brand-green" />
+                      <span>For Business</span>
+                    </div>
+                    <span className="text-[9px] font-bold text-brand-green bg-[#EAFDF3] px-1.5 py-0.5 rounded uppercase">Venues</span>
                   </Link>
                   <div className="h-[1px] bg-border-default my-2"></div>
                   <button

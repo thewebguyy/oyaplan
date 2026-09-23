@@ -53,6 +53,8 @@ import { OriginProvider } from "@/lib/location/OriginContext";
 import { MomentOfDelight } from "@/components/ui/moment-of-delight";
 import { SpendIntelligencePrompt } from "@/components/feedback/SpendIntelligencePrompt";
 
+import { AppMainContent } from "@/components/layout/AppMainContent";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -72,9 +74,9 @@ export default function RootLayout({
               }>
                 <NavBar />
               </Suspense>
-              <div className="pt-14 pb-16 md:pb-0">
+              <AppMainContent>
                 {children}
-              </div>
+              </AppMainContent>
               <Suspense fallback={null}>
                 <ClientOnly>
                   <MobileBottomNav />
