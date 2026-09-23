@@ -17,7 +17,7 @@ export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
       return initialSpots.slice(0, 12);
     }
     const q = searchQuery.toLowerCase().trim();
-    return initialSpots.filter((s) => {
+    return initialSpots.filter((s: Spot) => {
       const matchName = s.name.toLowerCase().includes(q);
       const matchArea = s.address?.toLowerCase().includes(q) || s.areas?.name?.toLowerCase().includes(q);
       const matchCat = s.category?.toLowerCase().includes(q);
@@ -88,7 +88,7 @@ export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
           </div>
         ) : (
           <div className="divide-y divide-gray-100 bg-white rounded-3xl border border-border-default overflow-hidden shadow-xs">
-            {filteredSpots.map((spot) => (
+            {filteredSpots.map((spot: Spot) => (
               <Link
                 key={spot.id}
                 href={`/venue/${spot.id}/claim`}

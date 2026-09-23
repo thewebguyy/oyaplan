@@ -42,7 +42,7 @@ export function ClaimsModerationTable({ claims, venues = [] }: ClaimsModerationT
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [revokingClaimId, setRevokingClaimId] = useState<string | null>(null);
 
-  const selectedClaim = claims.find(c => c.id === activeClaimId);
+  const selectedClaim = claims.find((c: ClaimWithVenue) => c.id === activeClaimId);
 
   const handleRevokeInvitation = async (claimId: string) => {
     if (!confirm('Are you sure you want to revoke this invitation? The recipient will no longer be able to use the link.')) {
@@ -171,7 +171,7 @@ export function ClaimsModerationTable({ claims, venues = [] }: ClaimsModerationT
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
-              {claims.map((claim) => {
+              {claims.map((claim: ClaimWithVenue) => {
                 const dateStr = new Date(claim.claimed_at).toLocaleDateString('en-GB', {
                   day: 'numeric',
                   month: 'short',

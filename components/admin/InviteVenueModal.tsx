@@ -60,12 +60,12 @@ export function InviteVenueModal({
     if (!searchQuery.trim()) return venues.slice(0, 15);
     const q = searchQuery.toLowerCase();
     return venues
-      .filter((v) => v.name.toLowerCase().includes(q) || (v.address && v.address.toLowerCase().includes(q)))
+      .filter((v: VenueOption) => v.name.toLowerCase().includes(q) || (v.address && v.address.toLowerCase().includes(q)))
       .slice(0, 20);
   }, [venues, searchQuery]);
 
   const selectedVenue = useMemo(() => {
-    return venues.find((v) => v.id === selectedVenueId);
+    return venues.find((v: VenueOption) => v.id === selectedVenueId);
   }, [venues, selectedVenueId]);
 
   if (!isOpen) return null;
@@ -189,7 +189,7 @@ export function InviteVenueModal({
                   type="text"
                   placeholder="Search venue by name or area..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                   className="w-full pl-8 pr-3 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-900 focus:outline-none focus:ring-1 focus:ring-purple-600"
                 />
               </div>
@@ -201,7 +201,7 @@ export function InviteVenueModal({
                     No venues found matching "{searchQuery}"
                   </div>
                 ) : (
-                  filteredVenues.map((venue) => {
+                  filteredVenues.map((venue: VenueOption) => {
                     const isSelected = selectedVenueId === venue.id;
                     return (
                       <button
@@ -244,7 +244,7 @@ export function InviteVenueModal({
               </label>
               <select
                 value={claimantRole}
-                onChange={(e) => setClaimantRole(e.target.value as ClaimantRole)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setClaimantRole(e.target.value as ClaimantRole)}
                 className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-purple-600"
               >
                 <option value="owner">Business Owner / Founder</option>
@@ -264,7 +264,7 @@ export function InviteVenueModal({
                 type="email"
                 placeholder="manager@venue.com"
                 value={claimantEmail}
-                onChange={(e) => setClaimantEmail(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClaimantEmail(e.target.value)}
                 className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-purple-600"
               />
               <p className="text-[11px] text-stone-500 mt-1">

@@ -340,7 +340,7 @@ export function BusinessTokenClaimClient({
               Your Role at {preview.venueName} *
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-              {(['owner', 'manager', 'marketing', 'operations', 'other'] as ClaimantRole[]).map((role) => (
+              {(['owner', 'manager', 'marketing', 'operations', 'other'] as ClaimantRole[]).map((role: ClaimantRole) => (
                 <button
                   type="button"
                   key={role}

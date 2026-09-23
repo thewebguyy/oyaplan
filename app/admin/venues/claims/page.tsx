@@ -111,7 +111,7 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-1.5 border-b border-stone-200 pb-2 overflow-x-auto">
-        {filterTabs.map((tab) => {
+        {filterTabs.map((tab: { key: string; label: string; badge?: number }) => {
           const isActive = status === tab.key;
           return (
             <Link
