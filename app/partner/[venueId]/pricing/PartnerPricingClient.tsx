@@ -4,9 +4,14 @@ import React, { useState } from 'react';
 import { Venue, MenuItem } from '@/lib/types';
 import { PartnerHeader } from '@/components/partner/PartnerHeader';
 import { PriceUpdateModal } from '@/components/partner/PriceUpdateModal';
-import { addMenuItemAction, deleteMenuItemAction, updateStructuredChargesAction } from '@/lib/actions/partnerPricingActions';
+import {
+  addMenuItemAction,
+  deleteMenuItemAction,
+  updateStructuredChargesAction,
+  type AddMenuItemInput,
+} from '@/lib/actions/partnerPricingActions';
 import { getVerificationText } from '@/lib/planning/presentation/decisionCardMapper';
-import { Tag, Plus, Edit2, Trash2, ShieldCheck, Info, Loader2, CheckCircle2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Info, Loader2, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface PartnerPricingClientProps {
@@ -66,7 +71,7 @@ export function PartnerPricingClient({
     const res = await addMenuItemAction({
       venueId: venue.id,
       name: newItemName.trim(),
-      category: newItemCategory as any,
+      category: newItemCategory as AddMenuItemInput['category'],
       price: priceNum,
     });
     setAddingLoading(false);
@@ -474,6 +479,7 @@ export function PartnerPricingClient({
 
       {/* Edit Price Modal */}
       <PriceUpdateModal
+        key={selectedItemForEdit?.id ?? 'price-update-modal'}
         venueId={venue.id}
         item={selectedItemForEdit}
         isOpen={isEditModalOpen}

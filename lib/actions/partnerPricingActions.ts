@@ -276,7 +276,17 @@ export async function updateStructuredChargesAction(
     const auth = await checkVenueAuthorization(venueId, user.id);
     if (!auth.authorized) return { success: false, error: 'Unauthorized' };
 
-    const payload: Record<string, any> = {};
+    type StructuredChargesPayload = {
+      vat_pct?: number;
+      service_charge_pct?: number;
+      minimum_spend?: number;
+      corkage_fee?: number;
+      entrance_fee?: number;
+      reservation_fee?: number;
+      weekend_pricing_notes?: string;
+    };
+
+    const payload: StructuredChargesPayload = {};
     if (typeof input.vatPct === 'number') payload.vat_pct = Math.max(0, input.vatPct);
     if (typeof input.serviceChargePct === 'number') payload.service_charge_pct = Math.max(0, input.serviceChargePct);
     if (typeof input.minimumSpend === 'number') payload.minimum_spend = Math.max(0, input.minimumSpend);

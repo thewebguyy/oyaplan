@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MenuItem } from '@/lib/types';
 import { updateMenuItemPriceAction } from '@/lib/actions/partnerPricingActions';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -32,21 +32,12 @@ export function PriceUpdateModal({
   onSuccess,
   onPriceUpdated,
 }: PriceUpdateModalProps) {
-  const [newPrice, setNewPrice] = useState('');
+  const [newPrice, setNewPrice] = useState(() => item?.price.toString() ?? '');
   const [reason, setReason] = useState(REASONS[0]);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-
-  // Synchronize when item changes
-  React.useEffect(() => {
-    if (item) {
-      setNewPrice(item.price.toString());
-      setSubmitted(false);
-      setError(null);
-    }
-  }, [item]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
