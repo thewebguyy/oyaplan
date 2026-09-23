@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { VenueClaim } from '@/lib/types';
 import { reviewVenueClaimAction } from '@/lib/actions/venueClaimActions';
