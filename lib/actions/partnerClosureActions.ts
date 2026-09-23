@@ -41,6 +41,8 @@ export async function reportTemporaryClosureAction(
 
     revalidatePath(`/partner/${venueId}`);
     revalidatePath(`/partner/${venueId}/closure`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/updates`);
     revalidatePath(`/venue/${venueId}`);
 
     return { success: true };
@@ -74,6 +76,8 @@ export async function reopenVenueAction(
 
     revalidatePath(`/partner/${venueId}`);
     revalidatePath(`/partner/${venueId}/closure`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/updates`);
     revalidatePath(`/venue/${venueId}`);
 
     return { success: true };

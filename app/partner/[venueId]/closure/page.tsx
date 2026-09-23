@@ -1,8 +1,4 @@
-import { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
-import { SessionResolver } from '@/lib/services/identity/sessionResolver';
-import { getPartnerVenue } from '@/lib/queries/partner';
-import { ClosureClient } from './ClosureClient';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,30 +6,7 @@ interface Props {
   params: Promise<{ venueId: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export default async function PartnerClosurePageRedirect({ params }: Props) {
   const { venueId } = await params;
-  return {
-    title: `Temporary Availability — OyaPlan Partner`,
-    description: `Report temporary closures or reopen your venue for OyaPlan itineraries.`,
-  };
-}
-
-export default async function PartnerClosurePage({ params }: Props) {
-  const { venueId } = await params;
-  const identity = await SessionResolver.resolveIdentity();
-
-  if (identity.type !== 'authenticated' || !identity.profile) {
-    redirect(`/account?next=/partner/${venueId}/closure`);
-    return null;
-  }
-
-  const profile = identity.profile;
-  const { data: venue, error } = await getPartnerVenue(venueId, profile.id);
-
-  if (error || !venue) {
-    notFound();
-    return null;
-  }
-
-  return <ClosureClient venue={venue} />;
+  redirect(`/business/${venueId}/updates`);
 }

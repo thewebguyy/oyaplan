@@ -107,6 +107,8 @@ export async function updateMenuItemPriceAction(
 
     revalidatePath(`/partner/${venueId}`);
     revalidatePath(`/partner/${venueId}/pricing`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/pricing`);
     revalidatePath(`/venue/${venueId}`);
 
     return { success: true };
@@ -193,6 +195,8 @@ export async function addMenuItemAction(
 
     revalidatePath(`/partner/${venueId}`);
     revalidatePath(`/partner/${venueId}/pricing`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/pricing`);
     revalidatePath(`/venue/${venueId}`);
 
     return { success: true, menuItemId: newItem.id, item: newItem as MenuItem };
@@ -245,6 +249,8 @@ export async function deleteMenuItemAction(
 
     revalidatePath(`/partner/${venueId}`);
     revalidatePath(`/partner/${venueId}/pricing`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/pricing`);
     revalidatePath(`/venue/${venueId}`);
 
     return { success: true };
@@ -304,10 +310,53 @@ export async function updateStructuredChargesAction(
 
     revalidatePath(`/partner/${venueId}`);
     revalidatePath(`/partner/${venueId}/pricing`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/pricing`);
     revalidatePath(`/venue/${venueId}`);
 
     return { success: true };
   } catch (err: unknown) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update charges' };
+  }
+}
+
+/**
+ * confirmAllPricesAction
+ * Fast 1-click confirmation by an operator that all existing menu prices and structured charges
+ * are still current. Updates last_price_updated_at and refreshes the verification window.
+ */
+export async function confirmAllPricesAction(
+  venueId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (!venueId) return { success: false, error: 'Venue ID is required' };
+
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: 'Authentication required' };
+
+    const auth = await checkVenueAuthorization(venueId, user.id);
+    if (!auth.authorized) return { success: false, error: 'Unauthorized to modify pricing for this venue' };
+
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('venues')
+      .update({
+        last_price_updated_at: now,
+        last_price_source: 'partner_confirmation',
+      })
+      .eq('id', venueId);
+
+    if (error) return { success: false, error: error.message };
+
+    revalidatePath(`/partner/${venueId}`);
+    revalidatePath(`/partner/${venueId}/pricing`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/pricing`);
+    revalidatePath(`/venue/${venueId}`);
+
+    return { success: true };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : 'Confirmation failed' };
   }
 }

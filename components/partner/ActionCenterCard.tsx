@@ -8,9 +8,10 @@ import { AlertTriangle, Clock, Camera, CalendarX, CheckCircle2, ArrowRight } fro
 interface ActionCenterCardProps {
   venue: Venue;
   menuItems: MenuItem[];
+  baseRoute?: 'partner' | 'business';
 }
 
-export function ActionCenterCard({ venue, menuItems }: ActionCenterCardProps) {
+export function ActionCenterCard({ venue, menuItems, baseRoute = 'partner' }: ActionCenterCardProps) {
   const actions: Array<{
     id: string;
     title: string;
@@ -20,6 +21,9 @@ export function ActionCenterCard({ venue, menuItems }: ActionCenterCardProps) {
     icon: React.ReactNode;
     severity: 'warning' | 'info';
   }> = [];
+
+  const venueEditorPath = baseRoute === 'business' ? `/business/${venue.id}/venue` : `/partner/${venue.id}/onboarding`;
+  const pricingPath = `/${baseRoute}/${venue.id}/pricing`;
 
   // Check 1: Pricing freshness
   const daysSincePriceUpdate = venue.last_price_updated_at ? Math.floor(
@@ -32,7 +36,7 @@ export function ActionCenterCard({ venue, menuItems }: ActionCenterCardProps) {
       title: 'No menu items listed',
       description: 'Add your representative menu items and charges so OyaPlan can estimate outing costs.',
       ctaLabel: 'Add menu items',
-      ctaHref: `/partner/${venue.id}/pricing`,
+      ctaHref: pricingPath,
       icon: <AlertTriangle className="w-5 h-5 text-amber-600" />,
       severity: 'warning',
     });
@@ -42,7 +46,7 @@ export function ActionCenterCard({ venue, menuItems }: ActionCenterCardProps) {
       title: 'Pricing needs confirmation',
       description: `Prices were last confirmed ${daysSincePriceUpdate} days ago. Confirm current prices to maintain Verified badge.`,
       ctaLabel: 'Review prices',
-      ctaHref: `/partner/${venue.id}/pricing`,
+      ctaHref: pricingPath,
       icon: <AlertTriangle className="w-5 h-5 text-amber-600" />,
       severity: 'warning',
     });
@@ -56,7 +60,7 @@ export function ActionCenterCard({ venue, menuItems }: ActionCenterCardProps) {
       title: 'Opening hours unconfirmed',
       description: 'Squads need to know when you are open before heading out.',
       ctaLabel: 'Update hours',
-      ctaHref: `/partner/${venue.id}/onboarding?step=1`,
+      ctaHref: `${venueEditorPath}?step=1`,
       icon: <Clock className="w-5 h-5 text-indigo-600" />,
       severity: 'info',
     });
@@ -70,7 +74,7 @@ export function ActionCenterCard({ venue, menuItems }: ActionCenterCardProps) {
       title: 'Photos boost customer confidence',
       description: 'Upload at least 3 photos (cover, interior, food) to showcase your space before squads choose you.',
       ctaLabel: 'Add photos',
-      ctaHref: `/partner/${venue.id}/onboarding?step=4`,
+      ctaHref: `${venueEditorPath}?step=4`,
       icon: <Camera className="w-5 h-5 text-emerald-600" />,
       severity: 'info',
     });

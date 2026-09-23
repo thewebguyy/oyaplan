@@ -8,10 +8,14 @@ import { CheckCircle2, Circle, ArrowRight } from 'lucide-react';
 interface ProfileHealthCardProps {
   health: ProfileHealth;
   venueId: string;
+  baseRoute?: 'partner' | 'business';
 }
 
-export function ProfileHealthCard({ health, venueId }: ProfileHealthCardProps) {
+export function ProfileHealthCard({ health, venueId, baseRoute = 'partner' }: ProfileHealthCardProps) {
   const isComplete = health.percentage === 100;
+  const completeProfileHref = baseRoute === 'business'
+    ? `/business/${venueId}/venue`
+    : `/partner/${venueId}/onboarding`;
 
   return (
     <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-5 shadow-xs">
@@ -36,7 +40,7 @@ export function ProfileHealthCard({ health, venueId }: ProfileHealthCardProps) {
 
         {!isComplete && (
           <Link
-            href={`/partner/${venueId}/onboarding`}
+            href={completeProfileHref}
             className="self-start sm:self-auto h-10 px-4 bg-midnight-lagoon hover:bg-[#00041f] text-white text-xs font-bold uppercase tracking-wider rounded-xl inline-flex items-center gap-1.5 transition-all tap-feedback cursor-pointer"
           >
             <span>Complete Profile</span>

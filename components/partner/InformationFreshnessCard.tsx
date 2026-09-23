@@ -7,14 +7,18 @@ import { ShieldCheck, Clock, Camera, ArrowRight } from 'lucide-react';
 interface InformationFreshnessCardProps {
   venue: Venue;
   approvedPhotosCount?: number;
+  baseRoute?: 'partner' | 'business';
 }
 
 export function InformationFreshnessCard({
   venue,
   approvedPhotosCount = 0,
+  baseRoute = 'partner',
 }: InformationFreshnessCardProps) {
   const priceFreshness = getVerificationText(venue.last_price_updated_at);
   const totalPhotos = approvedPhotosCount + (venue.gallery_urls?.length || 0) + (venue.cover_url ? 1 : 0);
+  const venueEditorPath = baseRoute === 'business' ? `/business/${venue.id}/venue` : `/partner/${venue.id}/onboarding`;
+  const pricingPath = `/${baseRoute}/${venue.id}/pricing`;
 
   return (
     <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-7 space-y-4 shadow-xs">
@@ -40,7 +44,7 @@ export function InformationFreshnessCard({
             <p className="font-bold text-text-primary text-sm">{priceFreshness}</p>
           </div>
           <Link
-            href={`/partner/${venue.id}/pricing`}
+            href={pricingPath}
             className="text-brand-green font-bold text-[11px] inline-flex items-center gap-1 hover:underline tap-feedback"
           >
             <span>Review pricing</span>
@@ -62,7 +66,7 @@ export function InformationFreshnessCard({
             </p>
           </div>
           <Link
-            href={`/partner/${venue.id}/onboarding?step=1`}
+            href={`${venueEditorPath}?step=1`}
             className="text-brand-green font-bold text-[11px] inline-flex items-center gap-1 hover:underline tap-feedback"
           >
             <span>Update hours</span>
@@ -82,7 +86,7 @@ export function InformationFreshnessCard({
             </p>
           </div>
           <Link
-            href={`/partner/${venue.id}/onboarding?step=4`}
+            href={`${venueEditorPath}?step=4`}
             className="text-brand-green font-bold text-[11px] inline-flex items-center gap-1 hover:underline tap-feedback"
           >
             <span>Manage photos</span>

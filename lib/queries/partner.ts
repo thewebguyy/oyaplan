@@ -210,12 +210,15 @@ export async function getVenuePhotos(
 export function calculateProfileHealth(
   venue: Venue,
   menuItems: MenuItem[],
-  approvedPhotosCount: number
+  approvedPhotosCount: number,
+  baseRoute: 'partner' | 'business' = 'partner'
 ): ProfileHealth {
   const completedItems: ProfileHealthItem[] = [];
   const missingItems: ProfileHealthItem[] = [];
 
   let score = 0;
+  const venueEditorPath = baseRoute === 'business' ? `/business/${venue.id}/venue` : `/partner/${venue.id}/onboarding`;
+  const pricingPath = `/${baseRoute}/${venue.id}/pricing`;
 
   // 1. Business Info (25%)
   const hasDesc = Boolean(venue.description && venue.description.length >= 20);
@@ -231,7 +234,7 @@ export function calculateProfileHealth(
       label: 'Complete business description & contact info',
       completed: false,
       actionLabel: 'Edit info',
-      actionHref: `/partner/${venue.id}/onboarding?step=1`
+      actionHref: `${venueEditorPath}?step=1`
     });
   }
 
@@ -246,7 +249,7 @@ export function calculateProfileHealth(
       label: 'Confirm opening hours',
       completed: false,
       actionLabel: 'Add hours',
-      actionHref: `/partner/${venue.id}/onboarding?step=1`
+      actionHref: `${venueEditorPath}?step=1`
     });
   }
 
@@ -267,7 +270,7 @@ export function calculateProfileHealth(
       label: 'Review prices (pricing needs freshness confirmation)',
       completed: false,
       actionLabel: 'Review prices',
-      actionHref: `/partner/${venue.id}/pricing`
+      actionHref: pricingPath
     });
   } else {
     missingItems.push({
@@ -275,7 +278,7 @@ export function calculateProfileHealth(
       label: 'Add at least 3 menu items with prices',
       completed: false,
       actionLabel: 'Add menu',
-      actionHref: `/partner/${venue.id}/pricing`
+      actionHref: pricingPath
     });
   }
 
@@ -293,7 +296,7 @@ export function calculateProfileHealth(
       label: 'Tag suitable experiences (date night, brunch, squad size)',
       completed: false,
       actionLabel: 'Classify vibe',
-      actionHref: `/partner/${venue.id}/onboarding?step=3`
+      actionHref: `${venueEditorPath}?step=3`
     });
   }
 
@@ -312,7 +315,7 @@ export function calculateProfileHealth(
       label: `Add ${Math.max(1, 3 - totalPhotos)} more photos of interior or food`,
       completed: false,
       actionLabel: 'Add photos',
-      actionHref: `/partner/${venue.id}/onboarding?step=4`
+      actionHref: `${venueEditorPath}?step=4`
     });
   } else {
     missingItems.push({
@@ -320,7 +323,7 @@ export function calculateProfileHealth(
       label: 'Add a cover photo and at least 2 interior/food photos',
       completed: false,
       actionLabel: 'Upload photos',
-      actionHref: `/partner/${venue.id}/onboarding?step=4`
+      actionHref: `${venueEditorPath}?step=4`
     });
   }
 
