@@ -32,10 +32,11 @@ export default async function ClaimVenuePage({ params }: Props) {
 
   if (!venue) {
     notFound();
+    return null;
   }
 
   const identity = await SessionResolver.resolveIdentity();
-  const initialUser = identity.type === 'authenticated' ? {
+  const initialUser = identity.type === 'authenticated' && identity.profile ? {
     id: identity.profile.id,
     email: identity.profile.email,
     name: identity.profile.display_name,

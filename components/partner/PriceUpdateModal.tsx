@@ -46,7 +46,7 @@ export function PriceUpdateModal({
     }
   }, [item]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!item) return;
 
@@ -90,7 +90,7 @@ export function PriceUpdateModal({
   if (!item) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+    <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && handleClose()}>
       <DialogContent className="sm:max-w-md bg-white border-none shadow-2xl rounded-3xl p-6 sm:p-8">
         <DialogHeader className="space-y-1.5 text-left">
           <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export function PriceUpdateModal({
                   type="number"
                   required
                   value={newPrice}
-                  onChange={(e) => setNewPrice(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPrice(e.target.value)}
                   placeholder="e.g. 9500"
                   className="w-full h-12 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-sm font-mono font-bold focus:bg-white focus:outline-none focus:border-brand-green"
                 />
@@ -164,10 +164,10 @@ export function PriceUpdateModal({
               </label>
               <select
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setReason(e.target.value)}
                 className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
               >
-                {REASONS.map((r) => (
+                {REASONS.map((r: string) => (
                   <option key={r} value={r}>
                     {r}
                   </option>
@@ -183,7 +183,7 @@ export function PriceUpdateModal({
               <input
                 type="text"
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNotes(e.target.value)}
                 placeholder="e.g. Updated menu rolled out this Friday"
                 className="w-full h-10 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
               />

@@ -38,6 +38,7 @@ export default async function PublicVenuePage({ params }: Props) {
 
   if (!venue) {
     notFound();
+    return null;
   }
 
   const [menuItems, photos] = await Promise.all([

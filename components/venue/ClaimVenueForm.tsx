@@ -29,7 +29,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
@@ -155,7 +155,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
             type="text"
             required
             value={claimantName}
-            onChange={(e) => setClaimantName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClaimantName(e.target.value)}
             placeholder="e.g. Babatunde Adeleke"
             className="w-full h-12 px-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
           />
@@ -167,7 +167,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
             Your Role at {venue.name} *
           </label>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-            {(['owner', 'manager', 'marketing', 'operations', 'other'] as ClaimantRole[]).map((role) => (
+            {(['owner', 'manager', 'marketing', 'operations', 'other'] as ClaimantRole[]).map((role: ClaimantRole) => (
               <button
                 type="button"
                 key={role}
@@ -193,7 +193,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
             type="tel"
             required
             value={claimantPhone}
-            onChange={(e) => setClaimantPhone(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClaimantPhone(e.target.value)}
             placeholder="e.g. 0803 123 4567"
             className="w-full h-12 px-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
           />
@@ -208,7 +208,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
             type="email"
             required
             value={claimantEmail}
-            onChange={(e) => setClaimantEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClaimantEmail(e.target.value)}
             placeholder="e.g. manager@thehouselagos.com"
             className="w-full h-12 px-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
           />
@@ -222,7 +222,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
           <textarea
             rows={2}
             value={relationshipNotes}
-            onChange={(e) => setRelationshipNotes(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRelationshipNotes(e.target.value)}
             placeholder="e.g. Co-founder, handling restaurant reservations and pricing updates"
             className="w-full p-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
           />

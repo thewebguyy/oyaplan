@@ -74,7 +74,7 @@ export function ChangeRequestModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleReset()}>
+    <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && handleReset()}>
       <DialogContent className="sm:max-w-lg bg-white border-none shadow-2xl rounded-3xl p-6 sm:p-8">
         <DialogHeader className="space-y-1.5 text-left">
           <div className="flex items-center gap-2">
@@ -124,10 +124,10 @@ export function ChangeRequestModal({
               </label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as ChangeRequestCategory)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value as ChangeRequestCategory)}
                 className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
               >
-                {CATEGORIES.map((c) => (
+                {CATEGORIES.map((c: { id: ChangeRequestCategory; label: string }) => (
                   <option key={c.id} value={c.id}>
                     {c.label}
                   </option>
@@ -144,7 +144,7 @@ export function ChangeRequestModal({
                 required
                 rows={3}
                 value={details}
-                onChange={(e) => setDetails(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDetails(e.target.value)}
                 placeholder="e.g. Cocktail price is now ₦8,000, and they open at 2pm on Sundays instead of 12pm."
                 className="w-full p-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
               />
@@ -159,7 +159,7 @@ export function ChangeRequestModal({
                 <input
                   type="text"
                   value={submitterName}
-                  onChange={(e) => setSubmitterName(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSubmitterName(e.target.value)}
                   placeholder="e.g. Tunde"
                   className="w-full h-10 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
                 />
@@ -172,7 +172,7 @@ export function ChangeRequestModal({
                 <input
                   type="text"
                   value={submitterContact}
-                  onChange={(e) => setSubmitterContact(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSubmitterContact(e.target.value)}
                   placeholder="e.g. 0803... or tunde@gmail.com"
                   className="w-full h-10 px-3 rounded-xl border border-border-default bg-[#FAFAF8] text-xs focus:bg-white focus:outline-none focus:border-brand-green"
                 />

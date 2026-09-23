@@ -325,7 +325,7 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
                     type="text"
                     required
                     value={rejectionReason}
-                    onChange={(e) => setRejectionReason(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRejectionReason(e.target.value)}
                     placeholder="e.g. Could not verify business affiliation with provided phone number"
                     className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
@@ -339,7 +339,7 @@ export function ClaimsModerationTable({ claims }: ClaimsModerationTableProps) {
                 <textarea
                   rows={3}
                   value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setAdminNotes(e.target.value)}
                   placeholder={
                     modalMode === 'request_info'
                       ? 'Specify what documentation or verification is needed from the manager...'

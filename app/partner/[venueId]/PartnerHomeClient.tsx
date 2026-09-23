@@ -94,7 +94,7 @@ export function PartnerHomeClient({
         {/* Information Freshness Monitor */}
         <InformationFreshnessCard 
           venue={venue} 
-          approvedPhotosCount={photos.filter(p => p.status === 'approved').length} 
+          approvedPhotosCount={photos.filter((p: VenuePhoto) => p.status === 'approved').length} 
         />
 
         {/* Direct WhatsApp Support */}

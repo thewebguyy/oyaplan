@@ -50,7 +50,7 @@ export default async function PartnerHomePage({ params }: Props) {
     getVenuePlanningInsights(venue.id),
   ]);
 
-  const approvedPhotos = photos.filter(p => p.status === 'approved').length;
+  const approvedPhotos = photos.filter((p: VenuePhoto) => p.status === 'approved').length;
   const health = calculateProfileHealth(venue, menuItems, approvedPhotos);
 
   return (

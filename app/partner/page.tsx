@@ -64,6 +64,7 @@ export default async function PartnerPortalIndexPage() {
   // If user manages exactly 1 venue, redirect directly to their partner home
   if (partnerVenues.length === 1 && partnerVenues[0]?.venue?.id) {
     redirect(`/partner/${partnerVenues[0].venue.id}`);
+    return null;
   }
 
   // If user manages multiple venues, show a switcher

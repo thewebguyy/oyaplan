@@ -25,6 +25,7 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
   const auth = await isAuthorizedAdmin();
   if (!auth.authorized) {
     redirect('/admin/login');
+    return null;
   }
 
   const { status = 'all' } = await searchParams;
