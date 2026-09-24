@@ -5,18 +5,13 @@ import Link from "next/link";
 import { 
   ArrowRight, 
   CheckCircle2, 
-  ShieldCheck, 
   Sparkles, 
   MessageSquare, 
   ChevronDown, 
   Clock, 
   Users, 
   Receipt, 
-  Search,
-  Eye,
-  TrendingUp,
-  Flame,
-  Award
+  Search 
 } from "lucide-react";
 import { PatternedBorder } from "@/components/business/PatternedBorder";
 import { OversizedHeroGraphic } from "@/components/business/OversizedHeroGraphic";
@@ -99,28 +94,6 @@ export function ForBusinessClient() {
                 </button>
               </Link>
             </div>
-
-            {/* Trust Micro-Copy */}
-            <p className="text-xs text-text-muted flex items-center gap-2 pt-1 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0" />
-              <span>Free forever to claim · Zero listing fees · Instant verification on WhatsApp</span>
-            </p>
-
-            {/* Scale Drop Metric Pills */}
-            <div className="pt-4 flex flex-wrap items-center gap-2 sm:gap-3">
-              <div className="px-3.5 py-1.5 bg-white/80 border border-border-default rounded-full text-xs font-bold text-midnight-lagoon flex items-center gap-1.5 shadow-2xs">
-                <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                <span>12,000+ Outings Planned</span>
-              </div>
-              <div className="px-3.5 py-1.5 bg-white/80 border border-border-default rounded-full text-xs font-bold text-midnight-lagoon flex items-center gap-1.5 shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>₦1.8B+ Squad Intent Tracked</span>
-              </div>
-              <div className="px-3.5 py-1.5 bg-white/80 border border-border-default rounded-full text-xs font-bold text-midnight-lagoon flex items-center gap-1.5 shadow-2xs">
-                <span className="text-amber-500">📍</span>
-                <span>250+ Lagos Spots Listed</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -139,7 +112,7 @@ export function ForBusinessClient() {
               Claim your venue in 3 steps
             </h2>
             <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
-              Zero paperwork. No waiting on web developers. Get real spending squads through your doors this weekend.
+              No 10-page forms or waiting around. 3 minutes to put your spot in the group chat before Friday.
             </p>
           </div>
 
@@ -156,7 +129,7 @@ export function ForBusinessClient() {
                   Find Your Spot
                 </h3>
                 <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                  Search our curated Lagos database for your venue — whether you run a rooftop lounge in Lekki, a dining spot in VI, or a beach club in Ilashe.
+                  Search our Lagos directory for your lounge, restaurant, or rooftop. If you&apos;re open in Lagos, your spot is probably already here.
                 </p>
               </div>
               <div className="pt-4 border-t border-border-default/50">
@@ -175,10 +148,10 @@ export function ForBusinessClient() {
                   02
                 </div>
                 <h3 className="text-xl font-bold text-midnight-lagoon">
-                  Take Control
+                  Set Your Real Numbers
                 </h3>
                 <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                  Verify ownership and lock in your latest menu, VAT, service charges, and corkage fees. Keep prices 100% accurate in 60 seconds from your phone.
+                  Claim your page and set your real numbers — cocktail prices, platters, corkage, VAT, and service charge. Zero surprises for guests.
                 </p>
               </div>
               <div className="pt-4 border-t border-border-default/50">
@@ -197,10 +170,10 @@ export function ForBusinessClient() {
                   03
                 </div>
                 <h3 className="text-xl font-bold text-midnight-lagoon">
-                  Host the Squad
+                  Host The Squad
                 </h3>
                 <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                  Get featured natively to thousands of weekend planners building itineraries within your budget bracket. Squads arrive pre-committed to spend.
+                  When squads budget for the weekend, they pick verified spots with clear pricing. They show up ready to spend, tabs paid.
                 </p>
               </div>
               <div className="pt-4 border-t border-border-default/50">
@@ -225,59 +198,59 @@ export function ForBusinessClient() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. THE 3 HOSPITALITY LEVERS (Why Top Lagos Spots Lock In)
+          3. THE REALITY (Why Top Lagos Spots Lock In)
       ───────────────────────────────────────────────────────────── */}
       <section id="why-oyaplan" className="py-16 sm:py-24 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-xl mx-auto">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-[#008751] text-[10px] font-black uppercase tracking-wider">
-              <span>Why OyaPlan Works</span>
+              <span>The Reality</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-midnight-lagoon tracking-tight">
-              Built for how Lagos actually goes out
+              People don&apos;t just browse OyaPlan. They pull up.
             </h2>
             <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-              No generic vanity metrics or fake follower counts. Just tools that fill your tables with spending guests.
+              Social media gives you saves and DMs. OyaPlan gets tables booked and tabs paid.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Lever 1 */}
+            {/* Card 1 */}
             <div className="p-8 rounded-3xl bg-white border border-border-default space-y-4 shadow-xs hover:border-brand-green/60 transition-all">
               <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
                 <Users className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-midnight-lagoon">
-                Pre-Committed Squad Spend
+                The Group Chat Decides Everything
               </h3>
               <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                Unlike casual Instagram scrollers who just DM &quot;send menu pls&quot;, OyaPlan users plan around confirmed budgets, squad sizes, and dates. They arrive ready to drop cash.
+                Before anyone calls a Bolt, the group chat is debating where to go and what it&apos;ll cost. When your prices are verified on OyaPlan, you&apos;re the spot they agree on in seconds.
               </p>
             </div>
 
-            {/* Lever 2 */}
+            {/* Card 2 */}
             <div className="p-8 rounded-3xl bg-white border border-border-default space-y-4 shadow-xs hover:border-brand-green/60 transition-all">
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center border border-emerald-200">
                 <Receipt className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-midnight-lagoon">
-                Kill The POS Bill Shock
+                Zero POS Drama
               </h3>
               <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                Nothing kills repeat visits like an unexpected 10% service charge or bottle minimum at checkout. Clear pricing upfront means guests order freely with zero billing drama.
+                Nothing ruins good vibes faster than guests fighting over surprise VAT or hidden service charges when the bill lands. Transparent prices mean people order freely, tip well, and come back.
               </p>
             </div>
 
-            {/* Lever 3 */}
+            {/* Card 3 */}
             <div className="p-8 rounded-3xl bg-white border border-border-default space-y-4 shadow-xs hover:border-brand-green/60 transition-all">
               <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-200">
                 <Clock className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-midnight-lagoon">
-                60-Second Menu Updates
+                Change Prices In 10 Seconds
               </h3>
               <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                Lagos inflation moves fast. Cocktails change, happy hour rotates. Update dishes, VAT, or temporary closing hours directly from your phone without waiting on web developers.
+                Added a new platter? Tweaked a cocktail price? Update it directly from your phone or WhatsApp. No waiting for someone to edit a website or reprint menus.
               </p>
             </div>
           </div>
