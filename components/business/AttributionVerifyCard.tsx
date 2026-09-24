@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { verifyVenueVisitAction, VerifyVisitResult, normalizePlanCode } from '@/lib/actions/venueAttributionActions';
+import { verifyVenueVisitAction, VerifyVisitResult } from '@/lib/actions/venueAttributionActions';
+import { normalizePlanCode } from '@/lib/utils/planCodeUtils';
 import { trackEvent } from '@/lib/analytics/trackClient';
 import { Users, CheckCircle2, AlertCircle, Loader2, QrCode, ShieldCheck, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
