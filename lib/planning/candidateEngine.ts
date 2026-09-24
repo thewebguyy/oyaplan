@@ -2,6 +2,7 @@ import { Spot } from '../types';
 import { CandidateEngine, PlanningContext, PlanningCandidate } from './types';
 import { isSpotInArea, getZoneForArea } from './utils';
 import { VIBE_EXPERIENCE_MAP } from '../constants/experiences';
+import { isVenueCurrentlyClosed } from './closureUtils';
 
 const CATEGORY_MAP: Record<string, string[]> = {
   "Eat and drink": ["restaurant", "bar", "cafe"],
@@ -24,6 +25,9 @@ export class DefaultCandidateEngine implements CandidateEngine {
     const filtered = spots.filter((spot) => {
       // Hard check: active spots only
       if (spot.active === false) return false;
+
+      // Hard check: exclude temporarily closed venues (pinnedSpotId exempt so caller sees closure state)
+      if (spot.id !== pinnedSpotId && isVenueCurrentlyClosed(spot)) return false;
 
       // Daypart Filter
       if (daypart && daypart !== "Any time") {

@@ -56,7 +56,7 @@ export async function createShareablePlan(plan: Plan, input: ForgeInput): Promis
         session_id: sessionId,
         group_id: input.groupId || null,
       })
-      .select('id')
+      .select('id, plan_code')
       .single();
 
     if (error) {
@@ -69,7 +69,7 @@ export async function createShareablePlan(plan: Plan, input: ForgeInput): Promis
       await SavedPlanService.savePlan(data.id).catch(console.error);
     }
 
-    return { success: true, id: data.id };
+    return { success: true, id: data.id, planCode: data.plan_code };
   } catch (e) {
     captureServerException(e);
     return { success: false, error: 'An unexpected error occurred' };

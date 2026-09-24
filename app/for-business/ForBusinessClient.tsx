@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { PatternedBorder } from "@/components/business/PatternedBorder";
 import { OversizedHeroGraphic } from "@/components/business/OversizedHeroGraphic";
+import { getBusinessWhatsAppUrl } from "@/lib/config/businessWhatsApp";
 
 interface FAQItem {
   question: string;
@@ -299,15 +300,31 @@ export function ForBusinessClient() {
                 </ul>
 
                 <div className="pt-2 flex items-center gap-4">
-                  <a
-                    href="https://wa.me/2348000000000?text=Hi%20OyaPlan%2C%20I%20own%20a%20venue%20in%20Lagos%20and%20want%20to%20learn%20more%20about%20OyaSpotlight%20placement."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-sm"
-                  >
-                    <span>Inquire About Spotlight on WhatsApp</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
+                  {(() => {
+                    const waUrl = getBusinessWhatsAppUrl('spotlight_inquiry');
+                    if (waUrl) {
+                      return (
+                        <a
+                          href={waUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-sm"
+                        >
+                          <span>Inquire About Spotlight on WhatsApp</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </a>
+                      );
+                    }
+                    return (
+                      <Link
+                        href="/business/claim"
+                        className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-sm"
+                      >
+                        <span>Claim Your Venue to Access Spotlight</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -437,15 +454,31 @@ export function ForBusinessClient() {
             </div>
 
             <div className="pt-2">
-              <a
-                href="https://wa.me/2348000000000?text=Hi%20OyaPlan%2C%20I%20own%20a%20venue%20in%20Lagos%20and%20want%20to%20claim%20my%20listing."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-brand-green hover:bg-[#007043] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all tap-feedback shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <MessageSquare className="w-4 h-4" />
-                <span>Message OyaPlan on WhatsApp</span>
-              </a>
+              {(() => {
+                const waUrl = getBusinessWhatsAppUrl('claim_support');
+                if (waUrl) {
+                  return (
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-brand-green hover:bg-[#007043] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all tap-feedback shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Message OyaPlan on WhatsApp</span>
+                    </a>
+                  );
+                }
+                return (
+                  <Link
+                    href="/business/claim"
+                    className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-brand-green hover:bg-[#007043] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all tap-feedback shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <span>Claim Your Listing Online</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -462,14 +495,20 @@ export function ForBusinessClient() {
           <Link href="/business/claim" className="hover:text-brand-green transition-colors">
             Claim Venue
           </Link>
-          <a
-            href="https://wa.me/2348000000000"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-brand-green transition-colors"
-          >
-            WhatsApp Support
-          </a>
+          {(() => {
+            const waUrl = getBusinessWhatsAppUrl('general_support');
+            if (!waUrl) return null;
+            return (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-brand-green transition-colors"
+              >
+                WhatsApp Support
+              </a>
+            );
+          })()}
           <Link href="/" className="hover:text-brand-green transition-colors">
             Outing Planner
           </Link>

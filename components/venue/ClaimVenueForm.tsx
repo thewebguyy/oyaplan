@@ -7,6 +7,7 @@ import { trackEvent } from '@/lib/analytics/trackClient';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { ShieldCheck, CheckCircle2, Loader2, ArrowRight, Store, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 
 interface ClaimVenueFormProps {
   venue: Venue;
@@ -103,14 +104,20 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
               Return to Venue Page
             </button>
           </Link>
-          <a
-            href="https://wa.me/2348000000000?text=Hi%20OyaPlan,%20I%20just%20claimed%20my%20venue"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto h-12 px-6 bg-[#EAFDF3] hover:bg-[#d6f9e4] text-[#008751] font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all"
-          >
-            <span>Message on WhatsApp</span>
-          </a>
+          {(() => {
+            const waUrl = getBusinessWhatsAppUrl('claim_support', { venueName: venue.name });
+            if (!waUrl) return null;
+            return (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto h-12 px-6 bg-[#EAFDF3] hover:bg-[#d6f9e4] text-[#008751] font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all"
+              >
+                <span>Message on WhatsApp</span>
+              </a>
+            );
+          })()}
         </div>
       </div>
     );
@@ -125,7 +132,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
             <Store className="w-4 h-4" />
           </div>
           <span className="type-ui-label text-xs font-black text-brand-green uppercase tracking-wider">
-            Supply Partnership
+            Venue Claim &amp; Verification
           </span>
         </div>
 

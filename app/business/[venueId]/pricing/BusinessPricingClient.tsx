@@ -11,6 +11,8 @@ import {
   type AddMenuItemInput,
 } from '@/lib/actions/partnerPricingActions';
 import { getVerificationText } from '@/lib/planning/presentation/decisionCardMapper';
+import { TablePolicyManager } from '@/components/business/TablePolicyManager';
+import { CelebrationRulesCard } from '@/components/business/CelebrationRulesCard';
 import {
   Plus,
   Edit2,
@@ -586,6 +588,25 @@ export function BusinessPricingClient({
           </div>
         </div>
       </form>
+
+      {/* Operational Table Policies */}
+      <TablePolicyManager
+        venueId={venue.id}
+        initialPolicies={venue.table_policies || []}
+        updatedAt={venue.table_policies_updated_at}
+      />
+
+      {/* Celebration & Corkage Rules */}
+      <CelebrationRulesCard
+        venueId={venue.id}
+        initialCakeFee={venue.cake_fee}
+        initialSpiritCorkageFee={venue.spirit_corkage_fee}
+        initialDecorFee={venue.decor_fee}
+        initialPhotoShootFee={venue.photo_shoot_fee}
+        initialCelebrationNotes={venue.celebration_notes}
+        status={venue.celebration_rules_status}
+        updatedAt={venue.celebration_rules_updated_at}
+      />
 
       {/* Outing Spend Confidence Explainer */}
       <div className="bg-[#FAF7F2] rounded-2xl border border-[#EAE4DC] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

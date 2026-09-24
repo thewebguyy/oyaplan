@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { Venue } from '@/lib/types';
 import { VenueImage } from '@/components/ui/VenueImage';
 import { TrustBadge } from '@/components/ui/trust-badge';
-import { Sparkles, ShieldCheck, Flag, ArrowRight, Store } from 'lucide-react';
+import { Sparkles, ShieldCheck, Flag, ArrowRight, Store, MessageSquare } from 'lucide-react';
 import { getVerificationText } from '@/lib/planning/presentation/decisionCardMapper';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 
 interface PublicVenueHeroProps {
   venue: Venue;
@@ -30,6 +31,19 @@ export function PublicVenueHero({
   const typicalSpendText = `₦${lowSpend.toLocaleString('en-NG')} – ₦${highSpend.toLocaleString('en-NG')} for 2`;
 
   const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&vibe=${encodeURIComponent(venue.vibe_tags?.[0] || 'dinner')}&fresh=true`;
+
+  const availabilityUrl = venue.contact_number
+    ? getBusinessWhatsAppUrl('availability_inquiry', {
+        venueName: venue.name,
+        customPhone: venue.contact_number,
+        availability: {
+          venueName: venue.name,
+          squadSize: 4,
+          date: 'This Weekend',
+          time: 'Evening',
+        },
+      })
+    : null;
 
   return (
     <div className="w-full bg-white border-b border-border-default">
@@ -111,17 +125,31 @@ export function PublicVenueHero({
               </p>
             </div>
 
-            {/* Primary Action */}
-            <Link href={forgeUrl} className="tap-feedback shrink-0">
-              <button className="w-full sm:w-auto h-12 px-6 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-sm uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer">
-                <Sparkles className="w-4 h-4 text-lasgidi-yellow" />
-                <span>Plan This Venue</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
+            {/* Actions */}
+            <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+              {availabilityUrl && (
+                <a
+                  href={availabilityUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto h-12 px-4 rounded-xl border border-border-default bg-white hover:bg-gray-50 text-xs font-bold text-text-secondary flex items-center justify-center gap-1.5 transition-colors tap-feedback shrink-0"
+                >
+                  <MessageSquare className="w-4 h-4 text-brand-green" />
+                  <span>Check Availability</span>
+                </a>
+              )}
+
+              <Link href={forgeUrl} className="tap-feedback shrink-0 w-full sm:w-auto">
+                <button className="w-full sm:w-auto h-12 px-6 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-sm uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer">
+                  <Sparkles className="w-4 h-4 text-lasgidi-yellow" />
+                  <span>Plan This Venue</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
           </div>
 
-          {/* Supply-side Claim Banner / Flag Incorrect */}
+          {/* Venue Claim & Verification / Flag Incorrect */}
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-t border-border-default/50">
             <div className="flex items-center gap-2 text-text-secondary font-medium">
               <Store className="w-4 h-4 text-brand-green shrink-0" />

@@ -118,6 +118,11 @@ export default function Footer() {
                   Give Beta Feedback
                 </Link>
               </li>
+              <li>
+                <Link href="/for-business" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                  OyaPlan for Business
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -128,6 +133,9 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} OyaPlan Technologies Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
+            <Link href="/for-business" className="text-sm text-white/40 hover:text-white transition-colors">
+              For Venues
+            </Link>
             <Link href="/privacy" className="text-sm text-white/40 hover:text-white transition-colors">
               Privacy
             </Link>

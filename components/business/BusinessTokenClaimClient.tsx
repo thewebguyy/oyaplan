@@ -22,6 +22,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import Link from 'next/link';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 
 interface BusinessTokenClaimClientProps {
   preview: InvitationPreview;
@@ -149,15 +150,21 @@ export function BusinessTokenClaimClient({
               View Public Listing
             </button>
           </Link>
-          <a
-            href={`https://wa.me/2348000000000?text=Hi%20OyaPlan,%20I%20just%20claimed%20my%20venue%20(${encodeURIComponent(preview.venueName)})`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto h-12 px-6 bg-[#EAFDF3] hover:bg-[#d5f9e3] text-[#008751] border border-[#A3F3C6] font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Chat on WhatsApp</span>
-          </a>
+          {(() => {
+            const waUrl = getBusinessWhatsAppUrl('claim_support', { venueName: preview.venueName });
+            if (!waUrl) return null;
+            return (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto h-12 px-6 bg-[#EAFDF3] hover:bg-[#d5f9e3] text-[#008751] border border-[#A3F3C6] font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Chat on WhatsApp</span>
+              </a>
+            );
+          })()}
         </div>
       </div>
     );

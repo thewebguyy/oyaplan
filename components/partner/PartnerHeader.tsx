@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Venue } from '@/lib/types';
 import { ShieldCheck, ExternalLink, MessageCircle } from 'lucide-react';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 
 interface PartnerHeaderProps {
   venue: Venue;
@@ -52,15 +53,21 @@ export function PartnerHeader({ venue }: PartnerHeaderProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <a
-              href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Operations,%20I%20need%20help%20with%20my%20venue"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#008751] bg-[#EAFDF3] hover:bg-[#daf8e7] transition-colors"
-            >
-              <MessageCircle className="w-3.5 h-3.5" />
-              <span>WhatsApp Support</span>
-            </a>
+            {(() => {
+              const waUrl = getBusinessWhatsAppUrl('general_support', { venueName: venue.name });
+              if (!waUrl) return null;
+              return (
+                <a
+                  href={waUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#008751] bg-[#EAFDF3] hover:bg-[#daf8e7] transition-colors"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>WhatsApp Support</span>
+                </a>
+              );
+            })()}
 
             <Link
               href={`/venue/${venue.id}`}

@@ -70,6 +70,10 @@ export type Spot = {
   things_to_know?: string[];
   secondary_experience?: string;
   food_type?: string;
+  is_temporarily_closed?: boolean;
+  temporary_closure_start?: string | null;
+  temporary_closure_end?: string | null;
+  temporary_closure_reason?: string | null;
 };
      
 export type ForgeInput = {
@@ -221,6 +225,7 @@ export type SharedPlanRow = {
   explanation?: PlanExplanation;
   saved_at?: string;
   transport_estimate?: TransportEstimate;
+  plan_code?: string;
   group_id?: string | null;
   group?: { id: string; name: string; emoji?: string } | Array<{ id: string; name: string; emoji?: string }> | null;
 };
@@ -268,7 +273,49 @@ export type VenueCategory =
   | 'cinema'
   | 'spa';
 
-export type SpotCategory = VenueCategory;
+export type SeatingType = 
+  | 'standard' 
+  | 'vip_booth' 
+  | 'cabana' 
+  | 'rooftop' 
+  | 'bar_counter' 
+  | 'outdoor_terrace' 
+  | 'private_dining_room';
+
+export type PolicyVerificationStatus = 'unverified' | 'owner_submitted' | 'verified';
+
+export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday' | 'all';
+
+export interface TablePolicy {
+  version: 1;
+  id: string;
+  name: string;
+  seating_type: SeatingType;
+  minimum_spend: number;
+  mandatory_bottle_policy: boolean;
+  bottle_count_minimum: number | null;
+  applicable_days: DayOfWeek[];
+  applicable_start_time: string | null; // "HH:MM" 24h
+  applicable_end_time: string | null;   // "HH:MM" 24h
+  min_squad_size: number | null;
+  max_squad_size: number | null;
+  notes: string | null;
+  verification_status: PolicyVerificationStatus;
+  last_verified_at: string | null;
+  source: 'owner_portal' | 'ops_verification' | 'receipt_audit';
+}
+
+export interface AttributedVisit {
+  id: string;
+  venue_id: string;
+  shared_plan_id: string;
+  plan_code: string;
+  squad_size: number;
+  estimated_total_cost: number | null;
+  confirmed_by: string | null;
+  confirmed_at: string;
+  created_at: string;
+}
 
 export interface Venue {
   id: string;
@@ -298,6 +345,19 @@ export interface Venue {
   entrance_fee?: number;
   reservation_fee?: number;
   weekend_pricing_notes?: string;
+
+  // Operational Table Policies (Version 1 contract)
+  table_policies?: TablePolicy[];
+  table_policies_updated_at?: string | null;
+
+  // Celebration & Corkage Rules (nullable: null = unknown, 0 = free, >0 = fee)
+  cake_fee?: number | null;
+  spirit_corkage_fee?: number | null;
+  decor_fee?: number | null;
+  photo_shoot_fee?: number | null;
+  celebration_notes?: string | null;
+  celebration_rules_status?: PolicyVerificationStatus;
+  celebration_rules_updated_at?: string | null;
 
   // Partner Relationship State
   partner_state: PartnerState;

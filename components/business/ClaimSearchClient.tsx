@@ -3,13 +3,26 @@
 import React, { useState, useMemo } from 'react';
 import { Spot } from '@/lib/types';
 import Link from 'next/link';
-import { Search, Building2, MapPin, ArrowRight, MessageSquare, ShieldCheck, AlertCircle } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
+import {
+  Search,
+  Building2,
+  MapPin,
+  ArrowRight,
+  MessageSquare,
+  Sparkles,
+  Link2,
+} from 'lucide-react';
 
 interface ClaimSearchClientProps {
   initialSpots: Spot[];
 }
 
 export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
+  const searchParams = useSearchParams();
+  const isFirstTime = searchParams?.get('firstTime') === 'true';
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredSpots = useMemo(() => {
@@ -17,35 +30,77 @@ export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
       return initialSpots.slice(0, 12);
     }
     const q = searchQuery.toLowerCase().trim();
-    return initialSpots.filter((s: Spot) => {
-      const matchName = s.name.toLowerCase().includes(q);
-      const matchArea = s.address?.toLowerCase().includes(q) || s.areas?.name?.toLowerCase().includes(q);
-      const matchCat = s.category?.toLowerCase().includes(q);
-      return matchName || matchArea || matchCat;
-    }).slice(0, 20);
+    return initialSpots
+      .filter((s: Spot) => {
+        const matchName = s.name.toLowerCase().includes(q);
+        const matchArea =
+          s.address?.toLowerCase().includes(q) ||
+          s.areas?.name?.toLowerCase().includes(q);
+        const matchCat = s.category?.toLowerCase().includes(q);
+        return matchName || matchArea || matchCat;
+      })
+      .slice(0, 20);
   }, [searchQuery, initialSpots]);
+
+  const addVenueWaUrl = getBusinessWhatsAppUrl('add_venue', { query: searchQuery.trim() });
+  const generalClaimWaUrl = getBusinessWhatsAppUrl('claim_support');
 
   return (
     <div className="space-y-8 max-w-2xl mx-auto">
+      {/* First-time welcoming state */}
+      {isFirstTime && (
+        <div className="p-4 bg-[#EAFDF3] border border-[#A3F3C6] rounded-2xl flex items-start gap-3 text-[#0A7C3F] text-xs leading-relaxed animate-in fade-in duration-200">
+          <Sparkles className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
+          <div>
+            <span className="font-bold text-midnight-lagoon block text-sm">
+              You&apos;re signed in! Now let&apos;s find your business.
+            </span>
+            <p className="mt-0.5 text-[#0A7C3F]">
+              Search below for your spot so you can connect it to your account and review what Lagos outing planners see.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Search Header */}
       <div className="space-y-3 text-center sm:text-left">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-[#008751] text-xs font-black uppercase tracking-wider">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Claim Your Listing</span>
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Venue Claim</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon uppercase tracking-tight">
-          Find Your Venue on OyaPlan
+          Find your business on OyaPlan
         </h1>
-        <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
-          Search for your restaurant, bar, lounge, or activity in Lagos to verify your business details and pricing.
+        <p className="text-xs sm:text-sm text-text-muted leading-relaxed max-w-xl">
+          Find your business, check how it appears on OyaPlan, and take control of the information customers use to plan a visit.
         </p>
+
+        {/* 4 simple steps */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-left">
+          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
+            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 1</span>
+            <span className="text-xs font-bold text-midnight-lagoon">Find your spot</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
+            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 2</span>
+            <span className="text-xs font-bold text-midnight-lagoon">See customer view</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
+            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 3</span>
+            <span className="text-xs font-bold text-midnight-lagoon">Submit claim</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
+            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 4</span>
+            <span className="text-xs font-bold text-midnight-lagoon">Control pricing</span>
+          </div>
+        </div>
       </div>
 
-      {/* Direct Invitation Callout */}
-      <div className="p-4 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-start gap-3 text-amber-900 text-xs leading-relaxed">
-        <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+      {/* Direct Invitation Callout - Friendly, helpful path */}
+      <div className="p-4 bg-[#FAF7F2] border border-[#EAE4DC] rounded-2xl flex items-start gap-3 text-text-secondary text-xs leading-relaxed">
+        <Link2 className="w-4 h-4 text-[#7A3E1D] shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold">Received an invitation link?</span> If OyaPlan sent you a direct link via WhatsApp or email (e.g. <span className="font-mono font-semibold">/business/claim/[token]</span>), please open that specific link so your listing is instantly matched.
+          <span className="font-bold text-midnight-lagoon">Have a direct invitation link?</span> If OyaPlan sent you a direct link via WhatsApp or email, open that link directly to connect to your pre-verified venue listing immediately.
         </div>
       </div>
 
@@ -72,19 +127,25 @@ export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
         {filteredSpots.length === 0 ? (
           <div className="bg-white rounded-2xl border border-border-default p-8 text-center space-y-3">
             <Building2 className="w-8 h-8 text-text-muted mx-auto stroke-[1.5]" />
-            <h3 className="font-bold text-sm text-midnight-lagoon uppercase">Venue not found</h3>
+            <h3 className="font-bold text-sm text-midnight-lagoon uppercase">Can&apos;t find your business?</h3>
             <p className="text-xs text-text-secondary max-w-sm mx-auto leading-relaxed">
-              We may not have created an initial listing for your venue yet. Contact our team and we will add your business promptly.
+              We may not have created an initial listing for your venue yet. Message us and we&apos;ll get it listed promptly.
             </p>
-            <a
-              href={`https://wa.me/2348000000000?text=Hi%20OyaPlan,%20I'd%20like%20to%20add%20my%20venue%20(${encodeURIComponent(searchQuery)})%20to%20OyaPlan`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#EAFDF3] text-[#008751] font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-[#d5f9e3] transition-colors"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Add Your Venue via WhatsApp</span>
-            </a>
+            {addVenueWaUrl ? (
+              <a
+                href={addVenueWaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#EAFDF3] text-[#008751] font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-[#d5f9e3] transition-colors"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Message Us on WhatsApp to Add It</span>
+              </a>
+            ) : (
+              <p className="text-xs text-text-muted font-medium">
+                Reach out to our Lagos ops team to create your spot listing.
+              </p>
+            )}
           </div>
         ) : (
           <div className="divide-y divide-gray-100 bg-white rounded-3xl border border-border-default overflow-hidden shadow-xs">
@@ -124,20 +185,22 @@ export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
       {/* WhatsApp Help Footer */}
       <div className="p-6 bg-surface-grey rounded-2xl border border-border-default/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <div>
-          <h4 className="font-bold text-xs uppercase text-midnight-lagoon">Don&apos;t see your venue?</h4>
+          <h4 className="font-bold text-xs uppercase text-midnight-lagoon">Can&apos;t find your business?</h4>
           <p className="text-xs text-text-muted mt-0.5">
-            Our team creates listings for Lagos spots daily. Send us a message and we&apos;ll get yours ready.
+            Message our Lagos team directly and we&apos;ll help get your spot listed and verified.
           </p>
         </div>
-        <a
-          href="https://wa.me/2348000000000?text=Hi%20OyaPlan,%20I%20manage%20a%20venue%20in%20Lagos%20and%20would%20like%20to%20claim%20my%20listing"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 h-10 px-4 bg-white border border-border-default text-midnight-lagoon font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-1.5 hover:bg-gray-50 transition-colors shadow-2xs"
-        >
-          <MessageSquare className="w-3.5 h-3.5 text-brand-green" />
-          <span>Chat on WhatsApp</span>
-        </a>
+        {generalClaimWaUrl && (
+          <a
+            href={generalClaimWaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 h-10 px-4 bg-white border border-border-default text-midnight-lagoon font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-1.5 hover:bg-gray-50 transition-colors shadow-2xs cursor-pointer"
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-brand-green" />
+            <span>Chat on WhatsApp</span>
+          </a>
+        )}
       </div>
     </div>
   );

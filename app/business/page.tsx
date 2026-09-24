@@ -76,10 +76,14 @@ export default async function BusinessIndexPage() {
           </div>
         </main>
       );
+    // Authenticated user with 0 linked venues: send directly to claim flow with first-time onboarding state
+    if (venues.length === 0) {
+      redirect('/business/claim?firstTime=true');
+      return null;
     }
   }
 
-  // Unauthenticated or 0 venues — send to the public front door
+  // Unauthenticated — send to the public front door
   redirect('/for-business');
   return null;
 }

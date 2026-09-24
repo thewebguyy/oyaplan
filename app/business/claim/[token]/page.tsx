@@ -5,6 +5,7 @@ import { BusinessTokenClaimClient } from '@/components/business/BusinessTokenCla
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, AlertCircle, MessageSquare, Search } from 'lucide-react';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,15 +79,21 @@ export default async function BusinessTokenClaimPage({ params }: Props) {
               </button>
             </Link>
 
-            <a
-              href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20my%20invitation%20link%20expired%20or%20failed."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-11 bg-[#EAFDF3] hover:bg-[#D5F9E4] text-[#0A7C3F] border border-[#A3F3C6] text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all tap-feedback"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Contact OyaPlan Operations</span>
-            </a>
+            {(() => {
+              const waUrl = getBusinessWhatsAppUrl('invitation_help');
+              if (!waUrl) return null;
+              return (
+                <a
+                  href={waUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-11 bg-[#EAFDF3] hover:bg-[#D5F9E4] text-[#0A7C3F] border border-[#A3F3C6] text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all tap-feedback"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Contact OyaPlan Operations</span>
+                </a>
+              );
+            })()}
           </div>
         </div>
       </main>

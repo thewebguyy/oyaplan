@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import Link from 'next/link';
+import { AttributionVerifyCard } from '@/components/business/AttributionVerifyCard';
 
 interface BusinessActivityClientProps {
   venue: Venue;
@@ -130,6 +131,9 @@ export function BusinessActivityClient({
         </div>
       </div>
 
+      {/* Squad Visit Verification */}
+      <AttributionVerifyCard venueId={venue.id} />
+
       {/* Spend Intent & Budget Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Estimated Spending Represented */}
@@ -144,7 +148,7 @@ export function BusinessActivityClient({
             </span>
           </div>
           <p className="text-xs text-text-muted leading-relaxed pt-1">
-            Total planned squad budget allocated across itineraries featuring your venue in this window. <strong className="font-semibold text-text-secondary">This represents consumer planning intent, not captured merchant revenue.</strong>
+            Total planned squad budget allocated across itineraries featuring your venue in this window. <strong className="font-semibold text-text-secondary">This represents squad planning budgets, not verified till receipts or captured spend.</strong>
           </p>
         </div>
 

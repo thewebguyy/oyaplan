@@ -12,6 +12,7 @@ import {
 } from '@/lib/types';
 import { ActionCenterCard } from '@/components/partner/ActionCenterCard';
 import { InformationFreshnessCard } from '@/components/partner/InformationFreshnessCard';
+import { AttributionVerifyCard } from '@/components/business/AttributionVerifyCard';
 import { ProfileHealthCard } from '@/components/partner/ProfileHealthCard';
 import { DemandActivityCard } from '@/components/partner/DemandActivityCard';
 import { PlanningInsightsCard } from '@/components/partner/PlanningInsightsCard';
@@ -50,7 +51,7 @@ export function BusinessHomeClient({
                 OyaPlan for Business
               </span>
               <span className="text-gray-300">·</span>
-              <span className="text-xs text-text-muted">Lagos Supply Network</span>
+              <span className="text-xs text-text-muted">Keep your venue listing accurate and up to date</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
@@ -96,14 +97,17 @@ export function BusinessHomeClient({
         baseRoute="business"
       />
 
-      {/* ── 3. Profile Completeness ── */}
-      <ProfileHealthCard health={health} venueId={venue.id} baseRoute="business" />
+      {/* ── 3. Squad Visit Verification (Attribution) ── */}
+      <AttributionVerifyCard venueId={venue.id} />
 
       {/* ── 4. Planning Activity: What OyaPlan is Doing for Your Business ── */}
       <DemandActivityCard activity={activity} />
 
-      {/* ── 5. Audience Insights: How Squads Plan Around You ── */}
+      {/* ── 4. Audience Insights: How Squads Plan Around You ── */}
       <PlanningInsightsCard insights={insights} />
+
+      {/* ── 5. Profile Completeness & Improvements ── */}
+      <ProfileHealthCard health={health} venueId={venue.id} baseRoute="business" />
     </div>
   );
 }

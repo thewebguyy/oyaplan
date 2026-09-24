@@ -58,7 +58,7 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
 
       <PageHeader
         title="Partner Claims Pipeline"
-        description="Review operator claims, audit business authorization, and manage venue supply relationships."
+        description="Review operator claims, audit business authorization, and manage verified venue partnerships."
       />
 
       {/* Pipeline Summary Cards */}

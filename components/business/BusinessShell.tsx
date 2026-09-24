@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Venue } from '@/lib/types';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 import {
   ShieldCheck,
   ExternalLink,
@@ -137,15 +138,21 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
 
             {/* Right: Quick actions */}
             <div className="flex items-center gap-2 shrink-0">
-              <a
-                href={`https://wa.me/2348000000000?text=Hi%20OyaPlan%20Operations%2C%20I%20have%20a%20question%20about%20${encodeURIComponent(venue.name)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#008751] bg-[#EAFDF3] hover:bg-[#D8F6E4] border border-[#A3F3C6]/60 transition-colors tap-feedback"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
-              </a>
+              {(() => {
+                const waUrl = getBusinessWhatsAppUrl('general_support', { venueName: venue.name });
+                if (!waUrl) return null;
+                return (
+                  <a
+                    href={waUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#008751] bg-[#EAFDF3] hover:bg-[#D8F6E4] border border-[#A3F3C6]/60 transition-colors tap-feedback"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </a>
+                );
+              })()}
 
               <Link
                 href={`/venue/${venue.id}`}

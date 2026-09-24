@@ -259,6 +259,9 @@ export async function deleteMenuItemAction(
   }
 }
 
+import { TablePolicy, PolicyVerificationStatus } from '@/lib/types';
+import { validateTablePolicies } from '@/lib/planning/tablePolicyValidation';
+
 export interface UpdateChargesInput {
   venueId: string;
   vatPct?: number;
@@ -268,6 +271,13 @@ export interface UpdateChargesInput {
   entranceFee?: number;
   reservationFee?: number;
   weekendPricingNotes?: string;
+
+  // Celebration & Corkage Rules (nullable: null = unknown, 0 = free, >0 = fee)
+  cakeFee?: number | null;
+  spiritCorkageFee?: number | null;
+  decorFee?: number | null;
+  photoShootFee?: number | null;
+  celebrationNotes?: string | null;
 }
 
 export async function updateStructuredChargesAction(
@@ -290,6 +300,13 @@ export async function updateStructuredChargesAction(
       entrance_fee?: number;
       reservation_fee?: number;
       weekend_pricing_notes?: string;
+      cake_fee?: number | null;
+      spirit_corkage_fee?: number | null;
+      decor_fee?: number | null;
+      photo_shoot_fee?: number | null;
+      celebration_notes?: string | null;
+      celebration_rules_status?: PolicyVerificationStatus;
+      celebration_rules_updated_at?: string;
     };
 
     const payload: StructuredChargesPayload = {};
@@ -300,6 +317,34 @@ export async function updateStructuredChargesAction(
     if (typeof input.entranceFee === 'number') payload.entrance_fee = Math.max(0, input.entranceFee);
     if (typeof input.reservationFee === 'number') payload.reservation_fee = Math.max(0, input.reservationFee);
     if (typeof input.weekendPricingNotes === 'string') payload.weekend_pricing_notes = input.weekendPricingNotes.trim();
+
+    let celebrationRulesChanged = false;
+
+    if (input.cakeFee !== undefined) {
+      payload.cake_fee = input.cakeFee === null ? null : Math.max(0, input.cakeFee);
+      celebrationRulesChanged = true;
+    }
+    if (input.spiritCorkageFee !== undefined) {
+      payload.spirit_corkage_fee = input.spiritCorkageFee === null ? null : Math.max(0, input.spiritCorkageFee);
+      celebrationRulesChanged = true;
+    }
+    if (input.decorFee !== undefined) {
+      payload.decor_fee = input.decorFee === null ? null : Math.max(0, input.decorFee);
+      celebrationRulesChanged = true;
+    }
+    if (input.photoShootFee !== undefined) {
+      payload.photo_shoot_fee = input.photoShootFee === null ? null : Math.max(0, input.photoShootFee);
+      celebrationRulesChanged = true;
+    }
+    if (input.celebrationNotes !== undefined) {
+      payload.celebration_notes = input.celebrationNotes === null ? null : input.celebrationNotes.trim();
+      celebrationRulesChanged = true;
+    }
+
+    if (celebrationRulesChanged) {
+      payload.celebration_rules_status = 'owner_submitted';
+      payload.celebration_rules_updated_at = new Date().toISOString();
+    }
 
     const { error } = await supabase
       .from('venues')
@@ -317,6 +362,56 @@ export async function updateStructuredChargesAction(
     return { success: true };
   } catch (err: unknown) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update charges' };
+  }
+}
+
+/**
+ * saveTablePoliciesAction
+ * Centralized server-side validation boundary for TablePolicy versioned domain contracts.
+ * Rejects malformed objects and unknown fields before database persistence.
+ */
+export async function saveTablePoliciesAction(
+  venueId: string,
+  policies: unknown
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (!venueId) return { success: false, error: 'Venue ID is required' };
+
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: 'Authentication required' };
+
+    const auth = await checkVenueAuthorization(venueId, user.id);
+    if (!auth.authorized) return { success: false, error: 'Unauthorized to modify policies for this venue' };
+
+    // Strict Centralized Validation
+    let validatedPolicies: TablePolicy[];
+    try {
+      validatedPolicies = validateTablePolicies(policies);
+    } catch (valErr: any) {
+      return { success: false, error: `Invalid table policy data: ${valErr.message}` };
+    }
+
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('venues')
+      .update({
+        table_policies: validatedPolicies,
+        table_policies_updated_at: now
+      })
+      .eq('id', venueId);
+
+    if (error) return { success: false, error: error.message };
+
+    revalidatePath(`/partner/${venueId}`);
+    revalidatePath(`/partner/${venueId}/pricing`);
+    revalidatePath(`/business/${venueId}`);
+    revalidatePath(`/business/${venueId}/pricing`);
+    revalidatePath(`/venue/${venueId}`);
+
+    return { success: true };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to save table policies' };
   }
 }
 

@@ -529,6 +529,64 @@ export const EventSchemas = {
     venue_id: z.string(),
     partner_state: z.string().optional(),
     version: z.literal('1.0')
+  }),
+  'business_portal_opened': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    page: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'pricing_updated_in_portal': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    item_id: z.string().optional(),
+    price: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+  'table_policy_updated_in_portal': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    policy_count: z.number(),
+    version: z.literal('1.0')
+  }),
+  'celebration_rules_updated_in_portal': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    has_cake_fee: z.boolean(),
+    has_corkage_fee: z.boolean(),
+    version: z.literal('1.0')
+  }),
+  'closure_updated_in_portal': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    is_closed: z.boolean(),
+    version: z.literal('1.0')
+  }),
+  'whatsapp_support_clicked': z.object({
+    category: z.literal('Operations'),
+    context: z.string(),
+    venue_id: z.string().optional(),
+    version: z.literal('1.0')
+  }),
+  'availability_whatsapp_clicked': z.object({
+    category: z.literal('Engagement'),
+    venue_id: z.string().optional(),
+    venue_name: z.string(),
+    squad_size: z.number().optional(),
+    version: z.literal('1.0')
+  }),
+  'visit_confirmation_attempted': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    plan_code: z.string(),
+    version: z.literal('1.0')
+  }),
+  'visit_confirmation_succeeded': z.object({
+    category: z.literal('Operations'),
+    venue_id: z.string(),
+    plan_code: z.string(),
+    already_confirmed: z.boolean(),
+    version: z.literal('1.0')
   })
 } as const;
 

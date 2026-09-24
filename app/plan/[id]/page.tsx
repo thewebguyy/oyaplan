@@ -23,6 +23,7 @@ import { SharedPlanRow, Spot } from "@/lib/types";
 import { TrendingUp } from "lucide-react";
 import RecommendationFeedback from "@/components/RecommendationFeedback";
 import SaveAsSquadPrompt from "@/components/squad/SaveAsSquadPrompt";
+import { PlanCodeSquadPass } from "@/components/plan/PlanCodeSquadPass";
 import RouteCard from "@/components/dossier/RouteCard";
 import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
 import { LocationService } from "@/lib/services/LocationService";
@@ -170,6 +171,15 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           hasFood={plan?.spot?.has_food}
           category={plan?.spot?.category}
           freshnessText={explanation.freshness}
+        />
+
+        {/* Squad Plan Pass (Attribution Code & WhatsApp Availability Check) */}
+        <PlanCodeSquadPass
+          planCode={plan?.plan_code || `OYA-${id.slice(0, 6).toUpperCase()}`}
+          venueName={plan?.spot?.name || "Venue"}
+          squadSize={plan?.squad_size || 1}
+          totalCost={plan?.total_cost || 0}
+          venuePhone={plan?.spot?.contact_number}
         />
 
         {/* Route Card & Map Directions */}
