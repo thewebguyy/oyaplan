@@ -204,15 +204,16 @@ export function isTimeInWindow(time: string, start: string | null, end: string |
   if (!start && !end) return true; // No time restriction
   if (start && !end) return time >= start;
   if (!start && end) return time <= end;
+  if (!start || !end) return true;
 
   // Both start and end provided
-  if (start <= end!) {
+  if (start <= end) {
     // Normal same-day window e.g. 12:00 -> 18:00
-    return time >= start && time <= end!;
+    return time >= start && time <= end;
   }
 
   // Overnight window e.g. 20:00 -> 03:00
-  return time >= start || time <= end!;
+  return time >= start || time <= end;
 }
 
 /**

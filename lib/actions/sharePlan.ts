@@ -27,7 +27,10 @@ const sharePlanSchema = z.object({
 import { SessionResolver } from '../services/identity/sessionResolver';
 import { SavedPlanService } from '../services/identity/savedPlanService';
 
-export async function createShareablePlan(plan: Plan, input: ForgeInput): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createShareablePlan(
+  plan: Plan,
+  input: ForgeInput
+): Promise<{ success: boolean; id?: string; planCode?: string; error?: string }> {
   try {
     const parseResult = sharePlanSchema.safeParse({ plan, input });
     if (!parseResult.success) {

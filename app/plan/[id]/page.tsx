@@ -1,6 +1,7 @@
 import { captureServerException } from "@/lib/sentry";
 import { getSharedPlanWithSpot } from "@/lib/queries/plans";
 import { getSpendSummaryForSpot } from "@/lib/queries/actualSpend";
+import { getPublicVenueById } from "@/lib/queries/partner";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -19,7 +20,7 @@ import { WhyWePickedThis } from "@/components/dossier/WhyWePickedThis";
 import { AREAS } from "@/lib/config/areas";
 import { TrustStatus } from "@/components/ui/trust-badge";
 import { BudgetFitStatus } from "@/components/ui/budget-fit-badge";
-import { SharedPlanRow, Spot } from "@/lib/types";
+import { SharedPlanRow, Spot, Venue } from "@/lib/types";
 import { TrendingUp } from "lucide-react";
 import RecommendationFeedback from "@/components/RecommendationFeedback";
 import SaveAsSquadPrompt from "@/components/squad/SaveAsSquadPrompt";
@@ -86,9 +87,15 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
   }
 
   let spendSummary: Awaited<ReturnType<typeof getSpendSummaryForSpot>> = null;
+  let venue: Venue | null = null;
   try {
     if (plan?.spot?.id) {
-      spendSummary = await getSpendSummaryForSpot(plan.spot.id);
+      const [spendRes, venueRes] = await Promise.all([
+        getSpendSummaryForSpot(plan.spot.id),
+        getPublicVenueById(plan.spot.id),
+      ]);
+      spendSummary = spendRes;
+      venue = venueRes.data;
     }
   } catch (e) {
     captureServerException(e);
@@ -179,7 +186,7 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           venueName={plan?.spot?.name || "Venue"}
           squadSize={plan?.squad_size || 1}
           totalCost={plan?.total_cost || 0}
-          venuePhone={plan?.spot?.contact_number}
+          venuePhone={venue?.contact_number}
         />
 
         {/* Route Card & Map Directions */}

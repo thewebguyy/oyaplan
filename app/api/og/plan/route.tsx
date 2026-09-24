@@ -4,11 +4,10 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
-// We need a lightweight supabase client for the edge
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Lightweight supabase client for the edge
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function GET(req: NextRequest) {
   try {
