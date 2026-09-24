@@ -27,15 +27,11 @@ export function BusinessActivityClient({
 }: BusinessActivityClientProps) {
   const [range, setRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
 
-  // Multiplier for display purposes based on selected range window
-  const multiplier = range === '7d' ? 0.35 : range === '30d' ? 1 : range === '90d' ? 2.4 : 3.2;
-  const plansCount = Math.round(activity.plansFeaturingCount * multiplier);
-  const sharesCount = Math.round(activity.plansSharedCount * multiplier);
-  const outingsCount = Math.round(activity.reportedOutingsCount * multiplier);
-
-  // Typical estimated group spend represented (e.g. ₦35,000 per squad outing)
-  const estimatedSpendRepresented = plansCount * 35000;
-  const reportedActualSpend = outingsCount * 38000;
+  // Real metrics directly from Supabase activity query
+  const plansCount = activity.plansFeaturingCount;
+  const sharesCount = activity.plansSharedCount;
+  const outingsCount = activity.reportedOutingsCount;
+  const hasData = activity.hasEnoughData || plansCount > 0 || sharesCount > 0 || outingsCount > 0;
 
   return (
     <div className="space-y-6">
@@ -136,35 +132,39 @@ export function BusinessActivityClient({
 
       {/* Spend Intent & Budget Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Estimated Spending Represented */}
+        {/* Planning Intent Status */}
         <div className="bg-white rounded-2xl border border-border-default p-5 sm:p-6 space-y-2 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-text-muted">Estimated Outing Spend Represented</span>
+            <span className="text-xs font-bold text-text-muted">Upstream Squad Intent</span>
             <Wallet className="w-4 h-4 text-brand-green" />
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-extrabold font-mono text-midnight-lagoon">
-              ₦{estimatedSpendRepresented.toLocaleString()}
+              {plansCount}
             </span>
+            <span className="text-xs text-text-muted font-medium">itineraries built</span>
           </div>
           <p className="text-xs text-text-muted leading-relaxed pt-1">
-            Total planned squad budget allocated across itineraries featuring your venue in this window. <strong className="font-semibold text-text-secondary">This represents squad planning budgets, not verified till receipts or captured spend.</strong>
+            Squad leads who evaluated your menu and pricing fit during their planning phase. <strong className="font-semibold text-text-secondary">Reflects active interest before departure, not estimated revenue.</strong>
           </p>
         </div>
 
         {/* Reported Actual Spending */}
         <div className="bg-white rounded-2xl border border-border-default p-5 sm:p-6 space-y-2 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-text-muted">Reported Actual Spend</span>
+            <span className="text-xs font-bold text-text-muted">Post-Visit Spend Feedback</span>
             <CheckCheck className="w-4 h-4 text-brand-green" />
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-extrabold font-mono text-brand-green">
-              ₦{reportedActualSpend.toLocaleString()}
+              {outingsCount}
             </span>
+            <span className="text-xs text-text-muted font-medium">verified bills</span>
           </div>
           <p className="text-xs text-text-muted leading-relaxed pt-1">
-            Spend verified through post-outing squad feedback. Planners report whether their actual bill matched what they expected before leaving home.
+            {outingsCount > 0
+              ? 'Confirmed squad visits with post-outing bill accuracy feedback submitted by planners.'
+              : "We're still gathering enough planning activity to show this insight. Once squads report their post-outing bills, actual visit data will appear here."}
           </p>
         </div>
       </div>

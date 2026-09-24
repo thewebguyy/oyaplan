@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { OyaHoursEditor } from '@/components/business/OyaHoursEditor';
 
 interface PartnerOnboardingClientProps {
   venue: Venue;
@@ -86,6 +87,7 @@ export function PartnerOnboardingClient({
   const [hasParking, setHasParking] = useState(venue.has_parking ?? true);
   const [dressCode, setDressCode] = useState(venue.dress_code || 'Casual');
   const [indoorOutdoor, setIndoorOutdoor] = useState(venue.indoor_outdoor || 'both');
+  const [openingHours, setOpeningHours] = useState<Record<string, string>>(venue.opening_hours || {});
 
   // Step 2: Charges & Taxing
   const [vatPct, setVatPct] = useState(venue.vat_pct ?? 7.5);
@@ -146,6 +148,7 @@ export function PartnerOnboardingClient({
         contact_number: contactNumber,
         contact_email: contactEmail,
         instagram_handle: instagramHandle,
+        opening_hours: openingHours,
         has_parking: hasParking,
         dress_code: dressCode,
         indoor_outdoor: indoorOutdoor,
@@ -466,6 +469,15 @@ export function PartnerOnboardingClient({
                     <option value="Beachwear / Resort">Beachwear / Relaxed</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Operating Hours Editor */}
+              <div className="pt-2">
+                <OyaHoursEditor
+                  initialHours={openingHours}
+                  onChange={setOpeningHours}
+                  disabled={isSaving}
+                />
               </div>
             </div>
 

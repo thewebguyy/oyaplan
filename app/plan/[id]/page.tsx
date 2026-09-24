@@ -281,7 +281,7 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
 
         {/* New Reassurance Modules */}
         <WhyWePickedThis plan={plan!} />
-        <BeforeYouGo />
+        <BeforeYouGo venue={venue} isCrossWater={plan?.transport_estimate?.isCrossWater} />
 
         {/* Spend Accuracy Badge — only when we have 5+ reports */}
         {spendSummary && spendSummary.count >= 5 && (

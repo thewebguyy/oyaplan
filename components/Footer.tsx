@@ -82,12 +82,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/explore/lekki" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/explore/lekki-phase-1" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
                   Lekki
                 </Link>
               </li>
               <li>
-                <Link href="/explore/victoria-island" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/explore/vi" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
                   Victoria Island
                 </Link>
               </li>
@@ -121,6 +121,11 @@ export default function Footer() {
               <li>
                 <Link href="/for-business" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
                   OyaPlan for Business
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                  About OyaPlan
                 </Link>
               </li>
             </ul>

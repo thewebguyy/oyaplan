@@ -1,6 +1,6 @@
 import React from 'react';
 import { Venue } from '@/lib/types';
-import { Clock, MapPin, Car, Shirt, Phone, Calendar, AtSign } from 'lucide-react';
+import { Clock, MapPin, Car, Shirt, Phone, Calendar, AtSign, Navigation } from 'lucide-react';
 
 interface PublicOverviewSectionProps {
   venue: Venue;
@@ -9,12 +9,24 @@ interface PublicOverviewSectionProps {
 export function PublicOverviewSection({ venue }: PublicOverviewSectionProps) {
   const openingHours = venue.opening_hours || {};
   const hasHours = Object.keys(openingHours).length > 0;
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.name}, ${venue.address}, Lagos`)}`;
 
   return (
     <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-8 space-y-6 shadow-xs">
-      <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon uppercase tracking-tight">
-        Overview &amp; Operations
-      </h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon uppercase tracking-tight">
+          Overview &amp; Operations
+        </h2>
+        <a
+          href={mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-green hover:underline tap-feedback self-start sm:self-auto"
+        >
+          <Navigation className="w-3.5 h-3.5" />
+          <span>Get Directions (Google Maps) →</span>
+        </a>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Column: Hours */}
@@ -103,9 +115,27 @@ export function PublicOverviewSection({ venue }: PublicOverviewSectionProps) {
                 )}
                 <span>Contact</span>
               </div>
-              <p className="font-bold text-text-primary truncate">
-                {venue.instagram_handle ? `@${venue.instagram_handle.replace('@', '')}` : (venue.contact_number || 'Available via OyaPlan')}
-              </p>
+              {venue.instagram_handle ? (
+                <a
+                  href={`https://instagram.com/${venue.instagram_handle.replace('@', '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-brand-green hover:underline truncate block"
+                >
+                  @{venue.instagram_handle.replace('@', '')}
+                </a>
+              ) : venue.contact_number ? (
+                <a
+                  href={`tel:${venue.contact_number.replace(/\s+/g, '')}`}
+                  className="font-bold text-brand-green hover:underline truncate block"
+                >
+                  {venue.contact_number}
+                </a>
+              ) : (
+                <p className="font-bold text-text-primary truncate">
+                  Available via OyaPlan
+                </p>
+              )}
             </div>
           </div>
 
