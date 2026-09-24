@@ -16,8 +16,8 @@ export function AppMainContent({ children }: { children: React.ReactNode }) {
   }
 
   if (isPublicBusiness) {
-    // 64px business header, no consumer mobile bottom nav
-    return <div className="pt-16 pb-0">{children}</div>;
+    // Floating pill business navbar, no consumer mobile bottom nav
+    return <div className="pt-16 sm:pt-20 pb-0">{children}</div>;
   }
 
   // Consumer pages: 56px user nav + 64px mobile bottom nav on mobile

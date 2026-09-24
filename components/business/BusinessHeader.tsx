@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Compass, Menu, X, MessageSquare } from "lucide-react";
+import { ArrowRight, Compass, Menu, X, MessageSquare, Sparkles } from "lucide-react";
 
 export function BusinessHeader() {
   const pathname = usePathname();
@@ -13,148 +13,160 @@ export function BusinessHeader() {
   const isClaimPage = pathname?.startsWith("/business/claim");
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-border-default z-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
-        {/* Left: Brand + Business Identifier */}
-        <div className="flex items-center gap-3">
-          <Link href="/for-business" className="flex items-center gap-2.5 tap-feedback">
+    <>
+      {/* ── Floating Pill Container ── */}
+      <header className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl bg-white/90 backdrop-blur-xl border border-[#EAE4DC] shadow-[0_10px_35px_rgba(0,0,0,0.08)] px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full flex items-center justify-between transition-all">
+        {/* Left: Brand + Business Capsule */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <Link href="/for-business" className="flex items-center gap-2 tap-feedback">
             <Image
               src="/logo.png"
               alt="OyaPlan"
               width={610}
               height={143}
-              className="h-6 w-auto object-contain shrink-0"
+              className="h-5 sm:h-6 w-auto object-contain shrink-0"
               priority
             />
-            <span className="text-[10px] font-black text-brand-green uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#EAFDF3] border border-[#A3F3C6]">
+            <span className="text-[9px] sm:text-[10px] font-black text-brand-green uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#EAFDF3] border border-[#A3F3C6]">
               Business
             </span>
           </Link>
+        </div>
 
-          {/* Context Switcher back to User Outing Planner */}
-          <span className="hidden md:inline-block text-border-default">|</span>
+        {/* Center: Playbook Navigation Anchors (Desktop) */}
+        {!isClaimPage && (
+          <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold text-text-secondary">
+            <a
+              href="#why-oyaplan"
+              className="px-3 py-1.5 rounded-full hover:text-midnight-lagoon hover:bg-[#FAF7F2] transition-colors"
+            >
+              Why OyaPlan
+            </a>
+            <a
+              href="#how-it-works"
+              className="px-3 py-1.5 rounded-full hover:text-midnight-lagoon hover:bg-[#FAF7F2] transition-colors"
+            >
+              How It Works
+            </a>
+            <a
+              href="#spotlight"
+              className="px-3 py-1.5 rounded-full hover:text-midnight-lagoon hover:bg-[#FAF7F2] transition-colors flex items-center gap-1"
+            >
+              <Sparkles className="w-3 h-3 text-amber-500 fill-amber-500" />
+              <span>Spotlight</span>
+            </a>
+            <a
+              href="#faq"
+              className="px-3 py-1.5 rounded-full hover:text-midnight-lagoon hover:bg-[#FAF7F2] transition-colors"
+            >
+              FAQ
+            </a>
+          </nav>
+        )}
+
+        {/* Right Actions: Switch to Planner + Login + Claim Button */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/"
-            className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-text-secondary hover:text-brand-green transition-colors px-2 py-1 rounded-lg hover:bg-surface-grey tap-feedback"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-text-muted hover:text-brand-green px-2.5 py-1.5 rounded-full hover:bg-[#FAF7F2] transition-colors tap-feedback"
             title="Switch to Outing Planner"
           >
             <Compass className="w-3.5 h-3.5 text-brand-green" />
-            <span>Outing Planner</span>
+            <span className="hidden md:inline">Planner</span>
           </Link>
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-4">
-          <Link
-            href="/for-business"
-            className={`text-xs font-semibold transition-colors px-2.5 py-1.5 rounded-lg ${
-              pathname === "/for-business"
-                ? "text-brand-green bg-[#EAFDF3]"
-                : "text-text-secondary hover:text-midnight-lagoon hover:bg-surface-grey"
-            }`}
-          >
-            Overview
-          </Link>
-
-          <a
-            href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20I%20have%20a%20question%20about%20listing%20my%20venue."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-semibold text-text-secondary hover:text-midnight-lagoon hover:bg-surface-grey transition-colors px-2.5 py-1.5 rounded-lg flex items-center gap-1.5"
-          >
-            <MessageSquare className="w-3.5 h-3.5 text-[#008751]" />
-            <span>Support</span>
-          </a>
 
           <Link
             href="/account?next=/business"
-            className="text-xs font-semibold text-text-secondary hover:text-midnight-lagoon px-3 py-2 rounded-xl transition-colors"
+            className="hidden sm:inline-block text-xs font-semibold text-text-secondary hover:text-midnight-lagoon px-2.5 py-1.5 rounded-full transition-colors"
           >
-            Sign In
+            Partner Login
           </Link>
 
           {!isClaimPage && (
             <Link
               href="/business/claim"
-              className="h-9 px-4 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer tap-feedback"
+              className="h-8 sm:h-9 px-3.5 sm:px-4 bg-brand-green hover:bg-[#007043] text-white text-[11px] sm:text-xs font-bold rounded-full flex items-center gap-1.5 transition-all shadow-xs cursor-pointer tap-feedback"
             >
-              <span>Claim Business</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          )}
-        </nav>
-
-        {/* Mobile Actions & Toggle */}
-        <div className="flex md:hidden items-center gap-2">
-          {!isClaimPage && (
-            <Link
-              href="/business/claim"
-              className="h-8 px-3 bg-brand-green hover:bg-[#007043] text-white text-[11px] font-bold rounded-lg flex items-center gap-1 transition-all shadow-xs tap-feedback"
-            >
-              <span>Claim</span>
-              <ArrowRight className="w-3 h-3" />
+              <span>Claim Venue</span>
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </Link>
           )}
 
+          {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-midnight-lagoon hover:bg-surface-grey rounded-lg transition-colors tap-feedback"
+            className="lg:hidden p-1.5 sm:p-2 text-midnight-lagoon hover:bg-surface-grey rounded-full transition-colors tap-feedback"
             aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Drawer Menu */}
+      {/* ── Mobile Floating Drawer ── */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-border-default bg-white px-4 py-4 space-y-3 shadow-lg animate-in slide-in-from-top duration-200">
+        <div className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md bg-white/95 backdrop-blur-2xl border border-[#EAE4DC] rounded-3xl p-4 shadow-xl space-y-2 lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="space-y-1">
-            <Link
-              href="/for-business"
+            <a
+              href="#why-oyaplan"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-xl text-xs font-bold text-midnight-lagoon hover:bg-surface-grey"
+              className="block px-3.5 py-2.5 rounded-xl text-xs font-bold text-midnight-lagoon hover:bg-surface-grey"
             >
-              Business Overview
-            </Link>
-            <Link
-              href="/business/claim"
+              Why OyaPlan
+            </a>
+            <a
+              href="#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-xl text-xs font-bold text-midnight-lagoon hover:bg-surface-grey"
+              className="block px-3.5 py-2.5 rounded-xl text-xs font-bold text-midnight-lagoon hover:bg-surface-grey"
             >
-              Claim Your Venue
-            </Link>
+              How It Works
+            </a>
+            <a
+              href="#spotlight"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-midnight-lagoon hover:bg-surface-grey"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span>OyaSpotlight (Premium)</span>
+            </a>
+            <a
+              href="#faq"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3.5 py-2.5 rounded-xl text-xs font-bold text-midnight-lagoon hover:bg-surface-grey"
+            >
+              Frequently Asked Questions
+            </a>
+          </div>
+
+          <div className="pt-2 border-t border-border-default/60 space-y-1">
             <Link
               href="/account?next=/business"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-xl text-xs font-bold text-midnight-lagoon hover:bg-surface-grey"
+              className="block px-3.5 py-2 rounded-xl text-xs font-semibold text-text-secondary hover:bg-surface-grey"
             >
-              Sign In to Business Portal
+              Partner Login
+            </Link>
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-brand-green hover:bg-[#EAFDF3]"
+            >
+              <Compass className="w-4 h-4 text-brand-green" />
+              <span>Switch to Outing Planner</span>
             </Link>
             <a
               href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20I%20have%20a%20question%20about%20listing%20my%20venue."
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-[#008751] hover:bg-[#EAFDF3]"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-[#008751] hover:bg-[#EAFDF3]"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>WhatsApp Support</span>
+              <span>Chat on WhatsApp</span>
             </a>
-          </div>
-
-          <div className="pt-2 border-t border-border-default">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-text-secondary hover:bg-surface-grey"
-            >
-              <Compass className="w-4 h-4 text-brand-green" />
-              <span>Switch to Outing Planner</span>
-            </Link>
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
