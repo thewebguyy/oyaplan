@@ -273,6 +273,8 @@ export type VenueCategory =
   | 'cinema'
   | 'spa';
 
+export type SpotCategory = VenueCategory;
+
 export type SeatingType = 
   | 'standard' 
   | 'vip_booth' 
