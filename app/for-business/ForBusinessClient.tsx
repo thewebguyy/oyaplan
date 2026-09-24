@@ -63,10 +63,11 @@ export function ForBusinessClient() {
 
           {/* Left Hero Content */}
           <div className="max-w-2xl space-y-6 relative z-10 text-left">
-            {/* Pill Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-[#008751] text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-[#008751] animate-pulse" />
-              <span>For Lagos Restaurants, Lounges & Beach Clubs</span>
+            {/* Clean Editorial Eyebrow */}
+            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white border border-[#EAE4DC] text-xs shadow-2xs">
+              <span className="font-bold text-midnight-lagoon text-[11px] tracking-tight">OyaPlan for Business</span>
+              <span className="text-gray-300">/</span>
+              <span className="text-[11px] text-text-muted">For restaurants, lounges & beach clubs</span>
             </div>
 
             {/* Massive Benefit-Driven Headline */}
@@ -262,93 +263,96 @@ export function ForBusinessClient() {
       ───────────────────────────────────────────────────────────── */}
       <section id="spotlight" className="py-16 sm:py-24 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="relative rounded-[32px] bg-[#07150E] text-white p-8 sm:p-14 border border-[#008751]/40 overflow-hidden shadow-2xl">
+          <div className="relative rounded-3xl bg-[#0B1E14] text-white p-8 sm:p-12 border border-[#1B3828] overflow-hidden shadow-xl">
             {/* Patterned Accent on Top Lip */}
-            <PatternedBorder className="absolute top-0 left-0 right-0 opacity-80" />
+            <PatternedBorder className="absolute top-0 left-0 right-0 opacity-40" />
 
-            {/* Ambient Background Glows */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[#008751]/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 space-y-8">
-              {/* Header Badge & Title */}
-              <div className="space-y-4 max-w-2xl">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#008751]/30 border border-[#A3F3C6]/40 text-[#A3F3C6] text-[11px] font-black uppercase tracking-wider">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 pt-2">
+              {/* Left Column: Editorial Value Proposition */}
+              <div className="lg:col-span-7 space-y-5 text-left">
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-amber-400 uppercase">
                   <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                  <span>OyaSpotlight · Premium Visibility Tier</span>
+                  <span>OyaSpotlight · Premium Placement</span>
                 </div>
 
-                <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-                  Own the Top Pick in Squad Outing Plans
+                <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                  Be the first spot the group chat agrees on.
                 </h2>
 
-                <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-normal">
-                  Modeled for Lagos’ premier lounges and dining destinations. When squads ask OyaPlan to build an itinerary with a budget matching your space, Spotlight venues are pinned as the #1 verified recommendation.
+                <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
+                  When squads build outing plans with a budget matching your space, Spotlight venues are recommended first. Real intent from ready-to-spend groups.
                 </p>
-              </div>
 
-              {/* 4 Spotlight Perks Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2 backdrop-blur-sm">
-                  <div className="w-9 h-9 rounded-xl bg-[#008751]/40 text-[#A3F3C6] flex items-center justify-center font-bold text-sm">
-                    👑
-                  </div>
-                  <h4 className="font-bold text-sm text-white">Algorithm Top Pick</h4>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Priority placement for squads searching your neighborhood and spend range.
-                  </p>
-                </div>
+                <ul className="space-y-3 pt-1">
+                  <li className="flex items-start gap-3 text-xs sm:text-sm text-gray-300">
+                    <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
+                    <span><strong className="text-white font-semibold">Priority algorithm placement</strong> — Top-ranked recommendation for relevant vibes and spend brackets.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-xs sm:text-sm text-gray-300">
+                    <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
+                    <span><strong className="text-white font-semibold">Verified Spotlight emblem</strong> — Distinct trust marker that speeds up group consensus.</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-xs sm:text-sm text-gray-300">
+                    <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
+                    <span><strong className="text-white font-semibold">Weekend demand signals</strong> — Track how many squads are actively planning outings in your zone.</span>
+                  </li>
+                </ul>
 
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2 backdrop-blur-sm">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">
-                    🎖️
-                  </div>
-                  <h4 className="font-bold text-sm text-white">Gold Verified Emblem</h4>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Exclusive trust badge that builds instant consensus in the group chat.
-                  </p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2 backdrop-blur-sm">
-                  <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm">
-                    📊
-                  </div>
-                  <h4 className="font-bold text-sm text-white">Squad Demand Heatmap</h4>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Live visibility into how many groups are planning outings in your zone this weekend.
-                  </p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2 backdrop-blur-sm">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
-                    💬
-                  </div>
-                  <h4 className="font-bold text-sm text-white">WhatsApp Concierge</h4>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Direct line to our Lagos operations team for instant flyer & menu updates.
-                  </p>
+                <div className="pt-2 flex items-center gap-4">
+                  <a
+                    href="https://wa.me/2348000000000?text=Hi%20OyaPlan%2C%20I%20own%20a%20venue%20in%20Lagos%20and%20want%20to%20learn%20more%20about%20OyaSpotlight%20placement."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-sm"
+                  >
+                    <span>Inquire About Spotlight on WhatsApp</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
 
-              {/* Bottom Spotlight Callout */}
-              <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-white/10">
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                    Limited to 5 venues per neighborhood
-                  </span>
-                  <p className="text-xs text-gray-400">
-                    Spots are curated to maintain high intent for planners.
-                  </p>
+              {/* Right Column: Tangible UI Specimen Card */}
+              <div className="lg:col-span-5">
+                <div className="bg-[#142B1F] border border-[#234B35] rounded-2xl p-5 sm:p-6 space-y-4 shadow-lg text-left">
+                  {/* Top Specimen Badge */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-amber-300 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 fill-amber-300" />
+                      Top Pick for Friday
+                    </span>
+                    <span className="text-[10px] font-semibold text-gray-400">Squad of 6</span>
+                  </div>
+
+                  {/* Venue Specimen Header */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-white">The House</h3>
+                      <span className="text-[10px] font-semibold bg-[#EAFDF3] text-[#0A7C3F] px-1.5 py-0.5 rounded">Verified</span>
+                    </div>
+                    <p className="text-xs text-gray-400">Victoria Island · Lounge & Dining</p>
+                  </div>
+
+                  {/* Spend Breakdown Box */}
+                  <div className="p-3 bg-[#0B1A12] rounded-xl border border-[#1B3828] space-y-1.5 font-mono text-[11px]">
+                    <div className="flex justify-between text-gray-400">
+                      <span>Estimated Spend</span>
+                      <span className="text-white font-bold font-sans">~₦22,000 / person</span>
+                    </div>
+                    <div className="flex justify-between text-gray-500 text-[10px]">
+                      <span>Cocktails + Small Chops</span>
+                      <span>VAT & Service Included</span>
+                    </div>
+                  </div>
+
+                  {/* Consensus Signal */}
+                  <div className="pt-1 flex items-center justify-between text-[11px] text-gray-300 border-t border-white/5">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>Group chat consensus</span>
+                    </span>
+                    <span className="font-bold text-emerald-400">6 of 6 voted Yes</span>
+                  </div>
                 </div>
-                <a
-                  href="https://wa.me/2348000000000?text=Hi%20OyaPlan%2C%20I%20own%20a%20venue%20in%20Lagos%20and%20want%20to%20learn%20more%20about%20OyaSpotlight%20placement."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-black uppercase tracking-wider rounded-xl inline-flex items-center gap-2 transition-all tap-feedback shrink-0"
-                >
-                  <span>Inquire About Spotlight</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </a>
               </div>
             </div>
           </div>
@@ -440,7 +444,7 @@ export function ForBusinessClient() {
                 className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-brand-green hover:bg-[#007043] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all tap-feedback shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               >
                 <MessageSquare className="w-4 h-4" />
-                <span>Message Lagos Ops on WhatsApp</span>
+                <span>Message OyaPlan on WhatsApp</span>
               </a>
             </div>
           </div>
@@ -477,7 +481,7 @@ export function ForBusinessClient() {
           </Link>
         </div>
         <p className="text-xs text-text-muted">
-          © {new Date().getFullYear()} OyaPlan for Business · Lagos, Nigeria · Built for the venues that power Lagos nightlife and dining.
+          © {new Date().getFullYear()} OyaPlan · Find where to go. Know what it&apos;ll cost. · Lagos, Nigeria
         </p>
       </footer>
     </div>
