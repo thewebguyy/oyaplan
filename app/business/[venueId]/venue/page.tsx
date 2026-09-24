@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ venueId: string }>;
+  searchParams?: Promise<{ step?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -18,8 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function BusinessVenuePage({ params }: Props) {
+export default async function BusinessVenuePage({ params, searchParams }: Props) {
   const { venueId } = await params;
+  const sp = searchParams ? await searchParams : undefined;
+  const initialStep = sp?.step ? Math.min(Math.max(parseInt(sp.step, 10) || 1, 1), 4) : 1;
   const identity = await SessionResolver.resolveIdentity();
 
   if (identity.type !== 'authenticated' || !identity.profile) {
@@ -46,6 +49,7 @@ export default async function BusinessVenuePage({ params }: Props) {
         venue={venue}
         initialMenuItems={menuItems}
         initialPhotos={photos}
+        initialStep={initialStep}
       />
     </div>
   );

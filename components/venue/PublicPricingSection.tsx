@@ -1,7 +1,7 @@
 import React from 'react';
 import { Venue, MenuItem } from '@/lib/types';
 import { getVerificationText } from '@/lib/planning/presentation/decisionCardMapper';
-import { ShieldCheck, Info, Tag } from 'lucide-react';
+import { ShieldCheck, Info, Tag, PartyPopper, Layers } from 'lucide-react';
 
 interface PublicPricingSectionProps {
   venue: Venue;
@@ -173,6 +173,100 @@ export function PublicPricingSection({ venue, menuItems }: PublicPricingSectionP
               <span className="font-bold">Weekend / Event Notes:</span> {venue.weekend_pricing_notes}
             </p>
           )}
+        </div>
+      )}
+
+      {/* Celebration & Corkage Rules */}
+      {(venue.cake_fee != null || venue.spirit_corkage_fee != null || venue.decor_fee != null || venue.photo_shoot_fee != null || venue.celebration_notes) && (
+        <div className="bg-[#FAF7F2] border border-[#EAE4DC] rounded-2xl p-4 sm:p-5 space-y-3">
+          <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-midnight-lagoon">
+            <PartyPopper className="w-4 h-4 text-brand-green" />
+            <span>Celebrations &amp; Corkage Policies</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            {venue.cake_fee != null && (
+              <div className="p-3 bg-white rounded-xl border border-border-default/60">
+                <span className="text-text-muted block">Cake Fee</span>
+                <span className="font-bold text-text-primary text-sm">
+                  {venue.cake_fee === 0 ? "Allowed (Free)" : `₦${venue.cake_fee.toLocaleString('en-NG')}`}
+                </span>
+              </div>
+            )}
+
+            {venue.spirit_corkage_fee != null && (
+              <div className="p-3 bg-white rounded-xl border border-border-default/60">
+                <span className="text-text-muted block">Spirit Corkage</span>
+                <span className="font-bold text-text-primary text-sm">
+                  {venue.spirit_corkage_fee === 0 ? "Allowed (Free)" : `₦${venue.spirit_corkage_fee.toLocaleString('en-NG')}`}
+                </span>
+              </div>
+            )}
+
+            {venue.decor_fee != null && (
+              <div className="p-3 bg-white rounded-xl border border-border-default/60">
+                <span className="text-text-muted block">Decor Setup</span>
+                <span className="font-bold text-text-primary text-sm">
+                  {venue.decor_fee === 0 ? "No fee" : `₦${venue.decor_fee.toLocaleString('en-NG')}`}
+                </span>
+              </div>
+            )}
+
+            {venue.photo_shoot_fee != null && (
+              <div className="p-3 bg-white rounded-xl border border-border-default/60">
+                <span className="text-text-muted block">Photo Shoot</span>
+                <span className="font-bold text-text-primary text-sm">
+                  {venue.photo_shoot_fee === 0 ? "No fee" : `₦${venue.photo_shoot_fee.toLocaleString('en-NG')}`}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {venue.celebration_notes && (
+            <p className="text-xs text-text-secondary bg-white p-3 rounded-xl border border-border-default/60">
+              <span className="font-bold">Celebration Policy:</span> {venue.celebration_notes}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Table & Seating Policies */}
+      {Boolean(venue.table_policies && venue.table_policies.length > 0) && (
+        <div className="bg-[#FAF7F2] border border-[#EAE4DC] rounded-2xl p-4 sm:p-5 space-y-3">
+          <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-midnight-lagoon">
+            <Layers className="w-4 h-4 text-brand-green" />
+            <span>Table &amp; Seating Policies</span>
+          </div>
+
+          <div className="space-y-2">
+            {venue.table_policies?.map((policy) => (
+              <div key={policy.id} className="p-3 bg-white rounded-xl border border-border-default/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div>
+                  <span className="font-bold text-text-primary text-sm block">
+                    {policy.name || policy.seating_type.replace(/_/g, ' ').toUpperCase()}
+                  </span>
+                  <span className="text-text-muted text-[11px]">
+                    {policy.applicable_days.includes('all') ? 'All days' : policy.applicable_days.join(', ')}
+                    {policy.applicable_start_time ? ` • ${policy.applicable_start_time} - ${policy.applicable_end_time || 'close'}` : ''}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 font-mono font-bold text-midnight-lagoon">
+                  {policy.minimum_spend > 0 ? (
+                    <span className="px-2 py-1 bg-emerald-50 text-brand-green rounded-lg border border-emerald-100">
+                      Min. Spend: ₦{policy.minimum_spend.toLocaleString('en-NG')}
+                    </span>
+                  ) : (
+                    <span className="text-text-muted">No min. spend</span>
+                  )}
+                  {policy.mandatory_bottle_policy && (
+                    <span className="px-2 py-1 bg-amber-50 text-amber-800 rounded-lg border border-amber-200">
+                      {policy.bottle_count_minimum ? `${policy.bottle_count_minimum} bottle min.` : 'Bottle req.'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

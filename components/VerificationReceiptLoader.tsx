@@ -310,7 +310,11 @@ export default function VerificationReceiptLoader({
                         </span>
                       </div>
                       <p className="text-[11px] text-[#6B7280]">
-                        {elapsedTime >= 1900 ? `✓ ${spot ? spot.name : "Yellow Chilli"} menu prices verified` : "Auditing live restaurant menu sheets..."}
+                        {elapsedTime >= 1900
+                          ? Boolean(spot?.verified_by || spot?.price_source?.includes('verified'))
+                            ? `✓ ${spot?.name} menu prices verified`
+                            : `✓ ${spot ? spot.name : "Spot"} budget estimates loaded`
+                          : "Calculating menu and dining budget..."}
                       </p>
                       {elapsedTime < 1900 && (
                         <ProgressBar duration={900} delayMs={0} />

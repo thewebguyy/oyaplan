@@ -72,7 +72,7 @@ export function AttributionVerifyCard({ venueId }: AttributionVerifyCardProps) {
 
         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FAF7F2] rounded-xl border border-[#EAE4DC] text-[11px] text-text-secondary font-medium shrink-0">
           <ShieldCheck className="w-3.5 h-3.5 text-brand-green" />
-          <span>Non-Monetary Intent Match</span>
+          <span>Visit Confirmation · Not A Payment</span>
         </div>
       </div>
 

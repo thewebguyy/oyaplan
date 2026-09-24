@@ -11,7 +11,8 @@ import {
   Clock, 
   Users, 
   Receipt, 
-  Search 
+  Search,
+  ShieldCheck 
 } from "lucide-react";
 import { PatternedBorder } from "@/components/business/PatternedBorder";
 import { OversizedHeroGraphic } from "@/components/business/OversizedHeroGraphic";
@@ -212,7 +213,7 @@ export function ForBusinessClient() {
               People don&apos;t just browse OyaPlan. They pull up.
             </h2>
             <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-              Social media gives you saves and DMs. OyaPlan gets tables booked and tabs paid.
+              Social media gives you saves and DMs. OyaPlan gets squads planned and out the door.
             </p>
           </div>
 
@@ -271,60 +272,42 @@ export function ForBusinessClient() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 pt-2">
               {/* Left Column: Editorial Value Proposition */}
               <div className="lg:col-span-7 space-y-5 text-left">
-                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-amber-400 uppercase">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                  <span>OyaSpotlight · Premium Placement</span>
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-emerald-400 uppercase">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Verified Partner · Trust Marker</span>
                 </div>
 
                 <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                  Be the first spot the group chat agrees on.
+                  Be the spot the group chat agrees on.
                 </h2>
 
                 <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
-                  When squads build outing plans with a budget matching your space, Spotlight venues are recommended first. Real intent from ready-to-spend groups.
+                  When squads build outing plans with a budget matching your space, verified venues earn trust instantly. Real intent from ready-to-spend groups.
                 </p>
 
                 <ul className="space-y-3 pt-1">
                   <li className="flex items-start gap-3 text-xs sm:text-sm text-gray-300">
                     <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
-                    <span><strong className="text-white font-semibold">Priority algorithm placement</strong> — Top-ranked recommendation for relevant vibes and spend brackets.</span>
+                    <span><strong className="text-white font-semibold">100% price transparency</strong> — Verified menu items and tax calculations so squads never face bill shock.</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs sm:text-sm text-gray-300">
                     <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
-                    <span><strong className="text-white font-semibold">Verified Spotlight emblem</strong> — Distinct trust marker that speeds up group consensus.</span>
+                    <span><strong className="text-white font-semibold">Verified Partner badge</strong> — Distinct trust marker that speeds up group consensus.</span>
                   </li>
                   <li className="flex items-start gap-3 text-xs sm:text-sm text-gray-300">
                     <CheckCircle2 className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
-                    <span><strong className="text-white font-semibold">Weekend demand signals</strong> — Track how many squads are actively planning outings in your zone.</span>
+                    <span><strong className="text-white font-semibold">Weekend demand signals</strong> — Track how many squads are actively planning outings around your business.</span>
                   </li>
                 </ul>
 
                 <div className="pt-2 flex items-center gap-4">
-                  {(() => {
-                    const waUrl = getBusinessWhatsAppUrl('spotlight_inquiry');
-                    if (waUrl) {
-                      return (
-                        <a
-                          href={waUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-sm"
-                        >
-                          <span>Inquire About Spotlight on WhatsApp</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </a>
-                      );
-                    }
-                    return (
-                      <Link
-                        href="/business/claim"
-                        className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-sm"
-                      >
-                        <span>Claim Your Venue to Access Spotlight</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    );
-                  })()}
+                  <Link
+                    href="/business/claim"
+                    className="h-11 px-6 bg-white hover:bg-gray-100 text-midnight-lagoon text-xs font-bold rounded-xl inline-flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-sm"
+                  >
+                    <span>Claim Your Venue Listing</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </div>
 
@@ -333,9 +316,9 @@ export function ForBusinessClient() {
                 <div className="bg-[#142B1F] border border-[#234B35] rounded-2xl p-5 sm:p-6 space-y-4 shadow-lg text-left">
                   {/* Top Specimen Badge */}
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-amber-300 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-md flex items-center gap-1">
-                      <Sparkles className="w-3 h-3 fill-amber-300" />
-                      Top Pick for Friday
+                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-emerald-300 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3 text-emerald-300" />
+                      Verified Match
                     </span>
                     <span className="text-[10px] font-semibold text-gray-400">Squad of 6</span>
                   </div>

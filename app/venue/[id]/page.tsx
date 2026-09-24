@@ -46,7 +46,7 @@ export default async function PublicVenuePage({ params }: Props) {
     getVenuePhotos(venue.id),
   ]);
 
-  const district = (venue as any).districts;
+  const district = venue.districts;
   const areaName = district?.name || 'Lagos';
   const areaSlug = district?.slug || 'ikeja';
 

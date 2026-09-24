@@ -1,9 +1,11 @@
 "use client";
 
 import { BudgetFitBadge, BudgetFitStatus } from "@/components/ui/budget-fit-badge";
+import { TrustStatus } from "@/components/ui/trust-badge";
 import { HelpCircle, Check, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { NumericCounter } from "@/components/ui/NumericCounter";
+import { cn } from "@/lib/utils";
 
 import { TransportEstimate } from "@/lib/types";
 
@@ -13,6 +15,7 @@ interface ReceiptStructureProps {
   transportCost: number; // For the entire squad
   squadSize: number;
   budgetFitStatus: BudgetFitStatus;
+  trustStatus?: TrustStatus;
   hasCar: boolean;
   transportToggleNode: React.ReactNode;
   budget: number;
@@ -28,6 +31,7 @@ export function ReceiptStructure({
   transportCost, 
   squadSize, 
   budgetFitStatus,
+  trustStatus = "estimated",
   hasCar,
   transportToggleNode,
   budget,
@@ -80,10 +84,10 @@ export function ReceiptStructure({
 
         <div className="w-full border-2 border-[#111827] bg-white rounded-b-[20px] shadow-[0_12px_32px_rgba(0,0,0,0.08),0_4px_0_0_#111827] flex flex-col font-mono text-sm overflow-hidden scroll-reveal is-visible">
           
-          {/* Official Verification Watermark Header */}
+          {/* Official Budget Breakdown Watermark Header */}
           <div className="px-5 py-3 border-b border-dashed border-[#111827]/30 bg-[#FBFBFA] flex items-center justify-between text-[10px] uppercase tracking-widest text-[#6B7280]">
-            <span className="font-bold">OyaPlan Verified Receipt</span>
-            <span className="font-bold text-[#008751] bg-[#008751]/10 px-2 py-0.5 rounded">LAGOS • SEP 2026</span>
+            <span className="font-bold">OyaPlan Outing Budget Breakdown</span>
+            <span className="font-bold text-[#008751] bg-[#008751]/10 px-2 py-0.5 rounded">LAGOS • OUTING PLAN</span>
           </div>
 
           {/* Header Row */}
@@ -97,12 +101,16 @@ export function ReceiptStructure({
             <div className="flex justify-between items-start">
               <div className="space-y-1">
                 <h3 className="font-black text-[#111827] text-lg uppercase tracking-tight font-sans">{venueName}</h3>
-                <div className="flex items-center gap-1.5 text-xs text-[#008751] font-bold font-sans">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>
-                    {hasFood
-                      ? (freshnessText ? `Verified Menu • ${freshnessText}` : "Verified Menu Pricing")
-                      : (freshnessText ? `Verified Entry • ${freshnessText}` : "Verified Admission Fee")}
+                <div className="flex items-center gap-1.5 text-xs font-bold font-sans">
+                  <ShieldCheck className={cn("w-4 h-4", trustStatus === "verified" ? "text-[#008751]" : "text-text-muted")} />
+                  <span className={trustStatus === "verified" ? "text-[#008751]" : "text-text-secondary"}>
+                    {trustStatus === "verified"
+                      ? (hasFood
+                          ? (freshnessText ? `Verified Menu • ${freshnessText}` : "Verified Menu Pricing")
+                          : (freshnessText ? `Verified Entry • ${freshnessText}` : "Verified Admission Fee"))
+                      : (hasFood
+                          ? (freshnessText ? `Estimated Menu • ${freshnessText}` : "Estimated Menu Pricing")
+                          : (freshnessText ? `Estimated Entry • ${freshnessText}` : "Estimated Admission Fee"))}
                   </span>
                 </div>
               </div>

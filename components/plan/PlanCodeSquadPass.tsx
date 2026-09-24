@@ -59,13 +59,13 @@ export function PlanCodeSquadPass({
             Squad Plan Pass
           </span>
         </div>
-        <span className="text-[10px] text-gray-400 font-mono">Verified Itinerary</span>
+        <span className="text-[10px] text-gray-400 font-mono">Visit Pass</span>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0C2217] p-4 rounded-xl border border-[#1D4A32]">
         <div>
           <span className="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">
-            Public Plan Code
+            Visit Identification Code
           </span>
           <span className="text-2xl sm:text-3xl font-extrabold font-mono tracking-widest text-[#EAFDF3] select-all">
             {planCode}

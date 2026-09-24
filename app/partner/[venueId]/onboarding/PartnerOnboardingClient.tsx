@@ -25,6 +25,7 @@ interface PartnerOnboardingClientProps {
   venue: Venue;
   initialMenuItems: MenuItem[];
   initialPhotos: VenuePhoto[];
+  initialStep?: number;
 }
 
 const CATEGORIES: { value: SpotCategory; label: string }[] = [
@@ -66,9 +67,10 @@ export function PartnerOnboardingClient({
   venue,
   initialMenuItems,
   initialPhotos,
+  initialStep = 1,
 }: PartnerOnboardingClientProps) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(initialStep);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(venue.partner_state === 'verification_pending');

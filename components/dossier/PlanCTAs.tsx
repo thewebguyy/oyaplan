@@ -98,7 +98,7 @@ Zero hidden charges:
 🚗 Round-Trip Uber: ₦${transportCost.toLocaleString()}
 💸 VAT & Service: ₦${taxesCost.toLocaleString()}
 
-See verified receipt & who dey pay split:
+See full cost breakdown & squad split:
 🔗 ${shareUrl}
 
 Are you in? 👇`;

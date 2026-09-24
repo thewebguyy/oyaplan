@@ -338,6 +338,7 @@ export interface Venue {
   contact_number?: string;
   contact_email?: string;
   opening_hours?: Record<string, string>;
+  districts?: { name: string; slug: string } | null;
   
   // Tax & Fee details
   vat_pct: number;

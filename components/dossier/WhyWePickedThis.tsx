@@ -20,7 +20,7 @@ export function WhyWePickedThis({ plan }: { plan: SharedPlanRow }) {
             <Check className="w-3 h-3 text-[#008751]" strokeWidth={3} />
           </div>
           <div className="text-xs sm:text-sm text-[#4B5563]">
-            <strong className="text-[#111827] font-bold">Landed Budget Match:</strong> Fits inside your target budget at ₦{plan.total_cost?.toLocaleString()} total with verified entrees and cocktails.
+            <strong className="text-[#111827] font-bold">Landed Budget Match:</strong> Fits inside your target budget at ₦{plan.total_cost?.toLocaleString()} total with accounted food, drinks, and transport.
           </div>
         </li>
         <li className="flex items-start gap-3">
@@ -44,7 +44,7 @@ export function WhyWePickedThis({ plan }: { plan: SharedPlanRow }) {
             <Check className="w-3 h-3 text-[#008751]" strokeWidth={3} />
           </div>
           <div className="text-xs sm:text-sm text-[#4B5563]">
-            <strong className="text-[#111827] font-bold">No Hidden Minimums:</strong> No mandatory bottle purchase rules or surprise table fees attached to normal dining slots.
+            <strong className="text-[#111827] font-bold">Transparent Dining Terms:</strong> Menu estimates, mandatory charges, and dining terms checked so your squad doesn&apos;t face surprise gate or table fees.
           </div>
         </li>
       </ul>

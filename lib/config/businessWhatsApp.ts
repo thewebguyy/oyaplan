@@ -97,8 +97,8 @@ export const WhatsAppMessageTemplates = {
 
   spotlight_inquiry: (venueName?: string) =>
     venueName
-      ? `Hi OyaPlan Team, I manage ${venueName} in Lagos and want to learn more about OyaSpotlight premium placement.`
-      : `Hi OyaPlan Team, I own a venue in Lagos and want to learn more about OyaSpotlight premium placement.`,
+      ? `Hi OyaPlan Team, I manage ${venueName} in Lagos and want to learn more about becoming a Verified Partner on OyaPlan.`
+      : `Hi OyaPlan Team, I own a venue in Lagos and want to learn more about becoming a Verified Partner on OyaPlan.`,
 
   pricing_update: (venueName?: string) =>
     venueName
