@@ -81,7 +81,9 @@ export async function getPublicVenueById(
         partner_state: 'unclaimed',
         operational_status: 'community_verified',
         derived_typical_cost: spot.price_per_person || 0,
-        price_level: spot.price_tier || 2,
+        derived_price_tier: spot.price_tier || 2,
+        computed_confidence_score: 80,
+        confidence_reasons: ['Community Indexed Spot'],
       };
 
       return { data: normalizedVenue, error: null };
