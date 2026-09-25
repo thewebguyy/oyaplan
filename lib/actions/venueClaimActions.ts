@@ -229,3 +229,85 @@ export async function reviewVenueClaimAction(
     return { success: false, error: err instanceof Error ? err.message : 'Claim review failed' };
   }
 }
+
+export interface ClaimSearchVenueResult {
+  id: string;
+  slug?: string;
+  name: string;
+  category?: string;
+  address?: string;
+  partner_state?: string;
+  district_name?: string;
+}
+
+/**
+ * searchVenuesForClaimAction
+ * Queries the venues table directly in real-time with fallback to spots
+ */
+export async function searchVenuesForClaimAction(
+  query: string
+): Promise<ClaimSearchVenueResult[]> {
+  try {
+    if (!query || !query.trim()) return [];
+    const q = query.trim();
+    const supabase = await createServerClient();
+
+    // 1. Direct query to venues table
+    const { data: venuesData } = await supabase
+      .from('venues')
+      .select('id, slug, name, category, address, partner_state, districts(name, slug)')
+      .or(`name.ilike.%${q}%,address.ilike.%${q}%,category.ilike.%${q}%`)
+      .order('name', { ascending: true })
+      .limit(25);
+
+    // 2. Fallback query to spots table
+    const { data: spotsData } = await supabase
+      .from('spots')
+      .select('id, name, category, address, active, areas(name, slug)')
+      .or(`name.ilike.%${q}%,address.ilike.%${q}%,category.ilike.%${q}%`)
+      .eq('active', true)
+      .limit(25);
+
+    const seenNames = new Set<string>();
+    const results: ClaimSearchVenueResult[] = [];
+
+    if (venuesData) {
+      for (const v of venuesData) {
+        seenNames.add(v.name.toLowerCase().trim());
+        results.push({
+          id: v.id,
+          slug: v.slug,
+          name: v.name,
+          category: v.category,
+          address: v.address,
+          partner_state: v.partner_state || 'unclaimed',
+          district_name: (v as any).districts?.name || undefined,
+        });
+      }
+    }
+
+    if (spotsData) {
+      for (const s of spotsData) {
+        const normName = s.name.toLowerCase().trim();
+        if (!seenNames.has(normName)) {
+          seenNames.add(normName);
+          results.push({
+            id: s.id,
+            slug: s.id,
+            name: s.name,
+            category: s.category,
+            address: s.address,
+            partner_state: 'unclaimed',
+            district_name: (s as any).areas?.name || 'Lagos',
+          });
+        }
+      }
+    }
+
+    return results;
+  } catch (err) {
+    console.error('Error in searchVenuesForClaimAction:', err);
+    return [];
+  }
+}
+

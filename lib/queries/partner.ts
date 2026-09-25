@@ -13,7 +13,7 @@ import {
 
 /**
  * getPublicVenueById
- * Fetches public-facing venue record for /venue/[id]
+ * Fetches public-facing venue record for /venue/[id] with fallback to spots table
  */
 export async function getPublicVenueById(
   idOrSlug: string
@@ -21,6 +21,7 @@ export async function getPublicVenueById(
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
     
+    // 1. First attempt: Look up in venues table
     let query = supabase
       .from('venues')
       .select('*, districts(name, slug)');
@@ -33,11 +34,64 @@ export async function getPublicVenueById(
 
     const { data, error } = await query.maybeSingle();
 
+    if (data) {
+      return { data: (data as unknown as Venue), error: null };
+    }
+
+    // 2. Second attempt: Check venues by name if not UUID
+    if (!isUuid) {
+      const { data: venueByName } = await supabase
+        .from('venues')
+        .select('*, districts(name, slug)')
+        .ilike('name', idOrSlug.replace(/-/g, ' '))
+        .maybeSingle();
+
+      if (venueByName) {
+        return { data: (venueByName as unknown as Venue), error: null };
+      }
+    }
+
+    // 3. Fallback: Look up in legacy spots table
+    const { data: spot } = await supabase
+      .from('spots')
+      .select('*, areas(*)')
+      .or(`id.eq.${idOrSlug},name.ilike.%${idOrSlug.replace(/-/g, ' ')}%`)
+      .maybeSingle();
+
+    if (spot) {
+      const normalizedVenue: Venue = {
+        id: spot.id,
+        district_id: spot.area_id || '',
+        name: spot.name,
+        address: spot.address || 'Lagos, Nigeria',
+        description: spot.description || undefined,
+        vibe_tags: spot.vibe_tags || [],
+        category: (spot.category as any) || 'restaurant',
+        subcategory: spot.subcategory || null,
+        typical_duration_hours: spot.typical_duration_hours || 2,
+        instagram_handle: spot.instagram_handle || null,
+        is_featured: spot.is_featured || false,
+        active: spot.active !== false,
+        cover_url: spot.cover_url || spot.image_url || undefined,
+        gallery_urls: spot.gallery_urls || [],
+        districts: spot.areas ? { name: spot.areas.name, slug: spot.areas.slug } : { name: 'Lagos', slug: 'lagos' },
+        vat_pct: 7.5,
+        service_charge_pct: 10,
+        minimum_spend: 0,
+        partner_state: 'unclaimed',
+        operational_status: 'community_verified',
+        derived_typical_cost: spot.price_per_person || 0,
+        price_level: spot.price_tier || 2,
+      };
+
+      return { data: normalizedVenue, error: null };
+    }
+
     if (error) {
       return { data: null, error: error.message };
     }
 
-    return { data: (data as unknown as Venue) || null, error: null };
+    return { data: null, error: null };
   } catch (err: unknown) {
     return { data: null, error: err instanceof Error ? err.message : 'Unexpected error fetching venue' };
   }
@@ -591,7 +645,7 @@ export async function getVenuesForInvitation(): Promise<Array<{
 
 /**
  * getVenuesForClaimSearch
- * Fetches venues with district info for the public /business/claim search portal
+ * Fetches venues and spots with district info for the public /business/claim search portal
  */
 export async function getVenuesForClaimSearch(): Promise<Array<{
   id: string;
@@ -604,23 +658,69 @@ export async function getVenuesForClaimSearch(): Promise<Array<{
 }>> {
   try {
     const supabase = await createServerClient();
-    const { data, error } = await supabase
+    
+    // Fetch venues
+    const { data: venuesData } = await supabase
       .from('venues')
       .select('id, slug, name, category, address, partner_state, districts(name, slug)')
       .order('name', { ascending: true })
       .limit(300);
 
-    if (error || !data) return [];
+    // Fetch spots
+    const { data: spotsData } = await supabase
+      .from('spots')
+      .select('id, name, category, address, active, areas(name, slug)')
+      .eq('active', true)
+      .order('name', { ascending: true })
+      .limit(300);
 
-    return data.map((v: any) => ({
-      id: v.id,
-      slug: v.slug,
-      name: v.name,
-      category: v.category,
-      address: v.address,
-      partner_state: v.partner_state || 'unclaimed',
-      district_name: v.districts?.name || undefined,
-    }));
+    const seenNames = new Set<string>();
+    const results: Array<{
+      id: string;
+      slug?: string;
+      name: string;
+      category?: string;
+      address?: string;
+      partner_state?: string;
+      district_name?: string;
+    }> = [];
+
+    // Prioritize venues table entries
+    if (venuesData) {
+      for (const v of venuesData) {
+        seenNames.add(v.name.toLowerCase().trim());
+        results.push({
+          id: v.id,
+          slug: v.slug,
+          name: v.name,
+          category: v.category,
+          address: v.address,
+          partner_state: v.partner_state || 'unclaimed',
+          district_name: (v as any).districts?.name || undefined,
+        });
+      }
+    }
+
+    // Merge spots that aren't already in venues
+    if (spotsData) {
+      for (const s of spotsData) {
+        const normName = s.name.toLowerCase().trim();
+        if (!seenNames.has(normName)) {
+          seenNames.add(normName);
+          results.push({
+            id: s.id,
+            slug: s.id,
+            name: s.name,
+            category: s.category,
+            address: s.address,
+            partner_state: 'unclaimed',
+            district_name: (s as any).areas?.name || 'Lagos',
+          });
+        }
+      }
+    }
+
+    return results;
   } catch (err) {
     console.error('Error fetching venues for claim search:', err);
     return [];

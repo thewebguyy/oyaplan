@@ -3,27 +3,39 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <main className="min-h-[100dvh] bg-white flex flex-col items-center justify-center p-6 text-center antialiased">
+    <main className="min-h-[100dvh] bg-[#FAFAF8] flex flex-col items-center justify-center p-6 text-center antialiased">
       <div className="space-y-8 max-w-md">
         <span className="text-2xl font-[900] tracking-tighter">
           <span className="text-brand-green">Oya</span>
           <span className="text-intent-yellow">Plan</span>
         </span>
         
-        <div className="space-y-3">
-          <h1 className="type-heading text-text-primary">This plan doesn&apos;t exist.</h1>
-          <p className="type-body text-text-secondary">
-            Maybe it was deleted, or the link was wrong. Come plan a new one.
+        <div className="space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon uppercase tracking-tight">
+            Page Not Found
+          </h1>
+          <p className="type-body text-xs sm:text-sm text-text-secondary leading-relaxed">
+            The page, venue, or plan you are looking for doesn&apos;t exist or has moved.
           </p>
         </div>
 
-        <Link href="/">
-          <Button 
-            className="bg-brand-green hover:bg-brand-green-70 text-white h-[56px] px-10 rounded-[12px] type-subheading tap-feedback shadow-none border-none"
-          >
-            Plan a new outing →
-          </Button>
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href="/">
+            <Button 
+              className="w-full sm:w-auto bg-brand-green hover:bg-[#007043] text-white h-[50px] px-8 rounded-xl font-bold text-xs uppercase tracking-wider tap-feedback shadow-none border-none cursor-pointer"
+            >
+              Back to Home
+            </Button>
+          </Link>
+          <Link href="/for-business">
+            <Button 
+              variant="outline"
+              className="w-full sm:w-auto border-border-default hover:bg-white text-midnight-lagoon h-[50px] px-8 rounded-xl font-bold text-xs uppercase tracking-wider tap-feedback cursor-pointer"
+            >
+              For Business
+            </Button>
+          </Link>
+        </div>
       </div>
     </main>
   );

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Spot } from '@/lib/types';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
+import { searchVenuesForClaimAction } from '@/lib/actions/venueClaimActions';
 import {
   Search,
   Building2,
@@ -15,6 +16,7 @@ import {
   Link2,
   ShieldCheck,
   Clock,
+  Loader2,
 } from 'lucide-react';
 
 export interface VenueSearchItem {
@@ -37,8 +39,11 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
   const isFirstTime = searchParams?.get('firstTime') === 'true';
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [liveResults, setLiveResults] = useState<VenueSearchItem[] | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Unify venues or legacy spots into standardized list
+  // Unify venues or legacy spots into standardized initial list
   const allVenues: VenueSearchItem[] = useMemo(() => {
     if (initialVenues && initialVenues.length > 0) {
       return initialVenues;
@@ -56,10 +61,48 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
     return [];
   }, [initialVenues, initialSpots]);
 
-  const filteredVenues = useMemo(() => {
+  // Real-time server query against venues table
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    const trimmed = searchQuery.trim();
+    if (!trimmed) {
+      setLiveResults(null);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        const results = await searchVenuesForClaimAction(trimmed);
+        setLiveResults(results);
+      } catch (err) {
+        console.error('Error during real-time venue search:', err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 180);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  // Combined results: prioritize live database search, fallback to local memo
+  const displayVenues = useMemo(() => {
     if (!searchQuery.trim()) {
       return allVenues.slice(0, 15);
     }
+
+    if (liveResults !== null) {
+      return liveResults;
+    }
+
     const q = searchQuery.toLowerCase().trim();
     return allVenues
       .filter((v: VenueSearchItem) => {
@@ -71,7 +114,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         return matchName || matchArea || matchCat;
       })
       .slice(0, 30);
-  }, [searchQuery, allVenues]);
+  }, [searchQuery, liveResults, allVenues]);
 
   const addVenueWaUrl = getBusinessWhatsAppUrl('add_venue', { query: searchQuery.trim() });
   const generalClaimWaUrl = getBusinessWhatsAppUrl('claim_support');
@@ -143,19 +186,27 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
           value={searchQuery}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           placeholder="Search by venue name (e.g. The House, Circa, Cactus, Landmark)..."
-          className="w-full h-14 pl-11 pr-4 bg-white border border-border-default rounded-2xl text-sm font-medium text-text-primary focus:outline-none focus:border-brand-green shadow-xs transition-all"
+          className="w-full h-14 pl-11 pr-11 bg-white border border-border-default rounded-2xl text-sm font-medium text-text-primary focus:outline-none focus:border-brand-green shadow-xs transition-all"
         />
+        {isSearching && (
+          <Loader2 className="w-4 h-4 text-brand-green animate-spin absolute right-4 top-1/2 -translate-y-1/2" />
+        )}
       </div>
 
       {/* Results List */}
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs text-text-muted px-1">
           <span className="font-bold uppercase tracking-wider text-[11px]">
-            {searchQuery.trim() ? `Search Results (${filteredVenues.length})` : 'Indexed Venues in Lagos'}
+            {searchQuery.trim() ? `Search Results (${displayVenues.length})` : 'Indexed Venues in Lagos'}
           </span>
+          {isSearching && (
+            <span className="text-[10px] font-bold text-brand-green flex items-center gap-1">
+              <span>Searching live database...</span>
+            </span>
+          )}
         </div>
 
-        {filteredVenues.length === 0 ? (
+        {displayVenues.length === 0 ? (
           <div className="bg-white rounded-2xl border border-border-default p-8 text-center space-y-3">
             <Building2 className="w-8 h-8 text-text-muted mx-auto stroke-[1.5]" />
             <h3 className="font-bold text-sm text-midnight-lagoon uppercase">Can&apos;t find your business?</h3>
@@ -180,7 +231,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
           </div>
         ) : (
           <div className="divide-y divide-gray-100 bg-white rounded-3xl border border-border-default overflow-hidden shadow-xs">
-            {filteredVenues.map((venue: VenueSearchItem) => {
+            {displayVenues.map((venue: VenueSearchItem) => {
               const isVerified = venue.partner_state === 'verified_partner';
               const isPending = venue.partner_state === 'verification_pending';
 
