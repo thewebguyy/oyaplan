@@ -364,8 +364,7 @@ export async function getVenueDemandActivity(
 
     const plansShared = sharedCount || 0;
     const reportedOutings = reportedOutingsCount || 0;
-    // Total plans featuring venue: shared plans + estimated multiplier or direct request logs
-    const plansFeaturing = Math.max(plansShared, Math.round(plansShared * 1.5));
+    const plansFeaturing = plansShared;
 
     const totalSignals = plansFeaturing + plansShared + reportedOutings;
     const hasEnoughData = totalSignals >= 3;

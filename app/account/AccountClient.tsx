@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { User, ChevronRight, Share2, Bookmark, Sparkles, Pencil } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { User, ChevronRight, Share2, Bookmark, Sparkles, Pencil, Building2, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { UserProfile } from "@/lib/services/identity/sessionResolver";
 import { getReferralCode } from "@/lib/actions/getReferralCode";
@@ -25,6 +26,11 @@ export default function AccountClient({
   referralCode
 }: AccountClientProps) {
   const { signOut, openModal } = useAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const nextParam = searchParams.get("next");
+  const isBusinessContext = searchParams.get("context") === "business" || nextParam?.startsWith("/business");
   
   const [isEditing, setIsEditing] = useState(false);
   const [displayNameState, setDisplayNameState] = useState(profile?.display_name || "");
@@ -38,6 +44,13 @@ export default function AccountClient({
       });
     }
   }, [codeState, isAuthenticated]);
+
+  // If authenticated and arriving with a business redirect target, forward them seamlessly
+  useEffect(() => {
+    if (isAuthenticated && nextParam && nextParam.startsWith("/business")) {
+      router.push(nextParam);
+    }
+  }, [isAuthenticated, nextParam, router]);
 
   const handleSave = () => {
     if (!displayNameState.trim()) return;
@@ -59,6 +72,43 @@ export default function AccountClient({
   };
 
   if (!isAuthenticated || !profile) {
+    if (isBusinessContext) {
+      return (
+        <main className="min-h-[100dvh] bg-[#FAF7F2] pt-24 pb-16 px-4 flex flex-col items-center justify-center">
+          <div className="w-full max-w-md space-y-8 text-center bg-white rounded-3xl border border-[#EAE4DC] p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="w-16 h-16 bg-[#EAFDF3] text-brand-green border border-[#A3F3C6] rounded-2xl flex items-center justify-center mx-auto shadow-xs">
+              <Building2 className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EAFDF3] text-brand-green text-[10px] font-bold uppercase tracking-wider">
+                <span>Partner Portal</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                OyaPlan For Business
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-600 px-2 leading-relaxed">
+                Sign in with your operator account to manage your venue profile, live pricing, and operating updates.
+              </p>
+            </div>
+            <div className="space-y-3 pt-2">
+              <Button 
+                onClick={() => openModal("Sign in to Business Portal", nextParam || "/business")}
+                className="w-full bg-brand-green hover:bg-[#007043] text-white rounded-xl type-label h-12 shadow-sm border-none tap-feedback text-sm font-bold transition-all"
+              >
+                Sign In to Business Portal
+              </Button>
+              <Link
+                href="/for-business"
+                className="block text-xs text-slate-500 hover:text-slate-800 transition-colors"
+              >
+                Back to OyaPlan Business Overview
+              </Link>
+            </div>
+          </div>
+        </main>
+      );
+    }
+
     return (
       <main className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-16 px-4 flex flex-col items-center justify-center">
         <div className="w-full max-w-md space-y-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">

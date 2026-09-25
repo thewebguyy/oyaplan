@@ -1230,4 +1230,43 @@ html, body {
   background: rgba(1, 5, 40, 0.35);
 }
 
+/* ── OyaPlan Business Continuous Horizontal Marquee System ── */
+@keyframes businessMarqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.business-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: businessMarqueeScroll 45s linear infinite;
+  transition: animation-play-state 300ms ease;
+}
+
+.business-marquee-container:hover .business-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .business-marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Horizontal touch snap for mobile & tablet */
+.touch-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-card {
+  scroll-snap-align: start;
+}
+
 

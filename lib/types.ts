@@ -394,6 +394,7 @@ export interface Venue {
   group_suitability_min?: number | null;
   group_suitability_max?: number | null;
   has_parking?: boolean;
+  things_to_know?: string[];
 
   created_at?: string;
   updated_at?: string;

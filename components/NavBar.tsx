@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { ChevronLeft, User, LogOut, Bookmark, Building2 } from "lucide-react";
 import { useAuth } from "./providers/AuthProvider";
 import ClientOnly from "./ClientOnly";
-import { BusinessHeader } from "./business/BusinessHeader";
+import { BusinessMarketingHeader } from "./business/BusinessMarketingHeader";
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -23,10 +23,10 @@ export default function NavBar() {
   const isBusinessWorkspace = pathname?.startsWith("/business/") && !pathname?.startsWith("/business/claim");
   if (isBusinessWorkspace) return null;
 
-  // Business public & claim routes get the dedicated BusinessHeader
+  // Business public & claim routes get the dedicated BusinessMarketingHeader
   const isPublicBusiness = pathname === "/for-business" || pathname === "/business" || pathname?.startsWith("/business/claim") || pathname?.startsWith("/partner");
   if (isPublicBusiness) {
-    return <BusinessHeader />;
+    return <BusinessMarketingHeader />;
   }
 
   const centerLinks = [
