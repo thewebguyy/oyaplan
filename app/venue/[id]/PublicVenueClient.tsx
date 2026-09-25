@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Venue, MenuItem, VenuePhoto } from '@/lib/types';
 import { PublicVenueHero } from '@/components/venue/PublicVenueHero';
 import { PublicPricingSection } from '@/components/venue/PublicPricingSection';
+import { OperationalNoticeBanner } from '@/components/venue/OperationalNoticeBanner';
 import { PublicOverviewSection } from '@/components/venue/PublicOverviewSection';
 import { PublicExperienceFit } from '@/components/venue/PublicExperienceFit';
 import { PublicGallery } from '@/components/venue/PublicGallery';
@@ -38,6 +39,9 @@ export function PublicVenueClient({
 
       {/* Main Body Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
+        {/* Operational Notice (Temporary Closure / Maintenance) */}
+        <OperationalNoticeBanner venue={venue} />
+
         {/* Pricing Section (The most important consumer decision card) */}
         <PublicPricingSection venue={venue} menuItems={menuItems} />
 
