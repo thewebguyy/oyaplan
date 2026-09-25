@@ -13,34 +13,65 @@ import {
   MessageSquare,
   Sparkles,
   Link2,
+  ShieldCheck,
+  Clock,
 } from 'lucide-react';
 
-interface ClaimSearchClientProps {
-  initialSpots: Spot[];
+export interface VenueSearchItem {
+  id: string;
+  slug?: string;
+  name: string;
+  category?: string;
+  address?: string;
+  partner_state?: string;
+  district_name?: string;
 }
 
-export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
+interface ClaimSearchClientProps {
+  initialVenues?: VenueSearchItem[];
+  initialSpots?: Spot[];
+}
+
+export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchClientProps) {
   const searchParams = useSearchParams();
   const isFirstTime = searchParams?.get('firstTime') === 'true';
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredSpots = useMemo(() => {
+  // Unify venues or legacy spots into standardized list
+  const allVenues: VenueSearchItem[] = useMemo(() => {
+    if (initialVenues && initialVenues.length > 0) {
+      return initialVenues;
+    }
+    if (initialSpots && initialSpots.length > 0) {
+      return initialSpots.map((s: Spot) => ({
+        id: s.id,
+        name: s.name,
+        category: s.category,
+        address: s.address,
+        district_name: s.areas?.name,
+        partner_state: 'unclaimed',
+      }));
+    }
+    return [];
+  }, [initialVenues, initialSpots]);
+
+  const filteredVenues = useMemo(() => {
     if (!searchQuery.trim()) {
-      return initialSpots.slice(0, 12);
+      return allVenues.slice(0, 15);
     }
     const q = searchQuery.toLowerCase().trim();
-    return initialSpots
-      .filter((s: Spot) => {
-        const matchName = s.name.toLowerCase().includes(q);
+    return allVenues
+      .filter((v: VenueSearchItem) => {
+        const matchName = v.name.toLowerCase().includes(q);
         const matchArea =
-          s.address?.toLowerCase().includes(q) ||
-          s.areas?.name?.toLowerCase().includes(q);
-        const matchCat = s.category?.toLowerCase().includes(q);
+          v.address?.toLowerCase().includes(q) ||
+          v.district_name?.toLowerCase().includes(q);
+        const matchCat = v.category?.toLowerCase().includes(q);
         return matchName || matchArea || matchCat;
       })
-      .slice(0, 20);
-  }, [searchQuery, initialSpots]);
+      .slice(0, 30);
+  }, [searchQuery, allVenues]);
 
   const addVenueWaUrl = getBusinessWhatsAppUrl('add_venue', { query: searchQuery.trim() });
   const generalClaimWaUrl = getBusinessWhatsAppUrl('claim_support');
@@ -120,11 +151,11 @@ export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs text-text-muted px-1">
           <span className="font-bold uppercase tracking-wider text-[11px]">
-            {searchQuery.trim() ? `Search Results (${filteredSpots.length})` : 'Popular Venues in Lagos'}
+            {searchQuery.trim() ? `Search Results (${filteredVenues.length})` : 'Indexed Venues in Lagos'}
           </span>
         </div>
 
-        {filteredSpots.length === 0 ? (
+        {filteredVenues.length === 0 ? (
           <div className="bg-white rounded-2xl border border-border-default p-8 text-center space-y-3">
             <Building2 className="w-8 h-8 text-text-muted mx-auto stroke-[1.5]" />
             <h3 className="font-bold text-sm text-midnight-lagoon uppercase">Can&apos;t find your business?</h3>
@@ -149,35 +180,54 @@ export function ClaimSearchClient({ initialSpots }: ClaimSearchClientProps) {
           </div>
         ) : (
           <div className="divide-y divide-gray-100 bg-white rounded-3xl border border-border-default overflow-hidden shadow-xs">
-            {filteredSpots.map((spot: Spot) => (
-              <Link
-                key={spot.id}
-                href={`/venue/${spot.id}/claim`}
-                className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-[#FAFAF8] transition-colors tap-feedback group"
-              >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-sm text-midnight-lagoon group-hover:text-brand-green transition-colors truncate">
-                      {spot.name}
-                    </h2>
-                    {spot.category && (
-                      <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-surface-grey text-text-secondary shrink-0">
-                        {spot.category}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-text-muted truncate">
-                    <MapPin className="w-3 h-3 shrink-0" />
-                    <span className="truncate">{spot.address || spot.areas?.name || 'Lagos'}</span>
-                  </div>
-                </div>
+            {filteredVenues.map((venue: VenueSearchItem) => {
+              const isVerified = venue.partner_state === 'verified_partner';
+              const isPending = venue.partner_state === 'verification_pending';
 
-                <div className="shrink-0 flex items-center gap-1 text-xs font-bold text-brand-green uppercase tracking-wider">
-                  <span className="hidden sm:inline">Claim</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </Link>
-            ))}
+              return (
+                <Link
+                  key={venue.id}
+                  href={`/venue/${venue.id}/claim`}
+                  className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-[#FAFAF8] transition-colors tap-feedback group"
+                >
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="font-bold text-sm text-midnight-lagoon group-hover:text-brand-green transition-colors truncate">
+                        {venue.name}
+                      </h2>
+                      {venue.category && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-surface-grey text-text-secondary shrink-0">
+                          {venue.category}
+                        </span>
+                      )}
+                      {isVerified && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
+                          <ShieldCheck className="w-3 h-3" />
+                          <span>Verified Partner</span>
+                        </span>
+                      )}
+                      {isPending && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
+                          <Clock className="w-3 h-3" />
+                          <span>Verification in Progress</span>
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-text-muted truncate">
+                      <MapPin className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{venue.address || venue.district_name || 'Lagos'}</span>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-brand-green uppercase tracking-wider">
+                    <span className="hidden sm:inline">
+                      {isVerified ? 'Manage' : 'Claim'}
+                    </span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

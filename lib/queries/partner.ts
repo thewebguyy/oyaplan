@@ -588,3 +588,41 @@ export async function getVenuesForInvitation(): Promise<Array<{
     return [];
   }
 }
+
+/**
+ * getVenuesForClaimSearch
+ * Fetches venues with district info for the public /business/claim search portal
+ */
+export async function getVenuesForClaimSearch(): Promise<Array<{
+  id: string;
+  slug?: string;
+  name: string;
+  category?: string;
+  address?: string;
+  partner_state?: string;
+  district_name?: string;
+}>> {
+  try {
+    const supabase = await createServerClient();
+    const { data, error } = await supabase
+      .from('venues')
+      .select('id, slug, name, category, address, partner_state, districts(name, slug)')
+      .order('name', { ascending: true })
+      .limit(300);
+
+    if (error || !data) return [];
+
+    return data.map((v: any) => ({
+      id: v.id,
+      slug: v.slug,
+      name: v.name,
+      category: v.category,
+      address: v.address,
+      partner_state: v.partner_state || 'unclaimed',
+      district_name: v.districts?.name || undefined,
+    }));
+  } catch (err) {
+    console.error('Error fetching venues for claim search:', err);
+    return [];
+  }
+}

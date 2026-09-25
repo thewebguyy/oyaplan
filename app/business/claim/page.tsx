@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getForgeSpots } from '@/lib/queries/spots';
+import { getVenuesForClaimSearch } from '@/lib/queries/partner';
 import { ClaimSearchClient } from '@/components/business/ClaimSearchClient';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BusinessClaimSearchPage() {
-  const { data: spots } = await getForgeSpots();
+  const venues = await getVenuesForClaimSearch();
 
   return (
     <main className="min-h-[100dvh] bg-[#FAFAF8] antialiased py-10 px-4 sm:px-6">
@@ -26,7 +26,7 @@ export default async function BusinessClaimSearchPage() {
         </Link>
       </div>
 
-      <ClaimSearchClient initialSpots={spots || []} />
+      <ClaimSearchClient initialVenues={venues} />
     </main>
   );
 }
