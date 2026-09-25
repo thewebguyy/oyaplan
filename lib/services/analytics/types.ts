@@ -460,6 +460,7 @@ export const EventSchemas = {
     venue_id: z.string(),
     claim_id: z.string().optional(),
     role: z.string().optional(),
+    proof_type: z.string().optional(),
     version: z.literal('1.0')
   }),
   'venue_claim_approved': z.object({

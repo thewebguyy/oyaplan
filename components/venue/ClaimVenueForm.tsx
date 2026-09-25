@@ -147,6 +147,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
           claim_id: res.claimId,
           role: claimantRole,
           proof_type: proofType,
+          version: '1.0',
         });
       } else {
         setError(res.error || 'Failed to submit claim. Please try again.');
