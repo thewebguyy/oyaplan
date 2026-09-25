@@ -18,7 +18,7 @@ import {
   Building,
   Phone,
   FileText,
-  Instagram,
+  AtSign,
   Mail,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -474,7 +474,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                     : 'border-border-default bg-[#FAFAF8] text-text-secondary hover:border-gray-400'
                 }`}
               >
-                <Instagram className="w-4 h-4" />
+                <AtSign className="w-4 h-4" />
                 <span className="text-xs font-bold leading-tight">Official Instagram</span>
               </button>
 
