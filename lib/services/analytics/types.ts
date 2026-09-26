@@ -195,6 +195,24 @@ export const EventSchemas = {
     action: z.string(), // 'vote', 'save', 'plan_own', 'whatsapp_join'
     version: z.literal('1.0')
   }),
+  'squad_shared': z.object({
+    category: z.literal('Sharing'),
+    plan_id: z.string(),
+    share_method: z.string(),
+    confirmed_count: z.number().optional(),
+    version: z.literal('1.0').optional()
+  }),
+  'squad_opened': z.object({
+    category: z.literal('Engagement'),
+    plan_id: z.string(),
+    version: z.literal('1.0').optional()
+  }),
+  'squad_member_joined': z.object({
+    category: z.literal('Engagement'),
+    plan_id: z.string(),
+    display_name: z.string(),
+    version: z.literal('1.0').optional()
+  }),
 
   // Trust & Feedback
   'confidence_badge_clicked': z.object({

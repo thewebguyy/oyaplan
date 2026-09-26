@@ -17,6 +17,30 @@ export interface SquadParticipant {
   updated_at: string;
 }
 
+export interface PlanSettlement {
+  id: string;
+  plan_id: string;
+  bank_name: string;
+  account_number: string;
+  account_name: string;
+  note?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SquadOption {
+  id: string;
+  plan_id: string;
+  spot_id?: string | null;
+  option_label: string;
+  title: string;
+  category?: string | null;
+  estimated_per_person: number;
+  address?: string | null;
+  votes_count: number;
+  created_at: string;
+}
+
 export interface SquadLiveEconomics {
   headcount: number;
   foodSpend: number;
@@ -61,6 +85,9 @@ export interface SquadRoomData {
   currentUserToken: string;
   isCreator: boolean;
   liveEconomics: SquadLiveEconomics;
+  settlement: PlanSettlement | null;
+  options: SquadOption[];
+  userVotedOptionId: string | null;
 }
 
 export class SquadService {
@@ -116,7 +143,7 @@ export class SquadService {
   }
 
   /**
-   * Fetches all Squad Room data and recalculates live per-person economics based on confirmed headcount
+   * Fetches all Squad Room data including live headcount, non-custodial settlement details, and showdown options
    */
   public static async getSquadRoomData(planId: string): Promise<{
     data: SquadRoomData | null;
@@ -139,21 +166,72 @@ export class SquadService {
       const supabase = await this.getSupabaseClient();
 
       let participants: SquadParticipant[] = [];
+      let settlement: PlanSettlement | null = null;
+      let rawOptions: any[] = [];
+      let rawVotes: any[] = [];
 
       try {
-        const { data: dbParticipants, error: partError } = await supabase
-          .from("plan_squad_participants")
-          .select("*")
-          .eq("plan_id", planId)
-          .order("created_at", { ascending: true });
+        const [partRes, settleRes, optionsRes, votesRes] = await Promise.all([
+          supabase
+            .from("plan_squad_participants")
+            .select("*")
+            .eq("plan_id", planId)
+            .order("created_at", { ascending: true }),
+          supabase
+            .from("plan_settlements")
+            .select("*")
+            .eq("plan_id", planId)
+            .maybeSingle(),
+          supabase
+            .from("squad_options")
+            .select("*")
+            .eq("plan_id", planId)
+            .order("created_at", { ascending: true }),
+          supabase
+            .from("squad_option_votes")
+            .select("*")
+            .eq("plan_id", planId),
+        ]);
 
-        if (!partError && dbParticipants) {
-          participants = dbParticipants as SquadParticipant[];
+        if (!partRes.error && partRes.data) {
+          participants = partRes.data as SquadParticipant[];
+        }
+        if (!settleRes.error && settleRes.data) {
+          settlement = settleRes.data as PlanSettlement;
+        }
+        if (!optionsRes.error && optionsRes.data) {
+          rawOptions = optionsRes.data;
+        }
+        if (!votesRes.error && votesRes.data) {
+          rawVotes = votesRes.data;
         }
       } catch {
-        // Fallback to empty participants if table is initializing
-        participants = [];
+        // Resilient fallback
       }
+
+      // Calculate votes tally per option
+      const votesByOption: Record<string, number> = {};
+      let userVotedOptionId: string | null = null;
+
+      for (const vote of rawVotes) {
+        votesByOption[vote.option_id] = (votesByOption[vote.option_id] || 0) + 1;
+        if (vote.participant_token === participantToken) {
+          userVotedOptionId = vote.option_id;
+        }
+      }
+
+      const options: SquadOption[] = rawOptions.map((opt) => ({
+        id: opt.id,
+        plan_id: opt.plan_id,
+        spot_id: opt.spot_id,
+        option_label: opt.option_label || "Option",
+        title: opt.title,
+        category: opt.category,
+        estimated_per_person: opt.estimated_per_person,
+        address: opt.address,
+        votes_count: votesByOption[opt.id] || 0,
+        created_at: opt.created_at,
+      }));
 
       const currentUserParticipant =
         participants.find(
@@ -165,12 +243,9 @@ export class SquadService {
       const confirmedParticipants = participants.filter((p) => p.status === "in");
       const confirmedCount = confirmedParticipants.length;
 
-      // Determine effective headcount for dynamic cost calculation:
-      // If people have explicitly RSVP'd 'in', use that number; otherwise default to initial target squad size
       const targetSquadSize = Number(planData.squad_size) || 2;
       const effectiveHeadcount = confirmedCount > 0 ? confirmedCount : targetSquadSize;
 
-      // Price per person baseline from spot or original food estimate
       const pricePerPerson =
         Number(spot.price_per_person) ||
         Math.round((Number(planData.food_cost) || 20000) / targetSquadSize);
@@ -238,6 +313,9 @@ export class SquadService {
         currentUserToken: participantToken,
         isCreator,
         liveEconomics,
+        settlement,
+        options,
+        userVotedOptionId,
       };
 
       return { data: roomData, notFound: false, error: null };
@@ -269,7 +347,6 @@ export class SquadService {
 
       const userId = identity.type === "authenticated" ? identity.profile.id : null;
 
-      // Upsert participant record by plan_id and participant_token
       const { data, error } = await supabase
         .from("plan_squad_participants")
         .upsert(
@@ -328,6 +405,145 @@ export class SquadService {
       }
 
       return { success: true };
+    } catch (e) {
+      captureServerException(e);
+      return { success: false, error: "An unexpected error occurred" };
+    }
+  }
+
+  /**
+   * Saves or updates non-custodial host bank settlement details on the plan
+   */
+  public static async saveSettlementDetails(
+    planId: string,
+    settlement: {
+      bankName: string;
+      accountNumber: string;
+      accountName: string;
+      note?: string;
+    }
+  ): Promise<{ success: boolean; data?: PlanSettlement; error?: string }> {
+    try {
+      const cleanBank = settlement.bankName.trim();
+      const cleanNumber = settlement.accountNumber.trim().replace(/\D/g, "");
+      const cleanName = settlement.accountName.trim();
+
+      if (!cleanBank || cleanNumber.length < 9 || cleanNumber.length > 12 || !cleanName) {
+        return { success: false, error: "Please enter valid bank details (10-digit NUBAN account number)" };
+      }
+
+      const supabase = await this.getSupabaseClient();
+
+      const { data, error } = await supabase
+        .from("plan_settlements")
+        .upsert(
+          {
+            plan_id: planId,
+            bank_name: cleanBank,
+            account_number: cleanNumber,
+            account_name: cleanName,
+            note: settlement.note?.trim() || null,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: "plan_id",
+          }
+        )
+        .select()
+        .single();
+
+      if (error) {
+        captureServerException(error);
+        return { success: false, error: "Failed to save bank settlement details" };
+      }
+
+      return { success: true, data: data as PlanSettlement };
+    } catch (e) {
+      captureServerException(e);
+      return { success: false, error: "An unexpected error occurred" };
+    }
+  }
+
+  /**
+   * Casts a 1-tap blind vote for an option in the squad showdown
+   */
+  public static async voteSquadOption(
+    planId: string,
+    optionId: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      const [participantToken, supabase] = await Promise.all([
+        this.getOrCreateParticipantToken(),
+        this.getSupabaseClient(),
+      ]);
+
+      const { error } = await supabase
+        .from("squad_option_votes")
+        .upsert(
+          {
+            plan_id: planId,
+            option_id: optionId,
+            participant_token: participantToken,
+            voted_at: new Date().toISOString(),
+          },
+          {
+            onConflict: "plan_id,participant_token",
+          }
+        );
+
+      if (error) {
+        captureServerException(error);
+        return { success: false, error: "Could not record option vote" };
+      }
+
+      return { success: true };
+    } catch (e) {
+      captureServerException(e);
+      return { success: false, error: "An unexpected error occurred" };
+    }
+  }
+
+  /**
+   * Adds an itinerary candidate option for squad showdown voting
+   */
+  public static async createSquadOption(
+    planId: string,
+    option: {
+      optionLabel?: string;
+      title: string;
+      category?: string;
+      estimatedPerPerson: number;
+      address?: string;
+      spotId?: string;
+    }
+  ): Promise<{ success: boolean; data?: SquadOption; error?: string }> {
+    try {
+      if (!option.title.trim() || option.estimatedPerPerson <= 0) {
+        return { success: false, error: "Please provide valid option details" };
+      }
+
+      const supabase = await this.getSupabaseClient();
+
+      const { data, error } = await supabase
+        .from("squad_options")
+        .insert({
+          plan_id: planId,
+          option_label: option.optionLabel || "Option",
+          title: option.title.trim(),
+          category: option.category || "Dining",
+          estimated_per_person: option.estimatedPerPerson,
+          address: option.address || null,
+          spot_id: option.spotId || null,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        captureServerException(error);
+        return { success: false, error: "Could not create squad option" };
+      }
+
+      return { success: true, data: data as SquadOption };
     } catch (e) {
       captureServerException(e);
       return { success: false, error: "An unexpected error occurred" };

@@ -32,3 +32,41 @@ export async function updateSquadAttendanceAction(planId: string, status: "in" |
 
   return result;
 }
+
+export async function saveSquadSettlementAction(
+  planId: string,
+  settlement: {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    note?: string;
+  }
+) {
+  if (!planId || !settlement.bankName || !settlement.accountNumber || !settlement.accountName) {
+    return { success: false, error: "All bank account fields are required" };
+  }
+
+  const result = await SquadService.saveSettlementDetails(planId, settlement);
+
+  if (result.success) {
+    revalidatePath(`/squad/${planId}`);
+    revalidatePath(`/plan/${planId}`);
+  }
+
+  return result;
+}
+
+export async function voteSquadOptionAction(planId: string, optionId: string) {
+  if (!planId || !optionId) {
+    return { success: false, error: "Invalid vote parameters" };
+  }
+
+  const result = await SquadService.voteSquadOption(planId, optionId);
+
+  if (result.success) {
+    revalidatePath(`/squad/${planId}`);
+    revalidatePath(`/plan/${planId}`);
+  }
+
+  return result;
+}

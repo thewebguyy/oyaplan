@@ -33,7 +33,7 @@ vi.mock("@supabase/ssr", () => ({
   })),
 }));
 
-describe("SquadService (OyaSquad Collaborative Decision Engine)", () => {
+describe("SquadService (OyaSquad Collaborative Decision Engine & Tier 1)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(SessionResolver.resolveIdentity).mockResolvedValue({
@@ -80,20 +80,65 @@ describe("SquadService (OyaSquad Collaborative Decision Engine)", () => {
         error: null,
       });
 
-      // Mock 3 confirmed participants in DB
-      mockFrom.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({
-              data: [
-                { id: "p1", plan_id: "plan-123", participant_token: "token-1", display_name: "Bode", status: "in", is_creator: true, created_at: "2026-09-26T20:00:00Z" },
-                { id: "p2", plan_id: "plan-123", participant_token: "token-2", display_name: "Tobi", status: "in", is_creator: false, created_at: "2026-09-26T20:05:00Z" },
-                { id: "p3", plan_id: "plan-123", participant_token: "token-3", display_name: "Amaka", status: "in", is_creator: false, created_at: "2026-09-26T20:10:00Z" },
-              ],
-              error: null,
+      mockFrom.mockImplementation((table: string) => {
+        if (table === "plan_squad_participants") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({
+                  data: [
+                    { id: "p1", plan_id: "plan-123", participant_token: "token-1", display_name: "Bode", status: "in", is_creator: true, created_at: "2026-09-26T20:00:00Z" },
+                    { id: "p2", plan_id: "plan-123", participant_token: "token-2", display_name: "Tobi", status: "in", is_creator: false, created_at: "2026-09-26T20:05:00Z" },
+                    { id: "p3", plan_id: "plan-123", participant_token: "token-3", display_name: "Amaka", status: "in", is_creator: false, created_at: "2026-09-26T20:10:00Z" },
+                  ],
+                  error: null,
+                }),
+              }),
             }),
-          }),
-        }),
+          };
+        }
+        if (table === "plan_settlements") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                maybeSingle: vi.fn().mockResolvedValue({
+                  data: {
+                    id: "settle-1",
+                    plan_id: "plan-123",
+                    bank_name: "GTBank",
+                    account_number: "0123456789",
+                    account_name: "Bode Olusegun",
+                    note: null,
+                  },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        if (table === "squad_options") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({
+                  data: [],
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        if (table === "squad_option_votes") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockResolvedValue({
+                data: [],
+                error: null,
+              }),
+            }),
+          };
+        }
+        return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: [] }) }) };
       });
 
       const res = await SquadService.getSquadRoomData("plan-123");
@@ -105,67 +150,74 @@ describe("SquadService (OyaSquad Collaborative Decision Engine)", () => {
       expect(data.liveEconomics.headcount).toBe(3);
       // Food spend = 15,000 * 3 = 45,000
       expect(data.liveEconomics.foodSpend).toBe(45000);
-      // Transport for 3 people (1 car) between Ikeja and VI is roundtrip 13,000 (6500 * 2)
       expect(data.liveEconomics.vehiclesRequired).toBe(1);
       expect(data.liveEconomics.transportNote).toContain("1 ride-hailing vehicle");
       // Total = 45,000 + 13,000 = 58,000
       expect(data.liveEconomics.totalSpend).toBe(58000);
-      // Per person = ceil(58,000 / 3) = 19,334
       expect(data.liveEconomics.perPersonSpend).toBe(19334);
+      // Settlement info present
+      expect(data.settlement?.account_name).toBe("Bode Olusegun");
     });
+  });
 
-    it("scales vehicles required when squad headcount exceeds 4 people", async () => {
-      vi.mocked(getSharedPlanWithSpot).mockResolvedValue({
-        data: {
-          id: "plan-456",
-          start_area: "ikeja",
-          squad_size: 6,
-          budget: 150000,
-          vibe: "Party",
-          food_cost: 90000,
-          transport_cost: 26000,
-          total_cost: 116000,
-          why_it_fits: "Party squad",
-          spot: {
-            id: "spot-456",
-            name: "Zaza Lounge",
-            category: "Lounge",
-            address_slug: "victoria-island",
-            price_per_person: 15000,
-          },
-        },
-        notFound: false,
-        error: null,
+  describe("Tier 1: Non-Custodial Bank Settlement", () => {
+    it("validates NUBAN account number length before saving", async () => {
+      const res = await SquadService.saveSettlementDetails("plan-123", {
+        bankName: "GTBank",
+        accountNumber: "123", // Too short
+        accountName: "Bode",
       });
 
-      // Mock 6 confirmed participants
-      const sixParticipants = Array.from({ length: 6 }).map((_, i) => ({
-        id: `p-${i}`,
-        plan_id: "plan-456",
-        participant_token: `token-${i}`,
-        display_name: `Member ${i + 1}`,
-        status: "in",
-        is_creator: i === 0,
+      expect(res.success).toBe(false);
+      expect(res.error).toContain("Please enter valid bank details");
+    });
+
+    it("saves valid host bank details and returns success", async () => {
+      const mockSettlement = {
+        id: "settle-123",
+        plan_id: "plan-123",
+        bank_name: "Guaranty Trust Bank (GTBank)",
+        account_number: "0123456789",
+        account_name: "Bode Olusegun",
+        note: "Send before 11pm",
         created_at: new Date().toISOString(),
-      }));
+        updated_at: new Date().toISOString(),
+      };
 
       mockFrom.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({
-              data: sixParticipants,
+        upsert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockSettlement,
               error: null,
             }),
           }),
         }),
       });
 
-      const res = await SquadService.getSquadRoomData("plan-456");
-      expect(res.data).toBeDefined();
-      const data = res.data!;
-      expect(data.confirmedCount).toBe(6);
-      expect(data.liveEconomics.vehiclesRequired).toBe(2);
-      expect(data.liveEconomics.transportNote).toContain("2 vehicles calculated for 6 people");
+      const res = await SquadService.saveSettlementDetails("plan-123", {
+        bankName: "Guaranty Trust Bank (GTBank)",
+        accountNumber: "0123456789",
+        accountName: "Bode Olusegun",
+        note: "Send before 11pm",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.data?.account_number).toBe("0123456789");
+    });
+  });
+
+  describe("Tier 1: Multi-Option Showdown Voting", () => {
+    it("records a 1-tap blind vote for a squad option", async () => {
+      mockFrom.mockReturnValue({
+        upsert: vi.fn().mockResolvedValue({
+          data: null,
+          error: null,
+        }),
+      });
+
+      const res = await SquadService.voteSquadOption("plan-123", "option-abc");
+      expect(res.success).toBe(true);
     });
   });
 

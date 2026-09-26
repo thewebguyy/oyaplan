@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Users, 
   Check, 
@@ -15,31 +16,120 @@ import {
   MessageSquare, 
   Loader2, 
   ExternalLink,
-  Utensils
+  Utensils,
+  CreditCard,
+  Building,
+  Vote,
+  Radio,
+  CheckCircle2
 } from "lucide-react";
 import { SquadRoomData } from "@/lib/services/squadService";
-import { joinSquadAction, updateSquadAttendanceAction } from "@/lib/actions/squad";
+import { 
+  joinSquadAction, 
+  updateSquadAttendanceAction, 
+  saveSquadSettlementAction,
+  voteSquadOptionAction 
+} from "@/lib/actions/squad";
+import { supabaseBrowser } from "@/lib/supabase";
 import { trackEvent } from "@/lib/analytics/trackClient";
 import { toast } from "sonner";
 import { Avatar } from "@/components/ui/avatar";
 import { useAuth } from "@/components/providers/AuthProvider";
+
+const NIGERIAN_BANKS = [
+  "Guaranty Trust Bank (GTBank)",
+  "Kuda Bank",
+  "Access Bank",
+  "Zenith Bank",
+  "Moniepoint MFB",
+  "OPay",
+  "Palmpay",
+  "First Bank of Nigeria",
+  "United Bank for Africa (UBA)",
+  "Stanbic IBTC Bank",
+  "Sterling Bank",
+  "Wema Bank (ALAT)",
+  "Fidelity Bank",
+  "FCMB",
+];
 
 interface SquadRoomClientProps {
   initialData: SquadRoomData;
 }
 
 export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
+  const router = useRouter();
   const { displayName: authDisplayName } = useAuth();
   const [data, setData] = useState<SquadRoomData>(initialData);
+  
   const [guestNameInput, setGuestNameInput] = useState(
     data.currentUserParticipant?.display_name || authDisplayName || ""
   );
   const [isEditingName, setIsEditingName] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedAccount, setCopiedAccount] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  // Settlement Form State
+  const [isAddingSettlement, setIsAddingSettlement] = useState(false);
+  const [bankNameInput, setBankNameInput] = useState(data.settlement?.bank_name || NIGERIAN_BANKS[0]);
+  const [accountNumberInput, setAccountNumberInput] = useState(data.settlement?.account_number || "");
+  const [accountNameInput, setAccountNameInput] = useState(data.settlement?.account_name || "");
+  const [settlementNoteInput, setSettlementNoteInput] = useState(data.settlement?.note || "");
+
+  // Realtime Presence Channel
+  useEffect(() => {
+    const channel = supabaseBrowser
+      .channel(`squad_room_${data.planId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "plan_squad_participants",
+          filter: `plan_id=eq.${data.planId}`,
+        },
+        () => {
+          router.refresh();
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "squad_option_votes",
+          filter: `plan_id=eq.${data.planId}`,
+        },
+        () => {
+          router.refresh();
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "plan_settlements",
+          filter: `plan_id=eq.${data.planId}`,
+        },
+        () => {
+          router.refresh();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabaseBrowser.removeChannel(channel);
+    };
+  }, [data.planId, router]);
+
+  // Keep state updated when server revalidates
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
+
   const isUserIn = data.currentUserParticipant?.status === "in";
-  const isUserDeclined = data.currentUserParticipant?.status === "declined";
   const hasJoined = !!data.currentUserParticipant;
 
   const currentHeadcount = data.liveEconomics.headcount;
@@ -109,12 +199,11 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
         toast.success(`You're in, ${guestNameInput.trim()}! 🎉`);
         setIsEditingName(false);
         trackEvent("squad_member_joined", {
-          category: "Squad",
+          category: "Engagement",
           plan_id: data.planId,
           display_name: guestNameInput.trim(),
         });
-        // Optimistic refresh
-        window.location.reload();
+        router.refresh();
       } else {
         toast.error(res.error || "Could not join right now");
       }
@@ -127,9 +216,61 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
       const res = await updateSquadAttendanceAction(data.planId, newStatus);
       if (res.success) {
         toast.info(newStatus === "in" ? "You're back in!" : "Status updated to Can't make it");
-        window.location.reload();
+        router.refresh();
       } else {
         toast.error("Could not update status");
+      }
+    });
+  };
+
+  const handleSaveSettlement = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bankNameInput || !accountNumberInput.trim() || !accountNameInput.trim()) {
+      toast.error("Please fill in bank name, account number, and account name");
+      return;
+    }
+
+    startTransition(async () => {
+      const res = await saveSquadSettlementAction(data.planId, {
+        bankName: bankNameInput,
+        accountNumber: accountNumberInput.trim(),
+        accountName: accountNameInput.trim(),
+        note: settlementNoteInput.trim(),
+      });
+
+      if (res.success) {
+        toast.success("Host bank details saved for split & settle!");
+        setIsAddingSettlement(false);
+        router.refresh();
+      } else {
+        toast.error(res.error || "Failed to save bank details");
+      }
+    });
+  };
+
+  const handleCopyBankDetails = async () => {
+    if (!data.settlement) return;
+    const { bank_name, account_number, account_name } = data.settlement;
+    const textToCopy = `${account_number} (${bank_name} - ${account_name})`;
+
+    try {
+      await navigator.clipboard.writeText(account_number);
+      setCopiedAccount(true);
+      toast.success(`Copied ${account_number} (${bank_name})! Send ~₦${perPersonSpend.toLocaleString("en-NG")} to ${account_name}`);
+      setTimeout(() => setCopiedAccount(false), 3000);
+    } catch {
+      toast.error("Could not copy account number");
+    }
+  };
+
+  const handleVoteOption = (optionId: string) => {
+    startTransition(async () => {
+      const res = await voteSquadOptionAction(data.planId, optionId);
+      if (res.success) {
+        toast.success("Vote recorded for showdown option!");
+        router.refresh();
+      } else {
+        toast.error(res.error || "Could not record vote");
       }
     });
   };
@@ -138,16 +279,24 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
     <main className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon pt-20 sm:pt-24 pb-32 selection:bg-[#008751]/20">
       <div className="max-w-xl mx-auto px-4 sm:px-6 space-y-6 animate-in fade-in duration-200">
         
-        {/* 1. OUTING TITLE & VENUE IDENTITY */}
+        {/* 1. OUTING TITLE & REALTIME SYNC STATUS */}
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase tracking-wider">
-              <Sparkles className="w-3 h-3 text-[#FCC630]" />
-              <span>Squad Decision Room</span>
-            </span>
-            <span className="text-[11px] font-bold text-text-muted capitalize">
-              {data.plan.vibe} Vibe
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase tracking-wider">
+                <Sparkles className="w-3 h-3 text-[#FCC630]" />
+                <span>Squad Decision Room</span>
+              </span>
+              <span className="text-[11px] font-bold text-text-muted capitalize">
+                {data.plan.vibe} Vibe
+              </span>
+            </div>
+
+            {/* Realtime Pulse Indicator */}
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#008751] bg-[#EAFDF3] px-2.5 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#008751] animate-pulse" />
+              <span>Live Sync</span>
+            </div>
           </div>
           
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-midnight-lagoon">
@@ -272,6 +421,73 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
 
         </div>
 
+        {/* 3. MULTI-OPTION SHOWDOWN (If Options Available) */}
+        {data.options.length > 0 && (
+          <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-3.5">
+              <div className="flex items-center gap-2">
+                <Vote className="w-4 h-4 text-[#008751]" />
+                <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
+                  Squad Showdown (Vote on Options)
+                </h2>
+              </div>
+              <span className="text-[10px] font-bold text-text-muted uppercase">
+                1-Tap Blind Vote
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {data.options.map((opt) => {
+                const isUserVoted = data.userVotedOptionId === opt.id;
+
+                return (
+                  <div 
+                    key={opt.id}
+                    className={`p-4 rounded-2xl border transition-all ${
+                      isUserVoted 
+                        ? "bg-[#EAFDF3] border-[#008751] ring-1 ring-[#008751]" 
+                        : "bg-[#FAF7F2] border-[#EAE4DC] hover:border-[#008751]/40"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-[#008751]">
+                          {opt.option_label}
+                        </span>
+                        <h3 className="text-sm font-bold text-midnight-lagoon">
+                          {opt.title}
+                        </h3>
+                        <p className="text-xs text-text-muted mt-0.5">
+                          ~₦{opt.estimated_per_person.toLocaleString("en-NG")} per person
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs font-bold text-midnight-lagoon bg-white px-2.5 py-1 rounded-lg border border-[#EAE4DC]">
+                          {opt.votes_count} {opt.votes_count === 1 ? "vote" : "votes"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleVoteOption(opt.id)}
+                          disabled={isPending}
+                          className={`h-9 px-3.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all tap-feedback ${
+                            isUserVoted
+                              ? "bg-[#008751] text-white"
+                              : "bg-white border border-[#EAE4DC] text-midnight-lagoon hover:bg-[#EAFDF3] hover:text-[#008751]"
+                          }`}
+                        >
+                          {isUserVoted ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Radio className="w-3.5 h-3.5" />}
+                          <span>{isUserVoted ? "Voted" : "Vote"}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* 4. WHO'S COMING (Member List) */}
         <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-3.5">
@@ -332,7 +548,173 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
           )}
         </div>
 
-        {/* 5. PROGRESSIVE DISCLOSURE: WHAT WE'RE GETTING & FULL PLAN LINK */}
+        {/* 5. SPLIT & SETTLE (Non-Custodial Bank Account Details) */}
+        <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-3.5">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#008751]" />
+              <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
+                Split &amp; Settle (Host Bank Account)
+              </h2>
+            </div>
+            <span className="text-[10px] font-bold text-text-muted uppercase">
+              1-Tap Copy
+            </span>
+          </div>
+
+          {data.settlement ? (
+            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-bold text-text-muted uppercase">Bank Name</p>
+                  <p className="text-sm font-bold text-midnight-lagoon">{data.settlement.bank_name}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[11px] font-bold text-text-muted uppercase">Account Name</p>
+                  <p className="text-sm font-bold text-midnight-lagoon">{data.settlement.account_name}</p>
+                </div>
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-[#EAE4DC] flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-bold text-text-muted uppercase">Account Number</p>
+                  <p className="text-base font-black text-[#008751] font-mono tracking-wider">
+                    {data.settlement.account_number}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyBankDetails}
+                  className="h-10 px-4 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all tap-feedback shadow-xs cursor-pointer"
+                >
+                  {copiedAccount ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedAccount ? "Copied!" : "Copy Account"}</span>
+                </button>
+              </div>
+
+              {data.settlement.note && (
+                <p className="text-xs text-text-secondary italic">
+                  &ldquo;{data.settlement.note}&rdquo;
+                </p>
+              )}
+
+              {data.isCreator && (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingSettlement(true)}
+                  className="text-xs font-bold text-[#008751] hover:underline"
+                >
+                  Edit Bank Details
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {!isAddingSettlement ? (
+                <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] text-center space-y-2">
+                  <p className="text-xs font-bold text-midnight-lagoon">
+                    No bank account added yet
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    {data.isCreator 
+                      ? "Add your Nigerian bank account so friends can copy your details and send their exact share with 1 tap."
+                      : "The host has not added bank details yet. They can add it to make splitting easier."
+                    }
+                  </p>
+                  {data.isCreator && (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingSettlement(true)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold transition-all tap-feedback mt-1"
+                    >
+                      <Building className="w-3.5 h-3.5" />
+                      <span>Add Host Bank Account</span>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <form onSubmit={handleSaveSettlement} className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-3.5">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-midnight-lagoon">
+                      Select Bank
+                    </label>
+                    <select
+                      value={bankNameInput}
+                      onChange={(e) => setBankNameInput(e.target.value)}
+                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-medium px-3 outline-none focus:border-[#008751]"
+                    >
+                      {NIGERIAN_BANKS.map((b) => (
+                        <option key={b} value={b}>{b}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-midnight-lagoon">
+                      Account Number (10 digits)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={10}
+                      required
+                      value={accountNumberInput}
+                      onChange={(e) => setAccountNumberInput(e.target.value.replace(/\D/g, ""))}
+                      placeholder="e.g. 0123456789"
+                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-mono font-bold px-3 outline-none focus:border-[#008751]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-midnight-lagoon">
+                      Account Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={accountNameInput}
+                      onChange={(e) => setAccountNameInput(e.target.value)}
+                      placeholder="e.g. Bode Olusegun"
+                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-medium px-3 outline-none focus:border-[#008751]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold text-midnight-lagoon">
+                      Note / Description (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={settlementNoteInput}
+                      onChange={(e) => setSettlementNoteInput(e.target.value)}
+                      placeholder="e.g. Transfer your ~₦17k share before 11pm"
+                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-medium px-3 outline-none focus:border-[#008751]"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingSettlement(false)}
+                      className="flex-1 h-11 rounded-xl border border-[#EAE4DC] bg-white text-xs font-bold text-text-muted hover:text-midnight-lagoon"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isPending}
+                      className="flex-1 h-11 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold flex items-center justify-center gap-1.5 tap-feedback disabled:opacity-50"
+                    >
+                      {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                      <span>Save Details</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 6. PROGRESSIVE DISCLOSURE: WHAT WE'RE GETTING & FULL PLAN LINK */}
         <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-3.5">
             <div className="flex items-center gap-2">
@@ -371,7 +753,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
           </div>
         </div>
 
-        {/* 6. WHATSAPP & SHARE BUTTONS */}
+        {/* 7. WHATSAPP & SHARE BUTTONS */}
         <div className="space-y-3">
           <button
             type="button"
@@ -394,7 +776,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
 
       </div>
 
-      {/* 7. MOBILE STICKY BOTTOM ACTION BAR */}
+      {/* 8. MOBILE STICKY BOTTOM ACTION BAR */}
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#EAE4DC] p-3 px-4 md:hidden pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-lg">
         <div className="max-w-md mx-auto flex items-center justify-between gap-3">
           <div>
