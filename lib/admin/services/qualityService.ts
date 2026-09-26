@@ -130,12 +130,12 @@ export class QualityService {
       }
     });
 
-    // Map actual spend discrepancies by spot_id
+    // Map actual spend discrepancies by spot_id (>15% threshold per Phase 9 operating model)
     const spendDiscrepancyMap = new Map<string, { count: number; maxVariancePct: number }>();
     spendReports.forEach((r) => {
       if (r.spot_id && r.estimated_total > 0 && r.actual_total > 0) {
         const variance = Math.abs(r.actual_total - r.estimated_total) / r.estimated_total;
-        if (variance > 0.20) {
+        if (variance >= 0.15) {
           const current = spendDiscrepancyMap.get(r.spot_id) || { count: 0, maxVariancePct: 0 };
           current.count++;
           current.maxVariancePct = Math.max(current.maxVariancePct, Math.round(variance * 100));
@@ -259,7 +259,7 @@ export class QualityService {
       // ─────────────────────────────────────────────────────────────────
       const spendDiscrepancy = spendDiscrepancyMap.get(spot.id);
       if (spendDiscrepancy) {
-        const isHighVariance = spendDiscrepancy.maxVariancePct >= 35;
+        const isHighVariance = spendDiscrepancy.maxVariancePct >= 30;
         items.push({
           id: `${spot.id}-spend-mismatch`,
           issue_type: "ACTUAL_SPEND_MISMATCH",
@@ -273,10 +273,37 @@ export class QualityService {
           customer_exposure: customerExposure,
           impact_score: (isHighVariance ? 500 : 200) + customerExposure,
           impact_description: `Actual spend differs by ${spendDiscrepancy.maxVariancePct}% from estimate`,
-          reason: `${spendDiscrepancy.count} post-outing report(s) show up to ${spendDiscrepancy.maxVariancePct}% variance from estimate.`,
-          action_label: "Investigate",
+          reason: `${spendDiscrepancy.count} post-outing report(s) show up to ${spendDiscrepancy.maxVariancePct}% variance from estimate (${isHighVariance ? "reverification urgent" : "reverification required within 48h"}).`,
+          action_label: isHighVariance ? "Audit Venue" : "Investigate",
           detected_at: now,
         });
+      }
+
+      // ─────────────────────────────────────────────────────────────────
+      // P1 — Data Freshness: STALE_PRICING (>30d Medium, >60d High)
+      // ─────────────────────────────────────────────────────────────────
+      if (spot.price_updated_at) {
+        const daysAgo = Math.floor((Date.now() - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24));
+        if (daysAgo > 30) {
+          const isCriticalStale = daysAgo > 60;
+          items.push({
+            id: `${spot.id}-stale-pricing`,
+            issue_type: "STALE_PRICING",
+            category: "trust_risk",
+            severity: isCriticalStale ? "high" : "medium",
+            scope: "venue",
+            venue_id: spot.id,
+            venue_name: spot.name,
+            venue_slug: spot.address_slug || spot.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            area_name: areaName,
+            customer_exposure: customerExposure,
+            impact_score: (isCriticalStale ? 400 : 150) + customerExposure,
+            impact_description: `Pricing unverified for ${daysAgo} days (${isCriticalStale ? "deprioritize from suggestions" : "queue reverification"})`,
+            reason: `Last verified ${daysAgo} days ago on ${new Date(spot.price_updated_at).toLocaleDateString("en-NG")}.`,
+            action_label: "Reverify",
+            detected_at: now,
+          });
+        }
       }
 
       // ─────────────────────────────────────────────────────────────────

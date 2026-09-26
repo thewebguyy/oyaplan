@@ -189,7 +189,7 @@ describe("QualityService - Trust Operations Risk Detection", () => {
     expect(spendIssue).toBeDefined();
     expect(spendIssue?.severity).toBe("high");
     expect(spendIssue?.impact_description).toContain("50%");
-    expect(spendIssue?.action_label).toBe("Investigate");
+    expect(spendIssue?.action_label).toBe("Audit Venue");
   });
 
   it("assigns MISSING_HERO as Medium severity (honest severity calibration)", async () => {

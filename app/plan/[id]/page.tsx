@@ -210,6 +210,7 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
             spotId={plan.spot?.id ?? null}
             estimatedTotal={plan.total_cost}
             spotName={spotName}
+            plannedSquadSize={plan.squad_size}
           />
         </div>
 
