@@ -62,8 +62,11 @@ export function VenueMobileStickyCTA({
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#EAE4DC] px-4 py-3 pb-safe shadow-lg">
-      <div className="flex items-center gap-3">
+    <aside
+      aria-label="Venue mobile actions"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-[#EAE4DC] px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(0,0,0,0.08)]"
+    >
+      <div className="flex items-center gap-3 max-w-lg mx-auto">
         <button
           type="button"
           onClick={handleToggleSave}
@@ -88,6 +91,6 @@ export function VenueMobileStickyCTA({
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
-    </div>
+    </aside>
   );
 }

@@ -173,17 +173,21 @@ export function ExploreSlugClient({
               <span className="text-[10px] font-black uppercase text-text-muted flex items-center gap-1 select-none">
                 <Users className="w-3.5 h-3.5 text-[#008751]" /> Squad
               </span>
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-1.5">
                 <button
+                  type="button"
                   onClick={() => updateFilters({ squad: Math.max(1, squadCount - 1) })}
-                  className="w-6 h-6 rounded-md bg-white border border-border-default flex items-center justify-center font-bold text-sm text-[#010528] hover:bg-[#010528]/5"
+                  aria-label="Decrease squad size"
+                  className="w-8 h-8 rounded-lg bg-white border border-border-default flex items-center justify-center font-bold text-base text-[#010528] hover:bg-[#010528]/5 tap-feedback transition-colors cursor-pointer"
                 >
                   -
                 </button>
-                <span className="font-extrabold text-sm text-[#010528] w-4 text-center">{squadCount}</span>
+                <span className="font-extrabold text-sm text-[#010528] w-5 text-center">{squadCount}</span>
                 <button
+                  type="button"
                   onClick={() => updateFilters({ squad: squadCount + 1 })}
-                  className="w-6 h-6 rounded-md bg-white border border-border-default flex items-center justify-center font-bold text-sm text-[#010528] hover:bg-[#010528]/5"
+                  aria-label="Increase squad size"
+                  className="w-8 h-8 rounded-lg bg-white border border-border-default flex items-center justify-center font-bold text-base text-[#010528] hover:bg-[#010528]/5 tap-feedback transition-colors cursor-pointer"
                 >
                   +
                 </button>

@@ -362,7 +362,7 @@ export default function NavBar() {
           <div
             id="mobile-navigation-drawer"
             ref={drawerRef}
-            className="fixed inset-y-0 right-0 w-full max-w-[320px] bg-white shadow-2xl flex flex-col justify-between p-6 z-50 animate-in slide-in-from-right duration-250 ease-out"
+            className="fixed inset-y-0 right-0 w-full max-w-[320px] bg-white shadow-2xl flex flex-col justify-between p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] z-50 animate-in slide-in-from-right duration-250 ease-out overflow-y-auto"
           >
             <div className="space-y-6">
               {/* Drawer Top Bar */}

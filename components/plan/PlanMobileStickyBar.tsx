@@ -71,9 +71,9 @@ export function PlanMobileStickyBar({
   return (
     <aside
       aria-label="Mobile plan actions"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-border-default px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-lift-lagoon animate-slide-up"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-border-default px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(0,0,0,0.08)] animate-slide-up"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 max-w-lg mx-auto">
         {/* Edit Button */}
         <Link
           href={editUrl}

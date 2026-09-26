@@ -20,6 +20,6 @@ export function AppMainContent({ children }: { children: React.ReactNode }) {
     return <div className="pt-16 sm:pt-20 pb-0">{children}</div>;
   }
 
-  // Consumer pages: 56px user nav + 64px mobile bottom nav on mobile
-  return <div className="pt-14 pb-16 md:pb-0">{children}</div>;
+  // Consumer pages: 56px top nav + dynamic safe-area clearance for mobile bottom bar
+  return <div className="pt-14 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-0">{children}</div>;
 }

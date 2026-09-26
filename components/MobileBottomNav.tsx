@@ -17,15 +17,27 @@ export default function MobileBottomNav() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Hide on business pages and standalone forms
+  // Hide on business pages, dedicated action surfaces (venue detail, generated plan, forge), auth routes, and standalone forms
   const isBusinessRoute =
     pathname === "/for-business" ||
     pathname === "/business" ||
     pathname?.startsWith("/business/") ||
     pathname?.startsWith("/partner");
 
+  const isDedicatedActionSurface =
+    pathname?.startsWith("/venue/") ||
+    pathname?.startsWith("/plan/") ||
+    pathname === "/forge";
+
+  const isAuthRoute =
+    pathname === "/login" ||
+    pathname?.startsWith("/login/") ||
+    pathname === "/account/finish-signup";
+
   if (
     isBusinessRoute ||
+    isDedicatedActionSurface ||
+    isAuthRoute ||
     pathname === "/feedback" ||
     pathname === "/list-your-spot" ||
     pathname === "/suggest-a-spot"

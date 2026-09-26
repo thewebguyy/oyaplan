@@ -98,7 +98,7 @@ export default function AuthModal() {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-md bg-white border border-[#EAE4DC] shadow-[0px_24px_48px_rgba(0,0,0,0.12)] rounded-[28px] p-6 sm:p-8">
+      <DialogContent className="sm:max-w-md bg-white border border-[#EAE4DC] shadow-[0px_24px_48px_rgba(0,0,0,0.12)] rounded-[28px] p-6 sm:p-8 max-h-[90dvh] overflow-y-auto">
         <DialogHeader className="space-y-2 text-center">
           <div className="flex justify-center mb-1">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#008751]/10 text-[#008751]">
