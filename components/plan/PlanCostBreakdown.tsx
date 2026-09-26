@@ -143,8 +143,8 @@ export function PlanCostBreakdown({
                 <span>Menu Pricing</span>
               </p>
               <p className="text-text-secondary leading-relaxed">
-                Prices are pulled directly from verified venue menus and receipts. Food and drink
-                allocations are scaled for {squadSize} person(s).
+                Prices are based on venue menu data collected by OyaPlan. Food and drink
+                allocations are estimated for {squadSize} person(s).
               </p>
             </div>
 
@@ -167,8 +167,13 @@ export function PlanCostBreakdown({
                 <span>Mandatory Charges</span>
               </p>
               <p className="text-text-secondary leading-relaxed">
-                Standard Nigerian statutory 7.5% VAT and 5% service charge are accounted for upfront to
-                prevent surprise billing on arrival.
+                {vatPct > 0 && serviceChargePct > 0
+                  ? `${vatPct}% VAT and ${serviceChargePct}% service charge are factored into this estimate. Actual charges at the venue may vary.`
+                  : vatPct > 0
+                  ? `${vatPct}% VAT is factored into this estimate. Service charge policies vary by venue.`
+                  : serviceChargePct > 0
+                  ? `${serviceChargePct}% service charge is factored into this estimate.`
+                  : 'VAT and service charge policies vary by venue and are not explicitly specified for this location.'}
               </p>
             </div>
 
@@ -176,7 +181,7 @@ export function PlanCostBreakdown({
             {freshnessText && (
               <div className="pt-2 border-t border-[#E5E0D8] flex items-center gap-1.5 text-[11px] text-text-muted">
                 <Clock className="w-3 h-3 text-[#008751]" />
-                <span>Last verified: {freshnessText}</span>
+                <span>Data freshness: {freshnessText}</span>
               </div>
             )}
           </div>

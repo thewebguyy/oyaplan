@@ -92,7 +92,7 @@ export function PlanWhatYouGet({
 
           {availableItems.length > 6 && (
             <p className="text-[11px] text-text-muted pt-1 text-center">
-              + {availableItems.length - 6} more verified items available on venue menu
+              + {availableItems.length - 6} more items on venue menu
             </p>
           )}
         </div>
@@ -112,7 +112,7 @@ export function PlanWhatYouGet({
               ? `Estimated entry fees and core experiences for ${squadSize} person(s). Final activities depend on selection at the venue.`
               : `Granular itemized menu data is limited. Estimated around ₦${Math.round(
                   foodCost / squadSize
-                ).toLocaleString('en-NG')} per person based on verified venue price range.`}
+                ).toLocaleString('en-NG')} per person based on venue price range.`}
           </p>
         </div>
       )}

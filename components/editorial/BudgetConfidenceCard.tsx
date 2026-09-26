@@ -33,12 +33,12 @@ export function BudgetConfidenceCard({ plan, originalBudget }: BudgetConfidenceC
             Budget Relationship
           </span>
           <h3 className="text-base sm:text-lg font-black text-midnight-lagoon">
-            Outing Cost & Savings
+            Outing Cost Estimate
           </h3>
         </div>
         <span className="text-[11px] font-bold text-[#008751] flex items-center gap-1 bg-[#008751]/10 px-2.5 py-1 rounded-full">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>All-Inclusive</span>
+          <span>Landed Estimate</span>
         </span>
       </div>
 

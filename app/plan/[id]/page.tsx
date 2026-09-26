@@ -170,8 +170,8 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           freshnessText={explanation.freshness}
           hasCar={hasCar}
           hasFood={plan.spot?.has_food}
-          serviceChargePct={venue?.service_charge_pct ?? 5}
-          vatPct={venue?.vat_pct ?? 7.5}
+          serviceChargePct={venue?.service_charge_pct ?? 0}
+          vatPct={venue?.vat_pct ?? 0}
         />
 
         {/* 4. Why This Plan */}

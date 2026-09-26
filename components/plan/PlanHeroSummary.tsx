@@ -31,7 +31,7 @@ export function PlanHeroSummary({
   startAreaName,
   spot,
   venue,
-  trustStatus = 'verified',
+  trustStatus = 'estimated',
   freshnessText,
   isSharedPlan = false,
 }: PlanHeroSummaryProps) {
