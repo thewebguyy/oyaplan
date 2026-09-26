@@ -1,8 +1,11 @@
-import * as React from "react"
-import { getInitials } from "@/lib/utils/avatar"
+"use client";
+
+import * as React from "react";
+import { getInitials } from "@/lib/utils/avatar";
 
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   name?: string | null;
+  src?: string | null;
   size?: "sm" | "md" | "lg" | "xl";
 }
 
@@ -17,7 +20,8 @@ const AVATAR_PALETTES = [
   { bg: "#FF5722", text: "#FFFFFF", emoji: "🍕" },
 ];
 
-export function Avatar({ name, size = "md", className = "", ...props }: AvatarProps) {
+export function Avatar({ name, src, size = "md", className = "", ...props }: AvatarProps) {
+  const [imageError, setImageError] = React.useState(false);
   const initials = getInitials(name);
   
   // Deterministic seed based on name
@@ -26,15 +30,32 @@ export function Avatar({ name, size = "md", className = "", ...props }: AvatarPr
 
   const sizeClasses = {
     sm: "w-8 h-8 text-xs",
-    md: "w-12 h-12 text-base",
-    lg: "w-16 h-16 text-xl",
+    md: "w-10 h-10 text-sm",
+    lg: "w-14 h-14 text-lg",
     xl: "w-20 h-20 text-2xl",
   };
+
+  if (src && !imageError) {
+    return (
+      <div
+        className={`relative inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full shadow-sm border border-black/10 select-none bg-surface-grey ${sizeClasses[size]} ${className}`}
+        {...props}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={name || "User avatar"}
+          onError={() => setImageError(true)}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  }
 
   return (
     <div
       style={{ backgroundColor: style.bg, color: style.text }}
-      className={`relative inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full font-black uppercase tracking-wider shadow-sm border-2 border-white/40 select-none ${sizeClasses[size]} ${className}`}
+      className={`relative inline-flex items-center justify-center shrink-0 overflow-hidden rounded-full font-black uppercase tracking-wider shadow-sm border border-black/10 select-none ${sizeClasses[size]} ${className}`}
       {...props}
     >
       <span className="relative z-10 flex items-center gap-0.5">
@@ -42,5 +63,5 @@ export function Avatar({ name, size = "md", className = "", ...props }: AvatarPr
         <span className="text-[0.7em] leading-none opacity-90">{style.emoji}</span>
       </span>
     </div>
-  )
+  );
 }

@@ -5,6 +5,7 @@ export interface UserProfile {
   id: string;
   role: 'planner' | 'scout' | 'venue_operator' | 'admin';
   display_name?: string;
+  avatar_url?: string | null;
   email?: string;
   profile_badge?: string | null;
   beta_joined_at?: string | null;
@@ -56,9 +57,11 @@ export class SessionResolver {
     // We fetch the profile directly to enforce RBAC downstream.
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, role, display_name, profile_badge, beta_joined_at, beta_onboarding_complete')
+      .select('id, role, display_name, avatar_url, profile_badge, beta_joined_at, beta_onboarding_complete')
       .eq('id', user.id)
       .single();
+
+    const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
 
     return {
       type: 'authenticated',
@@ -67,6 +70,7 @@ export class SessionResolver {
         id: user.id,
         role: profile?.role || 'planner',
         display_name: profile?.display_name,
+        avatar_url: avatarUrl,
         email: user.email,
         profile_badge: profile?.profile_badge || null,
         beta_joined_at: profile?.beta_joined_at || null,

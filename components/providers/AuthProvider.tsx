@@ -2,10 +2,13 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabaseBrowser } from '@/lib/supabase';
-import { Session } from '@supabase/supabase-js';
+import { Session, User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   session: Session | null;
+  user: User | null;
+  avatarUrl: string | null;
+  displayName: string | null;
   isLoading: boolean;
   isModalOpen: boolean;
   openModal: (reason?: string, returnTo?: string) => void;
@@ -67,10 +70,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   };
 
+  const user = session?.user ?? null;
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
+  const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || null;
+
   return (
     <AuthContext.Provider
       value={{
         session,
+        user,
+        avatarUrl,
+        displayName,
         isLoading,
         isModalOpen,
         openModal,

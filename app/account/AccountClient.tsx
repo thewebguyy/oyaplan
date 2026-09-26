@@ -206,6 +206,21 @@ export default function AccountClient({
         {/* 3. Section Rhythm */}
         <div className="space-y-4 pt-2 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-300 fill-mode-both">
           
+          <Link href="/saved" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
+                  <Bookmark className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-text-primary">Saved Spots</h3>
+                  <p className="text-sm text-text-muted mt-0.5">Places and venues you bookmarked</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-text-muted" />
+            </div>
+          </Link>
+
           <Link href="/dashboard" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -215,6 +230,21 @@ export default function AccountClient({
                 <div>
                   <h3 className="text-base font-bold text-text-primary">Saved Plans</h3>
                   <p className="text-sm text-text-muted mt-0.5">{savedPlansCount} outings planned</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-text-muted" />
+            </div>
+          </Link>
+
+          <Link href="/settings" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-text-primary">Settings</h3>
+                  <p className="text-sm text-text-muted mt-0.5">Login, security & preferences</p>
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 text-text-muted" />

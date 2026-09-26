@@ -4,8 +4,15 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-export async function updateProfile(data: { displayName: string }) {
-  if (!data.displayName || data.displayName.trim().length === 0) {
+export interface ProfileUpdateInput {
+  displayName?: string;
+  avatarUrl?: string | null;
+  phoneNumber?: string;
+  country?: string;
+}
+
+export async function updateProfile(data: ProfileUpdateInput) {
+  if (data.displayName !== undefined && data.displayName.trim().length === 0) {
     return { success: false, error: "Display name cannot be empty" };
   }
 
@@ -19,8 +26,14 @@ export async function updateProfile(data: { displayName: string }) {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll() {
-          // Action handles writing implicitly if needed
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Handled
+          }
         },
       },
     });
@@ -34,9 +47,22 @@ export async function updateProfile(data: { displayName: string }) {
       return { success: false, error: "Unauthorized" };
     }
 
+    const updates: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (data.displayName !== undefined) {
+      updates.display_name = data.displayName.trim();
+    }
+
+    if (data.avatarUrl !== undefined) {
+      updates.avatar_url = data.avatarUrl;
+    }
+
+    // Update profiles table
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ display_name: data.displayName.trim() })
+      .update(updates)
       .eq("id", user.id);
 
     if (updateError) {
@@ -44,8 +70,20 @@ export async function updateProfile(data: { displayName: string }) {
       return { success: false, error: "Failed to update profile" };
     }
 
+    // Also update auth user metadata if extra attributes were provided
+    if (data.phoneNumber || data.country || data.displayName) {
+      await supabase.auth.updateUser({
+        data: {
+          ...(data.displayName ? { full_name: data.displayName.trim(), name: data.displayName.trim() } : {}),
+          ...(data.phoneNumber ? { phone_number: data.phoneNumber.trim() } : {}),
+          ...(data.country ? { country: data.country.trim() } : {}),
+        },
+      });
+    }
+
     revalidatePath("/account");
     revalidatePath("/dashboard");
+    revalidatePath("/settings");
 
     return { success: true };
   } catch (error) {

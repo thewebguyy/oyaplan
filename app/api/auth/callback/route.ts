@@ -4,11 +4,13 @@ import { cookies } from 'next/headers';
 import { IdentityMergeService } from '@/lib/services/identity/identityMergeService';
 import { AnalyticsService } from '@/lib/services/analytics/analyticsService';
 import { captureServerException } from '@/lib/sentry';
+import { sanitizeReturnTo } from '@/lib/utils/returnTo';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/';
+  const rawNext = searchParams.get('next') ?? '/';
+  const safeNext = sanitizeReturnTo(rawNext, '/');
   
   if (code) {
     const cookieStore = await cookies();
@@ -27,7 +29,6 @@ export async function GET(request: Request) {
             );
           } catch {
             // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing user sessions.
           }
         },
       },
@@ -46,10 +47,6 @@ export async function GET(request: Request) {
       if (sessionId) {
         await IdentityMergeService.mergeIdentity(data.user.id, sessionId);
       } else {
-        // Happens when the magic link opens in a different cookie jar than the tab
-        // that started the flow (e.g. an in-app browser) — pre-signin activity and
-        // attribution for this user cannot be merged. Track it so we can measure
-        // how often it happens instead of losing it silently.
         console.warn('[AUTH CALLBACK] No oya_session_id cookie present — identity merge skipped', {
           userId: data.user.id,
         });
@@ -69,19 +66,25 @@ export async function GET(request: Request) {
         await IdentityMergeService.linkSavedPlan(data.user.id, pendingPlan);
       }
 
-      // 3. Beta welcome redirect: if user has a badge but hasn't completed onboarding,
-      //    route them through /beta/welcome before the normal destination.
+      // 3. Resolve profile state
       const { data: profile } = await supabase
         .from('profiles')
-        .select('profile_badge, beta_onboarding_complete')
+        .select('display_name, profile_badge, beta_onboarding_complete')
         .eq('id', data.user.id)
         .single();
 
+      // If user has a beta badge but hasn't completed onboarding, route through /beta/welcome
       if (profile?.profile_badge && !profile.beta_onboarding_complete) {
         return NextResponse.redirect(`${origin}/beta/welcome`);
       }
+
+      // If consumer profile is missing display_name and not going to business portal, route to finish-signup
+      const isBusinessTarget = safeNext.startsWith('/business') || safeNext.startsWith('/for-business');
+      if (!isBusinessTarget && (!profile?.display_name || profile.display_name.trim().length === 0)) {
+        return NextResponse.redirect(`${origin}/account/finish-signup?next=${encodeURIComponent(safeNext)}`);
+      }
       
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(`${origin}${safeNext}`);
     }
   }
 
