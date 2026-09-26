@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Sparkles, Compass, Bookmark, User } from "lucide-react";
+import { motion } from "framer-motion";
 import { useAuth } from "./providers/AuthProvider";
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { session, openModal } = useAuth();
+  const { session } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -65,108 +66,109 @@ export default function MobileBottomNav() {
     return qs ? `${href}?${qs}` : href;
   };
 
+  const isAccountActive = pathname.startsWith("/account") || pathname.startsWith("/settings");
+
   const navItems = [
     {
+      id: "plan",
       name: "Plan",
       href: "/",
       icon: Sparkles,
       isActive: pathname === "/" || pathname === "/forge",
     },
     {
+      id: "explore",
       name: "Explore",
       href: "/explore",
       icon: Compass,
       isActive: pathname.startsWith("/explore"),
     },
     {
+      id: "saved",
       name: "Saved",
       href: "/saved",
       icon: Bookmark,
       isActive: pathname.startsWith("/saved") || pathname === "/dashboard",
     },
+    {
+      id: "account",
+      name: "Account",
+      href: "/account",
+      icon: User,
+      isActive: isAccountActive,
+    },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#EAE4DC] md:hidden px-2 py-1 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
-      <nav className="flex items-center justify-around w-full max-w-md mx-auto">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-[#EAE4DC] md:hidden px-3 py-1.5 pb-safe shadow-[0_-8px_30px_rgba(0,0,0,0.07)]">
+      <nav className="flex items-center justify-around w-full max-w-md mx-auto relative">
         {navItems.map((item) => {
           const Icon = item.icon;
           const href = buildPreservedHref(item.href);
+          const active = item.isActive;
+
           return (
             <Link
-              key={item.name}
+              key={item.id}
               href={href}
               prefetch={true}
-              className={`flex flex-col items-center justify-center min-h-[44px] min-w-[48px] py-1 px-2.5 rounded-xl transition-all duration-200 tap-feedback ${
-                item.isActive
-                  ? "text-[#008751] font-bold"
-                  : "text-[#6B7280] hover:text-[#1A1A1A]"
-              }`}
+              className="relative flex flex-col items-center justify-center min-h-[48px] min-w-[56px] py-1 px-2.5 rounded-2xl group select-none cursor-pointer"
             >
-              <div className="relative">
+              {/* Animated Floating Pill Backdrop */}
+              {active && (
+                <motion.div
+                  layoutId="activeTabPill"
+                  className="absolute inset-0 bg-[#008751]/10 rounded-2xl border border-[#008751]/20 shadow-xs pointer-events-none"
+                  transition={{
+                    type: "spring",
+                    stiffness: 450,
+                    damping: 35,
+                    mass: 0.8,
+                  }}
+                />
+              )}
+
+              {/* Icon with Spring Bounce */}
+              <motion.div
+                animate={{
+                  scale: active ? 1.15 : 1,
+                  y: active ? -1.5 : 0,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 25,
+                }}
+                className="relative z-10"
+              >
                 <Icon
-                  className={`w-5 h-5 transition-transform ${
-                    item.isActive ? "scale-110 text-[#008751]" : "text-[#6B7280]"
+                  className={`w-5 h-5 transition-colors duration-200 ${
+                    active ? "text-[#008751] stroke-[2.4]" : "text-[#6B7280] group-hover:text-[#1A1A1A] stroke-[1.8]"
                   }`}
                 />
-                {item.isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#008751] rounded-full" />
-                )}
-              </div>
-              <span className="text-[11px] mt-0.5 font-medium tracking-tight">
+              </motion.div>
+
+              {/* Label & Active Dot */}
+              <span
+                className={`text-[11px] mt-0.5 font-bold tracking-tight relative z-10 transition-colors duration-200 ${
+                  active ? "text-[#008751]" : "text-[#6B7280] group-hover:text-[#1A1A1A]"
+                }`}
+              >
                 {item.name}
               </span>
+
+              {/* Glowing Pulse Dot for Active State */}
+              {active && (
+                <motion.span
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-1.5 h-1.5 bg-[#008751] rounded-full mt-0.5 shadow-[0_0_6px_rgba(0,135,81,0.6)]"
+                />
+              )}
             </Link>
           );
         })}
-
-        {/* Account / Sign In Tab */}
-        {showSessionState ? (
-          <Link
-            href="/account"
-            prefetch={true}
-            className={`flex flex-col items-center justify-center min-h-[44px] min-w-[48px] py-1 px-2.5 rounded-xl transition-all duration-200 tap-feedback ${
-              pathname.startsWith("/account") || pathname.startsWith("/settings")
-                ? "text-[#008751] font-bold"
-                : "text-[#6B7280] hover:text-[#1A1A1A]"
-            }`}
-            aria-label="Account"
-          >
-            <div className="relative">
-              <User 
-                className={`w-5 h-5 transition-transform ${
-                  pathname.startsWith("/account") || pathname.startsWith("/settings")
-                    ? "scale-110 text-[#008751]" 
-                    : "text-[#6B7280]"
-                }`} 
-              />
-              {(pathname.startsWith("/account") || pathname.startsWith("/settings")) && (
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#008751] rounded-full" />
-              )}
-            </div>
-            <span className="text-[11px] mt-0.5 font-medium tracking-tight">
-              Account
-            </span>
-          </Link>
-        ) : (
-          <Link
-            href="/account"
-            prefetch={true}
-            className={`flex flex-col items-center justify-center min-h-[44px] min-w-[48px] py-1 px-2.5 rounded-xl transition-all duration-200 tap-feedback ${
-              pathname.startsWith("/account")
-                ? "text-[#008751] font-bold"
-                : "text-[#6B7280] hover:text-[#1A1A1A]"
-            }`}
-            aria-label="Account"
-          >
-            <div className="relative">
-              <User className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] mt-0.5 font-medium tracking-tight">
-              Account
-            </span>
-          </Link>
-        )}
       </nav>
     </div>
   );

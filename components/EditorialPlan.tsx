@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ForgeInput, PlanEvaluation, PlanExplanation } from "@/lib/types";
 import { PlanHeader } from "./editorial/PlanHeader";
 import { BudgetConfidenceCard } from "./editorial/BudgetConfidenceCard";
@@ -11,7 +12,7 @@ import { ExclusionList } from "./editorial/ExclusionList";
 import { formatConfidenceEvidence } from "@/lib/utils/editorialFormatter";
 import { getVibeConfig } from "@/lib/constants/vibes";
 import { calculateTransportTime } from "@/lib/utils/calculateTransportTime";
-import { Shield, Check } from "lucide-react";
+import { Shield, Check, ChevronDown } from "lucide-react";
 import RouteCard from "./dossier/RouteCard";
 import TransportEstimateCard from "./TransportEstimateCard";
 import { LocationService } from "@/lib/services/LocationService";
@@ -40,6 +41,7 @@ export default function EditorialPlan({
   const { plan } = evaluation;
   const explanation: Partial<PlanExplanation> = plan.explanation || {};
   const diff = originalBudget ? originalBudget - plan.totalCost : 0;
+  const [isWhyDropdownOpen, setIsWhyDropdownOpen] = useState(false);
 
   const getSquadWord = (size: number) => {
     const words = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
@@ -83,112 +85,141 @@ export default function EditorialPlan({
           </div>
         )}
 
-        {/* 4. Verified Landed Guarantee Proof Seal */}
-        <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-[24px] p-6 sm:p-7 space-y-4">
-          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#008751]/10 flex items-center justify-center text-[#008751]">
+        {/* 4. Unified Landed Guarantee & Why We Picked This Spot (Collapsible Accordion for Mobile Simplicity) */}
+        <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-[24px] overflow-hidden shadow-xs transition-all">
+          <button
+            type="button"
+            onClick={() => setIsWhyDropdownOpen(!isWhyDropdownOpen)}
+            className="w-full p-5 sm:p-6 flex items-center justify-between gap-3 text-left hover:bg-black/[0.02] transition-colors cursor-pointer"
+            aria-expanded={isWhyDropdownOpen}
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-[#008751]/10 flex items-center justify-center text-[#008751] shrink-0">
                 <Shield className="w-5 h-5 stroke-[2.5]" />
               </div>
-              <div>
-                <span className="text-[10px] uppercase tracking-widest font-black text-[#008751] block">Anti-Deception Check</span>
-                <h4 className="text-base font-black text-[#111827]">Lagos Landed Price Guarantee</h4>
-              </div>
-            </div>
-            <span className="text-xs font-black text-[#008751] bg-[#008751]/10 px-3 py-1 rounded-full uppercase tracking-wider">
-              100% Transparent
-            </span>
-          </div>
-
-          {/* Tangible Proof Items */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
-              </div>
-              <span>{plan.spot.has_food === false ? "Verified admission & entry rate" : "Real menu & drink prices"}</span>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
-              </div>
-              <span>Round-trip ride-hailing covered</span>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
-              </div>
-              <span>{plan.spot.has_food === false ? "Access & gate fees accounted for" : "VAT 7.5% & service charges included"}</span>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-              <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
-              </div>
-              <span>Zero hidden cover or surprise fees</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 6. Why this plan? Section */}
-        <div className="bg-white border border-border-default/60 rounded-[20px] p-6 space-y-3">
-          <h4 className="type-ui-label font-bold text-midnight-lagoon uppercase tracking-wider text-xs">Why we picked {plan.spot.name} for you</h4>
-          <ul className="space-y-2.5">
-            {(explanation.ordered_reasons || []).length > 0 ? (
-              explanation.ordered_reasons?.map((reason, idx) => (
-                <li key={idx} className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
-                  <span className="text-[#008751] font-bold select-none">•</span>
-                  <span>{reason}</span>
-                </li>
-              ))
-            ) : (
-              <>
-                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
-                  <span className="text-[#008751] font-bold select-none">•</span>
-                  <span>
-                    {diff < 0 
-                      ? `Stays near your budget limits, costing ₦${plan.totalCost.toLocaleString()} total`
-                      : `Fits comfortably inside your ₦${(originalBudget || plan.totalCost).toLocaleString()} budget limit`
-                    }
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] uppercase tracking-widest font-black text-[#008751] block">Anti-Deception Check</span>
+                  <span className="text-[10px] font-bold text-white bg-[#008751] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    100% Transparent
                   </span>
-                </li>
-                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
-                  <span className="text-[#008751] font-bold select-none">•</span>
-                  <span>
-                    {input.startArea && input.startArea !== "anywhere"
-                      ? calculateTransportTime(input.startArea, plan.spot.coordinates).displayCopy
-                      : "Est. round-trip transport (Uber/Bolt) is factored into standard Lagos routes"
-                    }
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
-                  <span className="text-[#008751] font-bold select-none">•</span>
-                  <span>{getVibeConfig(input.vibe).receiptFull}</span>
-                </li>
-                <li className="flex items-start gap-2.5 text-sm text-text-secondary font-medium">
-                  <span className="text-[#008751] font-bold select-none">•</span>
-                  <span>Perfect for a squad size of {getSquadWord(input.squadSize)}</span>
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
+                </div>
+                <h4 className="text-sm sm:text-base font-black text-[#111827] truncate mt-0.5">
+                  Lagos Landed Guarantee & Match Reasons
+                </h4>
+                <p className="text-xs text-text-muted font-medium truncate">
+                  {isWhyDropdownOpen ? "Tap to collapse guarantee & reasoning" : "Tap to view menu verification, fees & reasoning"}
+                </p>
+              </div>
+            </div>
 
-        {/* 7. Things to Know — Surfacing Trade-Offs */}
-        {(explanation.things_to_know || []).length > 0 && (
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-[20px] p-5 space-y-2">
-            <h4 className="text-xs font-black uppercase text-amber-800 tracking-wider flex items-center gap-1.5">
-              <span>⚠️ Things to know</span>
-            </h4>
-            <ul className="space-y-1.5">
-              {explanation.things_to_know?.map((item, idx) => (
-                <li key={idx} className="text-xs text-amber-900 font-medium flex items-start gap-2">
-                  <span className="select-none text-amber-600">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+            <div className="w-8 h-8 rounded-full bg-white border border-[#E5E7EB] flex items-center justify-center shrink-0 text-[#4B5563] shadow-xs">
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isWhyDropdownOpen ? 'rotate-180 text-[#008751]' : ''}`} />
+            </div>
+          </button>
+
+          {isWhyDropdownOpen && (
+            <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-[#E5E7EB]/70 space-y-5 animate-in fade-in-50 duration-200">
+              {/* Tangible Proof Items */}
+              <div className="space-y-2 pt-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-text-muted block">
+                  Price Protection & Inclusions
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-white p-4 rounded-xl border border-border-default/60">
+                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                    </div>
+                    <span>{plan.spot.has_food === false ? "Verified admission & entry rate" : "Real menu & drink prices"}</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                    </div>
+                    <span>Round-trip ride-hailing covered</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                    </div>
+                    <span>{plan.spot.has_food === false ? "Access & gate fees accounted for" : "VAT 7.5% & service charges included"}</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                    </div>
+                    <span>Zero hidden cover or surprise fees</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Why this spot for you */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-text-muted block">
+                  Why We Picked {plan.spot.name}
+                </span>
+                <div className="bg-white p-4 rounded-xl border border-border-default/60">
+                  <ul className="space-y-2.5">
+                    {(explanation.ordered_reasons || []).length > 0 ? (
+                      explanation.ordered_reasons?.map((reason, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
+                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span>{reason}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
+                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span>
+                            {diff < 0 
+                              ? `Stays near your budget limits, costing ₦${plan.totalCost.toLocaleString()} total`
+                              : `Fits comfortably inside your ₦${(originalBudget || plan.totalCost).toLocaleString()} budget limit`
+                            }
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
+                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span>
+                            {input.startArea && input.startArea !== "anywhere"
+                              ? calculateTransportTime(input.startArea, plan.spot.coordinates).displayCopy
+                              : "Est. round-trip transport (Uber/Bolt) is factored into standard Lagos routes"
+                            }
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
+                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span>{getVibeConfig(input.vibe).receiptFull}</span>
+                        </li>
+                        <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
+                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span>Perfect for a squad size of {getSquadWord(input.squadSize)}</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Things to Know — Surfacing Trade-Offs */}
+              {(explanation.things_to_know || []).length > 0 && (
+                <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 space-y-1.5">
+                  <h4 className="text-xs font-black uppercase text-amber-800 tracking-wider flex items-center gap-1.5">
+                    <span>⚠️ Things to know</span>
+                  </h4>
+                  <ul className="space-y-1.5">
+                    {explanation.things_to_know?.map((item, idx) => (
+                      <li key={idx} className="text-xs text-amber-900 font-medium flex items-start gap-2">
+                        <span className="select-none text-amber-600">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* 8. Transport Range & Route Evidence */}
         {(() => {

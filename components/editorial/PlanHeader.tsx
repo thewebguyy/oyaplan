@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { ForgeInput, Plan } from "@/lib/types";
 import { VenueImage } from "@/components/ui/VenueImage";
-import { MapPin, Sparkles } from "lucide-react";
+import { MapPin, Sparkles, ExternalLink } from "lucide-react";
 
 export function PlanHeader({
   input,
@@ -49,6 +50,8 @@ export function PlanHeader({
     ? plan.spot.address_slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
     : input.startArea || "Lagos";
 
+  const venueHref = `/venue/${plan.spot.id || plan.spot.address_slug || 'lagos'}`;
+
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
       {isTopPick ? (
@@ -65,16 +68,26 @@ export function PlanHeader({
       )}
 
       {/* Resy/OpenTable High-Converting Image Frame */}
-      <div className="w-full max-w-2xl aspect-[16/9] mb-8 rounded-[24px] overflow-hidden img-zoom-container shadow-2xl relative border border-black/5">
+      <Link 
+        href={venueHref}
+        aria-label={`Explore verified details and full menu for ${plan.spot.name}`}
+        className="w-full max-w-2xl aspect-[16/9] mb-8 rounded-[24px] overflow-hidden img-zoom-container shadow-2xl relative border border-black/5 block group cursor-pointer"
+      >
         <VenueImage 
           src={plan.spot.image_url || plan.spot.cover_url} 
           alt={plan.spot.name} 
           fallbackCategory={plan.spot.category}
-          className="img-zoom"
+          className="img-zoom group-hover:scale-105 transition-transform duration-500"
         />
         {/* Subtle Dark Vignette & Live Badge Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/20 group-hover:from-black/80 transition-colors" />
         
+        {/* Top hover indicator */}
+        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md text-[#111827] px-3 py-1.5 rounded-full text-xs font-bold shadow-md opacity-90 group-hover:opacity-100 group-hover:bg-[#008751] group-hover:text-white transition-all flex items-center gap-1">
+          <span>View Venue & Menu</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </div>
+
         {/* Bottom Floating Pill Indicators */}
         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-bold pointer-events-none">
           <span className="inline-flex items-center gap-1 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] uppercase tracking-wider">
@@ -85,15 +98,19 @@ export function PlanHeader({
             {plan.spot.has_food === false ? "Verified Admission" : "Verified Menu"}
           </span>
         </div>
-      </div>
+      </Link>
 
       <h2 className="type-display-product text-[#111827] uppercase tracking-tight text-xl sm:text-3xl font-black mb-2">
         {plan.title || getHeadline()}
       </h2>
       <div className="flex items-center gap-2 justify-center flex-col sm:flex-row">
-        <p className="type-tagline text-[#4B5563] text-lg font-semibold">
-          {plan.subtitle || `at ${plan.spot.name}`}
-        </p>
+        <Link 
+          href={venueHref}
+          className="type-tagline text-[#4B5563] hover:text-[#008751] text-lg font-semibold inline-flex items-center gap-1.5 transition-colors group cursor-pointer"
+        >
+          <span>{plan.subtitle || `at ${plan.spot.name}`}</span>
+          <ExternalLink className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-[#008751]" />
+        </Link>
       </div>
 
       {/* Resy Structured Data Badges */}
