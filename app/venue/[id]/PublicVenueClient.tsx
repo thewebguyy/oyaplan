@@ -78,6 +78,10 @@ export function PublicVenueClient({
         photos={photos}
         areaName={areaName}
         areaSlug={areaSlug}
+        fromPlan={fromPlan}
+        planSquad={planSquad}
+        planBudget={planBudget}
+        planVibe={planVibe}
         onOpenCorrection={() => setIsCorrectionOpen(true)}
       />
 

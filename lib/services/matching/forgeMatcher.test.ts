@@ -145,40 +145,40 @@ const BASE_INPUT: ForgeInput = {
 // ─── calculateZoneFare ────────────────────────────────────────────────────────
 
 describe('calculateZoneFare', () => {
-  it('returns ₦6,000 for same area (local trip)', () => {
-    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(6000);
-    expect(calculateZoneFare('yaba', 'yaba')).toBe(6000);
-    expect(calculateZoneFare('lekki-phase-1', 'lekki-phase-1')).toBe(6000);
+  it('returns ₦9,000 for same area (local trip)', () => {
+    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(9000);
+    expect(calculateZoneFare('yaba', 'yaba')).toBe(9000);
+    expect(calculateZoneFare('lekki-phase-1', 'lekki-phase-1')).toBe(9000);
   });
 
-  it('returns ₦7,000 for same zone, different area (mainland–mainland)', () => {
-    // ikeja and gbagada are both mainland -> 3500 one way -> 7000 round trip
-    expect(calculateZoneFare('ikeja', 'gbagada')).toBe(7000);
+  it('returns ₦10,000 for same zone, different area (mainland–mainland)', () => {
+    // ikeja and gbagada are both mainland -> 5000 one way -> 10000 round trip
+    expect(calculateZoneFare('ikeja', 'gbagada')).toBe(10000);
   });
 
-  it('returns ₦7,000 for same zone, different area (island–island)', () => {
-    // lekki-phase-1 and vi are both island -> 3500 one way -> 7000 round trip
-    expect(calculateZoneFare('lekki-phase-1', 'vi')).toBe(7000);
+  it('returns ₦10,000 for same zone, different area (island–island)', () => {
+    // lekki-phase-1 and vi are both island -> 5000 one way -> 10000 round trip
+    expect(calculateZoneFare('lekki-phase-1', 'vi')).toBe(10000);
   });
 
-  it('returns ₦7,000 for same zone, different area (central–central)', () => {
-    // yaba and surulere are both central -> 3500 one way -> 7000 round trip
-    expect(calculateZoneFare('yaba', 'surulere')).toBe(7000);
+  it('returns ₦10,000 for same zone, different area (central–central)', () => {
+    // yaba and surulere are both central -> 5000 one way -> 10000 round trip
+    expect(calculateZoneFare('yaba', 'surulere')).toBe(10000);
   });
 
-  it('returns ₦9,000 for mainland ↔ central', () => {
-    expect(calculateZoneFare('ikeja', 'yaba')).toBe(9000);
-    expect(calculateZoneFare('yaba', 'ikeja')).toBe(9000);
+  it('returns ₦13,000 for mainland ↔ central', () => {
+    expect(calculateZoneFare('ikeja', 'yaba')).toBe(13000);
+    expect(calculateZoneFare('yaba', 'ikeja')).toBe(13000);
   });
 
-  it('returns ₦11,000 for central ↔ island', () => {
-    expect(calculateZoneFare('yaba', 'lekki-phase-1')).toBe(11000);
-    expect(calculateZoneFare('lekki-phase-1', 'yaba')).toBe(11000);
+  it('returns ₦16,000 for central ↔ island', () => {
+    expect(calculateZoneFare('yaba', 'lekki-phase-1')).toBe(16000);
+    expect(calculateZoneFare('lekki-phase-1', 'yaba')).toBe(16000);
   });
 
-  it('returns ₦17,000 for mainland ↔ island', () => {
-    expect(calculateZoneFare('ikeja', 'lekki-phase-1')).toBe(17000);
-    expect(calculateZoneFare('lekki-phase-1', 'ikeja')).toBe(17000);
+  it('returns ₦26,000 for mainland ↔ island', () => {
+    expect(calculateZoneFare('ikeja', 'lekki-phase-1')).toBe(26000);
+    expect(calculateZoneFare('lekki-phase-1', 'ikeja')).toBe(26000);
   });
 
   it('is symmetric — origin and destination can be swapped', () => {
@@ -193,13 +193,13 @@ describe('calculateZoneFare', () => {
     }
   });
 
-  it('applies Apapa surcharge (+₦3,000 round trip) on top of base fare', () => {
-    // apapa → central: base one-way 4000 + 1500 surcharge = 5500. Round trip = 11000.
-    expect(calculateZoneFare('apapa', 'yaba')).toBe(11000);
-    // apapa → mainland: base one-way 4500 + 1500 = 6000. Round trip = 12000.
-    expect(calculateZoneFare('apapa', 'ikeja')).toBe(12000);
-    // apapa → island: base one-way 6000 + 1500 = 7500. Round trip = 15000.
-    expect(calculateZoneFare('apapa', 'lekki-phase-1')).toBe(15000);
+  it('applies Apapa surcharge (+₦5,000 round trip) on top of base fare', () => {
+    // apapa → central: base one-way 6000 + 2500 surcharge = 8500. Round trip = 17000.
+    expect(calculateZoneFare('apapa', 'yaba')).toBe(17000);
+    // apapa → mainland: base one-way 6500 + 2500 = 9000. Round trip = 18000.
+    expect(calculateZoneFare('apapa', 'ikeja')).toBe(18000);
+    // apapa → island: base one-way 9000 + 2500 = 11500. Round trip = 23000.
+    expect(calculateZoneFare('apapa', 'lekki-phase-1')).toBe(23000);
   });
 
   it('returns rounded values (nearest ₦500) for all trips', () => {
@@ -212,14 +212,14 @@ describe('calculateZoneFare', () => {
     }
   });
 
-  it('same-area trip returns ₦6,000 realistic round trip', () => {
-    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(6000);
+  it('same-area trip returns ₦9,000 realistic round trip', () => {
+    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(9000);
   });
 
   it('uses ikeja as default zone for unknown area slugs', () => {
     // Unknown areas fall to ZONES["unknown"] = undefined → "other" zone.
-    // "other" to mainland: (4500 + 1500) × 2 = 12000
-    expect(calculateZoneFare('unknown-area', 'ikeja')).toBe(12000);
+    // "other" to mainland: (6500 + 2500) × 2 = 18000
+    expect(calculateZoneFare('unknown-area', 'ikeja')).toBe(18000);
   });
 
   it('returns all-positive values for all known area pairs', () => {

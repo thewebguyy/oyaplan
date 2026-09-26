@@ -204,6 +204,11 @@ export default function EditorialPlan({
                 minCost={plan.transportMinCost}
                 maxCost={plan.transportMaxCost}
                 transportCost={plan.transportCost}
+                costPerPerson={plan.transportEstimate?.costPerPerson}
+                minCostPerPerson={plan.transportEstimate?.minCostPerPerson}
+                maxCostPerPerson={plan.transportEstimate?.maxCostPerPerson}
+                partySize={input.squadSize || 1}
+                vehiclesRequired={plan.transportEstimate?.vehiclesRequired || (input.squadSize ? Math.ceil(input.squadSize / 4) : 1)}
                 mode={plan.transportMode || input.transportMode || "ride-hailing"}
                 confidenceScore={plan.transportConfidenceScore}
                 confidenceLabel={plan.transportConfidenceLabel || "Typical estimate"}

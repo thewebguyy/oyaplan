@@ -8,15 +8,15 @@ interface AnchorItem {
 }
 
 const ANCHORS: AnchorItem[] = [
-  { id: "overview", label: "Overview" },
   { id: "pricing", label: "What It Costs" },
   { id: "scenarios", label: "What You Can Get" },
   { id: "menu", label: "Menu" },
+  { id: "overview", label: "Vibe & Fit" },
   { id: "good-to-know", label: "Good to Know" },
 ];
 
 export function VenueStickyAnchorNav() {
-  const [activeSection, setActiveSection] = useState<string>("overview");
+  const [activeSection, setActiveSection] = useState<string>("pricing");
 
   useEffect(() => {
     const handleScroll = () => {

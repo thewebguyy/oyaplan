@@ -10,6 +10,9 @@ interface PlanWhatYouGetProps {
   venue?: Venue | null;
   menuItems?: MenuItem[];
   hasFood?: boolean;
+  budget?: number;
+  vibe?: string;
+  startAreaName?: string;
 }
 
 export function PlanWhatYouGet({
@@ -19,9 +22,21 @@ export function PlanWhatYouGet({
   venue,
   menuItems = [],
   hasFood = true,
+  budget,
+  vibe,
+  startAreaName,
 }: PlanWhatYouGetProps) {
   const isActivity = hasFood === false || spot?.has_food === false;
   const venueId = venue?.id || spot?.id;
+
+  const planQueryParams = new URLSearchParams();
+  planQueryParams.set('fromPlan', 'true');
+  planQueryParams.set('squad', squadSize.toString());
+  if (budget) planQueryParams.set('budget', budget.toString());
+  if (vibe) planQueryParams.set('vibe', vibe);
+  if (startAreaName) planQueryParams.set('startArea', startAreaName);
+
+  const venueMenuHref = venueId ? `/venue/${venueId}?${planQueryParams.toString()}#menu` : '#';
 
   // Filter available items
   const availableItems = menuItems.filter((i) => i.is_available !== false);
@@ -131,7 +146,7 @@ export function PlanWhatYouGet({
       {venueId && (
         <div className="pt-1 flex justify-center">
           <Link
-            href={`/venue/${venueId}#menu`}
+            href={venueMenuHref}
             className="text-xs font-bold text-[#008751] hover:text-[#007043] inline-flex items-center gap-1.5 transition-colors tap-feedback py-1"
           >
             <span>View full {spot?.name || venue?.name || 'venue'} menu & prices</span>

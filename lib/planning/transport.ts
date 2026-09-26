@@ -74,6 +74,7 @@ export function getDepartureBucket(departureAt?: Date): DepartureBucket {
 /**
  * Deterministic Lagos 2026 Zone Fare Formula
  * Returns round-trip cost in Naira with party size vehicle capacity modeling.
+ * Inflation-adjusted for current Lagos ride-hailing / fuel realities.
  */
 export function calculateZoneFare(origin: string, destination: string, partySize: number = 1): number {
   const normOrigin = origin?.toLowerCase().trim() || "ikeja";
@@ -82,41 +83,41 @@ export function calculateZoneFare(origin: string, destination: string, partySize
   const zone1 = ZONES[normOrigin] || (normOrigin === "anywhere" ? "anywhere" : "other");
   const zone2 = ZONES[normDest] || "other";
 
-  let baseOneWayPerVehicle = 3000;
+  let baseOneWayPerVehicle = 4500;
 
   if (normOrigin === "anywhere") {
-    baseOneWayPerVehicle = 3500;
+    baseOneWayPerVehicle = 5000;
   } else if (normOrigin === normDest) {
-    baseOneWayPerVehicle = 3000;
+    baseOneWayPerVehicle = 4500;
   } else if (zone1 === "other" || zone2 === "other") {
     const nonApapaZone = zone1 === "other" ? zone2 : zone1;
     if (nonApapaZone === "other") {
-      baseOneWayPerVehicle = 3500;
+      baseOneWayPerVehicle = 5000;
     } else if (nonApapaZone === "central") {
-      baseOneWayPerVehicle = 4000;
-    } else if (nonApapaZone === "mainland") {
-      baseOneWayPerVehicle = 4500;
-    } else if (nonApapaZone === "island") {
       baseOneWayPerVehicle = 6000;
+    } else if (nonApapaZone === "mainland") {
+      baseOneWayPerVehicle = 6500;
+    } else if (nonApapaZone === "island") {
+      baseOneWayPerVehicle = 9000;
     }
-    baseOneWayPerVehicle += 1500; // Apapa / outlying zone surcharge
+    baseOneWayPerVehicle += 2500; // Apapa / outlying zone surcharge
   } else if (zone1 === zone2) {
-    baseOneWayPerVehicle = 3500;
+    baseOneWayPerVehicle = 5000;
   } else if (
     (zone1 === "mainland" && zone2 === "central") ||
     (zone1 === "central" && zone2 === "mainland")
   ) {
-    baseOneWayPerVehicle = 4500;
+    baseOneWayPerVehicle = 6500;
   } else if (
     (zone1 === "central" && zone2 === "island") ||
     (zone1 === "island" && zone2 === "central")
   ) {
-    baseOneWayPerVehicle = 5500;
+    baseOneWayPerVehicle = 8000;
   } else if (
     (zone1 === "mainland" && zone2 === "island") ||
     (zone1 === "island" && zone2 === "mainland")
   ) {
-    baseOneWayPerVehicle = 8500;
+    baseOneWayPerVehicle = 13000;
   }
 
   const vehicleCapacity = 4;
@@ -133,6 +134,10 @@ export interface TransportRange {
   minCost: number;
   maxCost: number;
   midpointCost: number;
+  costPerPerson?: number;
+  minCostPerPerson?: number;
+  maxCostPerPerson?: number;
+  surgeMultiplier?: number;
 }
 
 export interface TransportEstimate {
@@ -141,6 +146,10 @@ export interface TransportEstimate {
   low: number;
   high: number;
   midpointCost: number;
+  costPerPerson?: number;
+  minCostPerPerson?: number;
+  maxCostPerPerson?: number;
+  surgeMultiplier?: number;
   mode: TransportMode;
   origin: string;
   destination: string;
@@ -187,7 +196,11 @@ export class TransportPricingProvider {
         reason: "NO_ROUTE_DATA",
         minCost: 0,
         maxCost: 0,
-        midpointCost: 0
+        midpointCost: 0,
+        costPerPerson: 0,
+        minCostPerPerson: 0,
+        maxCostPerPerson: 0,
+        surgeMultiplier: 1.0,
       };
     }
 
@@ -203,12 +216,33 @@ export class TransportPricingProvider {
       ? 0 
       : rawBase * profile.multiplier;
 
-    const delta = scaledBase * profile.variancePercent;
-    const minCost = scaledBase === 0 ? 0 : Math.floor((scaledBase - delta) / 500) * 500;
-    const maxCost = scaledBase === 0 ? 0 : Math.ceil((scaledBase + delta) / 500) * 500;
+    // Determine surge scale factor based on departure window
+    const bucket = getDepartureBucket(departureAt);
+    const surgeMultiplier = mode === "ride-hailing"
+      ? (bucket === "peak" ? 1.45 : bucket === "late-night" ? 1.20 : 1.0)
+      : (bucket === "peak" ? 1.20 : 1.0);
+
+    const minDelta = scaledBase * profile.variancePercent;
+    const minCost = scaledBase === 0 ? 0 : Math.max(500, Math.floor((scaledBase - minDelta) / 500) * 500);
+    // Upper bound incorporates the multiplicative surge factor + variance to guarantee full rush-hour surge coverage
+    const maxCost = scaledBase === 0 ? 0 : Math.ceil((scaledBase * surgeMultiplier * (1 + profile.variancePercent)) / 500) * 500;
     const midpointCost = Math.round(scaledBase / 500) * 500;
 
-    return { status: "available", minCost, maxCost, midpointCost };
+    const validParty = Math.max(1, partySize);
+    const costPerPerson = Math.round((midpointCost / validParty) / 100) * 100;
+    const minCostPerPerson = Math.round((minCost / validParty) / 100) * 100;
+    const maxCostPerPerson = Math.round((maxCost / validParty) / 100) * 100;
+
+    return { 
+      status: "available", 
+      minCost, 
+      maxCost, 
+      midpointCost,
+      costPerPerson,
+      minCostPerPerson,
+      maxCostPerPerson,
+      surgeMultiplier
+    };
   }
 
   static calculateEstimate(
@@ -234,6 +268,10 @@ export class TransportPricingProvider {
       low: range.minCost,
       high: range.maxCost,
       midpointCost: range.midpointCost,
+      costPerPerson: range.costPerPerson,
+      minCostPerPerson: range.minCostPerPerson,
+      maxCostPerPerson: range.maxCostPerPerson,
+      surgeMultiplier: range.surgeMultiplier,
       mode,
       origin,
       destination,
@@ -243,8 +281,8 @@ export class TransportPricingProvider {
       departureAssumption: getDepartureBucket(departureAt),
       departure_assumption: getDepartureBucket(departureAt),
       isCrossWater,
-      calculationVersion: "2026-v2",
-      calculation_version: "2026-v2"
+      calculationVersion: "2026-v3",
+      calculation_version: "2026-v3"
     };
   }
 }

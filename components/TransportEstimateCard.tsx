@@ -9,6 +9,11 @@ interface TransportEstimateCardProps {
   minCost?: number;
   maxCost?: number;
   transportCost: number;
+  costPerPerson?: number;
+  minCostPerPerson?: number;
+  maxCostPerPerson?: number;
+  partySize?: number;
+  vehiclesRequired?: number;
   mode?: string;
   confidenceScore?: number;
   confidenceLabel?: string;
@@ -25,6 +30,11 @@ export default function TransportEstimateCard({
   minCost,
   maxCost,
   transportCost,
+  costPerPerson,
+  minCostPerPerson,
+  maxCostPerPerson,
+  partySize = 1,
+  vehiclesRequired = 1,
   mode = "ride-hailing",
   confidenceLabel = "Typical estimate",
   badgeColor = "yellow",
@@ -116,6 +126,21 @@ export default function TransportEstimateCard({
             </button>
           </div>
           <p className="text-2xl font-black text-midnight-lagoon tracking-tight">{rangeCopy}</p>
+          {!isUnavailable && (
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-xs text-text-secondary font-medium">
+              {partySize > 1 ? (
+                <>
+                  <span className="text-[#008751] font-bold">
+                    ~₦{(minCostPerPerson ?? Math.round(displayMin / partySize / 100) * 100).toLocaleString()} – ₦{(maxCostPerPerson ?? Math.round(displayMax / partySize / 100) * 100).toLocaleString()} / person
+                  </span>
+                  <span className="text-text-muted">•</span>
+                  <span>Squad of {partySize} ({vehiclesRequired} {vehiclesRequired > 1 ? "cars" : "car"})</span>
+                </>
+              ) : (
+                <span className="text-text-muted">Solo Outing • 1 car round-trip</span>
+              )}
+            </div>
+          )}
         </div>
 
         <div

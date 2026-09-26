@@ -27,6 +27,10 @@ interface VenueHeroGalleryProps {
   photos: VenuePhoto[];
   areaName?: string;
   areaSlug?: string;
+  fromPlan?: boolean;
+  planSquad?: number;
+  planBudget?: number;
+  planVibe?: string;
   onOpenCorrection?: () => void;
 }
 
@@ -35,6 +39,10 @@ export function VenueHeroGallery({
   photos = [],
   areaName = "Lagos",
   areaSlug = "ikeja",
+  fromPlan = false,
+  planSquad,
+  planBudget,
+  planVibe,
   onOpenCorrection,
 }: VenueHeroGalleryProps) {
   const { isSaved, saveSpot, removeSpot } = useSavedSpots();
@@ -89,7 +97,11 @@ export function VenueHeroGallery({
   const currentDayName = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
   const todayHours = venue.opening_hours ? (venue.opening_hours as Record<string, string>)[currentDayName] : null;
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=2&budget=${lowSpend}&vibe=${encodeURIComponent(venue.vibe_tags?.[0] || "chill")}&fresh=true`;
+  const targetSquad = planSquad && planSquad > 0 ? planSquad : 2;
+  const targetBudget = planBudget && planBudget > 0 ? planBudget : lowSpend;
+  const targetVibe = planVibe || venue.vibe_tags?.[0] || "chill";
+
+  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${targetSquad}&budget=${targetBudget}&vibe=${encodeURIComponent(targetVibe)}&fresh=true`;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.name}, ${venue.address}, Lagos`)}`;
 
   return (

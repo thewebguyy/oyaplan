@@ -14,6 +14,10 @@ export type TransportEstimate = {
   low: number;
   high: number;
   midpointCost?: number;
+  costPerPerson?: number;
+  minCostPerPerson?: number;
+  maxCostPerPerson?: number;
+  surgeMultiplier?: number;
   mode: string;
   origin: string;
   destination: string;

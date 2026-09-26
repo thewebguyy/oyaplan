@@ -1,124 +1,99 @@
-# OyaPlan — Phase 7: Plan → Venue Decision Architecture Audit
+# OyaPlan — Phase 7: Venue Decision Experience Audit
 
-**Status:** APPROVED FOR IMPLEMENTATION  
-**Role:** Senior Product Designer + Senior Frontend Engineer + UX Architect + Information Architecture Specialist  
-**Scope:** Phase 7 — Plan → Venue Decision Experience  
-
----
-
-## 1. Executive Summary & Objective
-
-When an OyaPlanner completes the Forge wizard and reviews a generated budget plan at `/plan/[id]`, they encounter the picked venue:
-
-```text
-FORGE
-  ↓
-GENERATED PLAN (/plan/[id])
-  ↓
-“This plan is for [VENUE NAME]”
-  ↓
-User naturally thinks: “Tell me more about this place before I leave home.”
-  ↓
-Tap venue name / venue image / venue context
-  ↓
-CANONICAL VENUE PAGE (/venue/[id])
-  ↓
-Understand the place (Atmosphere, What it costs, What you get, Location, Hours, Policies)
-  ↓
-CONFIDENT OUTING DECISION
-  ↓
-Plan This Venue (Pre-filled Forge) or Return to Plan
-```
-
-The central objective of Phase 7 is to **transform the venue named inside a generated Plan into an intentional, high-quality gateway into the canonical venue page**, making the venue page a complete, trustworthy decision layer between discovery and going out.
+**Document:** `docs/design/OYAPLAN_PHASE7_VENUE_DECISION_AUDIT.md`  
+**Role:** Senior Product Designer + Senior Frontend Engineer + UX Architect + Trust/Data Product Engineer  
+**Status:** Canonical Decision Architecture Audit  
 
 ---
 
-## 2. Current State Audit
+## 1. Executive Summary & North Star
 
-### 2.1 Current Plan → Venue Connection (`/plan/[id]`)
-* **PlanHeroSummary (`PlanHeroSummary.tsx`):** Displays the venue image, category, and a small "View Venue" pill, but the main card is not fully interactive or prioritized as the primary exploratory link.
-* **PlanWhatYouGet (`PlanWhatYouGet.tsx`):** Displays menu item allocations and pricing estimates, but lacks a deep anchor link to the full scannable venue menu (`/venue/[id]#menu`).
-* **PlanCostBreakdown (`PlanCostBreakdown.tsx`):** Explains food, rides, VAT, and service charge, but does not offer quick access to check the venue's house policies and mandatory fee disclosures.
+OyaPlan is **not a restaurant directory**, **not a social discovery feed**, and **not a booking/reservation platform**. 
 
-### 2.2 Current Venue Page (`/venue/[id]`)
-* **Components in Place:**
-  - `VenueHeroGallery.tsx`: Visual photo grid, category badges, trust badges, operating breadcrumbs.
-  - `VenueStickyAnchorNav.tsx`: Anchor links between Overview, Budget, Menu, Experience, Good to Know.
-  - `VenueDecisionSummary.tsx`: Typical spend per person, estimated budget for 2, trust reasons.
-  - `VenueBudgetScenario.tsx`: Dynamic "What can I get for ₦X?" spending simulator based on menu items.
-  - `VenueScannableMenu.tsx`: Scannable menu categories with search and pricing.
-  - `VenueExperienceSection.tsx`: Vibe tags and crowd suitability.
-  - `VenueGoodToKnow.tsx`: House policies, VAT/service charge rates, opening hours, address and Google Maps directions link.
-  - `VenueNearbyDiscovery.tsx`: Nearby alternatives in the same district.
-  - `VenueMobileStickyCTA.tsx`: Bottom sticky CTA with "Plan This Venue" and 1-tap "Save Spot".
-* **Gaps Identified:**
-  1. Arriving from a Plan loses the originating plan context (squad size, budget, and vibe).
-  2. Opening hours lacks an automated "Open Now" / "Closed" live status indicator when structured hours exist.
-  3. No explicit "From Your Plan" contextual banner explaining why OyaPlan recommended this venue for their specific squad/budget.
-  4. Mandatory charges could be even more explicit regarding corkage, reservation policies, and minimum spend rules.
+> **Product Principle:**  
+> *OyaPlan does not help people browse endlessly. It helps them become confident enough to decide where to spend their money.*
+
+The user journey is:
+$$\text{Forge} \longrightarrow \text{Plan} \longrightarrow \text{Venue} \longrightarrow \text{Understand} \longrightarrow \text{Decide} \longrightarrow \text{Plan This Venue}$$
+
+The venue page (`/venue/[id]`) is an **intermediate uncertainty-reduction layer**, not a dead-end destination. Its sole objective is to answer the critical questions a planner needs before committing time, social capital, and money.
 
 ---
 
-## 3. Fresha-Inspired Information Architecture vs. OyaPlan Differences
+## 2. Decision Questions Framework
 
-Fresha provides an exceptional structural model for **frictionless profile information hierarchy**, but OyaPlan's business model and user outcomes are fundamentally different:
+A planner contemplating spending ₦30,000–₦150,000 in Lagos must get immediate, factual answers to 9 fundamental questions:
 
-| Dimension | Fresha Profile Architecture | OyaPlan Canonical Venue Experience |
-| :--- | :--- | :--- |
-| **Core Goal** | Convert visitor into an appointment booking. | Convert uncertainty into understanding and budget confidence before leaving home. |
-| **Monetization** | Commission on booked appointments / staff tips. | Pure consumer utility & planning intelligence (Zero booking fees). |
-| **CTA Model** | "Book Now", select staff, pick calendar slot. | "Plan This Venue", pre-fill budget & squad in Forge. |
-| **Pricing Model** | Fixed service prices (e.g. Haircut ₦15,000). | Variable group dining bills, VAT, service charges, ride-hailing estimates, and minimum spends. |
-| **Social Proof** | Star ratings, user reviews, booking counts. | Hard data freshness timestamps, verified menu receipts, and transparent calculation methodology. |
-
-### The OyaPlan Information Hierarchy:
-```text
-1. VENUE IDENTITY & ATMOSPHERE (Name, District, Category, Verified Photos, Trust Badge)
-   ↓
-2. OPERATIONAL STATUS & LOCATION (Open Now / Hours, Address, Landmark, Directions)
-   ↓
-3. FINANCIAL DECISION & TYPICAL SPEND (Typical cost/person, Estimate for 2, Originating Plan Context)
-   ↓
-4. BUDGET SCENARIO: WHAT CAN WE GET? (Dynamic item allocations for squad budget)
-   ↓
-5. SCANNABLE MENU & ITEM PRICING (Menu categories, price transparency)
-   ↓
-6. GOOD TO KNOW & HOUSE POLICIES (VAT, Service Charge, Minimum Spend, Corkage, Dress Code)
-   ↓
-7. EXPERIENCE FIT & VIBE (Group dining, Date night, Outdoor seating)
-   ↓
-8. PRIMARY ACTION: PLAN THIS VENUE (Pre-fill Forge with pinned venue)
-```
+| # | Question | Current Status | Target Architecture Solution |
+| :--- | :--- | :--- | :--- |
+| **Q1** | **What is this place?** | Partially answered (Hero banner + category). | Large editorial typography, verified vibe tags, category, and curated photo gallery. |
+| **Q2** | **Where is it?** | Present (Address text + Google Maps link). | Neighborhood/District breadcrumb, full address, 1-tap Google Maps directions, and Uber ride deep link. |
+| **Q3** | **When can I go?** | Inconsistent across spots. | Day-by-day operating hours table. If hours are missing: honest fallback *"Opening hours not yet verified"*. |
+| **Q4** | **What does it actually cost?** | Present in Decision Summary. | 3-column spend breakdown: Typical spend/person, 2-person pair, 4-person squad. Landed cost framing (food + drinks + house fees). |
+| **Q5** | **What can we realistically get?** | Simulated in Budget Scenario. | Interactive Spending Simulator using verified item prices across squad sizes (2, 4, 6) and budgets. |
+| **Q6** | **Are there important charges or policies?** | Handled in Good to Know. | Strict **NULL / 0 / >0** semantics for VAT, Service Charge, Corkage Fee, Cake Fee, Minimum Spend, and Table Policy. |
+| **Q7** | **Does it fit the kind of outing I'm planning?** | Handled in Experience Fit. | Occasion match, noise level, lighting, squad suitability (backed exclusively by database metadata). |
+| **Q8** | **Why did OyaPlan choose it?** | Rendered only when arriving from Plan. | `VenuePlanContextCard` displays originating squad, budget, and vibe match + "Return to Plan" button. |
+| **Q9** | **What should I do next?** | Handled via CTAs. | Primary action: **"Plan This Venue"** $\rightarrow$ pins venue in Forge with pre-populated parameters. Secondary: **"Save Spot"** $\rightarrow$ localStorage synced list. |
 
 ---
 
-## 4. Trust & Data Integrity Rules
+## 3. Data Availability & Schema Integrity Matrix
 
-1. **Strict Tri-State Charge Representation:**
-   - `NULL` = *"Not specified by venue"* (Never treat as ₦0).
-   - `0` = *"Free / No charge"*.
-   - `> 0` = Exact known percentage or Naira amount.
-2. **Zero Fabricated Social Proof:**
-   - No synthetic ratings, stars, fake review counts, or "100+ people booked today" urgency tricks.
-3. **Transparent Data Freshness:**
-   - Always display when menu prices or venue details were last verified by OyaPlan.
-4. **Graceful Degradation:**
-   - If a venue has no photos, show a clean, honest camera placeholder.
-   - If a venue has no granular menu items, state that pricing is estimated from district tiers.
+Every displayed field must map to a verifiable source without fabricated data:
+
+| Field Name | DB Column / Source | Type | Verified / Estimated | Fallback Behavior when Missing / NULL |
+| :--- | :--- | :--- | :--- | :--- |
+| **Venue Name** | `venues.name` | `string` | Canonical Fact | Required; not-found trigger if missing. |
+| **Address** | `venues.address` | `string` | Canonical Fact | Fallback to district name or `Lagos`. |
+| **District / Area** | `districts.name`, `districts.slug` | `string` | Canonical Fact | Defaults to `Lagos` / `ikeja`. |
+| **Category** | `venues.category` | `string` | Canonical Fact | Defaults to `Restaurant` or `Lounge`. |
+| **Vibe Tags** | `venues.vibe_tags` | `string[]` | Verified/Curated | Defaults to `["Chill"]`. |
+| **Derived Typical Cost** | `venues.derived_typical_cost` | `number` | Estimated/Derived | Fallback to category baseline (₦18,000/person) with explicit *Estimated* badge. |
+| **Cover & Gallery** | `venues.cover_url`, `venue_photos` | `string[]` | Verified Asset | Clean editorial geometric placeholder with category icon. No generic stock photography. |
+| **Menu Items** | `menu_items` table | `MenuItem[]` | Verified / Partner | Category filter tabs. If empty: *"Menu indexing in progress"* banner. |
+| **VAT %** | `venues.vat_pct` | `number \| null` | Regulatory / Fact | `NULL` $\rightarrow$ *"Not stated"*; `0` $\rightarrow$ *"Inclusive / 0%"*; `>0` $\rightarrow$ `"{vat}%"`. |
+| **Service Charge %** | `venues.service_charge_pct` | `number \| null` | House Policy | `NULL` $\rightarrow$ *"Not stated"*; `0` $\rightarrow$ *"No service charge"*; `>0` $\rightarrow$ `"{sc}%"`. |
+| **Corkage Fee** | `venues.corkage_fee` | `number \| null` | House Policy | `NULL` $\rightarrow$ *"Not stated"*; `0` $\rightarrow$ *"Free"*; `>0` $\rightarrow$ `"₦{fee} / bottle"`. |
+| **Cake Fee** | `venues.cake_fee` | `number \| null` | House Policy | `NULL` $\rightarrow$ *"Not stated"*; `0` $\rightarrow$ *"Free"*; `>0` $\rightarrow$ `"₦{fee}"`. |
+| **Minimum Spend** | `venues.minimum_spend` | `number \| null` | House Policy | `NULL` $\rightarrow$ *"Not stated"*; `0` $\rightarrow$ *"None"*; `>0` $\rightarrow$ `"₦{fee}"`. |
+| **Opening Hours** | `venues.opening_hours` | `JSON` | Operational Fact | `NULL` / `{}` $\rightarrow$ *"Opening hours not yet verified"*. |
+| **Contact Phone / WA** | `venues.contact_number` | `string \| null` | Operational Fact | If `null`, contact buttons are cleanly omitted (no dead buttons). |
 
 ---
 
-## 5. Implementation Action Plan
+## 4. Current Journey Friction & Deficiencies
 
-1. **Plan Page (`/plan/[id]`):**
-   - Elevate [PlanHeroSummary.tsx](file:///c:/Users/Admin/oyaplan/components/plan/PlanHeroSummary.tsx) to make the entire venue card interactive with an accessible link to `/venue/[id]`.
-   - Pass originating plan parameters in query string (`/venue/[id]?fromPlan=true&squad=4&budget=90000&vibe=dinner`) so the venue page can display contextual recommendations.
-   - Add deep-link to venue menu in [PlanWhatYouGet.tsx](file:///c:/Users/Admin/oyaplan/components/plan/PlanWhatYouGet.tsx).
-2. **Venue Page (`/venue/[id]`):**
-   - Add a lightweight, elegant **"From Your Plan"** contextual callout on `/venue/[id]` when arriving from a plan.
-   - Add smart **Live Operational Status** ("Open Now" / "Closed · Opens at X") in [VenueHeroGallery.tsx](file:///c:/Users/Admin/oyaplan/components/venue/VenueHeroGallery.tsx) and [VenueGoodToKnow.tsx](file:///c:/Users/Admin/oyaplan/components/venue/VenueGoodToKnow.tsx) calculated from `opening_hours`.
-   - Ensure the "Plan This Venue" CTA seamlessly pre-fills Forge with squad and budget context.
-3. **Mobile QA & Verification:**
-   - Test 360px, 390px, 412px, 768px, 1280px, 1440px.
-   - Run typecheck, vitest suite, and next production build.
+### Identified Friction Points:
+
+1. **Weak Context Continuity from Plan:**
+   - In `/plan/[id]`, the venue hero card links to `/venue/[id]`, but if a user taps it, they need an effortless way to return to their exact generated plan or jump forward into editing the venue in Forge.
+   - Fixed: `VenuePlanContextCard` and sticky return buttons.
+
+2. **Mobile Viewport Ergonomics (360px – 412px):**
+   - Anchor navigation and menu category pills require horizontal drag with no clipping or layout shift.
+   - Sticky action bar (`VenueMobileStickyCTA`) must observe iOS/Android `env(safe-area-inset-bottom)` and provide 48px thumb targets.
+
+3. **Honest Operational Semantics:**
+   - Never show "Open Now" or "No Hidden Fees" unless backed by explicit non-null DB records.
+   - If a venue is marked `temporarily_closed` or `under_maintenance`, a top-level alert banner must immediately notify the planner before they coordinate a squad.
+
+4. **"Plan This Venue" Action Directness:**
+   - Tapping "Plan This Venue" must link to `/forge?pinned=[venueId]&area=[areaSlug]&squad=[squad]&budget=[budget]&vibe=[vibe]&fresh=true`.
+   - Pins the venue in the Forge engine so matching filters preserve the user's intent.
+
+---
+
+## 5. Implementation Strategy & Deliverables
+
+1. **Plan Output Integration:**
+   - Verify all links from Plan Hero Summary (`components/plan/PlanHeroSummary.tsx`) and Plan What You Get (`components/plan/PlanWhatYouGet.tsx`) cleanly forward context parameters to `/venue/[id]`.
+2. **Venue Decision Page Polish:**
+   - `PublicVenueClient.tsx`: Full orchestration with breadcrumbs, plan context card, anchor nav, decision summary, budget simulator, scannable menu, experience fit, good to know, nearby discovery, and mobile sticky CTA.
+3. **Mobile & Accessibility Hardening:**
+   - Touch targets $\ge 44\times 44\text{px}$.
+   - Full keyboard navigation and visible focus rings.
+   - No horizontal layout overflow at 360px.
+4. **Hardening & Verification:**
+   - Document in `docs/design/OYAPLAN_PHASE7_HARDENING_AUDIT.md`.
+   - Run complete TypeScript and test suite checks.

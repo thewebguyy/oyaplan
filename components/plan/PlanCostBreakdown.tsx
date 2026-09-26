@@ -62,10 +62,15 @@ export function PlanCostBreakdown({
         </div>
 
         <div className="flex items-center justify-between py-1">
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-col">
             <span className="font-semibold text-text-secondary">
               {hasCar ? 'Transport (Driving/Car)' : 'Ride-Hailing Transport (Round Trip)'}
             </span>
+            {!hasCar && transportCost > 0 && squadSize > 1 && (
+              <span className="text-[10px] text-text-muted font-mono">
+                ~₦{Math.round(transportCost / squadSize).toLocaleString('en-NG')}/person • {Math.ceil(squadSize / 4)} {Math.ceil(squadSize / 4) > 1 ? 'cars' : 'car'}
+              </span>
+            )}
           </div>
           <span className="font-mono font-bold text-midnight-lagoon tabular-nums">
             {hasCar || transportCost === 0 ? '₦0' : `~₦${transportCost.toLocaleString('en-NG')}`}
@@ -85,9 +90,16 @@ export function PlanCostBreakdown({
 
         {/* Total Cost Row */}
         <div className="pt-3 border-t border-dashed border-gray-200 flex items-center justify-between font-bold">
-          <span className="text-midnight-lagoon text-sm sm:text-base font-black">
-            Estimated Outing Total
-          </span>
+          <div>
+            <span className="text-midnight-lagoon text-sm sm:text-base font-black block">
+              Estimated Outing Total
+            </span>
+            {squadSize > 1 && (
+              <span className="text-[11px] font-bold text-[#008751] font-mono block">
+                ~₦{Math.round(totalCost / squadSize).toLocaleString('en-NG')} per person
+              </span>
+            )}
+          </div>
           <span className="font-mono font-black text-[#008751] text-base sm:text-lg tabular-nums">
             ~₦{totalCost.toLocaleString('en-NG')}
           </span>

@@ -54,16 +54,18 @@ export function VenueBudgetScenario({
   const estimatedFoodAndDrinks = Math.round(numMains * avgMain + numStarters * avgStarter + numDrinks * avgDrink);
   
   // Mandatory charges
-  const vatPct = venue.vat_pct || 7.5;
-  const serviceChargePct = venue.service_charge_pct || 0;
+  const vatPct = venue.vat_pct ?? 7.5;
+  const serviceChargePct = venue.service_charge_pct ?? 0;
   const totalTaxAndService = Math.round(estimatedFoodAndDrinks * ((vatPct + serviceChargePct) / 100));
 
-  // Estimated Lagos ride-hailing transport
-  const estimatedTransport = 6000;
+  // Estimated Lagos ride-hailing transport (intra-district round-trip per vehicle)
+  const vehiclesRequired = Math.max(1, Math.ceil(selectedSquad / 4));
+  const estimatedTransport = 9000 * vehiclesRequired;
 
   const totalEstimatedOuting = estimatedFoodAndDrinks + totalTaxAndService + estimatedTransport;
   const difference = selectedBudget - totalEstimatedOuting;
   const isWithinBudget = difference >= 0;
+  const perPersonTotal = Math.round(totalEstimatedOuting / selectedSquad / 100) * 100;
 
   const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${selectedSquad}&budget=${selectedBudget}&vibe=${encodeURIComponent(venue.vibe_tags?.[0] || "chill")}&fresh=true`;
 
@@ -197,11 +199,16 @@ export function VenueBudgetScenario({
                 </div>
                 <ul className="text-xs text-text-secondary space-y-1">
                   <li>• VAT ({vatPct}%) &amp; Service Charge ({serviceChargePct}%): ~₦{totalTaxAndService.toLocaleString("en-NG")}</li>
-                  <li>• Estimated Lagos Uber/Bolt Ride: ~₦{estimatedTransport.toLocaleString("en-NG")}</li>
+                  <li>• Estimated Lagos Ride ({vehiclesRequired} {vehiclesRequired > 1 ? "cars" : "car"} round-trip): ~₦{estimatedTransport.toLocaleString("en-NG")}</li>
                 </ul>
-                <div className="pt-2 border-t border-border-default/60 flex justify-between text-xs font-bold text-[#008751]">
-                  <span>Total Estimated Outing:</span>
-                  <span>~₦{totalEstimatedOuting.toLocaleString("en-NG")}</span>
+                <div className="pt-2 border-t border-border-default/60 flex items-center justify-between text-xs font-bold">
+                  <div className="text-midnight-lagoon">
+                    <span>Total Estimated:</span>
+                    <span className="block text-[10px] text-text-muted font-normal">~₦{perPersonTotal.toLocaleString("en-NG")}/person</span>
+                  </div>
+                  <span className="text-[#008751] font-mono text-sm sm:text-base font-black">
+                    ~₦{totalEstimatedOuting.toLocaleString("en-NG")}
+                  </span>
                 </div>
               </div>
 

@@ -156,6 +156,9 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           venue={venue}
           menuItems={menuItems}
           hasFood={plan.spot?.has_food}
+          budget={userBudget}
+          vibe={plan.vibe}
+          startAreaName={startAreaName}
         />
 
         {/* 3. Cost Breakdown & Landing Total */}
