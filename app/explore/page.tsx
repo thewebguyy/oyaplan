@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { getAreasWithSpotCounts } from "@/lib/queries/areas";
 
+import { RecentlyViewedRow } from "@/components/venue/RecentlyViewedRow";
+
 export const revalidate = 300;
 
 export const metadata: Metadata = {
@@ -64,6 +66,9 @@ export default async function ExploreIndex() {
             We manually verified menus and calibrated transport pricing for Lagos&apos; top active hubs. Choose an area to plan with confidence.
           </p>
         </div>
+
+        {/* Factual Recently Viewed Spots Shelf */}
+        <RecentlyViewedRow className="mb-10" />
 
         {error ? (
           <div className="p-6 bg-red-50 text-red-600 rounded-2xl border border-red-100">

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { trackEvent } from '@/lib/analytics/trackClient';
 import { Copy, Check, MessageSquare, Share2, Sliders, ShieldCheck } from 'lucide-react';
 import { PlanCodeSquadPass } from './PlanCodeSquadPass';
+import SavePlanButton from '@/components/SavePlanButton';
 
 interface PlanActionsShareProps {
   planId: string;
@@ -145,7 +146,7 @@ export function PlanActionsShare({
           <span className="text-[11px] font-bold text-text-muted">1-Tap Distribution</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* WhatsApp Direct Share */}
           <button
             type="button"
@@ -153,7 +154,7 @@ export function PlanActionsShare({
             className="h-12 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer tap-feedback"
           >
             <MessageSquare className="w-4 h-4 fill-white" />
-            <span>Share to WhatsApp</span>
+            <span>WhatsApp</span>
           </button>
 
           {/* Copy Link / Native Share */}
@@ -165,6 +166,9 @@ export function PlanActionsShare({
             {copiedLink ? <Check className="w-4 h-4 text-[#A3F3C6]" /> : <Copy className="w-4 h-4" />}
             <span>{copiedLink ? 'Link Copied!' : 'Copy Plan Link'}</span>
           </button>
+
+          {/* Save Plan Button */}
+          <SavePlanButton planId={planId} showLabel={true} />
         </div>
 
         {/* Edit Plan in Forge */}

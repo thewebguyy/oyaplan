@@ -15,6 +15,8 @@ import { VenueMobileStickyCTA } from "@/components/venue/VenueMobileStickyCTA";
 import { ChangeRequestModal } from "@/components/venue/ChangeRequestModal";
 import { trackEvent } from "@/lib/analytics/trackClient";
 
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+
 interface PublicVenueClientProps {
   venue: Venue;
   menuItems: MenuItem[];
@@ -33,8 +35,9 @@ export function PublicVenueClient({
   areaSlug = "ikeja",
 }: PublicVenueClientProps) {
   const [isCorrectionOpen, setIsCorrectionOpen] = useState(false);
+  const { recordView } = useRecentlyViewed();
 
-  // Telemetry
+  // Telemetry & Factual Recent History
   useEffect(() => {
     trackEvent("venue_viewed", {
       category: "Engagement",
@@ -42,7 +45,21 @@ export function PublicVenueClient({
       area: areaSlug,
       version: "1.0",
     });
-  }, [venue.id, areaSlug]);
+
+    // Record in local factual history (capped at 10 items)
+    recordView({
+      id: venue.id,
+      name: venue.name,
+      address: venue.address,
+      areaSlug: areaSlug,
+      areaName: areaName,
+      category: venue.category || "restaurant",
+      pricePerPerson: venue.derived_typical_cost || 15000,
+      imageUrl: venue.cover_url || (photos.length > 0 ? photos[0].url : undefined),
+      coverUrl: venue.cover_url,
+      vibeTags: venue.vibe_tags || ["Chill"],
+    });
+  }, [venue, areaSlug, areaName, photos, recordView]);
 
   return (
     <main className="min-h-[100dvh] bg-[#FAF7F2] antialiased pb-28 md:pb-20">
