@@ -38,8 +38,11 @@ export function VenueMobileStickyCTA({
         vibe_tags: venue.vibe_tags || ["Chill"],
         address: venue.address,
         address_slug: areaSlug,
-        confidence_score: venue.computed_confidence_score || 0.8,
-        price_confidence: "verified",
+        area_id: venue.district_id || areaSlug,
+        transport_matrix: {},
+        is_featured: venue.is_featured || false,
+        active: venue.active,
+        computed_confidence_score: venue.computed_confidence_score || 80,
       });
       toast.success(`${venue.name} saved!`);
     }

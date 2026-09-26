@@ -36,7 +36,7 @@ export function VenueBudgetScenario({
 
   // Group items by category
   const mains = menuItems.filter((i) => i.category === "main" || i.category === "other");
-  const startersAndSides = menuItems.filter((i) => i.category === "starter" || i.category === "side");
+  const startersAndSides = menuItems.filter((i) => i.category === "starter" || i.category === "dessert");
   const drinks = menuItems.filter((i) => ["cocktail", "wine", "beer", "spirits", "soft_drink"].includes(i.category));
 
   const hasMenuData = menuItems.length >= 2;

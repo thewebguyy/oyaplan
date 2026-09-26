@@ -9,7 +9,7 @@ interface VenueScannableMenuProps {
   menuItems: MenuItem[];
 }
 
-type MenuCategoryFilter = "all" | "food" | "drinks" | "sides" | "activities";
+type MenuCategoryFilter = "all" | "food" | "drinks" | "dessert" | "activities";
 
 export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenuProps) {
   const [activeCategory, setActiveCategory] = useState<MenuCategoryFilter>("all");
@@ -17,15 +17,15 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
   const isPartnerVerified = venue.partner_state === "verified_partner";
 
   // Classify items
-  const foodItems = menuItems.filter((i) => ["main", "starter", "dessert"].includes(i.category));
+  const foodItems = menuItems.filter((i) => ["main", "starter"].includes(i.category));
   const drinkItems = menuItems.filter((i) => ["cocktail", "wine", "beer", "spirits", "soft_drink"].includes(i.category));
-  const sideItems = menuItems.filter((i) => i.category === "side");
+  const dessertItems = menuItems.filter((i) => i.category === "dessert");
   const activityItems = menuItems.filter((i) => i.category === "activity_fee");
 
   const filteredItems = menuItems.filter((item) => {
     if (activeCategory === "food") return foodItems.includes(item);
     if (activeCategory === "drinks") return drinkItems.includes(item);
-    if (activeCategory === "sides") return sideItems.includes(item);
+    if (activeCategory === "dessert") return dessertItems.includes(item);
     if (activeCategory === "activities") return activityItems.includes(item);
     return true;
   });
@@ -34,7 +34,7 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
     { id: "all", label: "All Items", count: menuItems.length },
     ...(foodItems.length > 0 ? [{ id: "food" as MenuCategoryFilter, label: "Food & Dining", count: foodItems.length }] : []),
     ...(drinkItems.length > 0 ? [{ id: "drinks" as MenuCategoryFilter, label: "Drinks & Cocktails", count: drinkItems.length }] : []),
-    ...(sideItems.length > 0 ? [{ id: "sides" as MenuCategoryFilter, label: "Sides & Bites", count: sideItems.length }] : []),
+    ...(dessertItems.length > 0 ? [{ id: "dessert" as MenuCategoryFilter, label: "Desserts", count: dessertItems.length }] : []),
     ...(activityItems.length > 0 ? [{ id: "activities" as MenuCategoryFilter, label: "Activities", count: activityItems.length }] : []),
   ];
 
@@ -102,11 +102,6 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
                     <p className="text-xs sm:text-sm font-bold text-midnight-lagoon truncate">
                       {item.name}
                     </p>
-                    {item.description && (
-                      <p className="text-[11px] text-text-muted line-clamp-1">
-                        {item.description}
-                      </p>
-                    )}
                     <span className="inline-block text-[9px] font-bold uppercase tracking-wider text-text-muted bg-white px-2 py-0.5 rounded border border-[#EAE4DC]">
                       {item.category.replace(/_/g, " ")}
                     </span>

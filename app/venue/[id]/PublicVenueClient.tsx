@@ -37,16 +37,12 @@ export function PublicVenueClient({
   // Telemetry
   useEffect(() => {
     trackEvent("venue_viewed", {
-      category: "Discovery",
-      venue_id: venue.id,
-      venue_name: venue.name,
+      category: "Engagement",
+      spot_id: venue.id,
       area: areaSlug,
-      category_type: venue.category,
-      has_menu: menuItems.length > 0,
-      has_photos: photos.length > 0 || Boolean(venue.cover_url),
       version: "1.0",
     });
-  }, [venue.id, venue.name, venue.category, areaSlug, menuItems.length, photos.length, venue.cover_url]);
+  }, [venue.id, areaSlug]);
 
   return (
     <main className="min-h-[100dvh] bg-[#FAF7F2] antialiased pb-28 md:pb-20">
