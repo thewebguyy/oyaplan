@@ -1,16 +1,13 @@
 import { captureServerException } from "@/lib/sentry";
 import { getZoneBySlug, getZoneNameBySlug } from "@/lib/queries/zones";
-import { getAreasByZone, getAreaWithSpots, getAreaNameBySlug } from "@/lib/queries/areas";
+import { getAreasByZone, getAreaWithSpots, getAreaNameBySlug, getAreasWithSpotCounts } from "@/lib/queries/areas";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PageError from "@/components/PageError";
 import { Spot } from "@/lib/types";
-import { ExploreSlugClient } from "@/components/explore/ExploreSlugClient";
-import { getVerificationText, deriveTrustIndicator } from "@/lib/planning/presentation/decisionCardMapper";
-import { DecisionCardViewModel } from "@/lib/planning/presentation/types";
-import { TransportPricingProvider } from "@/lib/planning/transport";
+import { ExploreClient } from "@/components/explore/ExploreClient";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +17,11 @@ type Props = {
     budget?: string; 
     vibe?: string; 
     squad?: string; 
+    category?: string;
     pinned?: string; 
     spot?: string;
-    startArea?: string;
+    q?: string;
+    sort?: string;
   }>;
 };
 
@@ -32,87 +31,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { data: zone } = await getZoneNameBySlug(slug);
     if (zone) {
       return {
-        title: `Explore ${zone.name} — OyaPlan`,
-        description: `Discover spots in ${zone.name} Lagos.`,
+        title: `Explore ${zone.name} Lagos — OyaPlan Outing Guide`,
+        description: `Discover verified dining, nightlife, and activities in ${zone.name} Lagos with complete budget confidence.`,
       };
     }
     const { data: area } = await getAreaNameBySlug(slug);
     if (area) {
       return {
-        title: `${area.name} Outing Spots — OyaPlan`,
-        description: `Restaurants, activities, and experiences in ${area.name}, Lagos. Budget-friendly squad planning.`,
+        title: `${area.name} Outing Spots & Prices — OyaPlan`,
+        description: `Verified restaurant menus, lounges, and activities in ${area.name}, Lagos. Know what you'll spend before you leave home.`,
       };
     }
   } catch (e) {
     captureServerException(e);
   }
-  return { title: "Explore — OyaPlan" };
-}
-
-function mapSpotToDiscoveryCard(
-  spot: Spot, 
-  squadCount: number, 
-  budget: number | null,
-  startArea: string | null
-): DecisionCardViewModel {
-  const confidenceScore = spot.computed_confidence_score || 50;
-  const venueCost = (spot.price_per_person || 12000) * squadCount;
-  
-  // Calculate real transport cost using canonical TransportPricingProvider
-  let transportCost = 0;
-  if (startArea && squadCount > 1) {
-    const range = TransportPricingProvider.calculateRange(
-      startArea,
-      spot.address_slug || "ikeja",
-      "ride-hailing",
-      spot.transport_matrix || {},
-      undefined,
-      squadCount
-    );
-    transportCost = range.midpointCost;
-  }
-
-  const taxCost = Math.round(venueCost * 0.1);
-  const totalCost = venueCost + transportCost + taxCost;
-  const budgetRemaining = budget ? (budget * squadCount) - totalCost : 0;
-
-  return {
-    title: spot.name,
-    heroImage: spot.image_url,
-    venueCost,
-    transportCost,
-    totalCost,
-    budgetFit: budget ? (totalCost <= budget * squadCount ? "Fits budget" : "Over budget") : "Discovery price",
-    verification: getVerificationText(spot.price_updated_at),
-    confidence: confidenceScore,
-    whyItFits: spot.vibe_tags?.slice(0, 3).join(" • ") || "Vetted Outing Spot",
-    planningSummary: spot.address,
-
-    spotId: spot.id,
-    spotName: spot.name,
-    category: spot.category || 'restaurant',
-    address: spot.address,
-    pricePerPerson: spot.price_per_person,
-    addressSlug: spot.address_slug,
-    areaSlug: spot.areas?.slug || spot.address_slug,
-    travelInfo: undefined,
-    isAdjacent: false,
-    secondaryExperience: spot.secondary_experience,
-    foodType: spot.food_type,
-
-    budgetRemaining,
-    trustIndicator: deriveTrustIndicator(confidenceScore)
-  };
+  return { title: "Explore Lagos Spots — OyaPlan" };
 }
 
 export default async function ExploreSlug({ params, searchParams }: Props) {
   const { slug } = await params;
   const urlParams = await searchParams;
-  
-  const budget = urlParams.budget ? parseInt(urlParams.budget) : null;
-  const vibe = urlParams.vibe || null;
-  const squadCount = urlParams.squad ? parseInt(urlParams.squad) : 2;
-  const startArea = urlParams.startArea || null;
 
   // 1. Try Zone View
   let zoneData: { id: string; name: string; slug: string; description: string } | null = null;
@@ -127,7 +65,7 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   }
 
   if (zoneQueryError) {
-    return <PageError message="We couldn't load this right now." href="/explore" linkLabel="Back to Explore" />;
+    return <PageError message="We couldn't load this zone right now." href="/explore" linkLabel="Back to All Spots" />;
   }
 
   if (zoneData) {
@@ -146,46 +84,37 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
     }
 
     if (zoneAreasError) {
-      return <PageError message="We couldn't load this right now." href="/explore" linkLabel="Back to Explore" />;
+      return <PageError message="We couldn't load this right now." href="/explore" linkLabel="Back to All Spots" />;
     }
 
     return (
-      <main className="min-h-[100dvh] bg-[#FAFAF8] text-text-primary pb-20 antialiased pt-8">
-        <div className="max-w-4xl mx-auto px-6">
-          <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-text-primary transition-colors mb-6 tap-feedback">
+      <main className="min-h-[100dvh] bg-[#FAFAF8] text-text-primary pb-20 antialiased pt-24 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Link href="/explore" className="inline-flex items-center gap-2 type-label text-text-muted hover:text-midnight-lagoon transition-colors mb-6 tap-feedback">
             <ArrowLeft className="w-4 h-4" />
-            Back to All Zones
+            Back to All Spots
           </Link>
-          <h1 className="text-4xl md:text-5xl font-black text-midnight-lagoon tracking-tight mb-3 capitalize">{zoneData.name}</h1>
-          <p className="text-lg text-text-muted">{zoneData.description}</p>
+          <h1 className="text-3xl md:text-5xl font-black text-midnight-lagoon tracking-tight mb-3 capitalize">{zoneData.name}</h1>
+          <p className="text-base md:text-lg text-text-muted">{zoneData.description}</p>
         </div>
 
-        <div className="max-w-4xl mx-auto px-6 mt-12">
+        <div className="max-w-4xl mx-auto mt-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {areas?.map((area) => {
-              const areaParams = new URLSearchParams();
-              if (urlParams.budget) areaParams.append("budget", urlParams.budget);
-              if (urlParams.vibe) areaParams.append("vibe", urlParams.vibe);
-              if (urlParams.squad) areaParams.append("squad", urlParams.squad);
-              if (urlParams.startArea) areaParams.append("startArea", urlParams.startArea);
-              const href = areaParams.toString() ? `/explore/${area.slug}?${areaParams.toString()}` : `/explore/${area.slug}` ;
-
-              return (
-                <Link 
-                  key={area.id} 
-                  href={href}
-                  className="group p-8 bg-white border border-border-default rounded-[20px] hover:border-brand-green hover:shadow-[0px_8px_24px_rgba(0,135,81,0.08)] transition-all text-left tap-feedback block"
-                >
-                  <h3 className="type-heading text-text-primary group-hover:text-brand-green transition-colors lowercase first-letter:uppercase">{area.name}</h3>
-                  <p className="type-caption text-text-muted mt-2">{area.activeSpotCount} spots to discover</p>
-                </Link>
-              );
-            })}
+            {areas?.map((area) => (
+              <Link 
+                key={area.id} 
+                href={`/explore/${area.slug}`}
+                className="group p-6 bg-white border border-[#E5E7EB] rounded-3xl hover:border-[#008751] hover:shadow-md transition-all text-left tap-feedback block"
+              >
+                <h3 className="text-xl font-black text-midnight-lagoon group-hover:text-[#008751] transition-colors">{area.name}</h3>
+                <p className="text-xs text-text-muted mt-2 font-bold">{area.activeSpotCount} verified spots to discover</p>
+              </Link>
+            ))}
             
             {areas.length === 0 && (
-              <div className="col-span-full text-center py-20 bg-surface-grey rounded-[24px] border border-border-default space-y-4">
-                <p className="type-body text-text-muted">No active areas found in this zone yet.</p>
-                <Link href="/suggest-a-spot" className="type-label text-brand-green hover:underline inline-block">
+              <div className="col-span-full text-center py-20 bg-surface-grey rounded-3xl border border-[#E5E7EB] space-y-4">
+                <p className="text-sm text-text-muted font-bold">No active areas found in this zone yet.</p>
+                <Link href="/suggest-a-spot" className="text-xs font-black text-[#008751] hover:underline inline-block">
                   Know a hidden gem here? Suggest it &rarr;
                 </Link>
               </div>
@@ -213,66 +142,51 @@ export default async function ExploreSlug({ params, searchParams }: Props) {
   }
 
   if (areaFetchError) {
-    return <PageError message="We couldn't load this right now." href="/explore" linkLabel="Back to Explore" />;
+    return <PageError message="We couldn't load this area right now." href="/explore" linkLabel="Back to All Spots" />;
   }
 
   if (!area) notFound();
 
-  // Reorder if pinned or spot query is passed
+  // Load all available areas for switching
+  const { data: allAreas } = await getAreasWithSpotCounts();
+  const validAreas = (allAreas || []).filter((a) => a.activeSpotCount > 0);
+
+  // If a pinned spot is requested in query params, prioritize it at the top
   const targetId = urlParams.pinned || urlParams.spot;
-  if (targetId && area.spots.length > 0) {
-    const pinnedIndex = area.spots.findIndex(
+  let areaSpots = [...area.spots];
+  if (targetId && areaSpots.length > 0) {
+    const pinnedIndex = areaSpots.findIndex(
       (s) =>
         s.id === targetId ||
         s.address_slug === targetId ||
         s.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === targetId.toLowerCase()
     );
     if (pinnedIndex > 0) {
-      const [pinnedSpot] = area.spots.splice(pinnedIndex, 1);
-      area.spots.unshift(pinnedSpot);
+      const [pinnedSpot] = areaSpots.splice(pinnedIndex, 1);
+      areaSpots.unshift(pinnedSpot);
     }
   }
 
-  // Server-side filtering for active vibes
-  let filteredSpots = area.spots;
-  if (vibe) {
-    const VIBE_MAP: Record<string, string[]> = {
-      "date-night": ["Dinner", "date-night", "Intimate"],
-      "chill": ["Chill", "chill", "Casual"],
-      "foodie": ["Foodie", "foodie", "Gourmet"],
-      "party": ["Party", "party", "Loud"],
-      "brunch": ["Brunch", "brunch", "Daylight"]
-    };
-    const targetTags = VIBE_MAP[vibe] || [vibe];
-    filteredSpots = area.spots.filter(spot =>
-      spot.vibe_tags?.some(tag => 
-        targetTags.some(target => tag.toLowerCase().includes(target.toLowerCase()))
-      )
-    );
-  }
-
-  // Server-side filtering for max budget per person
-  if (budget) {
-    filteredSpots = filteredSpots.filter(spot => 
-      (spot.price_per_person || 0) <= budget
-    );
-  }
-
-  // Map spots directly on the server to visual view models (Pure Discovery)
-  const viewModels = filteredSpots.map((spot) => 
-    mapSpotToDiscoveryCard(spot, squadCount, budget, startArea)
-  );
-
   return (
-    <ExploreSlugClient
-      slug={slug}
-      areaName={area.name}
-      initialSpots={viewModels}
-      rawSpots={filteredSpots}
-      initialBudget={budget}
-      initialVibe={vibe}
-      initialSquadCount={squadCount}
-      initialStartArea={startArea}
-    />
+    <div className="relative">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-20">
+        <Link 
+          href="/explore" 
+          className="inline-flex items-center gap-1.5 text-xs font-black text-text-muted hover:text-midnight-lagoon transition-colors py-1.5 px-3 rounded-xl bg-white border border-[#E5E7EB] hover:bg-surface-grey tap-feedback w-fit"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>All Lagos Spots</span>
+        </Link>
+      </div>
+
+      <ExploreClient
+        initialSpots={areaSpots}
+        availableAreas={validAreas}
+        preselectedAreaSlug={area.slug}
+        preselectedAreaName={area.name}
+        title={`${area.name} Outing Spots`}
+        subtitle={`Verified restaurants, bars, cafes, and activities in ${area.name}. Compare spend and plan with confidence.`}
+      />
+    </div>
   );
 }

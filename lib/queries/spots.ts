@@ -27,6 +27,24 @@ export async function getForgeSpots(
   }
 }
 
+export async function getExploreSpots(): Promise<{ data: Spot[] | null; error: string | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('spots')
+      .select('*, areas(*)')
+      .eq('active', true)
+      .order('name', { ascending: true })
+      .limit(300);
+
+    if (error) return { data: null, error: error.message };
+    if (!data) return { data: null, error: null };
+
+    return { data: data as Spot[], error: null };
+  } catch {
+    return { data: null, error: 'Unexpected error fetching explore spots' };
+  }
+}
+
 
 export async function getTrendingSpots(
   limit: number
