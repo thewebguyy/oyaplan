@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPublicVenueById, getVenueMenuItems, getVenuePhotos, getNearbyVenues } from '@/lib/queries/partner';
@@ -52,13 +53,15 @@ export default async function PublicVenuePage({ params }: Props) {
   const areaSlug = district?.slug || 'ikeja';
 
   return (
-    <PublicVenueClient
-      venue={venue}
-      menuItems={menuItems}
-      photos={photos}
-      nearbyVenues={nearbyVenues}
-      areaName={areaName}
-      areaSlug={areaSlug}
-    />
+    <Suspense fallback={<div className="min-h-[100dvh] bg-[#FAF7F2]" />}>
+      <PublicVenueClient
+        venue={venue}
+        menuItems={menuItems}
+        photos={photos}
+        nearbyVenues={nearbyVenues}
+        areaName={areaName}
+        areaSlug={areaSlug}
+      />
+    </Suspense>
   );
 }

@@ -41,10 +41,19 @@ export function PlanHeroSummary({
   const isWellUnderBudget = budget > 0 && estimatedSpend < budget * 0.6;
   const isOverBudget = remaining < 0;
 
-  // Resolved venue link
+  // Resolved venue link with preserved plan context
   const venueId = venue?.id || spot?.id;
   const venueSlug = spot?.address_slug || venue?.districts?.slug || 'lagos';
-  const venuePageHref = venueId ? `/venue/${venueId}` : `/explore/${venueSlug}`;
+  const planQueryParams = new URLSearchParams();
+  planQueryParams.set('fromPlan', 'true');
+  planQueryParams.set('squad', squadSize.toString());
+  planQueryParams.set('budget', budget.toString());
+  if (vibe) planQueryParams.set('vibe', vibe);
+  if (startAreaName) planQueryParams.set('startArea', startAreaName);
+
+  const venuePageHref = venueId 
+    ? `/venue/${venueId}?${planQueryParams.toString()}` 
+    : `/explore/${venueSlug}`;
 
   const resolvedArea =
     spot?.areas?.name ||
@@ -94,18 +103,22 @@ export function PlanHeroSummary({
         </h1>
       </div>
 
-      {/* 2. Visual Venue Card */}
-      <div className="bg-white border border-border-default rounded-2xl overflow-hidden shadow-xs">
-        <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden bg-gray-100">
+      {/* 2. Interactive Visual Venue Gateway Card */}
+      <div className="bg-white border border-border-default rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 group">
+        <Link 
+          href={venuePageHref}
+          aria-label={`Explore full details for ${spotName}`}
+          className="relative w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden bg-gray-100 block cursor-pointer"
+        >
           <VenueImage
             src={spot?.image_url || spot?.cover_url || venue?.cover_url}
             alt={spotName}
             fallbackCategory={spot?.category || venue?.category}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-opacity group-hover:opacity-90" />
 
-          {/* Badge overlays */}
+          {/* Top Badge overlays */}
           <div className="absolute top-3 left-3 flex items-center gap-2">
             <span className="px-2.5 py-1 bg-white/95 backdrop-blur-md text-midnight-lagoon rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
               {categoryLabel}
@@ -116,27 +129,24 @@ export function PlanHeroSummary({
             <TrustBadge status={trustStatus} />
           </div>
 
-          {/* Bottom Title on Image */}
+          {/* Bottom Title & Action Gateway */}
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 text-white">
             <div className="min-w-0">
-              <h2 className="text-lg sm:text-xl font-black tracking-tight truncate drop-shadow-sm">
+              <h2 className="text-lg sm:text-xl font-black tracking-tight truncate drop-shadow-sm group-hover:text-[#A3F3C6] transition-colors">
                 {spotName}
               </h2>
-              <p className="text-xs text-white/80 font-medium truncate flex items-center gap-1">
-                <MapPin className="w-3 h-3 shrink-0" />
+              <p className="text-xs text-white/85 font-medium truncate flex items-center gap-1 mt-0.5">
+                <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
                 <span>{resolvedArea}</span>
               </p>
             </div>
 
-            <Link
-              href={venuePageHref}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white text-midnight-lagoon text-xs font-bold hover:bg-gray-100 transition-colors shrink-0 shadow-sm"
-            >
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-midnight-lagoon text-xs font-black group-hover:bg-[#008751] group-hover:text-white transition-all shrink-0 shadow-sm tap-feedback">
               <span>View Venue</span>
-              <ExternalLink className="w-3 h-3" />
-            </Link>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* 3. The 3-Pillar Budget Relationship Card */}

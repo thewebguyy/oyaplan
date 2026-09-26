@@ -9,9 +9,20 @@ import { getVerificationText } from "@/lib/planning/presentation/decisionCardMap
 interface VenueDecisionSummaryProps {
   venue: Venue;
   areaSlug?: string;
+  fromPlan?: boolean;
+  planSquad?: number;
+  planBudget?: number;
+  planVibe?: string;
 }
 
-export function VenueDecisionSummary({ venue, areaSlug = "ikeja" }: VenueDecisionSummaryProps) {
+export function VenueDecisionSummary({ 
+  venue, 
+  areaSlug = "ikeja",
+  fromPlan = false,
+  planSquad,
+  planBudget,
+  planVibe,
+}: VenueDecisionSummaryProps) {
   const isPartnerVerified = venue.partner_state === "verified_partner";
   const isVerified = isPartnerVerified || venue.operational_status === "verified" || venue.operational_status === "fresh";
   const freshnessText = getVerificationText(venue.last_price_updated_at);
@@ -23,7 +34,11 @@ export function VenueDecisionSummary({ venue, areaSlug = "ikeja" }: VenueDecisio
   const low4 = Math.round((perPersonCost * 3.6) / 1000) * 1000;
   const high4 = Math.round((low4 * 1.35) / 1000) * 1000;
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=2&budget=${low2}&vibe=${encodeURIComponent(venue.vibe_tags?.[0] || "chill")}&fresh=true`;
+  const activeSquad = planSquad || 2;
+  const activeBudget = planBudget || (activeSquad === 4 ? low4 : low2);
+  const activeVibe = planVibe || venue.vibe_tags?.[0] || "chill";
+
+  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${activeSquad}&budget=${activeBudget}&vibe=${encodeURIComponent(activeVibe)}&fresh=true`;
 
   return (
     <section id="pricing" className="scroll-mt-32">

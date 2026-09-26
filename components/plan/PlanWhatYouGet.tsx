@@ -1,8 +1,7 @@
-'use client';
-
 import React from 'react';
+import Link from 'next/link';
 import { MenuItem, Spot, Venue } from '@/lib/types';
-import { Utensils, Sparkles, Check, HelpCircle, Ticket } from 'lucide-react';
+import { Utensils, Sparkles, Check, HelpCircle, Ticket, ArrowRight } from 'lucide-react';
 
 interface PlanWhatYouGetProps {
   squadSize: number;
@@ -22,6 +21,7 @@ export function PlanWhatYouGet({
   hasFood = true,
 }: PlanWhatYouGetProps) {
   const isActivity = hasFood === false || spot?.has_food === false;
+  const venueId = venue?.id || spot?.id;
 
   // Filter available items
   const availableItems = menuItems.filter((i) => i.is_available !== false);
@@ -126,6 +126,19 @@ export function PlanWhatYouGet({
           ₦{foodCost.toLocaleString('en-NG')}
         </span>
       </div>
+
+      {/* Full Menu Link to Venue */}
+      {venueId && (
+        <div className="pt-1 flex justify-center">
+          <Link
+            href={`/venue/${venueId}#menu`}
+            className="text-xs font-bold text-[#008751] hover:text-[#007043] inline-flex items-center gap-1.5 transition-colors tap-feedback py-1"
+          >
+            <span>View full {spot?.name || venue?.name || 'venue'} menu & prices</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

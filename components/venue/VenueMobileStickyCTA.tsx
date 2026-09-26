@@ -11,19 +11,32 @@ interface VenueMobileStickyCTAProps {
   venue: Venue;
   areaSlug?: string;
   coverImage?: string;
+  fromPlan?: boolean;
+  planSquad?: number;
+  planBudget?: number;
+  planVibe?: string;
 }
 
 export function VenueMobileStickyCTA({
   venue,
   areaSlug = "ikeja",
   coverImage,
+  fromPlan,
+  planSquad,
+  planBudget,
+  planVibe,
 }: VenueMobileStickyCTAProps) {
   const { isSaved, saveSpot, removeSpot } = useSavedSpots();
   const saved = isSaved(venue.id);
 
   const typicalCost = venue.derived_typical_cost > 0 ? venue.derived_typical_cost : 18000;
   const low2 = Math.round((typicalCost * 1.8) / 1000) * 1000;
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=2&budget=${low2}&vibe=${encodeURIComponent(venue.vibe_tags?.[0] || "chill")}&fresh=true`;
+
+  const targetSquad = planSquad || 2;
+  const targetBudget = planBudget || low2;
+  const targetVibe = planVibe || venue.vibe_tags?.[0] || "chill";
+
+  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${targetSquad}&budget=${targetBudget}&vibe=${encodeURIComponent(targetVibe)}&fresh=true`;
 
   const handleToggleSave = () => {
     if (saved) {

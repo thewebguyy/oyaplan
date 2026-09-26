@@ -15,7 +15,9 @@ import { VenueMobileStickyCTA } from "@/components/venue/VenueMobileStickyCTA";
 import { ChangeRequestModal } from "@/components/venue/ChangeRequestModal";
 import { trackEvent } from "@/lib/analytics/trackClient";
 
+import { useSearchParams } from "next/navigation";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { VenuePlanContextCard } from "@/components/venue/VenuePlanContextCard";
 
 interface PublicVenueClientProps {
   venue: Venue;
@@ -35,7 +37,13 @@ export function PublicVenueClient({
   areaSlug = "ikeja",
 }: PublicVenueClientProps) {
   const [isCorrectionOpen, setIsCorrectionOpen] = useState(false);
+  const searchParams = useSearchParams();
   const { recordView } = useRecentlyViewed();
+
+  const fromPlan = searchParams.get("fromPlan") === "true";
+  const planSquad = searchParams.get("squad") ? Number(searchParams.get("squad")) : undefined;
+  const planBudget = searchParams.get("budget") ? Number(searchParams.get("budget")) : undefined;
+  const planVibe = searchParams.get("vibe") || undefined;
 
   // Telemetry & Factual Recent History
   useEffect(() => {
@@ -79,11 +87,30 @@ export function PublicVenueClient({
       {/* 3. Main Content Stream */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 space-y-8">
         
+        {/* Plan Origin Context Card (When arriving from a generated Plan) */}
+        {fromPlan && (
+          <VenuePlanContextCard
+            venue={venue}
+            areaSlug={areaSlug}
+            areaName={areaName}
+            planSquad={planSquad}
+            planBudget={planBudget}
+            planVibe={planVibe}
+          />
+        )}
+
         {/* Operational Notice (Temporary Closure / Maintenance) */}
         <OperationalNoticeBanner venue={venue} />
 
         {/* Financial Decision Summary */}
-        <VenueDecisionSummary venue={venue} areaSlug={areaSlug} />
+        <VenueDecisionSummary
+          venue={venue}
+          areaSlug={areaSlug}
+          fromPlan={fromPlan}
+          planSquad={planSquad}
+          planBudget={planBudget}
+          planVibe={planVibe}
+        />
 
         {/* Budget Spending Simulator ("What can I get for ₦X?") */}
         <VenueBudgetScenario
@@ -115,6 +142,10 @@ export function PublicVenueClient({
         venue={venue}
         areaSlug={areaSlug}
         coverImage={venue.cover_url || photos[0]?.url}
+        fromPlan={fromPlan}
+        planSquad={planSquad}
+        planBudget={planBudget}
+        planVibe={planVibe}
       />
 
       {/* 5. Correction Modal */}
