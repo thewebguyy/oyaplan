@@ -260,6 +260,46 @@ export async function getVenuePhotos(
 }
 
 /**
+ * getNearbyVenues
+ * Retrieves nearby/similar venues for discovery recommendations
+ */
+export async function getNearbyVenues(
+  venueId: string,
+  districtId?: string | null,
+  category?: string | null,
+  limit: number = 3
+): Promise<Venue[]> {
+  try {
+    let query = supabase
+      .from('venues')
+      .select('*, districts(name, slug)')
+      .neq('id', venueId);
+
+    if (districtId) {
+      query = query.eq('district_id', districtId);
+    } else if (category) {
+      query = query.eq('category', category);
+    }
+
+    const { data, error } = await query.limit(limit);
+    if (!error && data && data.length > 0) {
+      return data as unknown as Venue[];
+    }
+
+    // Fallback: fetch any available venues
+    const { data: fallbackData } = await supabase
+      .from('venues')
+      .select('*, districts(name, slug)')
+      .neq('id', venueId)
+      .limit(limit);
+
+    return (fallbackData as unknown as Venue[]) || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * calculateProfileHealth
  * Evaluates real, actionable profile health percentage and missing tasks
  */

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getPublicVenueById, getVenueMenuItems, getVenuePhotos } from '@/lib/queries/partner';
+import { getPublicVenueById, getVenueMenuItems, getVenuePhotos, getNearbyVenues } from '@/lib/queries/partner';
 import { PublicVenueClient } from './PublicVenueClient';
 
 export const dynamic = 'force-dynamic';
@@ -41,9 +41,10 @@ export default async function PublicVenuePage({ params }: Props) {
     return null;
   }
 
-  const [menuItems, photos] = await Promise.all([
+  const [menuItems, photos, nearbyVenues] = await Promise.all([
     getVenueMenuItems(venue.id),
     getVenuePhotos(venue.id),
+    getNearbyVenues(venue.id, venue.district_id, venue.category, 3),
   ]);
 
   const district = venue.districts;
@@ -55,6 +56,7 @@ export default async function PublicVenuePage({ params }: Props) {
       venue={venue}
       menuItems={menuItems}
       photos={photos}
+      nearbyVenues={nearbyVenues}
       areaName={areaName}
       areaSlug={areaSlug}
     />
