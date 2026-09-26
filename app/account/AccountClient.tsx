@@ -1,16 +1,28 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useTransition } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { User, ChevronRight, Share2, Bookmark, Sparkles, Pencil, Building2, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { 
+  User, 
+  ChevronRight, 
+  Heart, 
+  Bookmark, 
+  Settings, 
+  HelpCircle, 
+  Layers, 
+  Shield, 
+  FileText, 
+  Building2, 
+  LogOut,
+  ArrowRight,
+  Lock
+} from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { UserProfile } from "@/lib/services/identity/sessionResolver";
-import { getReferralCode } from "@/lib/actions/getReferralCode";
 import { Avatar } from "@/components/ui/avatar";
-import { toast } from "sonner";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BetaBadge } from "@/components/ui/BetaBadge";
+import { toast } from "sonner";
 
 interface AccountClientProps {
   isAuthenticated: boolean;
@@ -22,86 +34,56 @@ interface AccountClientProps {
 export default function AccountClient({
   isAuthenticated,
   profile,
-  savedPlansCount,
-  referralCode
 }: AccountClientProps) {
-  const { signOut, openModal } = useAuth();
+  const { signOut, openModal, avatarUrl } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const nextParam = searchParams.get("next");
   const isBusinessContext = searchParams.get("context") === "business" || nextParam?.startsWith("/business");
-  
-  const [isEditing, setIsEditing] = useState(false);
-  const [displayNameState, setDisplayNameState] = useState(profile?.display_name || "");
-  const [codeState, setCodeState] = useState<string | null>(referralCode);
-  const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (!codeState && isAuthenticated) {
-      getReferralCode().then((code) => {
-        if (code) setCodeState(code);
-      });
-    }
-  }, [codeState, isAuthenticated]);
-
-  // If authenticated and arriving with a business redirect target, forward them seamlessly
-  useEffect(() => {
-    if (isAuthenticated && nextParam && nextParam.startsWith("/business")) {
-      router.push(nextParam);
-    }
-  }, [isAuthenticated, nextParam, router]);
-
-  const handleSave = () => {
-    if (!displayNameState.trim()) return;
-    
+  const handleSignOut = () => {
     startTransition(async () => {
-      try {
-        const { updateProfile } = await import('@/lib/actions/profile');
-        const res = await updateProfile({ displayName: displayNameState });
-        if (res.success) {
-          toast.success("Your profile has been updated.");
-          setIsEditing(false);
-        } else {
-          toast.error("We couldn't update this right now. Try again.");
-        }
-      } catch {
-        toast.error("An error occurred.");
-      }
+      await signOut();
+      router.push("/");
+      toast.success("Signed out successfully.");
     });
   };
 
+  // 1. Unauthenticated State
   if (!isAuthenticated || !profile) {
     if (isBusinessContext) {
       return (
-        <main className="min-h-[100dvh] bg-[#FAF7F2] pt-24 pb-16 px-4 flex flex-col items-center justify-center">
-          <div className="w-full max-w-md space-y-8 text-center bg-white rounded-3xl border border-[#EAE4DC] p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="w-16 h-16 bg-[#EAFDF3] text-brand-green border border-[#A3F3C6] rounded-2xl flex items-center justify-center mx-auto shadow-xs">
-              <Building2 className="w-8 h-8" />
+        <main className="min-h-[100dvh] bg-[#FAF7F2] pt-24 pb-20 px-4 flex flex-col items-center justify-center selection:bg-[#008751]/20">
+          <div className="w-full max-w-md space-y-6 text-center bg-white rounded-3xl border border-[#EAE4DC] p-8 shadow-xs animate-in fade-in slide-in-from-bottom-4 duration-400">
+            <div className="w-14 h-14 bg-[#EAFDF3] text-[#008751] border border-[#A3F3C6] rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
+              <Building2 className="w-7 h-7" />
             </div>
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EAFDF3] text-brand-green text-[10px] font-bold uppercase tracking-wider">
-                <span>Partner Portal</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                OyaPlan For Business
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#EAFDF3] text-[#008751] text-[10px] font-black uppercase tracking-wider">
+                Partner Portal
+              </span>
+              <h1 className="text-2xl font-black text-midnight-lagoon tracking-tight">
+                OyaPlan for Business
               </h1>
-              <p className="text-xs sm:text-sm text-slate-600 px-2 leading-relaxed">
-                Sign in with your operator account to manage your venue profile, live pricing, and operating updates.
+              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed px-2">
+                Sign in with your operator credentials to manage venue pricing, menu updates, and real-world planner visibility.
               </p>
             </div>
             <div className="space-y-3 pt-2">
               <Button 
                 onClick={() => openModal("Sign in to Business Portal", nextParam || "/business")}
-                className="w-full bg-brand-green hover:bg-[#007043] text-white rounded-xl type-label h-12 shadow-sm border-none tap-feedback text-sm font-bold transition-all"
+                className="w-full bg-[#008751] hover:bg-[#007043] text-white rounded-xl h-12 text-xs font-bold transition-all tap-feedback"
               >
-                Sign In to Business Portal
+                <span>Sign In to Business Portal</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
               <Link
                 href="/for-business"
-                className="block text-xs text-slate-500 hover:text-slate-800 transition-colors"
+                className="block text-xs font-bold text-text-muted hover:text-midnight-lagoon transition-colors pt-1"
               >
-                Back to OyaPlan Business Overview
+                Back to Business Overview
               </Link>
             </div>
           </div>
@@ -110,267 +92,265 @@ export default function AccountClient({
     }
 
     return (
-      <main className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-16 px-4 flex flex-col items-center justify-center">
-        <div className="w-full max-w-md space-y-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="w-20 h-20 bg-brand-green/10 text-brand-green rounded-[24px] flex items-center justify-center mx-auto shadow-sm">
-            <User className="w-10 h-10" />
+      <main className="min-h-[100dvh] bg-[#FAF7F2] pt-24 pb-20 px-4 flex flex-col items-center justify-center selection:bg-[#008751]/20">
+        <div className="w-full max-w-md space-y-6 text-center bg-white rounded-3xl border border-[#EAE4DC] p-8 shadow-xs animate-in fade-in slide-in-from-bottom-4 duration-400">
+          <div className="w-16 h-16 bg-[#EAFDF3] text-[#008751] rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
+            <Lock className="w-8 h-8" />
           </div>
-          <div className="space-y-3">
-            <h1 className="text-3xl font-black text-midnight-lagoon tracking-tight">Your OyaPlan</h1>
-            <p className="type-body text-text-muted px-4">
-              Sign in to manage your profile and view your passport.
+          <div className="space-y-2">
+            <h1 className="text-2xl font-black text-midnight-lagoon tracking-tight">
+              Your OyaPlan
+            </h1>
+            <p className="text-xs sm:text-sm text-text-secondary leading-relaxed px-2">
+              Sign in to manage your personal profile, access saved spots and plans, and customize outing preferences.
             </p>
           </div>
-          <Button 
-            onClick={() => openModal()}
-            className="w-full bg-brand-green hover:bg-brand-green-70 text-white rounded-[16px] type-label h-14 shadow-md border-none tap-feedback text-lg transition-all"
-          >
-            Sign In
-          </Button>
+          <div className="pt-2">
+            <Button 
+              onClick={() => openModal("Sign in to access your account")}
+              className="w-full bg-[#008751] hover:bg-[#007043] text-white rounded-xl h-12 text-sm font-bold shadow-xs transition-all tap-feedback"
+            >
+              Sign In / Create Account
+            </Button>
+          </div>
         </div>
       </main>
     );
   }
 
+  // 2. Authenticated State
   const isEmailBasedName = profile.display_name === profile.email || profile.display_name?.includes("@");
-  const displayName = isEmailBasedName ? "Planner" : profile.display_name;
-
-  const joinedDateText = profile.beta_joined_at
-    ? new Date(profile.beta_joined_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
-    : "August 2026";
+  const displayName = isEmailBasedName 
+    ? (profile.email?.split("@")[0] || "Planner")
+    : (profile.display_name || "Planner");
+  const displayEmail = profile.email || "";
 
   return (
-    <main className="min-h-[100dvh] bg-[#FAFAF8] pb-24">
-      {/* 1. The Header — Solid Chowdeck-Style Brand Green (#008751) */}
-      <div className="w-full bg-[#008751] rounded-b-[28px] pt-14 pb-10 px-6 flex flex-col items-center text-center shadow-md relative animate-in fade-in duration-150">
-        <div className="relative mb-3">
-          <Avatar 
-            name={profile.display_name} 
-            size="xl"
-            className="ring-4 ring-white/30 shadow-md"
-          />
-        </div>
+    <main className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon pt-20 sm:pt-24 pb-28 selection:bg-[#008751]/20">
+      <div className="max-w-xl mx-auto px-4 sm:px-6 space-y-6 animate-in fade-in duration-200">
         
-        <h1 className="text-2xl font-black text-white tracking-tight mb-0.5">
-          {displayName}
-        </h1>
-        
-        {profile.email && (
-          <p 
-            onClick={() => {
-              if (profile.email) {
-                navigator.clipboard.writeText(profile.email);
-                toast.success("Email copied!");
-              }
-            }}
-            className="text-xs font-bold text-white/80 truncate max-w-[220px] mb-3 cursor-pointer tap-feedback"
-          >
-            {profile.email}
-          </p>
-        )}
-
-        <div className="flex flex-col items-center gap-1.5 mt-1">
-          {profile.profile_badge && (
-            <BetaBadge badgeType={profile.profile_badge} size="md" />
-          )}
-          <span className="text-xs font-bold text-white/90 tracking-wide mt-0.5">
-            Joined {joinedDateText}
-          </span>
-        </div>
-      </div>
-
-      <div className="max-w-md mx-auto px-4 sm:px-6 mt-6 space-y-6">
-        
-        {/* 2. User History Summary Strip */}
-        <div className="bg-white rounded-[24px] p-5 shadow-sm border border-[#E5E7EB] grid grid-cols-4 gap-2 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-200 fill-mode-both relative z-10">
-          <div className="text-center">
-            <div className="text-xl font-black text-[#008751]">{savedPlansCount}</div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Outings</div>
-          </div>
-          <div className="text-center border-l border-border-default">
-            <div className="text-xl font-black text-[#008751]">{savedPlansCount}</div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Saved</div>
-          </div>
-          <div className="text-center border-l border-border-default">
-            <div className="text-xl font-black text-[#008751]">
-              {(profile.role === 'admin' || profile.role === 'scout') ? '1' : '0'}
-            </div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Verified</div>
-          </div>
-          <div className="text-center border-l border-border-default">
-            <div className="text-xl font-black text-[#008751]">0</div>
-            <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">Invited</div>
-          </div>
-        </div>
-
-        {/* 3. Section Rhythm */}
-        <div className="space-y-4 pt-2 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-300 fill-mode-both">
-          
-          <Link href="/saved" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
-                  <Bookmark className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-text-primary">Saved Spots</h3>
-                  <p className="text-sm text-text-muted mt-0.5">Places and venues you bookmarked</p>
-                </div>
+        {/* 1. PROFILE HEADER — Restrained, Polished, Consumer Grade */}
+        <Link 
+          href="/account/profile"
+          prefetch={true}
+          className="group block bg-white rounded-[24px] border border-[#EAE4DC] p-5 shadow-xs tap-feedback transition-all hover:border-[#008751]/40"
+          aria-label="Edit your account profile"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+              <Avatar 
+                name={displayName} 
+                src={avatarUrl || profile.avatar_url} 
+                size="lg"
+                className="ring-2 ring-[#008751]/20 group-hover:ring-[#008751] transition-all shrink-0"
+              />
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-black text-midnight-lagoon truncate group-hover:text-[#008751] transition-colors">
+                  {displayName}
+                </h1>
+                {displayEmail && (
+                  <p className="text-xs text-text-muted truncate mt-0.5 font-medium">
+                    {displayEmail}
+                  </p>
+                )}
               </div>
-              <ChevronRight className="w-5 h-5 text-text-muted" />
             </div>
-          </Link>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-text-muted group-hover:text-[#008751] shrink-0 transition-colors">
+              <span className="hidden sm:inline">Profile</span>
+              <ChevronRight className="w-5 h-5" />
+            </div>
+          </div>
+        </Link>
 
-          <Link href="/dashboard" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
-                  <Bookmark className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-text-primary">Saved Plans</h3>
-                  <p className="text-sm text-text-muted mt-0.5">{savedPlansCount} outings planned</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-text-muted" />
-            </div>
-          </Link>
-
-          <Link href="/settings" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
-                  <User className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-text-primary">Settings</h3>
-                  <p className="text-sm text-text-muted mt-0.5">Login, security & preferences</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-text-muted" />
-            </div>
-          </Link>
-
-          <Link href="/scout" prefetch={true} className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-text-primary">OyaScout Dashboard</h3>
-                  <p className="text-sm text-text-muted mt-0.5">Verify prices & earn status</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-text-muted" />
-            </div>
-          </Link>
-          
-          {!isEditing ? (
-            <div 
-              onClick={() => setIsEditing(true)}
-              className="block bg-white rounded-[20px] p-5 border border-[#E5E7EB] tap-feedback transition-colors active:bg-surface-grey cursor-pointer"
+        {/* 2. SECTION: YOUR OYAPLAN */}
+        <div className="space-y-2">
+          <div className="px-2 text-[11px] font-black uppercase tracking-wider text-text-muted">
+            Your OyaPlan
+          </div>
+          <div className="bg-white rounded-[24px] border border-[#EAE4DC] overflow-hidden shadow-xs divide-y divide-[#EAE4DC]">
+            
+            {/* Account Profile */}
+            <Link 
+              href="/account/profile" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#FFF9C4] text-[#008751] flex items-center justify-center shrink-0">
-                    <Pencil className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-text-primary">Edit Profile</h3>
-                    <p className="text-sm text-text-muted mt-0.5">Change your display name</p>
-                  </div>
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
+                  <User className="w-4.5 h-4.5" />
                 </div>
-                <ChevronRight className="w-5 h-5 text-text-muted" />
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-[20px] p-5 border border-[#E5E7EB] animate-in fade-in duration-200">
-              <div className="space-y-4">
-                <input 
-                  value={displayNameState}
-                  onChange={(e) => setDisplayNameState(e.target.value)}
-                  placeholder="e.g. Bode Olusegun"
-                  className="w-full h-14 rounded-[12px] border border-[#E5E7EB] bg-surface-grey font-bold text-text-primary px-4 outline-none focus:border-[#008751] text-lg"
-                  autoFocus
-                />
-                <div className="flex gap-3">
-                  <button 
-                    onClick={() => {
-                      setDisplayNameState(profile.display_name || "");
-                      setIsEditing(false);
-                    }} 
-                    disabled={isPending}
-                    className="flex-1 rounded-[12px] h-12 border border-[#E5E7EB] text-text-primary hover:bg-surface-grey font-bold tap-feedback"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    onClick={handleSave} 
-                    disabled={isPending || !displayNameState.trim() || displayNameState === profile.display_name}
-                    className="flex-1 bg-[#008751] text-white rounded-[12px] h-12 shadow-sm font-bold tap-feedback disabled:opacity-50 flex items-center justify-center"
-                  >
-                    {isPending ? "Saving..." : "Save"}
-                  </button>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Account Profile</h2>
+                  <p className="text-[11px] text-text-muted">Personal info, display name &amp; photo</p>
                 </div>
               </div>
-            </div>
-          )}
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
 
-        </div>
-
-        {/* 4. Invite Squad Ticket */}
-        <div className="bg-[#FFF9C4] rounded-[24px] p-6 shadow-sm mt-8 space-y-4 animate-in slide-in-from-bottom-4 fade-in duration-500 delay-400 fill-mode-both border border-amber-200/60">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-full bg-white text-[#008751] flex items-center justify-center shrink-0 shadow-xs">
-              <Share2 className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[#00603A]">Invite your squad</h2>
-              <p className="text-xs text-[#00603A]/80 mt-0.5">Everyone gets better planning together.</p>
-            </div>
-          </div>
-
-          <div className="bg-white/90 rounded-[16px] border border-[#008751]/20 p-3.5 flex items-center justify-between gap-2 shadow-xs">
-            <span className="font-mono font-bold text-[#008751] text-base tracking-wider truncate">
-              {codeState ? `https://oyaplan.com/?ref=${codeState}` : "GENERATING..."}
-            </span>
-            <button 
-              onClick={() => {
-                if (codeState) {
-                  const origin = typeof window !== "undefined" ? window.location.origin : "https://oyaplan.com";
-                  navigator.clipboard.writeText(`${origin}/?ref=${codeState}`);
-                  toast.success("Referral link copied!");
-                }
-              }}
-              className="text-xs font-black text-[#008751] uppercase tracking-wider tap-feedback bg-[#FFF9C4] hover:bg-amber-200 px-3.5 py-2 rounded-xl shrink-0 transition-colors"
+            {/* Saved Spots */}
+            <Link 
+              href="/saved" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
             >
-              Copy
-            </button>
-          </div>
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
+                  <Heart className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Saved Spots</h2>
+                  <p className="text-[11px] text-text-muted">Bookmarked venues &amp; destinations</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
 
-          <button 
-            onClick={() => {
-              if (codeState) {
-                const origin = typeof window !== "undefined" ? window.location.origin : "https://oyaplan.com";
-                const shareText = `Find out exactly what your Lagos outing will cost before you leave home. Use my link: ${origin}/?ref=${codeState}`;
-                const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-                window.open(waUrl, "_blank");
-              }
-            }}
-            className="w-full h-13 bg-[#008751] hover:bg-[#006b41] text-white rounded-[16px] font-bold text-sm flex items-center justify-center gap-2 tap-feedback shadow-xs transition-colors"
-          >
-            Share on WhatsApp <ChevronRight className="w-4 h-4" />
-          </button>
+            {/* Saved Plans */}
+            <Link 
+              href="/saved?tab=plans" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
+                  <Bookmark className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Saved Plans</h2>
+                  <p className="text-[11px] text-text-muted">Outing itineraries &amp; squad plans</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+
+            {/* Settings */}
+            <Link 
+              href="/settings" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
+                  <Settings className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Settings</h2>
+                  <p className="text-[11px] text-text-muted">Security, logins &amp; preferences</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+
+          </div>
         </div>
 
-        {/* 5. Sign Out — Quiet, Not Alarming */}
-        <div className="pt-10 pb-6 animate-in fade-in duration-500 delay-500">
+        {/* 3. SECTION: COMPANY & SUPPORT */}
+        <div className="space-y-2">
+          <div className="px-2 text-[11px] font-black uppercase tracking-wider text-text-muted">
+            Company &amp; Support
+          </div>
+          <div className="bg-white rounded-[24px] border border-[#EAE4DC] overflow-hidden shadow-xs divide-y divide-[#EAE4DC]">
+            
+            <Link 
+              href="/feedback" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
+                  <HelpCircle className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Help / Feedback</h2>
+                  <p className="text-[11px] text-text-muted">Report an issue or suggest a feature</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+
+            <Link 
+              href="/about" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
+                  <Layers className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">About OyaPlan</h2>
+                  <p className="text-[11px] text-text-muted">Our story, mission &amp; budget confidence thesis</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+
+            <Link 
+              href="/privacy" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
+                  <Shield className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Privacy Policy</h2>
+                  <p className="text-[11px] text-text-muted">How we protect your identity &amp; data</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+
+            <Link 
+              href="/terms" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
+                  <FileText className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Terms of Service</h2>
+                  <p className="text-[11px] text-text-muted">Consumer terms &amp; guidelines</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+
+          </div>
+        </div>
+
+        {/* 4. SECTION: FOR BUSINESS (Restrained Bridge) */}
+        <div className="bg-white rounded-[24px] border border-[#EAE4DC] p-4.5 shadow-xs flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-midnight-lagoon text-white flex items-center justify-center shrink-0">
+              <Building2 className="w-4.5 h-4.5" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">OyaPlan for Business</h2>
+              <p className="text-[11px] text-text-muted truncate">Venue verification &amp; partner tools</p>
+            </div>
+          </div>
+          <Link
+            href="/for-business"
+            prefetch={true}
+            className="text-xs font-bold text-midnight-lagoon hover:text-[#008751] px-3.5 py-2 rounded-xl border border-[#EAE4DC] bg-[#FAF7F2] hover:bg-white transition-colors shrink-0 tap-feedback"
+          >
+            Explore ↗
+          </Link>
+        </div>
+
+        {/* 5. LOGOUT — Quiet, Restrained, Non-Alarming */}
+        <div className="pt-4 text-center">
           <button
-            onClick={() => signOut()}
-            className="w-full text-center text-sm font-bold text-text-muted hover:text-text-primary transition-colors tap-feedback"
+            type="button"
+            onClick={handleSignOut}
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors tap-feedback cursor-pointer min-h-[44px]"
           >
-            Sign out
+            <LogOut className="w-4 h-4" />
+            <span>Log out of OyaPlan</span>
           </button>
         </div>
 

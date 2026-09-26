@@ -223,7 +223,7 @@ export function VenueBudgetScenario({
               <span>Typical Outing Estimates (Limited Menu Data)</span>
             </div>
             <p className="text-xs text-text-secondary leading-relaxed">
-              We are still indexing the complete itemized menu for this venue. Based on area standards and verified receipts in {venue.category || "dining"}:
+              We are still indexing the complete itemized menu for this venue. Based on area standards and reported spend in {venue.category || "dining"}:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
               <div className="p-3 bg-white rounded-xl border border-[#EAE4DC]">

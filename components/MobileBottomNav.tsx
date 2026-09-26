@@ -70,7 +70,7 @@ export default function MobileBottomNav() {
       name: "Plan",
       href: "/",
       icon: Sparkles,
-      isActive: pathname === "/",
+      isActive: pathname === "/" || pathname === "/forge",
     },
     {
       name: "Explore",
@@ -82,12 +82,12 @@ export default function MobileBottomNav() {
       name: "Saved",
       href: "/saved",
       icon: Bookmark,
-      isActive: pathname === "/saved" || pathname === "/dashboard",
+      isActive: pathname.startsWith("/saved") || pathname === "/dashboard",
     },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#E5E7EB] md:hidden px-2 py-1.5 pb-safe shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#EAE4DC] md:hidden px-2 py-1 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
       <nav className="flex items-center justify-around w-full max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -97,7 +97,7 @@ export default function MobileBottomNav() {
               key={item.name}
               href={href}
               prefetch={true}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback ${
+              className={`flex flex-col items-center justify-center min-h-[44px] min-w-[48px] py-1 px-2.5 rounded-xl transition-all duration-200 tap-feedback ${
                 item.isActive
                   ? "text-[#008751] font-bold"
                   : "text-[#6B7280] hover:text-[#1A1A1A]"
@@ -106,14 +106,14 @@ export default function MobileBottomNav() {
               <div className="relative">
                 <Icon
                   className={`w-5 h-5 transition-transform ${
-                    item.isActive ? "scale-110" : ""
+                    item.isActive ? "scale-110 text-[#008751]" : "text-[#6B7280]"
                   }`}
                 />
                 {item.isActive && (
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#008751] rounded-full" />
                 )}
               </div>
-              <span className="text-[11px] mt-1 font-medium tracking-tight">
+              <span className="text-[11px] mt-0.5 font-medium tracking-tight">
                 {item.name}
               </span>
             </Link>
@@ -125,33 +125,47 @@ export default function MobileBottomNav() {
           <Link
             href="/account"
             prefetch={true}
-            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback ${
-              pathname === "/account"
+            className={`flex flex-col items-center justify-center min-h-[44px] min-w-[48px] py-1 px-2.5 rounded-xl transition-all duration-200 tap-feedback ${
+              pathname.startsWith("/account") || pathname.startsWith("/settings")
                 ? "text-[#008751] font-bold"
                 : "text-[#6B7280] hover:text-[#1A1A1A]"
             }`}
-            aria-label="Account profile"
+            aria-label="Account"
           >
             <div className="relative">
-              <User className="w-5 h-5" />
+              <User 
+                className={`w-5 h-5 transition-transform ${
+                  pathname.startsWith("/account") || pathname.startsWith("/settings")
+                    ? "scale-110 text-[#008751]" 
+                    : "text-[#6B7280]"
+                }`} 
+              />
+              {(pathname.startsWith("/account") || pathname.startsWith("/settings")) && (
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#008751] rounded-full" />
+              )}
             </div>
-            <span className="text-[11px] mt-1 font-medium tracking-tight">
+            <span className="text-[11px] mt-0.5 font-medium tracking-tight">
               Account
             </span>
           </Link>
         ) : (
-          <button
-            onClick={() => openModal()}
-            className="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 tap-feedback text-[#6B7280] hover:text-[#1A1A1A]"
-            aria-label="Sign in"
+          <Link
+            href="/account"
+            prefetch={true}
+            className={`flex flex-col items-center justify-center min-h-[44px] min-w-[48px] py-1 px-2.5 rounded-xl transition-all duration-200 tap-feedback ${
+              pathname.startsWith("/account")
+                ? "text-[#008751] font-bold"
+                : "text-[#6B7280] hover:text-[#1A1A1A]"
+            }`}
+            aria-label="Account"
           >
             <div className="relative">
               <User className="w-5 h-5" />
             </div>
-            <span className="text-[11px] mt-1 font-medium tracking-tight">
-              Sign In
+            <span className="text-[11px] mt-0.5 font-medium tracking-tight">
+              Account
             </span>
-          </button>
+          </Link>
         )}
       </nav>
     </div>

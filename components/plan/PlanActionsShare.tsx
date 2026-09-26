@@ -56,17 +56,17 @@ export function PlanActionsShare({
   }
   const editUrl = `/?${editParams.toString()}`;
 
-  // WhatsApp formatted share text
-  const getShareUrl = () => {
+  // Squad Room URL
+  const getSquadUrl = () => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}/plan/${planId}`;
+      return `${window.location.origin}/squad/${planId}`;
     }
-    return `https://oyaplan.vercel.app/plan/${planId}`;
+    return `https://oyaplan.vercel.app/squad/${planId}`;
   };
 
   const generateWhatsAppMessage = () => {
     const remaining = budget - totalCost;
-    const shareUrl = getShareUrl();
+    const squadUrl = getSquadUrl();
     const taxes = Math.max(0, totalCost - (foodCost + transportCost));
     const perPerson = Math.ceil(totalCost / squadSize);
 
@@ -81,7 +81,7 @@ export function PlanActionsShare({
       `• Food & Drinks: ₦${foodCost.toLocaleString('en-NG')}\n` +
       `• Estimated Transport (Round-Trip): ₦${transportCost.toLocaleString('en-NG')}\n` +
       (taxes > 0 ? `• Mandatory Charges & Buffer: ₦${taxes.toLocaleString('en-NG')}\n` : '') +
-      `\nSee full breakdown & menu items:\n${shareUrl}`
+      `\nTap to check the squad plan & confirm "I'm in":\n${squadUrl}`
     );
   };
 
@@ -98,7 +98,7 @@ export function PlanActionsShare({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(getShareUrl());
+      await navigator.clipboard.writeText(getSquadUrl());
       setCopiedLink(true);
       trackEvent('plan_shared', {
         category: 'Sharing',
@@ -117,8 +117,8 @@ export function PlanActionsShare({
       try {
         await navigator.share({
           title: `Squad Outing at ${venueName} — OyaPlan`,
-          text: `Check out our ~₦${totalCost.toLocaleString('en-NG')} plan for ${squadSize} people at ${venueName}.`,
-          url: getShareUrl(),
+          text: `Check out our ~₦${totalCost.toLocaleString('en-NG')} plan for ${squadSize} people at ${venueName}. Tap to say you're in!`,
+          url: getSquadUrl(),
         });
         trackEvent('plan_shared', {
           category: 'Sharing',
@@ -143,10 +143,19 @@ export function PlanActionsShare({
         <div className="flex items-center justify-between pb-2 border-b border-border-default/60">
           <h2 className="text-base font-black text-midnight-lagoon flex items-center gap-2">
             <Share2 className="w-4 h-4 text-[#008751]" />
-            <span>Squad Actions</span>
+            <span>Squad Decision &amp; Actions</span>
           </h2>
           <span className="text-[11px] font-bold text-text-muted">1-Tap Distribution</span>
         </div>
+
+        {/* Squad Decision Room Hero CTA */}
+        <Link
+          href={`/squad/${planId}`}
+          className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all tap-feedback"
+        >
+          <Share2 className="w-4 h-4" />
+          <span>Open Squad Decision Room (&ldquo;Who&apos;s In?&rdquo;)</span>
+        </Link>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* WhatsApp Direct Share */}
@@ -166,7 +175,7 @@ export function PlanActionsShare({
             className="h-12 w-full bg-midnight-lagoon hover:bg-black text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer tap-feedback"
           >
             {copiedLink ? <Check className="w-4 h-4 text-[#A3F3C6]" /> : <Copy className="w-4 h-4" />}
-            <span>{copiedLink ? 'Link Copied!' : 'Copy Plan Link'}</span>
+            <span>{copiedLink ? 'Link Copied!' : 'Copy Squad Link'}</span>
           </button>
 
           {/* Save Plan Button */}
