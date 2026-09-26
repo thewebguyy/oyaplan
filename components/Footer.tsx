@@ -105,7 +105,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-4">
               <li>
                 <Link href="/suggest-a-spot" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
-                  <span>Suggest a Spot 🏅</span>
+                  <span>Suggest a Spot</span>
                 </Link>
               </li>
               <li>

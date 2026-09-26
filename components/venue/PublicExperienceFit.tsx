@@ -74,14 +74,16 @@ export function PublicExperienceFit({ venue }: PublicExperienceFitProps) {
               vibeTags.map((vibe) => (
                 <span
                   key={vibe}
-                  className="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-border-default text-midnight-lagoon shadow-xs capitalize"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-border-default text-midnight-lagoon shadow-xs capitalize"
                 >
-                  ✨ {vibe}
+                  <Sparkles className="w-3.5 h-3.5 text-lasgidi-yellow" />
+                  <span>{vibe}</span>
                 </span>
               ))
             ) : (
-              <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-border-default text-midnight-lagoon">
-                ✨ Chill Outing
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-border-default text-midnight-lagoon">
+                <Sparkles className="w-3.5 h-3.5 text-lasgidi-yellow" />
+                <span>Chill Outing</span>
               </span>
             )}
 

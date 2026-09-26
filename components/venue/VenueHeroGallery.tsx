@@ -232,8 +232,9 @@ export function VenueHeroGallery({
                 {venue.category || "Spot"}
               </span>
 
-              <span className="px-3 py-1 rounded-full text-xs font-bold text-midnight-lagoon bg-surface-grey border border-[#EAE4DC]">
-                📍 {areaName}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-midnight-lagoon bg-surface-grey border border-[#EAE4DC]">
+                <MapPin className="w-3.5 h-3.5 text-[#008751]" />
+                <span>{areaName}</span>
               </span>
 
               {isPartnerVerified && (

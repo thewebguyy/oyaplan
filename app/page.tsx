@@ -4,7 +4,6 @@ import HeroSection from "@/components/HeroSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import HowItWorksSection from "@/components/HowItWorksSection";
-import { FounderStorySection } from "@/components/home/FounderStorySection";
 import { getForgeSpots } from "@/lib/queries/spots";
 import { Spot } from "@/lib/types";
 
@@ -27,9 +26,6 @@ export default async function LandingPage() {
 
       {/* Hero Section */}
       <HeroSection spots={spots} />
-
-      {/* Founder Story Narrative Section */}
-      <FounderStorySection />
 
       {/* How OyaPlan Works Section */}
       <HowItWorksSection />

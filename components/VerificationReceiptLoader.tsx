@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ForgeInput, Spot } from "@/lib/types";
+import { Wallet, Car, Users, Sparkles, Check, ShieldCheck } from "lucide-react";
 
 // Dynamic Ticker Component
 function NumberTicker({
@@ -343,7 +344,7 @@ export default function VerificationReceiptLoader({
                         </span>
                       </div>
                       <p className="text-[11px] text-[#6B7280]">
-                        {elapsedTime >= 2200 ? "✓ 10% VAT + local service charge baked in" : "Estimating local taxes and transaction service fees..."}
+                        {elapsedTime >= 2200 ? "✓ Estimated mandatory charges & buffers applied" : "Estimating local taxes and transaction service fees..."}
                       </p>
                       {elapsedTime < 2200 && (
                         <ProgressBar duration={500} delayMs={0} />
@@ -363,7 +364,7 @@ export default function VerificationReceiptLoader({
                   className="pt-4 border-t-2 border-dashed border-[#EAE8E3] text-center"
                 >
                   <span className="text-lg font-black text-[#10B981] flex items-center justify-center gap-1.5">
-                    ✓ Gbedu Ready.
+                    <Check className="w-5 h-5 stroke-[3]" /> Gbedu Ready.
                   </span>
                 </motion.div>
               )}
@@ -400,7 +401,7 @@ export default function VerificationReceiptLoader({
                   >
                     <div className="flex items-center justify-between text-xs font-bold text-[#1A1A1A]">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">💰</span>
+                        <Wallet className="w-4 h-4 text-[#008751]" />
                         <span>Budget: Clean</span>
                       </div>
                       <span className="text-[#008751] font-mono">✓ {remainingBuffer > 0 ? "Under Limit" : "Balanced"}</span>
@@ -427,7 +428,7 @@ export default function VerificationReceiptLoader({
                   >
                     <div className="flex items-center justify-between text-xs font-bold text-[#1A1A1A]">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">🚗</span>
+                        <Car className="w-4 h-4 text-[#FCC630]" />
                         <span>Transit: Nearby</span>
                       </div>
                       <span className="text-[#008751] font-mono">✓ Included</span>
@@ -454,7 +455,7 @@ export default function VerificationReceiptLoader({
                   >
                     <div className="flex items-center justify-between text-xs font-bold text-[#1A1A1A]">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">👥</span>
+                        <Users className="w-4 h-4 text-[#008751]" />
                         <span>Squad: Sorted</span>
                       </div>
                       <span className="text-[#008751] font-mono">✓ Fits {squadSize} {squadSize === 1 ? "person" : "people"}</span>
@@ -481,7 +482,7 @@ export default function VerificationReceiptLoader({
                   >
                     <div className="flex items-center justify-between text-xs font-bold text-[#1A1A1A]">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">🎵</span>
+                        <Sparkles className="w-4 h-4 text-[#FCC630]" />
                         <span>Vibe: Hits</span>
                       </div>
                       <span className="text-[#008751] font-mono">✓ Match</span>

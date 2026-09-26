@@ -15,7 +15,6 @@ export default function HowItWorksSection() {
     {
       step: 1,
       icon: Wallet,
-      emoji: "💳",
       title: "Pick your budget",
       description: "Set total squad spend or per-person limit. Zero hidden fees or surprise bills.",
       badge: "No Guesswork",
@@ -30,7 +29,6 @@ export default function HowItWorksSection() {
     {
       step: 2,
       icon: MapPin,
-      emoji: "📍",
       title: "Choose location",
       description: "Select your Lagos starting area — Lekki, Yaba, Ikeja, or VI. Distance is factored in.",
       badge: "Location-aware",
@@ -45,7 +43,6 @@ export default function HowItWorksSection() {
     {
       step: 3,
       icon: Sparkles,
-      emoji: "✨",
       title: "Choose your vibe",
       description: "Date night, squad linkup, birthday turn up, or quick bites tuned to your mood.",
       badge: "Tailored spots",
@@ -60,9 +57,8 @@ export default function HowItWorksSection() {
     {
       step: 4,
       icon: ShieldCheck,
-      emoji: "🛡️",
       title: "Get verified plan",
-      description: "Venue menu pricing, round-trip transport estimate, and statutory taxes calculated upfront.",
+      description: "Audited menu pricing, round-trip transport estimate, and verified venue charges upfront.",
       badge: "Verified Outing",
       cardBg: "bg-[#008751]",
       borderColor: "border-[#008751]",
@@ -85,7 +81,7 @@ export default function HowItWorksSection() {
         {/* Section Header */}
         <div className="mb-14 text-center max-w-2xl mx-auto">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#008751]/10 text-[#008751] border border-[#008751]/20 mb-3">
-            ✨ Simple 4-Step Magic
+            <Sparkles className="w-3.5 h-3.5" /> 4-Step Decision Flow
           </span>
           <h2 id="how-it-works-title" className="text-3xl sm:text-4xl md:text-5xl font-black text-[#1A1A1A] tracking-tight">
             How OyaPlan Works

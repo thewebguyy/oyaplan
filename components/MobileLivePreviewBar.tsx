@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, ChevronUp, X, Check, ShieldCheck } from "lucide-react";
+import { MapPin, ChevronUp, X, Check, ShieldCheck, Sparkles } from "lucide-react";
 import { Spot } from "@/lib/types";
 import RouteCard from "./dossier/RouteCard";
 import { LocationService } from "@/lib/services/LocationService";
@@ -167,7 +167,7 @@ export default function MobileLivePreviewBar({
             title="Tap to review cost breakdown"
           >
             <div className="w-10 h-10 rounded-xl bg-[#008751] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-inner">
-              ✨
+              <Sparkles className="w-5 h-5" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FCC630] uppercase tracking-wider">

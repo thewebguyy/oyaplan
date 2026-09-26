@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, Variants } from "framer-motion";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, MapPin, Sparkles } from "lucide-react";
 import { Spot } from "@/lib/types";
 import { ExplainedPlan } from "@/lib/planning/types";
 import { TransportPricingProvider } from "@/lib/planning/transport";
@@ -138,8 +138,8 @@ export default function LivePreviewCard({
         
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-white text-[10px] font-black uppercase tracking-wider">
-          <span className="bg-[#FCC630] text-[#111827] px-2.5 py-1 rounded-full shadow-xs">
-            ★ Top Match
+          <span className="bg-[#FCC630] text-[#111827] px-2.5 py-1 rounded-full shadow-xs flex items-center gap-1">
+            <Sparkles className="w-3 h-3" /> Top Match
           </span>
           <span className="bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-full border border-white/20">
             {vibe || "Date Night"}
@@ -151,8 +151,9 @@ export default function LivePreviewCard({
           <h3 className="text-lg font-black leading-tight truncate font-sans drop-shadow-sm">
             {spot.name}
           </h3>
-          <p className="text-[11px] text-white/80 font-medium">
-            📍 {spot.address || spot.address_slug || "Lagos"}
+          <p className="text-[11px] text-white/80 font-medium flex items-center gap-1 mt-0.5">
+            <MapPin className="w-3.5 h-3.5 text-[#FCC630] shrink-0" />
+            <span className="truncate">{spot.address || spot.address_slug || "Lagos"}</span>
           </p>
         </div>
       </div>

@@ -13,7 +13,19 @@ import OyaSquadSelector from "@/components/squad/OyaSquadSelector";
 
 import { Spot } from "@/lib/types";
 
-import { Loader2 } from "lucide-react";
+import { 
+  Loader2, 
+  Heart, 
+  Users, 
+  PartyPopper, 
+  Zap, 
+  Utensils, 
+  Sun, 
+  User, 
+  MapPin, 
+  AlertTriangle, 
+  Check 
+} from "lucide-react";
 
 interface PlannerWidgetProps {
   squadSize: number;
@@ -29,15 +41,15 @@ interface PlannerWidgetProps {
 }
 
 const PRIMARY_VIBES = [
-  { value: "Dinner", label: "Date Night", emoji: "💕" },
-  { value: "Chill", label: "Squad Linkup", emoji: "👥" },
-  { value: "Party", label: "Birthday Turn Up", emoji: "🎉" },
-  { value: "Quick", label: "Quick Bites", emoji: "⚡" },
+  { value: "Dinner", label: "Date Night", icon: Heart },
+  { value: "Chill", label: "Squad Linkup", icon: Users },
+  { value: "Party", label: "Birthday Turn Up", icon: PartyPopper },
+  { value: "Quick", label: "Quick Bites", icon: Zap },
 ];
 
 const EXTENDED_VIBES = [
-  { value: "Foodie", label: "Serious Chop", emoji: "🍲" },
-  { value: "Brunch", label: "Brunch Vibe", emoji: "🥞" },
+  { value: "Foodie", label: "Serious Chop", icon: Utensils },
+  { value: "Brunch", label: "Brunch Vibe", icon: Sun },
 ];
 
 const VIBE_TO_URL_MAP: Record<string, string> = {
@@ -199,7 +211,7 @@ export default function PlannerWidget({
           >
             <div className="flex flex-col gap-2">
               <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">
-                ⚠️
+                <AlertTriangle className="w-6 h-6 text-amber-600" />
               </div>
               <h3 className="text-lg font-black text-text-primary">
                 We don&apos;t support your area yet
@@ -213,7 +225,7 @@ export default function PlannerWidget({
               <button
                 type="button"
                 onClick={resetStatus}
-                className="w-full bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-xs cursor-pointer"
+                className="w-full bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-xs cursor-pointer min-h-[44px]"
               >
                 Choose an area
               </button>
@@ -228,8 +240,9 @@ export default function PlannerWidget({
         {/* LOCATION SELECTOR LAYER */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between flex-wrap gap-1">
-            <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280] flex items-center gap-2 flex-wrap">
-              <span>📍 Starting Location{selectedArea ? ` (${selectedArea.name})` : ""}</span>
+            <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280] flex items-center gap-1.5 flex-wrap">
+              <MapPin className="w-4 h-4 text-[#008751]" />
+              <span>Starting Location{selectedArea ? ` (${selectedArea.name})` : ""}</span>
               {(status === "permission-denied" || status === "unsupported" || status === "error") && (
                 <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
                   Defaulted to {selectedArea?.name || "Lagos"} (tap to change)
@@ -240,11 +253,11 @@ export default function PlannerWidget({
               type="button"
               onClick={handleUseCurrentLocation}
               disabled={status === "locating"}
-              className="text-xs font-bold text-[#008751] hover:underline cursor-pointer flex items-center gap-1.5"
+              className="text-xs font-bold text-[#008751] hover:underline cursor-pointer flex items-center gap-1.5 min-h-[44px]"
             >
               {status === "locating" ? (
                 <>
-                  <Loader2 className="w-3 h-3 animate-spin text-[#008751]" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#008751]" />
                   <span>Locating...</span>
                 </>
               ) : (
@@ -266,13 +279,13 @@ export default function PlannerWidget({
                       setControlledArea(area);
                     }
                   }}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                  className={`px-3.5 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[36px] ${
                     isSelected
                       ? "bg-[#008751] text-white shadow-xs"
                       : "bg-[#F3F4F6] text-[#1A1A1A] hover:bg-[#D1E7DB]"
                   }`}
                 >
-                  {isSelected && <span className="text-[10px]">✓</span>}
+                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                   <span>{area.name}</span>
                 </button>
               );
@@ -312,13 +325,13 @@ export default function PlannerWidget({
                 setSquadSize(1);
                 setGroupId(null);
               }}
-              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback ${
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback min-h-[72px] ${
                 squadSize === 1 && !groupId
                   ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
                   : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
               }`}
             >
-              <span className="text-base mb-0.5">👤</span>
+              <User className="w-4 h-4 mb-1" />
               <span>Just Me</span>
               <span className="text-[10px] opacity-75 font-normal">1 person</span>
             </button>
@@ -329,13 +342,13 @@ export default function PlannerWidget({
                 setSquadSize(2);
                 setGroupId(null);
               }}
-              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback ${
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback min-h-[72px] ${
                 squadSize === 2 && !groupId
                   ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
                   : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
               }`}
             >
-              <span className="text-base mb-0.5">💕</span>
+              <Heart className="w-4 h-4 mb-1" />
               <span>Date / +1</span>
               <span className="text-[10px] opacity-75 font-normal">2 people</span>
             </button>
@@ -345,13 +358,13 @@ export default function PlannerWidget({
               onClick={() => {
                 if (squadSize < 3) setSquadSize(4);
               }}
-              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback ${
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback min-h-[72px] ${
                 squadSize >= 3 || groupId
                   ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
                   : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
               }`}
             >
-              <span className="text-base mb-0.5">👥</span>
+              <Users className="w-4 h-4 mb-1" />
               <span>Squad</span>
               <span className="text-[10px] opacity-75 font-normal">3+ people</span>
             </button>
@@ -373,7 +386,7 @@ export default function PlannerWidget({
                         setSquadSize(size);
                         setGroupId(null);
                       }}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer min-h-[36px] ${
                         squadSize === size && !groupId
                           ? "bg-brand-green text-white shadow-xs"
                           : "bg-white text-text-secondary hover:bg-white/80 border border-border-default/60"
@@ -432,12 +445,13 @@ export default function PlannerWidget({
           <div className="grid grid-cols-2 gap-3" role="group" aria-label="Select outing vibe">
             {PRIMARY_VIBES.map((item) => {
               const isActive = vibe === item.value;
+              const Icon = item.icon;
               return (
                 <button
                   key={item.value}
                   type="button"
                   onClick={() => handleVibeClick(item.value)}
-                  className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none
+                  className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none min-h-[48px]
                     ${
                       isActive
                         ? "bg-[#FCC630] text-[#1A1A1A] border-2 border-[#008751]"
@@ -448,9 +462,7 @@ export default function PlannerWidget({
                   aria-pressed={isActive}
                   aria-label={`${item.label} vibe selection`}
                 >
-                  <span className="text-base shrink-0" aria-hidden="true">
-                    {item.emoji}
-                  </span>
+                  <Icon className="w-5 h-5 shrink-0 text-midnight-lagoon" aria-hidden="true" />
                   <span className="truncate">{item.label}</span>
                 </button>
               );
@@ -461,6 +473,7 @@ export default function PlannerWidget({
               {showMoreVibes &&
                 EXTENDED_VIBES.map((item) => {
                   const isActive = vibe === item.value;
+                  const Icon = item.icon;
                   return (
                     <motion.button
                       key={item.value}
@@ -470,7 +483,7 @@ export default function PlannerWidget({
                       exit={{ opacity: 0, y: 8, filter: "blur(1.5px)" }}
                       transition={{ type: "spring", stiffness: 120, damping: 18 }}
                       onClick={() => handleVibeClick(item.value)}
-                      className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none
+                      className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none min-h-[48px]
                         ${
                           isActive
                             ? "bg-[#FCC630] text-[#1A1A1A] border-2 border-[#008751]"
@@ -481,9 +494,7 @@ export default function PlannerWidget({
                       aria-pressed={isActive}
                       aria-label={`${item.label} vibe selection`}
                     >
-                      <span className="text-base shrink-0" aria-hidden="true">
-                        {item.emoji}
-                      </span>
+                      <Icon className="w-5 h-5 shrink-0 text-midnight-lagoon" aria-hidden="true" />
                       <span className="truncate">{item.label}</span>
                     </motion.button>
                   );

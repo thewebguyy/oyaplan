@@ -87,14 +87,16 @@ export function VenueExperienceSection({ venue }: VenueExperienceSectionProps) {
                 vibeTags.map((vibe) => (
                   <span
                     key={vibe}
-                    className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-[#EAE4DC] text-midnight-lagoon shadow-xs capitalize"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-[#EAE4DC] text-midnight-lagoon shadow-xs capitalize"
                   >
-                    ✨ {vibe}
+                    <Sparkles className="w-3.5 h-3.5 text-[#FCC630]" />
+                    <span>{vibe}</span>
                   </span>
                 ))
               ) : (
-                <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-[#EAE4DC] text-midnight-lagoon">
-                  ✨ Chill Hangout
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-[#EAE4DC] text-midnight-lagoon">
+                  <Sparkles className="w-3.5 h-3.5 text-[#FCC630]" />
+                  <span>Chill Hangout</span>
                 </span>
               )}
 

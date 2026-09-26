@@ -81,27 +81,25 @@ export function PlanCTAs({
 
   const cleanAddress = address ? address.split(",")[0] : startArea || "Lagos";
 
-  const greeting = squadName ? `⚡ Oya ${squadName}!` : "Yo! 🎉";
+  const greeting = squadName ? `*Oya ${squadName}!*` : "*Outing Plan:*";
 
   const perPersonTotal = Math.round(totalCost / squadSize);
 
   const shareText = `${greeting}
 
-Check our outing plan for ${venueName} 🔥
+Check our outing plan for ${venueName}:
 
-📍 ${venueName} (${cleanAddress})
-💰 Total Landed Cost: ₦${totalCost.toLocaleString()} (~₦${perPersonTotal.toLocaleString()} each)
-👥 Squad of ${squadSize}
+• Venue: ${venueName} (${cleanAddress})
+• Estimated Total: ₦${totalCost.toLocaleString()} (~₦${perPersonTotal.toLocaleString()} each)
+• Squad: ${squadSize} people
 
-Zero hidden charges:
-🍽️ Food & Drinks: ₦${foodCost.toLocaleString()}
-🚗 Round-Trip Uber: ₦${transportCost.toLocaleString()}
-💸 VAT & Service: ₦${taxesCost.toLocaleString()}
+Verified Breakdown:
+• Food & Dining: ₦${foodCost.toLocaleString()}
+• Estimated Transport (Round-Trip): ₦${transportCost.toLocaleString()}
+• Verified Charges & Buffer: ₦${taxesCost.toLocaleString()}
 
-See full cost breakdown & squad split:
-🔗 ${shareUrl}
-
-Are you in? 👇`;
+See the full plan and breakdown:
+${shareUrl}`;
 
   const handleShareWhatsApp = () => {
     const encodedText = encodeURIComponent(shareText);

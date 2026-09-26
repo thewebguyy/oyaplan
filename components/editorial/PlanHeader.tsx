@@ -1,5 +1,6 @@
 import { ForgeInput, Plan } from "@/lib/types";
 import { VenueImage } from "@/components/ui/VenueImage";
+import { MapPin, Sparkles } from "lucide-react";
 
 export function PlanHeader({
   input,
@@ -35,12 +36,12 @@ export function PlanHeader({
 
   const getAlternativeLabel = () => {
     if (plan.totalCost && input.budget && plan.totalCost <= input.budget * 0.85) {
-      return "Option B: Budget Saver 💰";
+      return "Option B: Budget Saver";
     }
     if (plan.transportCost && plan.transportCost < 3000) {
-      return "Option B: Lower Transport 🚖";
+      return "Option B: Lower Transport";
     }
-    return alternativeIndex === 0 ? "Option B: Different Vibe 🔮" : "Option C: Alternative Spot 📍";
+    return alternativeIndex === 0 ? "Option B: Different Vibe" : "Option C: Alternative Spot";
   };
 
   const priceTier = (plan.spot.price_per_person || 12000) > 25000 ? "₦₦₦" : (plan.spot.price_per_person || 12000) > 15000 ? "₦₦" : "₦";
@@ -51,8 +52,9 @@ export function PlanHeader({
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
       {isTopPick ? (
-        <div className="mb-6 flex items-center gap-2 bg-[#F6C642]/15 border border-[#F6C642]/40 text-[#7A5D00] px-4 py-1.5 rounded-full shadow-xs">
-          <span className="text-[11px] font-black uppercase tracking-[0.14em]">★ Top Vibe Match</span>
+        <div className="mb-6 flex items-center gap-1.5 bg-[#F6C642]/15 border border-[#F6C642]/40 text-[#7A5D00] px-4 py-1.5 rounded-full shadow-xs">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span className="text-[11px] font-black uppercase tracking-[0.14em]">Top Vibe Match</span>
         </div>
       ) : (
         <div className="mb-6 flex items-center gap-2 bg-[#008751]/10 border border-[#008751]/25 text-[#008751] px-4 py-1.5 rounded-full shadow-xs">
@@ -75,8 +77,9 @@ export function PlanHeader({
         
         {/* Bottom Floating Pill Indicators */}
         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-bold pointer-events-none">
-          <span className="bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] uppercase tracking-wider">
-            📍 {areaLabel}
+          <span className="inline-flex items-center gap-1 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] uppercase tracking-wider">
+            <MapPin className="w-3 h-3 text-[#FCC630]" />
+            <span>{areaLabel}</span>
           </span>
           <span className="bg-[#008751] text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-md">
             {plan.spot.has_food === false ? "Verified Admission" : "Verified Menu"}

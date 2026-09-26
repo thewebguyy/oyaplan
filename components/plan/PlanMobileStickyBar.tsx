@@ -52,17 +52,19 @@ export function PlanMobileStickyBar({
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://oyaplan.vercel.app';
     const shareUrl = `${origin}/plan/${planId}`;
     const taxes = Math.max(0, totalCost - (foodCost + transportCost));
+    const perPerson = Math.ceil(totalCost / squadSize);
 
     const message = encodeURIComponent(
-      `*OyaPlan Squad Outing: ${venueName}*\n\n` +
-      `👥 *Squad:* ${squadSize} people\n` +
-      `💰 *Estimated Outing Total:* ~₦${totalCost.toLocaleString('en-NG')}\n` +
-      `💵 *Your Budget:* ₦${budget.toLocaleString('en-NG')} (${
-        remaining >= 0 ? `₦${remaining.toLocaleString('en-NG')} left over` : 'near budget limit'
+      `*OyaPlan Outing: ${venueName}*\n\n` +
+      `• *Squad:* ${squadSize} people (~₦${perPerson.toLocaleString('en-NG')} each)\n` +
+      `• *Estimated Total Spend:* ~₦${totalCost.toLocaleString('en-NG')}\n` +
+      `• *Your Budget:* ₦${budget.toLocaleString('en-NG')} (${
+        remaining >= 0 ? `₦${remaining.toLocaleString('en-NG')} remaining` : 'near budget limit'
       })\n\n` +
-      `🍽️ *Food & Drinks:* ₦${foodCost.toLocaleString('en-NG')}\n` +
-      `🚗 *Rides (Round-trip):* ₦${transportCost.toLocaleString('en-NG')}\n` +
-      (taxes > 0 ? `🧾 *VAT & Service:* ₦${taxes.toLocaleString('en-NG')}\n` : '') +
+      `*Verified Breakdown:*\n` +
+      `• Food & Drinks: ₦${foodCost.toLocaleString('en-NG')}\n` +
+      `• Estimated Transport (Round-Trip): ₦${transportCost.toLocaleString('en-NG')}\n` +
+      (taxes > 0 ? `• Mandatory Charges & Buffer: ₦${taxes.toLocaleString('en-NG')}\n` : '') +
       `\nSee full breakdown & menu items:\n${shareUrl}`
     );
     window.open(`https://wa.me/?text=${message}`, '_blank');

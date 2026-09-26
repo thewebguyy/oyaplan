@@ -98,7 +98,7 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled', sq
     }
     const perPersonCost = Math.round(plan.totalCost / input.squadSize);
     
-    const header = squadName ? `⚡ *Oya ${squadName} — The Plan: ${plan.spot.name}*` : `🥂 *The Plan: ${plan.spot.name}*`;
+    const header = squadName ? `*Oya ${squadName} — The Plan: ${plan.spot.name}*` : `*The Plan: ${plan.spot.name}*`;
 
     const text = `${header} 
 
@@ -107,10 +107,10 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled', sq
 
 *Why we should go:* 
 ${plan.whyItFits}
-Prices are verified, so no unexpected billing.
+Prices are verified, so no unexpected billing surprises.
 
 *What's covered in the ₦${perPersonCost.toLocaleString()}:*
-Food, drinks, taxes, and round-trip transport. 
+Food, drinks, verified charges, and round-trip transport. 
 
 Check the full breakdown and let's lock it in: 
 ${url}`;
@@ -169,7 +169,7 @@ ${url}`;
           <MessageSquare className="w-[18px] h-[18px]" />
         )}
         {copied ? (
-          "Copied! Paste in chat ✓"
+          "Copied! Paste in chat"
         ) : isMobile ? (
           "Send via WhatsApp"
         ) : (
