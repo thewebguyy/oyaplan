@@ -47,13 +47,15 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase tracking-wider mb-1">
               <Utensils className="w-3 h-3" />
-              <span>Verified Menu &amp; Pricing</span>
+              <span>{menuItems.length > 0 ? "Verified Menu & Pricing" : "Menu & Spend Estimates"}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon uppercase tracking-tight">
               What You Can Order
             </h2>
             <p className="text-xs sm:text-sm text-text-secondary mt-0.5">
-              Verified item prices for realistic outing cost calculation.
+              {menuItems.length > 0
+                ? "Verified item prices for realistic outing cost calculation."
+                : "Standard spend benchmarks available while itemized menu indexing is completed."}
             </p>
           </div>
 
@@ -65,7 +67,7 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
               </span>
             )}
             <span className="text-xs font-bold text-text-muted">
-              {menuItems.length} items listed
+              {menuItems.length > 0 ? `${menuItems.length} items listed` : "Estimates available"}
             </span>
           </div>
         </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Venue } from "@/lib/types";
 import { ArrowRight, Tag, Users, ShieldCheck, Sparkles, TrendingUp, Info } from "lucide-react";
 import { getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 
 interface VenueDecisionSummaryProps {
   venue: Venue;
@@ -38,7 +39,13 @@ export function VenueDecisionSummary({
   const activeBudget = planBudget || (activeSquad === 4 ? low4 : low2);
   const activeVibe = planVibe || venue.vibe_tags?.[0] || "chill";
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${activeSquad}&budget=${activeBudget}&vibe=${encodeURIComponent(activeVibe)}&fresh=true`;
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: venue.id,
+    area: areaSlug,
+    squad: activeSquad,
+    budget: activeBudget,
+    vibe: activeVibe,
+  });
 
   return (
     <section id="pricing" className="scroll-mt-32">
@@ -136,7 +143,7 @@ export function VenueDecisionSummary({
                   : "Estimated Pricing Model"}
               </span>
             </div>
-            <p className="text-xs text-text-secondary leading-relaxed">
+            <p className="text-xs text-[#374151] leading-relaxed">
               {isPartnerVerified
                 ? "This venue actively updates and verifies its menu prices and operating rules directly on OyaPlan."
                 : "Pricing is derived from verified menus, crowd receipts, and verified Lagos outing signals."}
@@ -145,10 +152,10 @@ export function VenueDecisionSummary({
 
           <Link
             href={forgeUrl}
-            className="px-4 py-2 bg-[#008751] hover:bg-[#007043] text-white rounded-xl text-xs font-bold shrink-0 transition-colors shadow-xs flex items-center gap-1.5 tap-feedback"
+            className="px-5 py-2.5 sm:px-6 sm:py-3 bg-[#008751] hover:bg-[#007043] text-white rounded-xl text-xs sm:text-sm font-bold shrink-0 transition-colors shadow-sm flex items-center gap-2 tap-feedback cursor-pointer"
           >
             <span>Plan Outing</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 

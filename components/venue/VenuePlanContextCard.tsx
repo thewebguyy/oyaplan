@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sparkles, ArrowLeft, ArrowRight, Users, Wallet, CheckCircle2 } from "lucide-react";
 import { Venue } from "@/lib/types";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 
 interface VenuePlanContextCardProps {
   venue: Venue;
@@ -30,9 +31,15 @@ export function VenuePlanContextCard({
   const estimatedSquadCost = Math.round((perPersonCost * squadSize * 0.9) / 1000) * 1000;
   const targetBudget = planBudget && planBudget > 0 ? planBudget : estimatedSquadCost;
   const isWithinBudget = targetBudget >= estimatedSquadCost;
-  const vibe = planVibe || venue.vibe_tags?.[0] || "outing";
+  const vibe = planVibe || venue.vibe_tags?.[0] || "chill";
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${squadSize}&budget=${targetBudget}&vibe=${encodeURIComponent(vibe)}&fresh=true`;
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: venue.id,
+    area: areaSlug,
+    squad: squadSize,
+    budget: targetBudget,
+    vibe,
+  });
 
   return (
     <div className="bg-gradient-to-br from-[#008751]/10 via-white to-[#FAF7F2] border border-[#008751]/30 rounded-[24px] p-5 sm:p-6 shadow-xs space-y-4 animate-in fade-in duration-300">

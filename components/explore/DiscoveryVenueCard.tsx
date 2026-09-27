@@ -7,6 +7,7 @@ import { Spot } from "@/lib/types";
 import { VenueImage } from "@/components/ui/VenueImage";
 import { TrustBadge } from "@/components/ui/trust-badge";
 import { deriveTrustIndicator, getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 
 interface DiscoveryVenueCardProps {
   spot: Spot;
@@ -56,13 +57,13 @@ export function DiscoveryVenueCard({
       ? "estimated" 
       : "pending";
 
-  // Build Forge parameter string for seamless transition
-  const forgeParams = new URLSearchParams();
-  forgeParams.set("area", areaSlug);
-  forgeParams.set("pinned", spot.id);
-  forgeParams.set("squad", squadSize.toString());
-  if (budget) forgeParams.set("budget", budget.toString());
-  if (spot.vibe_tags?.[0]) forgeParams.set("vibe", spot.vibe_tags[0].toLowerCase());
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: spot.id,
+    area: areaSlug,
+    squad: squadSize,
+    budget: budget || (spot.price_per_person * squadSize),
+    vibe: spot.vibe_tags?.[0] || "chill",
+  });
 
   const firstVibe = spot.vibe_tags?.slice(0, 2).join(" • ") || "Vetted Outing Spot";
 
@@ -229,7 +230,7 @@ export function DiscoveryVenueCard({
           </Link>
 
           <Link
-            href={`/forge?${forgeParams.toString()}`}
+            href={forgeUrl}
             aria-label={`Plan outing at ${spot.name}`}
             className="py-3 px-4 rounded-xl bg-[#008751]/10 hover:bg-[#008751]/20 text-[#008751] font-black text-xs uppercase tracking-wider transition-colors tap-feedback flex items-center gap-1"
           >

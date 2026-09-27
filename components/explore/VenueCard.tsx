@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { TrustBadge } from "@/components/ui/trust-badge";
 import { CTA_LABELS } from "@/components/ui/ctaVocabulary";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 
 interface VenueCardProps {
   card: DecisionCardViewModel;
@@ -17,27 +18,13 @@ interface VenueCardProps {
 
 export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squadCount }: VenueCardProps) {
   const spotAreaSlug = card.areaSlug || slug;
-  const forgeParams = new URLSearchParams();
-  forgeParams.append("area", spotAreaSlug);
-  forgeParams.append("pinned", card.spotId);
-  
-  // Maps internal vibe tags AND URL slugs → valid Forge URL slug (Zod-accepted)
-  const VIBE_TO_URL: Record<string, string> = {
-    "Dinner": "date-night",   "date-night": "date-night",
-    "Chill":  "chill",        "chill":       "chill",
-    "Foodie": "foodie",       "foodie":      "foodie",
-    "Party":  "party",        "party":       "party",
-    "Quick":  "quick-link",   "quick-link":  "quick-link",
-    "Brunch": "brunch",       "brunch":      "brunch",
-  };
-
-  forgeParams.append("vibe",
-    VIBE_TO_URL[vibe ?? ""] ??
-    "chill"
-  );
-  forgeParams.append("budget", budget ? budget.toString() : "50000");
-  forgeParams.append("squad", squadCount.toString());
-  forgeParams.append("fresh", "true");
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: card.spotId,
+    area: spotAreaSlug,
+    squad: squadCount,
+    budget: budget || 50000,
+    vibe: vibe || "chill",
+  });
 
   // Category-based colors for badges
   const categoryColors: Record<string, string> = {
@@ -197,7 +184,7 @@ export function VenueCard({ card, slug, isSaved, onSaveToggle, budget, vibe, squ
             {isSaved ? <BookmarkCheck className="w-6 h-6" /> : <Bookmark className="w-6 h-6" />}
           </button>
           
-          <Link href={`/forge?${forgeParams.toString()}`} className="flex-1 block">
+          <Link href={forgeUrl} className="flex-1 block">
             <button className="w-full bg-[#0A0A0A] text-white type-ui-label text-sm uppercase font-extrabold px-5 py-3.5 rounded-xl btn-intent-snaps cursor-pointer">
               {CTA_LABELS.start_planning} →
             </button>

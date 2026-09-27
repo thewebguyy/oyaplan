@@ -17,6 +17,8 @@ import {
   Info
 } from "lucide-react";
 
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+
 interface VenueBudgetScenarioProps {
   venue: Venue;
   menuItems: MenuItem[];
@@ -67,7 +69,13 @@ export function VenueBudgetScenario({
   const isWithinBudget = difference >= 0;
   const perPersonTotal = Math.round(totalEstimatedOuting / selectedSquad / 100) * 100;
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${selectedSquad}&budget=${selectedBudget}&vibe=${encodeURIComponent(venue.vibe_tags?.[0] || "chill")}&fresh=true`;
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: venue.id,
+    area: areaSlug,
+    squad: selectedSquad,
+    budget: selectedBudget,
+    vibe: venue.vibe_tags?.[0] || "chill",
+  });
 
   return (
     <section id="scenarios" className="scroll-mt-32">
@@ -181,10 +189,19 @@ export function VenueBudgetScenario({
                   <Utensils className="w-4 h-4 text-[#008751]" />
                   <span>Sample Food & Drinks</span>
                 </div>
-                <ul className="text-xs text-text-secondary space-y-1">
-                  <li>• {numMains} × Main Courses (e.g. {mains[0]?.name || "Signature Main"})</li>
-                  <li>• {numStarters} × Shared Starter (e.g. {startersAndSides[0]?.name || "Crispy Bites"})</li>
-                  <li>• {numDrinks} × Cocktails / Beverages ({drinks[0]?.name || "Signature Drinks"})</li>
+                <ul className="text-xs text-[#374151] space-y-1.5">
+                  <li className="flex items-center gap-1.5">
+                    <Utensils className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                    <span>{numMains} × Main Courses (e.g. {mains[0]?.name || "Signature Main"})</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <Utensils className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                    <span>{numStarters} × Shared Starter (e.g. {startersAndSides[0]?.name || "Crispy Bites"})</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <GlassWater className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                    <span>{numDrinks} × Cocktails / Beverages ({drinks[0]?.name || "Signature Drinks"})</span>
+                  </li>
                 </ul>
                 <div className="pt-2 border-t border-border-default/60 flex justify-between text-xs font-bold text-midnight-lagoon">
                   <span>Food & Drinks Subtotal:</span>
@@ -197,9 +214,15 @@ export function VenueBudgetScenario({
                   <Receipt className="w-4 h-4 text-midnight-lagoon" />
                   <span>Charges & Transport</span>
                 </div>
-                <ul className="text-xs text-text-secondary space-y-1">
-                  <li>• VAT ({vatPct}%) &amp; Service Charge ({serviceChargePct}%): ~₦{totalTaxAndService.toLocaleString("en-NG")}</li>
-                  <li>• Estimated Lagos Ride ({vehiclesRequired} {vehiclesRequired > 1 ? "cars" : "car"} round-trip): ~₦{estimatedTransport.toLocaleString("en-NG")}</li>
+                <ul className="text-xs text-[#374151] space-y-1.5">
+                  <li className="flex items-center gap-1.5">
+                    <Receipt className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>VAT ({vatPct}%) &amp; Service Charge ({serviceChargePct}%): ~₦{totalTaxAndService.toLocaleString("en-NG")}</span>
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <Car className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                    <span>Estimated Ride ({vehiclesRequired} {vehiclesRequired > 1 ? "cars" : "car"} round-trip): ~₦{estimatedTransport.toLocaleString("en-NG")}</span>
+                  </li>
                 </ul>
                 <div className="pt-2 border-t border-border-default/60 flex items-center justify-between text-xs font-bold">
                   <div className="text-midnight-lagoon">

@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import { getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 import { toast } from "sonner";
 
 interface VenueHeroGalleryProps {
@@ -101,7 +102,13 @@ export function VenueHeroGallery({
   const targetBudget = planBudget && planBudget > 0 ? planBudget : lowSpend;
   const targetVibe = planVibe || venue.vibe_tags?.[0] || "chill";
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${targetSquad}&budget=${targetBudget}&vibe=${encodeURIComponent(targetVibe)}&fresh=true`;
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: venue.id,
+    area: areaSlug,
+    squad: targetSquad,
+    budget: targetBudget,
+    vibe: targetVibe,
+  });
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.name}, ${venue.address}, Lagos`)}`;
 
   return (

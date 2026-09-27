@@ -49,7 +49,7 @@ export function VenueStickyAnchorNav() {
   };
 
   return (
-    <div className="sticky top-[56px] z-30 bg-white/95 backdrop-blur-md border-b border-[#EAE4DC] transition-colors">
+    <div className="sticky top-[56px] z-30 bg-white/95 backdrop-blur-md border-b border-[#EAE4DC] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar py-2.5">
           {ANCHORS.map((anchor) => {

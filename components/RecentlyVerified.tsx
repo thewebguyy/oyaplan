@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getRecentlyVerifiedSpots } from "@/lib/queries/spots";
 import { BadgeCheck } from "lucide-react";
 import { timeAgo } from "@/lib/utils/timeAgo";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 import RevealOnScroll from "@/components/motion/RevealOnScroll";
 
 export default async function RecentlyVerified() {
@@ -18,15 +19,24 @@ export default async function RecentlyVerified() {
       </div>
       <div className="flex flex-row gap-4 overflow-x-auto pb-3 snap-x -mx-4 px-4 hide-scrollbar stagger-children">
         {spots.map((spot) => {
-          const areaName = spot.areas ? Array.isArray(spot.areas) ? spot.areas[0]?.name : spot.areas.name : "Lagos";
+          const areaSlug = spot.areas ? (Array.isArray(spot.areas) ? spot.areas[0]?.slug : spot.areas.slug) : (spot.address_slug || "ikeja");
+          const areaName = spot.areas ? (Array.isArray(spot.areas) ? spot.areas[0]?.name : spot.areas.name) : "Lagos";
           const updatedString = spot.price_updated_at 
             ? `Vetted ${timeAgo(spot.price_updated_at)}` 
             : "Vetted recently";
 
+          const planUrl = buildVenuePlanUrl({
+            venueId: spot.id,
+            area: areaSlug,
+            squad: 2,
+            budget: spot.price_per_person ? spot.price_per_person * 2 * 1.1 : 50000,
+            vibe: spot.vibe_tags?.[0] || "chill",
+          });
+
           return (
             <Link
               key={spot.id}
-              href={`/forge?pinned=${spot.id}&fresh=true`}
+              href={planUrl}
               className="flex-none w-[280px] sm:w-[300px] bg-white border border-border-default/60 rounded-[28px] p-5 snap-start card-lift shadow-xs hover:shadow-lift-warm tap-feedback group"
             >
               <div className="flex justify-between items-start mb-2">

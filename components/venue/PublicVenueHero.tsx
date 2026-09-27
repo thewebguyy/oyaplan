@@ -8,6 +8,7 @@ import { TrustBadge } from '@/components/ui/trust-badge';
 import { Sparkles, ShieldCheck, Flag, ArrowRight, Store, MessageSquare, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { getVerificationText } from '@/lib/planning/presentation/decisionCardMapper';
 import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
+import { buildVenuePlanUrl } from '@/lib/planning/buildVenuePlanUrl';
 
 interface PublicVenueHeroProps {
   venue: Venue;
@@ -34,7 +35,13 @@ export function PublicVenueHero({
   const highSpend = Math.round(lowSpend * 1.5 / 1000) * 1000;
   const typicalSpendText = `₦${lowSpend.toLocaleString('en-NG')} – ₦${highSpend.toLocaleString('en-NG')} for 2`;
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&vibe=${encodeURIComponent(venue.vibe_tags?.[0] || 'dinner')}&fresh=true`;
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: venue.id,
+    area: areaSlug,
+    squad: 2,
+    budget: lowSpend,
+    vibe: venue.vibe_tags?.[0] || 'dinner',
+  });
 
   const availabilityUrl = venue.contact_number
     ? getBusinessWhatsAppUrl('availability_inquiry', {

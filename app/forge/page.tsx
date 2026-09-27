@@ -13,19 +13,13 @@ import ForgeResultsClient from "./ForgeResultsClient";
 
 export const dynamic = "force-dynamic";
 
-const VIBE_URL_MAP: Record<string, string> = {
-  "date-night": "Dinner",
-  "chill": "Chill",
-  "foodie": "Foodie",
-  "party": "Party",
-  "quick-link": "Quick",
-  "brunch": "Brunch"
-};
+import { normalizeVibeToCanonicalSlug, CANONICAL_VIBE_TO_SPOT_TAG } from "@/lib/planning/buildVenuePlanUrl";
+import { normalizeAreaSlug } from "@/lib/planning/utils";
 
 const forgeParamsSchema = z.object({
-  vibe: z.enum(["date-night", "chill", "foodie", "party", "quick-link", "brunch"]),
-  squad: z.coerce.number().int().positive().min(1).max(50),
-  budget: z.coerce.number().int().positive().min(5000).max(2000000),
+  vibe: z.string().optional(),
+  squad: z.coerce.number().optional(),
+  budget: z.coerce.number().optional(),
   area: z.string().optional(),
   pinned: z.string().optional(),
   fresh: z.string().optional(),
@@ -57,24 +51,28 @@ export async function generateMetadata({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }): Promise<Metadata> {
   const resolvedParams = await searchParams;
-  const parsed = forgeParamsSchema.safeParse(resolvedParams);
+  const rawVibe = typeof resolvedParams.vibe === "string" ? resolvedParams.vibe : undefined;
+  const canonicalVibe = normalizeVibeToCanonicalSlug(rawVibe);
   
-  if (!parsed.success) {
-    return {
-      title: "Your Lagos Squad Plan — OyaPlan",
-    };
-  }
+  const rawSquad = Number(resolvedParams.squad);
+  const squad = !isNaN(rawSquad) && rawSquad >= 1 && rawSquad <= 50 ? Math.floor(rawSquad) : 2;
 
-  const { vibe, squad, budget, area } = parsed.data;
+  const rawBudget = Number(resolvedParams.budget);
+  const budget = !isNaN(rawBudget) && rawBudget >= 5000 && rawBudget <= 2000000 
+    ? Math.round(rawBudget / 500) * 500 
+    : 50000;
+
+  const rawArea = typeof resolvedParams.area === "string" ? resolvedParams.area : undefined;
+  const area = rawArea && rawArea !== "anywhere" ? normalizeAreaSlug(rawArea) : undefined;
   
-  const formattedVibe = vibe.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-  const formattedArea = area && area !== "anywhere"
+  const formattedVibe = canonicalVibe.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const formattedArea = area
     ? area.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
     : "Lagos";
 
   const title = `₦${budget.toLocaleString()} Outing Plan in ${formattedArea} (${squad} people) — OyaPlan`;
   const description = `Verified ${formattedVibe} squad outing plan in ${formattedArea}. Includes menus, real prices, and transport costs. Zero guesswork.`;
-  const imageUrl = `/api/og/plan?vibe=${vibe}&squad=${squad}&budget=${budget}&area=${area}`;
+  const imageUrl = `/api/og/plan?vibe=${canonicalVibe}&squad=${squad}&budget=${budget}&area=${area || "anywhere"}`;
 
   return {
     title,
@@ -107,11 +105,30 @@ export default async function ForgePage({
     return <div className="min-h-[100dvh] bg-white" />;
   }
 
-  // Zod Param Validation
-  const parsed = forgeParamsSchema.safeParse(resolvedParams);
-  if (!parsed.success) {
-    redirect("/?error=invalid_params");
-  }
+  // Gracefully normalize parameters with sensible defaults instead of fatal error redirects
+  const rawVibe = typeof resolvedParams.vibe === "string" ? resolvedParams.vibe : undefined;
+  const canonicalVibe = normalizeVibeToCanonicalSlug(rawVibe);
+
+  const rawSquad = Number(resolvedParams.squad);
+  const squad = !isNaN(rawSquad) && rawSquad >= 1 && rawSquad <= 50 ? Math.floor(rawSquad) : 2;
+
+  const rawBudget = Number(resolvedParams.budget);
+  const budget = !isNaN(rawBudget) && rawBudget >= 5000 && rawBudget <= 2000000 
+    ? Math.round(rawBudget / 500) * 500 
+    : 50000;
+
+  const rawArea = typeof resolvedParams.area === "string" ? resolvedParams.area : undefined;
+  const normalizedArea = rawArea ? normalizeAreaSlug(rawArea) : undefined;
+
+  const rawPinned = typeof resolvedParams.pinned === "string" && resolvedParams.pinned.trim() 
+    ? resolvedParams.pinned.trim() 
+    : undefined;
+  const isFreshSubmission = resolvedParams.fresh === "true";
+  const modeParam = typeof resolvedParams.mode === "string" && ["ride-hailing", "public-transit", "driving"].includes(resolvedParams.mode)
+    ? (resolvedParams.mode as "ride-hailing" | "public-transit" | "driving")
+    : "ride-hailing";
+  const rawDepartureAt = typeof resolvedParams.departureAt === "string" ? resolvedParams.departureAt : undefined;
+  const rawGroup = typeof resolvedParams.group === "string" ? resolvedParams.group : undefined;
 
   const categoryGroup = typeof resolvedParams.categoryGroup === "string" ? resolvedParams.categoryGroup : undefined;
   const allowedCategories = getAllowedCategories(categoryGroup);
@@ -121,10 +138,9 @@ export default async function ForgePage({
   let originDistrictId: string | undefined = undefined;
 
   try {
-    const isFreshSubmission = parsed.data.fresh === "true";
     const spotsPromise = getForgeSpots(allowedCategories ?? undefined);
-    const overridesPromise = parsed.data.area && parsed.data.area !== "anywhere"
-      ? getRouteOverrides(parsed.data.area)
+    const overridesPromise = normalizedArea && normalizedArea !== "anywhere"
+      ? getRouteOverrides(normalizedArea)
       : Promise.resolve({ data: [], error: null });
 
     // Data-gated Hold-Up logic: only enforce the 900ms floor on fresh submissions
@@ -153,11 +169,11 @@ export default async function ForgePage({
           confidence: ov.confidence
         };
       });
-    } else if (parsed.data.area && parsed.data.area !== "anywhere") {
+    } else if (normalizedArea && normalizedArea !== "anywhere") {
       const { data: areaData } = await supabase
         .from('areas')
         .select('id')
-        .eq('slug', parsed.data.area)
+        .eq('slug', normalizedArea)
         .single();
       if (areaData) {
         originDistrictId = areaData.id;
@@ -168,12 +184,27 @@ export default async function ForgePage({
     redirect("/?error=spots_unavailable");
   }
 
-  // Pinned Spot Validation
+  // Pinned Spot Validation & Recovery: Ensure pinned venue always survives
   let validatedPinnedId: string | undefined = undefined;
-  if (parsed.data.pinned) {
-    const pinnedSpot = allSpots.find(s => s.id === parsed.data.pinned && s.active);
+  if (rawPinned) {
+    const pinnedSpot = allSpots.find(s => s.id === rawPinned && s.active);
     if (pinnedSpot) {
       validatedPinnedId = pinnedSpot.id;
+    } else {
+      // Query specifically for the pinned spot in case it was outside category/limit
+      try {
+        const { data: pinnedSpotData } = await supabase
+          .from('spots')
+          .select('*, areas(*)')
+          .eq('id', rawPinned)
+          .single();
+        if (pinnedSpotData && pinnedSpotData.active) {
+          allSpots.unshift(pinnedSpotData as Spot);
+          validatedPinnedId = pinnedSpotData.id;
+        }
+      } catch (err) {
+        captureServerException(err);
+      }
     }
   }
 
@@ -184,18 +215,18 @@ export default async function ForgePage({
 
   // Map parsed params to ForgeInput
   const input: ForgeInput = {
-    startArea: parsed.data.area,
-    squadSize: parsed.data.squad,
-    budget: parsed.data.budget,
-    vibe: VIBE_URL_MAP[parsed.data.vibe] || parsed.data.vibe,
+    startArea: normalizedArea,
+    squadSize: squad,
+    budget: budget,
+    vibe: CANONICAL_VIBE_TO_SPOT_TAG[canonicalVibe] || "Chill",
     pinnedSpotId: validatedPinnedId,
-    transportMode: parsed.data.mode || "ride-hailing",
-    departureAt: parsed.data.departureAt,
+    transportMode: modeParam,
+    departureAt: rawDepartureAt,
     routeOverrides,
     originDistrictId,
     userId,
     sessionId,
-    groupId: parsed.data.group,
+    groupId: rawGroup,
   };
 
   // Run Matching/Pricing Engine: 2-Pass Matching (gated by area presence)

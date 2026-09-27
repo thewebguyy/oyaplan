@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Venue } from "@/lib/types";
 import { Heart, ArrowRight } from "lucide-react";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 import { toast } from "sonner";
 
 interface VenueMobileStickyCTAProps {
@@ -36,7 +37,13 @@ export function VenueMobileStickyCTA({
   const targetBudget = planBudget || low2;
   const targetVibe = planVibe || venue.vibe_tags?.[0] || "chill";
 
-  const forgeUrl = `/forge?pinned=${venue.id}&area=${areaSlug}&squad=${targetSquad}&budget=${targetBudget}&vibe=${encodeURIComponent(targetVibe)}&fresh=true`;
+  const forgeUrl = buildVenuePlanUrl({
+    venueId: venue.id,
+    area: areaSlug,
+    squad: targetSquad,
+    budget: targetBudget,
+    vibe: targetVibe,
+  });
 
   const handleToggleSave = () => {
     if (saved) {
