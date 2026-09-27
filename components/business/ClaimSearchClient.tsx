@@ -230,7 +230,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
             )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-100 bg-white rounded-3xl border border-border-default overflow-hidden shadow-xs">
+          <div className="divide-y divide-[#EAE4DC] bg-white rounded-3xl border border-[#EAE4DC] overflow-hidden shadow-xs">
             {displayVenues.map((venue: VenueSearchItem) => {
               const isVerified = venue.partner_state === 'verified_partner';
               const isPending = venue.partner_state === 'verification_pending';
@@ -239,42 +239,52 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
                 <Link
                   key={venue.id}
                   href={`/venue/${venue.id}/claim`}
-                  className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-[#FAFAF8] transition-colors tap-feedback group"
+                  className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-[#FAF7F2] transition-colors tap-feedback group"
                 >
-                  <div className="space-y-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="font-bold text-sm text-midnight-lagoon group-hover:text-brand-green transition-colors truncate">
-                        {venue.name}
-                      </h2>
-                      {venue.category && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-surface-grey text-text-secondary shrink-0">
-                          {venue.category}
-                        </span>
-                      )}
-                      {isVerified && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
-                          <ShieldCheck className="w-3 h-3" />
-                          <span>Verified Partner</span>
-                        </span>
-                      )}
-                      {isPending && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
-                          <Clock className="w-3 h-3" />
-                          <span>Verification in Progress</span>
-                        </span>
-                      )}
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-11 h-11 rounded-2xl bg-[#008751]/10 text-[#008751] flex items-center justify-center shrink-0 border border-[#008751]/15 group-hover:bg-[#008751] group-hover:text-white transition-all">
+                      <Building2 className="w-5 h-5" />
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-text-muted truncate">
-                      <MapPin className="w-3 h-3 shrink-0" />
-                      <span className="truncate">{venue.address || venue.district_name || 'Lagos'}</span>
+
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="font-bold text-sm text-midnight-lagoon group-hover:text-[#008751] transition-colors truncate">
+                          {venue.name}
+                        </h2>
+                        {venue.category && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-surface-grey text-text-secondary border border-[#EAE4DC] shrink-0">
+                            {venue.category}
+                          </span>
+                        )}
+                        {isVerified && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
+                            <ShieldCheck className="w-3 h-3" />
+                            <span>Verified Partner</span>
+                          </span>
+                        )}
+                        {isPending && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
+                            <Clock className="w-3 h-3" />
+                            <span>Verification in Progress</span>
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-text-muted truncate">
+                        <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                        <span className="truncate">{venue.address || venue.district_name || 'Lagos'}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="shrink-0 flex items-center gap-1.5 text-xs font-bold text-brand-green uppercase tracking-wider">
-                    <span className="hidden sm:inline">
-                      {isVerified ? 'Manage' : 'Claim'}
+                  <div className="shrink-0 flex items-center">
+                    <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                      isVerified
+                        ? 'bg-surface-grey text-midnight-lagoon border border-[#EAE4DC] group-hover:bg-midnight-lagoon group-hover:text-white'
+                        : 'bg-[#EAFDF3] text-[#008751] border border-[#A3F3C6] group-hover:bg-[#008751] group-hover:text-white'
+                    }`}>
+                      <span>{isVerified ? 'Manage' : 'Claim Venue'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </span>
-                    <ArrowRight className="w-4 h-4" />
                   </div>
                 </Link>
               );

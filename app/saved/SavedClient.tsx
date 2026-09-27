@@ -16,6 +16,7 @@ import {
 import { useSavedSpots } from "@/hooks/useSavedSpots";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 import ScrubbablePhotos from "@/components/explore/ScrubbablePhotos";
 import { RecentlyViewedRow } from "@/components/venue/RecentlyViewedRow";
 import { toast } from "sonner";
@@ -72,7 +73,7 @@ export default function SavedClient({
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10 bg-white-sand min-h-[100dvh] text-text-primary antialiased">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 bg-white-sand min-h-[100dvh] text-text-primary antialiased">
       {/* Header & Navigation Context */}
       <div className="space-y-4">
         <Link href="/">
@@ -82,18 +83,18 @@ export default function SavedClient({
           </button>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EAE4DC] pb-5">
           <div>
             <h1 className="type-display-product text-2xl sm:text-3xl font-black text-midnight-lagoon tracking-tight">
               Saved Experience
             </h1>
             <p className="text-xs sm:text-sm text-text-muted mt-1">
-              Your bookmarked places and saved outing plans.
+              Your bookmarked Lagos spots and saved squad outing plans.
             </p>
           </div>
 
           {/* Segmented Tab Switcher */}
-          <div className="flex items-center gap-1 bg-surface-grey p-1.5 rounded-full border border-border-default w-fit self-start sm:self-auto shadow-2xs">
+          <div className="flex items-center gap-1 bg-surface-grey p-1.5 rounded-full border border-[#EAE4DC] w-fit self-start sm:self-auto shadow-2xs">
             <button
               type="button"
               onClick={() => setActiveTab("spots")}
@@ -127,25 +128,18 @@ export default function SavedClient({
       {activeTab === "spots" && (
         <section aria-label="Saved spots list" className="space-y-6">
           {savedSpots.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-5 sm:gap-6">
               {savedSpots.map((spot) => {
-                const VIBE_TO_URL_MAP: Record<string, string> = {
-                  Dinner: "date-night",
-                  Chill: "chill",
-                  Foodie: "foodie",
-                  Party: "party",
-                  Quick: "quick-link",
-                  Brunch: "brunch",
-                };
                 const firstVibe = spot.vibe_tags?.[0] || "Chill";
-                const urlVibe = VIBE_TO_URL_MAP[firstVibe] || "chill";
+                const estimatedBudget = Math.round((spot.price_per_person || 15000) * 2 * 1.1);
 
-                const prefillParams = new URLSearchParams({
-                  area: spot.address_slug || spot.areas?.slug || "anywhere",
-                  pinned: spot.id,
-                  squad: "2",
-                  budget: Math.round(spot.price_per_person * 2 * 1.1).toString(),
-                  vibe: urlVibe,
+                const planUrl = buildVenuePlanUrl({
+                  venueId: spot.id,
+                  area: spot.address_slug || spot.areas?.slug,
+                  squad: 2,
+                  budget: estimatedBudget,
+                  vibe: firstVibe,
+                  source: "saved_spots",
                 });
 
                 return (
@@ -166,6 +160,13 @@ export default function SavedClient({
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
+                      {spot.category && (
+                        <div className="absolute bottom-3 left-3 z-30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/20">
+                            {spot.category}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="p-5 flex flex-col flex-grow text-left justify-between space-y-4">
@@ -177,22 +178,22 @@ export default function SavedClient({
                         </Link>
                         <p className="text-xs text-text-muted flex items-center gap-1 line-clamp-1">
                           <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
-                          <span>{spot.address}</span>
+                          <span>{spot.address || spot.areas?.name || 'Lagos'}</span>
                         </p>
                       </div>
 
                       <div className="pt-3 border-t border-[#EAE4DC] flex justify-between items-center">
                         <div className="flex flex-col">
-                          <span className="font-black text-midnight-lagoon text-base sm:text-lg">
-                            ₦{spot.price_per_person.toLocaleString("en-NG")}
+                          <span className="font-black text-midnight-lagoon text-base sm:text-lg tabular-nums">
+                            ₦{(spot.price_per_person || 0).toLocaleString("en-NG")}
                           </span>
                           <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider">
                             / person
                           </span>
                         </div>
 
-                        <Link href={`/forge?${prefillParams.toString()}&fresh=true`}>
-                          <Button className="bg-midnight-lagoon hover:bg-black text-white text-xs uppercase font-black px-4 py-2 rounded-xl tap-feedback cursor-pointer shadow-xs">
+                        <Link href={planUrl}>
+                          <Button className="bg-[#008751] hover:bg-[#007043] text-white text-xs uppercase font-black px-4 py-2 rounded-xl tap-feedback cursor-pointer shadow-xs">
                             Forge Plan
                           </Button>
                         </Link>

@@ -25,6 +25,9 @@ export async function submitVenueClaimAction(
 
     if (!venueId) return { success: false, error: 'Venue ID is required' };
     if (!claimantName || claimantName.trim().length < 2) return { success: false, error: 'Full name is required' };
+    if (claimantName.includes('@')) {
+      return { success: false, error: 'Please enter your actual full name, not your email address.' };
+    }
     if (!claimantPhone || claimantPhone.trim().length < 7) return { success: false, error: 'Valid phone number is required' };
     if (!claimantEmail || !claimantEmail.includes('@')) return { success: false, error: 'Valid email address is required' };
 

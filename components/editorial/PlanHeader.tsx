@@ -67,14 +67,18 @@ export function PlanHeader({
         </div>
       )}
 
-      {/* Resy/OpenTable High-Converting Image Frame */}
+      {/* High-Converting Image Frame */}
       <Link 
         href={venueHref}
         aria-label={`Explore verified details and full menu for ${plan.spot.name}`}
-        className="w-full max-w-2xl aspect-[16/9] mb-8 rounded-[24px] overflow-hidden img-zoom-container shadow-2xl relative border border-black/5 block group cursor-pointer"
+        className={`w-full max-w-2xl aspect-[16/9] mb-8 rounded-[24px] overflow-hidden img-zoom-container relative border block group cursor-pointer ${
+          isTopPick 
+            ? "border-[#008751]/30 shadow-[0_16px_36px_-8px_rgba(0,135,81,0.18)] ring-1 ring-[#008751]/20" 
+            : "border-black/5 shadow-xl"
+        }`}
       >
         <VenueImage 
-          src={plan.spot.image_url || plan.spot.cover_url} 
+          src={plan.spot.cover_url || plan.spot.image_url || (plan.spot.gallery_urls && plan.spot.gallery_urls[0]) || null} 
           alt={plan.spot.name} 
           fallbackCategory={plan.spot.category}
           className="img-zoom group-hover:scale-105 transition-transform duration-500"
@@ -84,7 +88,7 @@ export function PlanHeader({
         
         {/* Top hover indicator */}
         <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md text-[#111827] px-3 py-1.5 rounded-full text-xs font-bold shadow-md opacity-90 group-hover:opacity-100 group-hover:bg-[#008751] group-hover:text-white transition-all flex items-center gap-1">
-          <span>View Venue & Menu</span>
+          <span>View Venue &amp; Menu</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </div>
 

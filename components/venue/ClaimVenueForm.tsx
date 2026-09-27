@@ -33,17 +33,33 @@ interface ClaimVenueFormProps {
   } | null;
 }
 
+function sanitizePersonName(rawName?: string | null): string {
+  if (!rawName) return '';
+  const trimmed = rawName.trim();
+  // An email address or string containing @ is never a valid person full name
+  if (trimmed.includes('@')) return '';
+  return trimmed;
+}
+
 export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
   const { session, openModal, isLoading: isAuthLoading } = useAuth();
+
+  const rawMetaName = session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || initialUser?.name;
+  const sanitizedInitialName = sanitizePersonName(rawMetaName);
 
   // Active user can come from session or initial server identity
   const currentUser = session?.user
     ? {
         id: session.user.id,
         email: session.user.email,
-        name: (session.user.user_metadata?.full_name || session.user.user_metadata?.name || initialUser?.name || ''),
+        name: sanitizedInitialName,
       }
-    : initialUser;
+    : initialUser
+    ? {
+        ...initialUser,
+        name: sanitizePersonName(initialUser.name),
+      }
+    : null;
 
   // Step State: 1 = Account, 2 = Role & Contact, 3 = Verification Proof
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(currentUser?.id ? 2 : 1);
@@ -92,8 +108,14 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
     e.preventDefault();
     setError(null);
 
-    if (!claimantName.trim() || claimantName.trim().length < 2) {
+    const trimmedName = claimantName.trim();
+    if (!trimmedName || trimmedName.length < 2) {
       setError('Please provide your full name.');
+      return;
+    }
+
+    if (trimmedName.includes('@')) {
+      setError('Please provide your full name (e.g. Babatunde Adeleke), not an email address.');
       return;
     }
 
@@ -119,6 +141,13 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
       return;
     }
 
+    const trimmedName = claimantName.trim();
+    if (trimmedName.includes('@')) {
+      setError('Please enter your actual full name, not your email address.');
+      setCurrentStep(2);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -131,7 +160,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
 
       const res = await submitVenueClaimAction({
         venueId: venue.id,
-        claimantName,
+        claimantName: trimmedName,
         claimantRole,
         claimantPhone,
         claimantEmail,
@@ -164,7 +193,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
     const waUrl = getBusinessWhatsAppUrl('claim_support', { venueName: venue.name });
 
     return (
-      <div className="bg-white rounded-3xl border border-border-default p-8 sm:p-10 space-y-6 shadow-md text-center max-w-xl mx-auto animate-in fade-in duration-300">
+      <div className="bg-white rounded-3xl border border-[#EAE4DC] p-8 sm:p-10 space-y-6 shadow-md text-center max-w-xl mx-auto animate-in fade-in duration-300">
         <div className="w-16 h-16 bg-[#EAFDF3] text-[#008751] rounded-full flex items-center justify-center mx-auto shadow-sm">
           <CheckCircle2 className="w-8 h-8" />
         </div>
@@ -181,7 +210,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
           </p>
         </div>
 
-        <div className="p-5 bg-surface-grey rounded-2xl text-left space-y-3 border border-border-default/60">
+        <div className="p-5 bg-surface-grey rounded-2xl text-left space-y-3 border border-[#EAE4DC]/60">
           <h3 className="text-xs font-black text-midnight-lagoon uppercase tracking-wider">
             Verification Protocol
           </h3>
@@ -219,60 +248,71 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
     );
   }
 
-  return (
-    <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-10 space-y-8 shadow-md max-w-xl mx-auto">
-      {/* Venue Header */}
-      <div className="space-y-2 border-b border-border-default/60 pb-5">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center">
-            <Store className="w-4 h-4" />
-          </div>
-          <span className="type-ui-label text-xs font-black text-brand-green uppercase tracking-wider">
-            Venue Partner Program
-          </span>
-        </div>
+  const venueThumbnail = venue.cover_url || (venue.gallery_urls && venue.gallery_urls[0]);
 
-        <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon uppercase tracking-tight leading-tight">
-          Claim {venue.name}
-        </h1>
-        <p className="type-body text-xs sm:text-sm text-text-muted leading-relaxed">
-          {venue.address ? `${venue.address} · ` : ''}Take control of how customers discover, price, and plan outings around your business.
-        </p>
+  return (
+    <div className="bg-white rounded-3xl border border-[#EAE4DC] p-6 sm:p-10 space-y-8 shadow-sm max-w-xl mx-auto">
+      {/* Venue Header with Thumbnail */}
+      <div className="flex items-start gap-4 border-b border-[#EAE4DC] pb-5">
+        {venueThumbnail ? (
+          <div className="w-14 h-14 rounded-2xl overflow-hidden bg-surface-grey shrink-0 border border-[#EAE4DC] relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={venueThumbnail} alt={venue.name} className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className="w-14 h-14 rounded-2xl bg-[#008751]/10 text-[#008751] flex items-center justify-center shrink-0 border border-[#008751]/20">
+            <Store className="w-6 h-6" />
+          </div>
+        )}
+
+        <div className="space-y-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#008751] bg-[#008751]/10 px-2 py-0.5 rounded-full">
+              Venue Partner Program
+            </span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-midnight-lagoon uppercase tracking-tight leading-tight truncate">
+            Claim {venue.name}
+          </h1>
+          <p className="text-xs text-text-muted truncate">
+            {venue.address ? `${venue.address} · ` : ''}Manage verified pricing &amp; policies on OyaPlan.
+          </p>
+        </div>
       </div>
 
-      {/* 3-Step Progress Header */}
+      {/* 3-Step Progress Header with Accessible Contrast */}
       <div className="grid grid-cols-3 gap-2">
         <div
           className={`p-2.5 rounded-xl border text-center transition-all ${
             currentStep === 1
-              ? 'bg-[#EAFDF3] border-[#A3F3C6] text-[#008751]'
+              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751] ring-1 ring-[#008751]/20'
               : currentStep > 1
-              ? 'bg-white border-border-default text-midnight-lagoon'
-              : 'bg-surface-grey border-transparent text-text-muted'
+              ? 'bg-white border-[#EAE4DC] text-midnight-lagoon'
+              : 'bg-surface-grey border-[#EAE4DC]/60 text-text-secondary'
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider block">Step 1</span>
-          <span className="text-xs font-bold truncate block">Your Account</span>
+          <span className="text-xs font-bold truncate block">Account</span>
         </div>
 
         <div
           className={`p-2.5 rounded-xl border text-center transition-all ${
             currentStep === 2
-              ? 'bg-[#EAFDF3] border-[#A3F3C6] text-[#008751]'
+              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751] ring-1 ring-[#008751]/20'
               : currentStep > 2
-              ? 'bg-white border-border-default text-midnight-lagoon'
-              : 'bg-surface-grey border-transparent text-text-muted'
+              ? 'bg-white border-[#EAE4DC] text-midnight-lagoon'
+              : 'bg-surface-grey border-[#EAE4DC]/60 text-text-secondary'
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider block">Step 2</span>
-          <span className="text-xs font-bold truncate block">Role &amp; Phone</span>
+          <span className="text-xs font-bold truncate block">Role &amp; Contact</span>
         </div>
 
         <div
           className={`p-2.5 rounded-xl border text-center transition-all ${
             currentStep === 3
-              ? 'bg-[#EAFDF3] border-[#A3F3C6] text-[#008751]'
-              : 'bg-surface-grey border-transparent text-text-muted'
+              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751] ring-1 ring-[#008751]/20'
+              : 'bg-surface-grey border-[#EAE4DC]/60 text-text-secondary'
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider block">Step 3</span>
@@ -330,7 +370,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                 type="button"
                 disabled={isAuthLoading}
                 onClick={() => openModal(`Sign in to claim and manage ${venue.name}`, window.location.pathname)}
-                className="w-full h-14 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-sm uppercase tracking-wider rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full h-14 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-sm uppercase tracking-wider rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <ShieldCheck className="w-5 h-5" />
                 <span>Continue with Email or Google</span>
@@ -344,27 +384,31 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
         </div>
       )}
 
-      {/* STEP 2: Role & Direct Contact */}
+      {/* STEP 2: Role & Direct Contact with Proper Autocomplete */}
       {currentStep === 2 && (
         <form onSubmit={handleStep2Continue} className="space-y-5 animate-in fade-in duration-200">
           {/* Full Name */}
           <div className="space-y-1.5">
-            <label className="block text-text-secondary uppercase tracking-wider font-bold text-[11px]">
+            <label htmlFor="claimant-name" className="block text-midnight-lagoon uppercase tracking-wider font-bold text-[11px]">
               Your Full Name *
             </label>
             <input
+              id="claimant-name"
+              name="name"
               type="text"
               required
+              autoComplete="name"
+              spellCheck={false}
               value={claimantName}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClaimantName(e.target.value)}
               placeholder="e.g. Babatunde Adeleke"
-              className="w-full h-12 px-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
+              className="w-full h-12 px-4 rounded-xl border border-[#EAE4DC] bg-[#FAFAF8] text-sm text-midnight-lagoon focus:bg-white focus:outline-none focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/20 transition-all"
             />
           </div>
 
           {/* Role */}
           <div className="space-y-1.5">
-            <label className="block text-text-secondary uppercase tracking-wider font-bold text-[11px]">
+            <label className="block text-midnight-lagoon uppercase tracking-wider font-bold text-[11px]">
               Your Role at {venue.name} *
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -375,8 +419,8 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                   onClick={() => setClaimantRole(role)}
                   className={`h-11 rounded-xl text-xs font-bold capitalize transition-all border cursor-pointer ${
                     claimantRole === role
-                      ? 'bg-midnight-lagoon text-white border-midnight-lagoon shadow-sm'
-                      : 'bg-[#FAFAF8] text-text-muted border-border-default hover:border-gray-400'
+                      ? 'bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs'
+                      : 'bg-[#FAFAF8] text-text-secondary border-[#EAE4DC] hover:border-gray-400'
                   }`}
                 >
                   {role}
@@ -388,38 +432,44 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
           {/* WhatsApp / Phone */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="block text-text-secondary uppercase tracking-wider font-bold text-[11px]">
+              <label htmlFor="claimant-phone" className="block text-midnight-lagoon uppercase tracking-wider font-bold text-[11px]">
                 WhatsApp / Phone Number *
               </label>
-              <span className="text-[10px] font-bold text-[#008751]">For fast ops check</span>
+              <span className="text-[10px] font-bold text-[#008751]">For fast verification</span>
             </div>
             <div className="relative">
               <Phone className="w-4 h-4 text-text-muted absolute left-4 top-1/2 -translate-y-1/2" />
               <input
+                id="claimant-phone"
+                name="tel"
                 type="tel"
                 required
+                autoComplete="tel"
                 value={claimantPhone}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClaimantPhone(e.target.value)}
                 placeholder="e.g. 0803 123 4567"
-                className="w-full h-12 pl-11 pr-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
+                className="w-full h-12 pl-11 pr-4 rounded-xl border border-[#EAE4DC] bg-[#FAFAF8] text-sm text-midnight-lagoon focus:bg-white focus:outline-none focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/20 transition-all"
               />
             </div>
           </div>
 
           {/* Business Email */}
           <div className="space-y-1.5">
-            <label className="block text-text-secondary uppercase tracking-wider font-bold text-[11px]">
+            <label htmlFor="claimant-email" className="block text-midnight-lagoon uppercase tracking-wider font-bold text-[11px]">
               Work / Business Email *
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-text-muted absolute left-4 top-1/2 -translate-y-1/2" />
               <input
+                id="claimant-email"
+                name="email"
                 type="email"
                 required
+                autoComplete="email"
                 value={claimantEmail}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClaimantEmail(e.target.value)}
                 placeholder="e.g. manager@thehouselagos.com"
-                className="w-full h-12 pl-11 pr-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
+                className="w-full h-12 pl-11 pr-4 rounded-xl border border-[#EAE4DC] bg-[#FAFAF8] text-sm text-midnight-lagoon focus:bg-white focus:outline-none focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/20 transition-all"
               />
             </div>
           </div>
@@ -429,14 +479,14 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
             <button
               type="button"
               onClick={() => setCurrentStep(1)}
-              className="h-12 px-4 text-text-muted hover:text-midnight-lagoon font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+              className="h-12 px-4 text-text-secondary hover:text-midnight-lagoon font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
             </button>
             <button
               type="submit"
-              className="h-12 px-6 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-sm flex items-center gap-2 transition-all cursor-pointer"
+              className="h-12 px-6 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-xs flex items-center gap-2 transition-all cursor-pointer"
             >
               <span>Continue to Step 3</span>
               <ArrowRight className="w-4 h-4" />
@@ -449,7 +499,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
       {currentStep === 3 && (
         <form onSubmit={handleSubmitFinal} className="space-y-5 animate-in fade-in duration-200">
           <div className="space-y-2">
-            <label className="block text-text-secondary uppercase tracking-wider font-bold text-[11px]">
+            <label className="block text-midnight-lagoon uppercase tracking-wider font-bold text-[11px]">
               Verification Method *
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -458,8 +508,8 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                 onClick={() => setProofType('cac')}
                 className={`p-3 rounded-xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                   proofType === 'cac'
-                    ? 'border-brand-green bg-[#EAFDF3] text-[#008751]'
-                    : 'border-border-default bg-[#FAFAF8] text-text-secondary hover:border-gray-400'
+                    ? 'border-[#008751] bg-[#EAFDF3] text-[#008751]'
+                    : 'border-[#EAE4DC] bg-[#FAFAF8] text-text-secondary hover:border-gray-400'
                 }`}
               >
                 <Building className="w-4 h-4" />
@@ -471,8 +521,8 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                 onClick={() => setProofType('instagram')}
                 className={`p-3 rounded-xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                   proofType === 'instagram'
-                    ? 'border-brand-green bg-[#EAFDF3] text-[#008751]'
-                    : 'border-border-default bg-[#FAFAF8] text-text-secondary hover:border-gray-400'
+                    ? 'border-[#008751] bg-[#EAFDF3] text-[#008751]'
+                    : 'border-[#EAE4DC] bg-[#FAFAF8] text-text-secondary hover:border-gray-400'
                 }`}
               >
                 <AtSign className="w-4 h-4" />
@@ -484,8 +534,8 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                 onClick={() => setProofType('email_domain')}
                 className={`p-3 rounded-xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                   proofType === 'email_domain'
-                    ? 'border-brand-green bg-[#EAFDF3] text-[#008751]'
-                    : 'border-border-default bg-[#FAFAF8] text-text-secondary hover:border-gray-400'
+                    ? 'border-[#008751] bg-[#EAFDF3] text-[#008751]'
+                    : 'border-[#EAE4DC] bg-[#FAFAF8] text-text-secondary hover:border-gray-400'
                 }`}
               >
                 <FileText className="w-4 h-4" />
@@ -496,7 +546,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
 
           {/* Proof Input */}
           <div className="space-y-1.5">
-            <label className="block text-text-secondary uppercase tracking-wider font-bold text-[11px]">
+            <label htmlFor="proof-value" className="block text-midnight-lagoon uppercase tracking-wider font-bold text-[11px]">
               {proofType === 'cac'
                 ? 'CAC Business Registration Number (RC / BN)'
                 : proofType === 'instagram'
@@ -504,6 +554,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                 : 'Official Business Domain / Website'}
             </label>
             <input
+              id="proof-value"
               type="text"
               value={proofValue}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProofValue(e.target.value)}
@@ -514,21 +565,22 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
                   ? 'e.g. @thehouselagos'
                   : 'e.g. thehouselagos.com'
               }
-              className="w-full h-12 px-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
+              className="w-full h-12 px-4 rounded-xl border border-[#EAE4DC] bg-[#FAFAF8] text-sm text-midnight-lagoon focus:bg-white focus:outline-none focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/20 transition-all"
             />
           </div>
 
           {/* Context / Notes */}
           <div className="space-y-1.5">
-            <label className="block text-text-secondary uppercase tracking-wider font-bold text-[11px]">
+            <label htmlFor="relationship-notes" className="block text-midnight-lagoon uppercase tracking-wider font-bold text-[11px]">
               Additional Context (Optional)
             </label>
             <textarea
+              id="relationship-notes"
               rows={2}
               value={relationshipNotes}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRelationshipNotes(e.target.value)}
               placeholder="e.g. General Manager overseeing reservations, menu updates, and pricing"
-              className="w-full p-4 rounded-xl border border-border-default bg-[#FAFAF8] text-sm focus:bg-white focus:outline-none focus:border-brand-green transition-all"
+              className="w-full p-4 rounded-xl border border-[#EAE4DC] bg-[#FAFAF8] text-sm text-midnight-lagoon focus:bg-white focus:outline-none focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/20 transition-all"
             />
           </div>
 
@@ -537,7 +589,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="h-12 px-4 text-text-muted hover:text-midnight-lagoon font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
+              className="h-12 px-4 text-text-secondary hover:text-midnight-lagoon font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -565,6 +617,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
           </p>
         </form>
       )}
+
     </div>
   );
 }
