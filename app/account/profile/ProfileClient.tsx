@@ -32,7 +32,9 @@ export default function ProfileClient({
   const router = useRouter();
   const { session, user, avatarUrl, displayName, openModal } = useAuth();
   
-  const initialName = profile?.display_name || displayName || "";
+  const sanitizeName = (val?: string | null) => (val && !val.includes("@") ? val.trim() : "");
+  
+  const initialName = sanitizeName(profile?.display_name) || sanitizeName(displayName) || "";
   const initialPhone = "";
 
   const [displayNameInput, setDisplayNameInput] = useState(initialName);
@@ -68,22 +70,27 @@ export default function ProfileClient({
   }
 
   const effectiveEmail = user?.email || profile.email || "";
-  const effectiveDisplayName = displayNameInput.trim() || profile.display_name || "Planner";
+  const cleanDisplayName = sanitizeName(displayNameInput) || sanitizeName(profile.display_name);
   const authProvider = user?.app_metadata?.provider || "email";
 
-  const hasChanges = displayNameInput.trim() !== (profile.display_name || "") || phoneNumberInput.trim() !== "";
+  const hasChanges = displayNameInput.trim() !== (sanitizeName(profile.display_name)) || phoneNumberInput.trim() !== "";
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!displayNameInput.trim()) {
+    const trimmed = displayNameInput.trim();
+    if (!trimmed) {
       toast.error("Please enter a valid display name.");
+      return;
+    }
+    if (trimmed.includes("@")) {
+      toast.error("Display name cannot be an email address.");
       return;
     }
 
     startTransition(async () => {
       try {
         const res = await updateProfile({
-          displayName: displayNameInput.trim(),
+          displayName: trimmed,
           ...(phoneNumberInput.trim() ? { phoneNumber: phoneNumberInput.trim() } : {}),
         });
 
@@ -104,14 +111,14 @@ export default function ProfileClient({
       <div className="max-w-xl mx-auto px-4 sm:px-6 space-y-6 animate-in fade-in duration-200">
         
         {/* Back Navigation & Title */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Link 
             href="/account"
             prefetch={true}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-[#008751] transition-colors mb-1 min-h-[44px]"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-[#008751] transition-colors py-1 group tap-feedback"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Account</span>
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+            <span>Account</span>
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-midnight-lagoon">
             Account Profile
@@ -123,29 +130,31 @@ export default function ProfileClient({
 
         <form onSubmit={handleSave} className="space-y-6">
           
-          {/* 1. Avatar & Photo Section */}
+          {/* 1. Avatar & Identity Header Section */}
           <div className="bg-white rounded-[24px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
             <div className="flex items-center gap-2 border-b border-[#EAE4DC] pb-3.5">
               <User className="w-4 h-4 text-[#008751]" />
               <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
-                Profile Photo &amp; Avatar
+                Profile Identity
               </h2>
             </div>
 
             <div className="flex items-center gap-4 sm:gap-5">
               <Avatar 
-                name={effectiveDisplayName} 
+                name={cleanDisplayName || "Planner"} 
                 src={avatarUrl || profile.avatar_url} 
                 size="xl"
                 className="ring-4 ring-[#EAFDF3] shadow-2xs shrink-0"
               />
-              <div className="space-y-1">
-                <p className="text-sm font-bold text-midnight-lagoon">
-                  {effectiveDisplayName}
+              <div className="space-y-1 min-w-0">
+                <p className={`text-base font-black truncate ${cleanDisplayName ? "text-midnight-lagoon" : "text-text-muted italic"}`}>
+                  {cleanDisplayName || "Add your name"}
                 </p>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  Avatar synced automatically from your authentication provider.
-                </p>
+                {effectiveEmail && (
+                  <p className="text-xs text-text-secondary truncate font-medium">
+                    {effectiveEmail}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -176,7 +185,7 @@ export default function ProfileClient({
                     value={displayNameInput}
                     onChange={(e) => setDisplayNameInput(e.target.value)}
                     placeholder="e.g. Bode Olusegun"
-                    className="w-full h-12 rounded-xl bg-surface-grey border border-[#EAE4DC] focus:border-[#008751] focus:bg-white text-xs sm:text-sm font-medium px-4 outline-none transition-colors"
+                    className="w-full h-12 rounded-xl bg-[#FCFBF9] hover:bg-white focus:bg-white border border-[#EAE4DC] focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/15 text-xs sm:text-sm font-medium px-4 outline-none transition-all shadow-2xs"
                   />
                 </div>
                 <p className="text-[11px] text-text-muted">
@@ -222,7 +231,7 @@ export default function ProfileClient({
                     value={phoneNumberInput}
                     onChange={(e) => setPhoneNumberInput(e.target.value)}
                     placeholder="e.g. +234 801 234 5678"
-                    className="w-full h-12 rounded-xl bg-surface-grey border border-[#EAE4DC] focus:border-[#008751] focus:bg-white text-xs sm:text-sm font-medium px-4 outline-none transition-colors"
+                    className="w-full h-12 rounded-xl bg-[#FCFBF9] hover:bg-white focus:bg-white border border-[#EAE4DC] focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/15 text-xs sm:text-sm font-medium px-4 outline-none transition-all shadow-2xs"
                   />
                 </div>
                 <p className="text-[11px] text-text-muted">

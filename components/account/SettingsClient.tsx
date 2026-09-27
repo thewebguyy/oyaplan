@@ -60,15 +60,22 @@ export default function SettingsClient() {
     );
   }
 
-  const effectiveDisplayName = displayName || user.email?.split("@")[0] || "Planner";
+  const sanitizeName = (val?: string | null) => (val && !val.includes("@") ? val.trim() : "");
+  const cleanDisplayName = sanitizeName(displayName);
+  const effectiveDisplayName = cleanDisplayName || "Add your name";
   const authProvider = user.app_metadata.provider || "email";
 
   const handleSaveName = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nameInput.trim()) return;
+    const trimmed = nameInput.trim();
+    if (!trimmed) return;
+    if (trimmed.includes("@")) {
+      toast.error("Display name cannot be an email address.");
+      return;
+    }
 
     startTransition(async () => {
-      const res = await updateProfile({ displayName: nameInput.trim() });
+      const res = await updateProfile({ displayName: trimmed });
       if (res.success) {
         toast.success("Display name updated!");
         setIsEditingName(false);
@@ -86,16 +93,16 @@ export default function SettingsClient() {
 
   return (
     <main className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon pb-24 pt-20 sm:pt-24 selection:bg-[#008751]/20">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 space-y-8 animate-in fade-in duration-200">
         
         {/* Header */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Link 
             href="/account"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-[#008751] transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-[#008751] transition-colors py-1 group tap-feedback"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Profile</span>
+            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+            <span>Account</span>
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-midnight-lagoon">
             Account Settings
@@ -110,18 +117,20 @@ export default function SettingsClient() {
           <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-4">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-[#008751]" />
-              <h2 className="text-sm font-black uppercase tracking-wider text-midnight-lagoon">
+              <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
                 Profile Information
               </h2>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <Avatar name={effectiveDisplayName} src={avatarUrl} size="lg" />
-              <div>
-                <p className="text-sm font-bold text-midnight-lagoon">{effectiveDisplayName}</p>
-                <p className="text-xs text-text-muted">{user.email}</p>
+            <div className="flex items-center gap-3.5 min-w-0">
+              <Avatar name={cleanDisplayName || "Planner"} src={avatarUrl} size="lg" className="shrink-0" />
+              <div className="min-w-0">
+                <p className={`text-sm font-black truncate ${cleanDisplayName ? "text-midnight-lagoon" : "text-text-muted italic"}`}>
+                  {effectiveDisplayName}
+                </p>
+                <p className="text-xs text-text-secondary truncate font-medium">{user.email}</p>
               </div>
             </div>
 
@@ -129,18 +138,18 @@ export default function SettingsClient() {
               <button
                 type="button"
                 onClick={() => {
-                  setNameInput(effectiveDisplayName);
+                  setNameInput(cleanDisplayName || "");
                   setIsEditingName(true);
                 }}
-                className="text-xs font-bold text-[#008751] hover:underline px-3 py-1.5 rounded-lg hover:bg-[#EAFDF3] transition-colors"
+                className="text-xs font-bold text-[#008751] hover:underline px-3 py-1.5 rounded-lg hover:bg-[#EAFDF3] transition-colors cursor-pointer shrink-0"
               >
-                Edit Name
+                {cleanDisplayName ? "Edit Name" : "Add Name"}
               </button>
             ) : null}
           </div>
 
           {isEditingName && (
-            <form onSubmit={handleSaveName} className="space-y-3 pt-2 border-t border-[#EAE4DC] animate-in fade-in duration-150">
+            <form onSubmit={handleSaveName} className="space-y-3 pt-4 border-t border-[#EAE4DC] animate-in fade-in duration-150">
               <label htmlFor="displayName" className="block text-xs font-bold text-midnight-lagoon">
                 Display Name
               </label>
@@ -151,12 +160,13 @@ export default function SettingsClient() {
                   required
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
-                  className="flex-1 h-11 rounded-xl bg-surface-grey border border-[#EAE4DC] focus:border-[#008751] focus:bg-white text-xs sm:text-sm font-medium px-4 outline-none transition-colors"
+                  placeholder="e.g. Bode Olusegun"
+                  className="flex-1 h-11 rounded-xl bg-[#FCFBF9] hover:bg-white focus:bg-white border border-[#EAE4DC] focus:border-[#008751] focus:ring-2 focus:ring-[#008751]/15 text-xs sm:text-sm font-medium px-4 outline-none transition-all shadow-2xs"
                 />
                 <button
                   type="submit"
                   disabled={isPending || !nameInput.trim()}
-                  className="h-11 px-4 bg-[#008751] hover:bg-[#007043] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                  className="h-11 px-4 bg-[#008751] hover:bg-[#007043] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer shadow-2xs"
                 >
                   {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>Save</span>
@@ -164,7 +174,7 @@ export default function SettingsClient() {
                 <button
                   type="button"
                   onClick={() => setIsEditingName(false)}
-                  className="h-11 px-3 border border-[#EAE4DC] text-xs font-bold text-text-muted hover:text-midnight-lagoon rounded-xl"
+                  className="h-11 px-3 border border-[#EAE4DC] text-xs font-bold text-text-muted hover:text-midnight-lagoon rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -177,30 +187,30 @@ export default function SettingsClient() {
         <section className="bg-white rounded-[24px] border border-[#EAE4DC] p-6 shadow-xs space-y-4">
           <div className="flex items-center gap-2 border-b border-[#EAE4DC] pb-4">
             <Shield className="w-4 h-4 text-[#008751]" />
-            <h2 className="text-sm font-black uppercase tracking-wider text-midnight-lagoon">
+            <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
               Login & Security
             </h2>
           </div>
 
           <div className="space-y-3 divide-y divide-[#EAE4DC]">
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
               <div>
                 <p className="text-xs font-bold text-midnight-lagoon">Primary Email</p>
-                <p className="text-xs text-text-muted">{user.email}</p>
+                <p className="text-xs text-text-secondary mt-0.5">{user.email}</p>
               </div>
-              <span className="text-[10px] font-bold text-[#008751] bg-[#EAFDF3] px-2 py-0.5 rounded-full uppercase">
+              <span className="self-start sm:self-auto text-[10px] font-bold text-[#008751] bg-[#EAFDF3] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 Verified
               </span>
             </div>
 
-            <div className="flex items-center justify-between pt-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3">
               <div>
                 <p className="text-xs font-bold text-midnight-lagoon">Authentication Method</p>
-                <p className="text-xs text-text-muted capitalize">
+                <p className="text-xs text-text-secondary mt-0.5 capitalize">
                   {authProvider === "google" ? "Google OAuth" : "Email Magic Link / OTP"}
                 </p>
               </div>
-              <span className="text-[10px] font-bold text-text-muted bg-surface-grey px-2 py-0.5 rounded-full uppercase">
+              <span className="self-start sm:self-auto text-[10px] font-bold text-text-muted bg-surface-grey px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 Active
               </span>
             </div>
@@ -211,7 +221,7 @@ export default function SettingsClient() {
         <section className="bg-white rounded-[24px] border border-[#EAE4DC] p-6 shadow-xs space-y-3">
           <div className="flex items-center gap-2 border-b border-[#EAE4DC] pb-4">
             <FileText className="w-4 h-4 text-[#008751]" />
-            <h2 className="text-sm font-black uppercase tracking-wider text-midnight-lagoon">
+            <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
               Legal & Privacy
             </h2>
           </div>
@@ -219,7 +229,7 @@ export default function SettingsClient() {
           <div className="space-y-2">
             <Link
               href="/privacy"
-              className="flex items-center justify-between p-3 rounded-xl hover:bg-surface-grey text-xs font-bold text-midnight-lagoon transition-colors"
+              className="flex items-center justify-between p-3 rounded-xl hover:bg-[#FAF7F2] text-xs font-bold text-midnight-lagoon transition-colors"
             >
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-[#008751]" />
@@ -230,7 +240,7 @@ export default function SettingsClient() {
 
             <Link
               href="/terms"
-              className="flex items-center justify-between p-3 rounded-xl hover:bg-surface-grey text-xs font-bold text-midnight-lagoon transition-colors"
+              className="flex items-center justify-between p-3 rounded-xl hover:bg-[#FAF7F2] text-xs font-bold text-midnight-lagoon transition-colors"
             >
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-[#008751]" />
@@ -254,18 +264,18 @@ export default function SettingsClient() {
           </div>
           <Link
             href="/for-business"
-            className="text-xs font-bold text-midnight-lagoon hover:text-[#008751] px-3 py-1.5 rounded-lg border border-[#EAE4DC] bg-white hover:bg-[#FAF7F2] transition-colors shrink-0"
+            className="text-xs font-bold text-midnight-lagoon hover:text-[#008751] px-3.5 py-2 rounded-xl border border-[#EAE4DC] bg-white hover:bg-white transition-colors shrink-0 tap-feedback"
           >
             For Businesses ↗
           </Link>
         </section>
 
         {/* Section 5: Log Out */}
-        <div className="pt-2">
+        <div className="pt-2 text-center">
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full h-12 rounded-xl border border-red-200 text-red-600 bg-red-50/50 hover:bg-red-50 text-xs font-bold flex items-center justify-center gap-2 transition-colors tap-feedback cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-red-200 bg-white text-xs font-bold text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors tap-feedback cursor-pointer min-h-[44px]"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign out of this device</span>

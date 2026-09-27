@@ -63,13 +63,16 @@ export class SessionResolver {
 
     const avatarUrl = profile?.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
 
+    const rawDisplayName = profile?.display_name?.trim();
+    const cleanDisplayName = rawDisplayName && !rawDisplayName.includes('@') ? rawDisplayName : undefined;
+
     return {
       type: 'authenticated',
       sessionId,
       profile: {
         id: user.id,
         role: profile?.role || 'planner',
-        display_name: profile?.display_name,
+        display_name: cleanDisplayName,
         avatar_url: avatarUrl,
         email: user.email,
         profile_badge: profile?.profile_badge || null,

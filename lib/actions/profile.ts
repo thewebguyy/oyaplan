@@ -12,8 +12,14 @@ export interface ProfileUpdateInput {
 }
 
 export async function updateProfile(data: ProfileUpdateInput) {
-  if (data.displayName !== undefined && data.displayName.trim().length === 0) {
-    return { success: false, error: "Display name cannot be empty" };
+  if (data.displayName !== undefined) {
+    const trimmed = data.displayName.trim();
+    if (trimmed.length === 0) {
+      return { success: false, error: "Display name cannot be empty." };
+    }
+    if (trimmed.includes("@")) {
+      return { success: false, error: "Display name cannot be an email address." };
+    }
   }
 
   try {

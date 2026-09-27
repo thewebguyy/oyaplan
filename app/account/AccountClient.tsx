@@ -119,10 +119,8 @@ export default function AccountClient({
   }
 
   // 2. Authenticated State
-  const isEmailBasedName = profile.display_name === profile.email || profile.display_name?.includes("@");
-  const displayName = isEmailBasedName 
-    ? (profile.email?.split("@")[0] || "Planner")
-    : (profile.display_name || "Planner");
+  const hasValidName = Boolean(profile.display_name && !profile.display_name.includes("@") && profile.display_name.trim() !== "");
+  const displayName = hasValidName ? profile.display_name!.trim() : "Add your name";
   const displayEmail = profile.email || "";
 
   return (
@@ -139,17 +137,17 @@ export default function AccountClient({
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 min-w-0">
               <Avatar 
-                name={displayName} 
+                name={hasValidName ? displayName : "Planner"} 
                 src={avatarUrl || profile.avatar_url} 
                 size="lg"
                 className="ring-2 ring-[#008751]/20 group-hover:ring-[#008751] transition-all shrink-0"
               />
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl font-black text-midnight-lagoon truncate group-hover:text-[#008751] transition-colors">
+                <h1 className={`text-lg sm:text-xl font-black truncate transition-colors ${hasValidName ? "text-midnight-lagoon group-hover:text-[#008751]" : "text-text-muted italic group-hover:text-[#008751]"}`}>
                   {displayName}
                 </h1>
                 {displayEmail && (
-                  <p className="text-xs text-text-muted truncate mt-0.5 font-medium">
+                  <p className="text-xs text-text-secondary truncate mt-0.5 font-medium">
                     {displayEmail}
                   </p>
                 )}
@@ -343,11 +341,11 @@ export default function AccountClient({
         </div>
 
         {/* 5. LOGOUT — Quiet, Restrained, Non-Alarming */}
-        <div className="pt-4 text-center">
+        <div className="pt-2 text-center">
           <button
             type="button"
             onClick={handleSignOut}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors tap-feedback cursor-pointer min-h-[44px]"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-red-200 bg-white text-xs font-bold text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors tap-feedback cursor-pointer min-h-[44px]"
           >
             <LogOut className="w-4 h-4" />
             <span>Log out of OyaPlan</span>

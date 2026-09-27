@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Check, X, Loader2 } from 'lucide-react';
+import { Users, Plus, Check, X, Loader2, AlertCircle } from 'lucide-react';
 import { OyaSquadSummary } from '@/lib/types';
 import { createGroupAction, getUserGroupsAction } from '@/lib/actions/groupActions';
 import { trackEvent } from '@/lib/analytics/trackClient';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 interface OyaSquadSelectorProps {
   selectedGroupId: string | null;
@@ -17,30 +18,44 @@ export default function OyaSquadSelector({
   onSelectSquad,
   initialSquads = [],
 }: OyaSquadSelectorProps) {
+  const { session, openModal } = useAuth();
   const [squads, setSquads] = useState<OyaSquadSummary[]>(initialSquads);
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState('');
   const [memberInput, setMemberInput] = useState('');
   const [members, setMembers] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Refresh squads whenever user session changes or on initial mount
   useEffect(() => {
     let mounted = true;
-    if (initialSquads.length === 0) {
+    if (session?.user?.id) {
       getUserGroupsAction()
         .then((res) => {
-          if (mounted && res.success && res.data && res.data.length > 0) {
+          if (mounted && res.success && res.data) {
             setSquads(res.data);
           }
         })
         .catch(() => {
-          // anonymous or network error - silently ignore
+          // silently ignore
         });
+    } else if (initialSquads.length === 0) {
+      setSquads([]);
     }
     return () => {
       mounted = false;
     };
-  }, [initialSquads.length]);
+  }, [session?.user?.id, initialSquads.length]);
+
+  const handleStartCreate = () => {
+    if (!session?.user?.id) {
+      openModal('Sign in to save and reuse your OyaSquads for future outings', window.location.pathname);
+      return;
+    }
+    setError(null);
+    setShowCreate(true);
+  };
 
   const handleAddMember = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -53,7 +68,17 @@ export default function OyaSquadSelector({
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    setError(null);
+
+    if (!session?.user?.id) {
+      openModal('Sign in to save this OyaSquad to your account', window.location.pathname);
+      return;
+    }
+
+    if (!name.trim()) {
+      setError('Please provide a squad name.');
+      return;
+    }
 
     const finalMembers =
       memberInput.trim() && !members.includes(memberInput.trim())
@@ -83,7 +108,7 @@ export default function OyaSquadSelector({
           last_outing: null,
         };
 
-        setSquads([...squads, newSquad]);
+        setSquads(prev => [...prev, newSquad]);
         onSelectSquad(newSquad.id, count);
         setShowCreate(false);
         setName('');
@@ -96,9 +121,17 @@ export default function OyaSquadSelector({
           member_count: count,
           version: '1.0',
         });
+      } else {
+        if (res.error === 'unauthorized') {
+          openModal('Sign in to save this OyaSquad to your account', window.location.pathname);
+        } else if (res.error === 'group_limit_reached') {
+          setError('You have reached the maximum of 10 saved squads.');
+        } else {
+          setError('Failed to create squad. Please try again.');
+        }
       }
     } catch {
-      // ignore
+      setError('An unexpected error occurred. Please check your connection.');
     } finally {
       setIsSubmitting(false);
     }
@@ -109,8 +142,8 @@ export default function OyaSquadSelector({
       <div className="pt-1">
         <button
           type="button"
-          onClick={() => setShowCreate(true)}
-          className="text-xs text-brand-green font-bold hover:underline flex items-center gap-1 cursor-pointer tap-feedback"
+          onClick={handleStartCreate}
+          className="text-xs text-[#008751] font-bold hover:underline flex items-center gap-1 cursor-pointer tap-feedback"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Save this squad as an OyaSquad for next time</span>
@@ -252,18 +285,28 @@ export default function OyaSquadSelector({
             </div>
           )}
 
+          {error && (
+            <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
           <div className="flex justify-end gap-2 pt-1">
             <button
               type="button"
-              onClick={() => setShowCreate(false)}
-              className="px-3 py-1.5 text-xs text-text-muted hover:text-text-primary"
+              onClick={() => {
+                setShowCreate(false);
+                setError(null);
+              }}
+              className="px-3 py-1.5 text-xs text-text-muted hover:text-midnight-lagoon cursor-pointer font-bold"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!name.trim() || isSubmitting}
-              className="px-4 py-1.5 bg-brand-green text-white text-xs font-bold rounded-full disabled:opacity-50 flex items-center gap-1"
+              className="px-4 py-1.5 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold rounded-full disabled:opacity-50 flex items-center gap-1 cursor-pointer tap-feedback transition-all shadow-xs"
             >
               {isSubmitting ? (
                 <>
@@ -271,7 +314,7 @@ export default function OyaSquadSelector({
                   <span>Saving...</span>
                 </>
               ) : (
-                <span>Save & Use</span>
+                <span>Save &amp; Use</span>
               )}
             </button>
           </div>

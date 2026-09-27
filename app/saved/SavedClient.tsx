@@ -148,7 +148,11 @@ export default function SavedClient({
                     className="bg-white border border-[#EAE4DC] rounded-[24px] flex flex-col overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-full group"
                   >
                     <div className="w-full aspect-[16/10] relative bg-surface-grey overflow-hidden">
-                      <ScrubbablePhotos venueName={spot.name} imageUrl={spot.image_url} />
+                      <ScrubbablePhotos 
+                        venueName={spot.name} 
+                        imageUrl={spot.cover_url || spot.image_url || (spot.gallery_urls && spot.gallery_urls[0])} 
+                        images={spot.gallery_urls && spot.gallery_urls.length > 0 ? spot.gallery_urls : undefined}
+                      />
                       <div className="absolute top-3 right-3 z-30">
                         <button
                           type="button"

@@ -74,11 +74,11 @@ export function VenueImage({
               <circle cx="12" cy="10" r="3" />
             </svg>
           </div>
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#6B7280]">
-            {fallbackCategory || 'Verified Lagos Venue'}
+          <span className="text-[11px] font-extrabold uppercase tracking-wider text-text-primary">
+            {fallbackCategory || 'Lagos Outing Spot'}
           </span>
-          <span className="text-[9px] font-bold text-[#9CA3AF] tracking-wide">
-            Pricing Verified
+          <span className="text-[9px] font-bold text-text-muted tracking-wide">
+            OyaPlan Vetted Venue
           </span>
         </div>
       </div>

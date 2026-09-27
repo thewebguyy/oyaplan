@@ -67,9 +67,11 @@ export function DiscoveryVenueCard({
 
   const firstVibe = spot.vibe_tags?.slice(0, 2).join(" • ") || "Vetted Outing Spot";
 
+  const venueHeroImage = spot.cover_url || spot.image_url || (spot.gallery_urls && spot.gallery_urls[0]) || null;
+
   return (
     <article
-      className={`group bg-white rounded-[28px] border border-[#E5E7EB] hover:border-[#008751]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative ${className}`}
+      className={`group bg-white rounded-[28px] border border-[#EAE4DC] hover:border-[#008751]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative ${className}`}
     >
       {/* Top Image Section (Aspect 16:10) */}
       <div className="relative aspect-[16/10] w-full bg-[#F4F1EB] overflow-hidden shrink-0">
@@ -80,7 +82,7 @@ export function DiscoveryVenueCard({
           aria-hidden="true"
         >
           <VenueImage
-            src={spot.cover_url || spot.image_url}
+            src={venueHeroImage}
             alt={`${spot.name} in ${areaName}`}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
             fallbackCategory={spot.category}
@@ -138,20 +140,20 @@ export function DiscoveryVenueCard({
         <div>
           {/* Header Row: Title & Save Bookmark */}
           <div className="flex items-start justify-between gap-2">
-            <div className="space-y-1">
+            <div className="space-y-1 min-w-0">
               <Link 
                 href={`/venue/${spot.id}`} 
-                className="group-hover:text-[#008751] transition-colors"
+                className="group-hover:text-[#008751] transition-colors block"
               >
-                <h3 className="text-xl font-black text-midnight-lagoon tracking-tight line-clamp-1">
+                <h3 className="text-xl font-black text-midnight-lagoon tracking-tight truncate">
                   {spot.name}
                 </h3>
               </Link>
-              <p className="text-xs text-text-muted flex items-center gap-1 line-clamp-1">
+              <p className="text-xs text-text-muted flex items-center gap-1 truncate">
                 <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
-                <span className="font-bold text-text-secondary">{areaName}</span>
+                <span className="font-bold text-text-secondary truncate">{areaName}</span>
                 <span>•</span>
-                <span>{spot.address}</span>
+                <span className="truncate">{spot.address}</span>
               </p>
             </div>
 
@@ -171,7 +173,7 @@ export function DiscoveryVenueCard({
           </div>
 
           {/* Pricing Highlight Container */}
-          <div className="mt-3.5 p-3 rounded-2xl bg-[#FAFAF8] border border-[#EAE4DC] flex items-baseline justify-between">
+          <div className="mt-3.5 p-3.5 rounded-2xl bg-[#FAFAF8] border border-[#EAE4DC] flex items-baseline justify-between">
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider text-text-muted block">
                 {squadSize === 1 ? "Estimated Outing" : `Estimated for Squad (${squadSize})`}
@@ -220,11 +222,11 @@ export function DiscoveryVenueCard({
           </div>
         </div>
 
-        {/* Action Buttons Row */}
-        <div className="pt-2 flex items-center gap-2">
+        {/* Action Buttons Row — Primary Plan, Secondary View Venue */}
+        <div className="pt-2 flex items-center gap-2.5">
           <Link
             href={`/venue/${spot.id}`}
-            className="flex-1 py-3 px-4 rounded-xl bg-midnight-lagoon hover:bg-[#0b1442] text-white text-center text-xs font-black uppercase tracking-wider transition-colors tap-feedback"
+            className="px-4 py-3 rounded-xl border border-[#EAE4DC] hover:border-midnight-lagoon bg-white hover:bg-surface-grey text-midnight-lagoon text-center text-xs font-bold uppercase tracking-wider transition-colors tap-feedback shrink-0"
           >
             View Venue
           </Link>
@@ -232,10 +234,10 @@ export function DiscoveryVenueCard({
           <Link
             href={forgeUrl}
             aria-label={`Plan outing at ${spot.name}`}
-            className="py-3 px-4 rounded-xl bg-[#008751]/10 hover:bg-[#008751]/20 text-[#008751] font-black text-xs uppercase tracking-wider transition-colors tap-feedback flex items-center gap-1"
+            className="flex-1 py-3 px-4 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-center text-xs font-black uppercase tracking-wider transition-all shadow-xs tap-feedback flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <span>Plan</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>Plan Outing</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

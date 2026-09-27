@@ -272,7 +272,7 @@ export function ExploreClient({
               className={`h-[52px] px-4 rounded-2xl border font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 tap-feedback cursor-pointer ${
                 activeFilterCount > 0
                   ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-xs"
-                  : "bg-white border-[#E5E7EB] text-midnight-lagoon hover:border-[#008751]/40 shadow-xs"
+                  : "bg-white border-[#EAE4DC] text-midnight-lagoon hover:border-[#008751]/40 shadow-2xs"
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -294,7 +294,7 @@ export function ExploreClient({
                 className={`py-2 px-3.5 rounded-full border text-xs font-extrabold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                   filters.areaSlug === "all"
                     ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-xs"
-                    : "bg-white border-[#E5E7EB] text-text-secondary hover:border-midnight-lagoon"
+                    : "bg-white border-[#EAE4DC] text-text-secondary hover:border-midnight-lagoon"
                 }`}
               >
                 All Lagos ({initialSpots.length})
@@ -309,7 +309,7 @@ export function ExploreClient({
                     className={`py-2 px-3.5 rounded-full border text-xs font-extrabold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                       isSelected
                         ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-xs"
-                        : "bg-white border-[#E5E7EB] text-text-secondary hover:border-midnight-lagoon"
+                        : "bg-white border-[#EAE4DC] text-text-secondary hover:border-midnight-lagoon"
                     }`}
                   >
                     {area.name} {area.activeSpotCount ? `(${area.activeSpotCount})` : ""}
@@ -331,7 +331,7 @@ export function ExploreClient({
                   className={`py-2 px-3.5 rounded-full border text-xs font-extrabold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                     isSelected
                       ? "bg-[#008751] border-[#008751] text-white shadow-xs"
-                      : "bg-white border-[#E5E7EB] text-text-secondary hover:border-[#008751]/40"
+                      : "bg-white border-[#EAE4DC] text-text-secondary hover:border-[#008751]/40"
                   }`}
                 >
                   {cat.label}
@@ -341,7 +341,7 @@ export function ExploreClient({
           </div>
 
           {/* Quick Active Controls Banner */}
-          <div className="p-3 bg-white rounded-2xl border border-[#E5E7EB] flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="p-3.5 bg-white rounded-2xl border border-[#EAE4DC] shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-4 flex-wrap">
               {/* Squad Selector Quick Indicator */}
               <div className="flex items-center gap-1.5 text-text-secondary font-bold">
