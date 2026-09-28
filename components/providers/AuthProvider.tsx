@@ -71,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const user = session?.user ?? null;
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
   const userMetaName = user?.user_metadata?.full_name || user?.user_metadata?.name || null;
   const displayName = userMetaName && !userMetaName.includes('@') ? userMetaName.trim() : null;
 
