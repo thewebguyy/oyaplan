@@ -7,25 +7,25 @@ import { ShieldCheck, ArrowRight, Sparkles, CheckCircle2, MessageSquare } from "
 export function BusinessFoundingPartner() {
   const perks = [
     {
-      title: "Direct WhatsApp Concierge",
-      desc: "Instant line to our product team for menu updates, corrections, and custom asset assistance.",
+      title: "Reservation Readiness",
+      desc: "Pilot structured reservation requests with deposits paid directly to your business account.",
     },
     {
-      title: "Verified Founding Badge",
-      desc: "Distinguish your venue as an authentic, verified spot in Lagos planning searches.",
+      title: "Deep Pricing & Menu Verification",
+      desc: "Direct concierge line with our team to keep your full menu, bottles, and house policies verified.",
     },
     {
       title: "Demand Feedback Loop",
-      desc: "Influence the features, reporting metrics, and planning tools we build for operators next.",
+      desc: "Understand how Lagos squads evaluate your venue during their upstream planning process.",
     },
     {
-      title: "Zero Setup or Subscription Fees",
-      desc: "Claiming and managing your venue profile is completely free for founding partners.",
+      title: "Always Free to List",
+      desc: "No setup fees, no software subscriptions. OyaPlan only earns when reservations happen.",
     },
   ];
 
   return (
-    <section className="py-20 sm:py-28 bg-[#FAF7F2] border-t border-[#EAE4DC]">
+    <section className="py-20 sm:py-28 bg-[#FAF7F2] border-t border-[#EAE4DC]" id="partner-cohort">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl border border-[#EAE4DC] p-8 sm:p-12 lg:p-16 shadow-xs relative overflow-hidden">
           
@@ -33,16 +33,16 @@ export function BusinessFoundingPartner() {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-brand-green">
               <Sparkles className="w-3.5 h-3.5" />
               <span className="text-[11px] font-black uppercase tracking-wider">
-                Act V • Founding Partner Cohort
+                Priority Partner Cohort
               </span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-              Help shape how Lagos businesses show up on OyaPlan.
+              You are where the customer decides.
             </h2>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              We are starting with a focused group of Lagos venues to make the platform genuinely indispensable for operators and the people deciding where to spend. No fabricated numbers, no hidden fees — just accurate representation.
+              We are working directly with an initial cohort of priority Lagos venues for deep verification, rich pricing accuracy, and pilot reservation workflows. For every venue in Lagos, listing on OyaPlan remains completely free.
             </p>
 
             {/* 4 Pillars Grid */}
@@ -69,11 +69,11 @@ export function BusinessFoundingPartner() {
                 href="/business/claim"
                 className="h-12 px-6 bg-brand-green hover:bg-[#007043] text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm tap-feedback cursor-pointer"
               >
-                <span>Become a founding venue</span>
+                <span>Get Started — Free</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Founding%20Partner%20Cohort"
+                href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Priority%20Partner%20Cohort"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-12 px-6 bg-white hover:bg-slate-50 text-slate-800 border border-[#EAE4DC] text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all tap-feedback"

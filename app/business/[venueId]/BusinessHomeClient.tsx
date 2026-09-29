@@ -13,6 +13,7 @@ import {
 import { ActionCenterCard } from '@/components/partner/ActionCenterCard';
 import { InformationFreshnessCard } from '@/components/partner/InformationFreshnessCard';
 import { AttributionVerifyCard } from '@/components/business/AttributionVerifyCard';
+import { BusinessReservationsCard } from '@/components/business/BusinessReservationsCard';
 import { ProfileHealthCard } from '@/components/partner/ProfileHealthCard';
 import { DemandActivityCard } from '@/components/partner/DemandActivityCard';
 import { PlanningInsightsCard } from '@/components/partner/PlanningInsightsCard';
@@ -97,7 +98,13 @@ export function BusinessHomeClient({
         baseRoute="business"
       />
 
-      {/* ── 3. Squad Visit Verification (Attribution) ── */}
+      {/* ── 3. Reservations & Commercial Activity ── */}
+      <BusinessReservationsCard
+        venueId={venue.id}
+        reservationFee={venue.reservation_fee}
+      />
+
+      {/* ── 4. Squad Visit Verification (Attribution) ── */}
       <AttributionVerifyCard venueId={venue.id} />
 
       {/* ── 4. Planning Activity: What OyaPlan is Doing for Your Business ── */}

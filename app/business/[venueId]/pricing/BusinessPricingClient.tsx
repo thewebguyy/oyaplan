@@ -55,6 +55,7 @@ export function BusinessPricingClient({
   const [minimumSpend, setMinimumSpend] = useState(venue.minimum_spend ?? 0);
   const [corkageFee, setCorkageFee] = useState(venue.corkage_fee ?? 0);
   const [entranceFee, setEntranceFee] = useState(venue.entrance_fee ?? 0);
+  const [reservationFee, setReservationFee] = useState(venue.reservation_fee ?? 0);
   const [weekendNotes, setWeekendNotes] = useState(venue.weekend_pricing_notes || '');
   const [savingCharges, setSavingCharges] = useState(false);
   const [chargesSuccess, setChargesSuccess] = useState(false);
@@ -140,6 +141,7 @@ export function BusinessPricingClient({
       minimumSpend: Number(minimumSpend),
       corkageFee: Number(corkageFee),
       entranceFee: Number(entranceFee),
+      reservationFee: Number(reservationFee),
       weekendPricingNotes: weekendNotes,
     });
 
@@ -572,6 +574,27 @@ export function BusinessPricingClient({
               className="w-full h-10 px-3 rounded-lg border border-border-default bg-white text-xs font-bold text-midnight-lagoon focus:outline-none focus:border-brand-green font-mono"
             />
             <p className="text-[10px] text-text-muted">Door fee per person if applicable.</p>
+          </div>
+
+          {/* Table Reservation Deposit */}
+          <div className="space-y-1.5 p-3.5 rounded-xl bg-[#FAF7F2] border border-[#EAE4DC]/60 sm:col-span-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-bold text-text-secondary">
+                Table Reservation Deposit (NGN)
+              </label>
+              <span className="text-[10px] text-text-muted font-mono font-bold">₦</span>
+            </div>
+            <input
+              type="number"
+              min="0"
+              step="5000"
+              value={reservationFee}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReservationFee(parseInt(e.target.value, 10) || 0)}
+              className="w-full h-10 px-3 rounded-lg border border-border-default bg-white text-xs font-bold text-midnight-lagoon focus:outline-none focus:border-brand-green font-mono"
+            />
+            <p className="text-[10px] text-text-muted">
+              Required deposit to hold a table. Paid directly to your venue by the customer. OyaPlan does not hold customer deposits.
+            </p>
           </div>
 
           {/* Weekend Notes */}

@@ -193,6 +193,13 @@ export function PublicPricingSection({ venue, menuItems }: PublicPricingSectionP
                 <p className="font-mono font-bold text-text-primary">₦{venue.entrance_fee?.toLocaleString('en-NG')}</p>
               </div>
             )}
+            {Boolean(venue.reservation_fee && venue.reservation_fee > 0) && (
+              <div className="space-y-0.5">
+                <span className="text-text-muted">Table Reservation Deposit</span>
+                <p className="font-mono font-bold text-text-primary">₦{venue.reservation_fee?.toLocaleString('en-NG')}</p>
+                <p className="text-[10px] text-text-muted">Paid directly to venue</p>
+              </div>
+            )}
           </div>
         </div>
       )}

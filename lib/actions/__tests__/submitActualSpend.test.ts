@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock Supabase
-vi.mock("../supabase", () => {
+vi.mock("../../supabase", () => {
   const insertMock = vi.fn().mockResolvedValue({ error: null });
   const fromMock = vi.fn((table: string) => ({
     insert: insertMock,
@@ -14,7 +14,7 @@ vi.mock("../supabase", () => {
 });
 
 import { submitActualSpend } from "../submitActualSpend";
-import { supabase } from "../supabase";
+import { supabase } from "../../supabase";
 
 describe("submitActualSpend Server Action", () => {
   beforeEach(() => {

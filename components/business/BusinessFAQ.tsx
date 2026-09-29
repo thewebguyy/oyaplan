@@ -9,28 +9,36 @@ export function BusinessFAQ() {
 
   const faqs = [
     {
-      q: "What exactly is OyaPlan for Business?",
-      a: "OyaPlan for Business is the official portal for venue owners and managers in Lagos to control their public profile, menus, pricing, operating hours, and house policies across the OyaPlan consumer planning app.",
+      q: "Is it free to list my business on OyaPlan?",
+      a: "Yes. Listing your venue on OyaPlan is 100% free. There are no registration fees, monthly SaaS subscriptions, or paywalls just to be discoverable by Lagos outing planners.",
     },
     {
-      q: "How does OyaPlan help my venue attract customers?",
-      a: "Lagos consumers use OyaPlan before they leave home to calculate squad budgets and pick venues that match their vibe. When your prices, dress code, and corkage rules are clear, groups can confidently lock your spot into their outing itineraries.",
+      q: "How does OyaPlan make money?",
+      a: "OyaPlan earns a commission when a qualifying reservation or booked outing is generated through the platform. We monetize when we deliver real, qualified customer bookings to your business.",
     },
     {
-      q: "Does OyaPlan charge commissions on walk-ins or bills?",
-      a: "No. OyaPlan does not take a percentage of your food and drink sales, POS settlement, or walk-in customer revenue. You maintain 100% of your earnings.",
+      q: "Does OyaPlan hold customer deposits?",
+      a: "No. Required reservation deposits and table fees are paid directly to your venue's account. OyaPlan never holds your money, acts as payment custodian, or runs an escrow wallet.",
     },
     {
-      q: "Does OyaPlan replace my POS or table booking system?",
-      a: "No. OyaPlan is an outing planning and decision engine, not an internal POS or table management software. We bridge consumer planning decisions to your physical venue.",
+      q: "Do I need to be fully verified to be listed?",
+      a: "No. Hundreds of businesses are listed across Lagos with available public information. OyaPlan transparently distinguishes verified partner information from estimated or community-reported data so planners always know what is verified.",
     },
     {
-      q: "How do I claim my venue?",
-      a: "Search for your venue in our claim directory. If your venue is already indexed, you can request ownership with basic verification. If it is not listed yet, you can add your venue in under 3 minutes.",
+      q: "Can customers reserve through OyaPlan?",
+      a: "Where your business supports reservations, customers can submit structured reservation requests through OyaPlan detailing date, time, party size, and seating preference.",
     },
     {
-      q: "What if my menu or prices change frequently?",
-      a: "You can update prices, seasonal specials, and signature dishes directly in your Business dashboard in real-time. Changes immediately update across all consumer budget calculations.",
+      q: "Does OyaPlan guarantee a reservation?",
+      a: "No. A reservation is only represented as confirmed after your venue directly reviews and confirms it. We never mislead customers into thinking a table is booked without your explicit acceptance.",
+    },
+    {
+      q: "What happens if my prices change?",
+      a: "You can update prices, seasonal dishes, and bottle minimums directly in your Business portal in seconds. Changes immediately update across all consumer budget estimates while preserving verification provenance.",
+    },
+    {
+      q: "Does OyaPlan charge commissions on walk-ins or food bills?",
+      a: "No. OyaPlan does not take a percentage of your food and drink sales, walk-in customer revenue, or POS settlement. Commission applies strictly to qualifying reservations made through OyaPlan.",
     },
   ];
 

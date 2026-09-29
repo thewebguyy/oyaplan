@@ -26,11 +26,11 @@ export function BusinessFooter() {
               </span>
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              The official portal for Lagos hospitality venues to manage their profile, prices, menus, and house policies inside the OyaPlan planning app.
+              The official portal for Lagos hospitality venues to manage prices, menus, and house policies, and turn planning intent into direct reservations.
             </p>
             <div className="pt-2">
               <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-widest bg-emerald-950/80 px-2.5 py-1 rounded-md border border-emerald-800">
-                Lagos, Nigeria
+                Lagos, Nigeria • Free Listing
               </span>
             </div>
           </div>
@@ -43,17 +43,22 @@ export function BusinessFooter() {
             <ul className="space-y-2 text-xs text-slate-300">
               <li>
                 <Link href="/business/claim" className="hover:text-white transition-colors">
-                  Claim Your Venue
+                  List Your Venue — Free
                 </Link>
+              </li>
+              <li>
+                <a href="/for-business#reservations" className="hover:text-white transition-colors">
+                  How Reservations Work
+                </a>
+              </li>
+              <li>
+                <a href="/for-business#marketplace-relationship" className="hover:text-white transition-colors">
+                  Marketplace Relationship
+                </a>
               </li>
               <li>
                 <Link href="/account?next=/business&context=business" className="hover:text-white transition-colors">
                   Business Sign In
-                </Link>
-              </li>
-              <li>
-                <Link href="/for-business#business-types" className="hover:text-white transition-colors">
-                  Business Categories
                 </Link>
               </li>
               <li>
@@ -104,7 +109,7 @@ export function BusinessFooter() {
               href="/business/claim"
               className="w-full h-10 px-4 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm"
             >
-              <span>Claim Spot</span>
+              <span>Get Started</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>

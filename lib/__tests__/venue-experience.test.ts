@@ -4,15 +4,22 @@ import { Venue, MenuItem } from '@/lib/types';
 describe('Venue Financial Calculations & Null Semantics', () => {
   const sampleVenue: Venue = {
     id: 'venue-123',
-    slug: 'cactus-vi',
+    district_id: 'dist-vi',
     name: 'Cactus Restaurant',
-    category: 'Restaurant',
+    category: 'restaurant',
     address: '20/24 Ozumba Mbadiwe Ave, Victoria Island',
     description: 'Bustling waterside bistro in Victoria Island with terrace dining.',
     vibe_tags: ['Chill', 'Foodie'],
     audience_tags: ['Couples', 'Squads'],
     activity_tags: ['Dining'],
     derived_typical_cost: 22000,
+    derived_price_tier: 2,
+    typical_duration_hours: 2,
+    is_featured: false,
+    active: true,
+    gallery_urls: [],
+    subcategory: 'bistro',
+    instagram_handle: null,
     computed_confidence_score: 0.9,
     confidence_reasons: ['Verified OCR menu', 'Active partner updates'],
     vat_pct: 7.5,
@@ -36,10 +43,10 @@ describe('Venue Financial Calculations & Null Semantics', () => {
   };
 
   const sampleMenuItems: MenuItem[] = [
-    { id: 'm1', venue_id: 'venue-123', name: 'Seafood Pasta', price: 16500, category: 'main', is_available: true, created_at: '', updated_at: '' },
-    { id: 'm2', venue_id: 'venue-123', name: 'Grilled Ribeye Steak', price: 24000, category: 'main', is_available: true, created_at: '', updated_at: '' },
-    { id: 's1', venue_id: 'venue-123', name: 'Peppered Calamari', price: 8500, category: 'starter', is_available: true, created_at: '', updated_at: '' },
-    { id: 'd1', venue_id: 'venue-123', name: 'Chapman Cocktail', price: 4500, category: 'cocktail', is_available: true, created_at: '', updated_at: '' },
+    { id: 'm1', venue_id: 'venue-123', name: 'Seafood Pasta', price: 16500, category: 'main', is_available: true, created_at: '', last_updated_at: '' },
+    { id: 'm2', venue_id: 'venue-123', name: 'Grilled Ribeye Steak', price: 24000, category: 'main', is_available: true, created_at: '', last_updated_at: '' },
+    { id: 's1', venue_id: 'venue-123', name: 'Peppered Calamari', price: 8500, category: 'starter', is_available: true, created_at: '', last_updated_at: '' },
+    { id: 'd1', venue_id: 'venue-123', name: 'Chapman Cocktail', price: 4500, category: 'cocktail', is_available: true, created_at: '', last_updated_at: '' },
   ];
 
   it('computes realistic 2-person scenario with mandatory house charges', () => {

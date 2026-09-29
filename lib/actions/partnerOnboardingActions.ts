@@ -45,6 +45,7 @@ export async function saveOnboardingStepAction(
       if (typeof data.minimum_spend === 'number') updatePayload.minimum_spend = data.minimum_spend;
       if (typeof data.corkage_fee === 'number') updatePayload.corkage_fee = data.corkage_fee;
       if (typeof data.entrance_fee === 'number') updatePayload.entrance_fee = data.entrance_fee;
+      if (typeof data.reservation_fee === 'number') updatePayload.reservation_fee = data.reservation_fee;
       if (data.weekend_pricing_notes !== undefined) updatePayload.weekend_pricing_notes = data.weekend_pricing_notes;
     } else if (step === 3) {
       // Step 3: Experience Fit & Suitability

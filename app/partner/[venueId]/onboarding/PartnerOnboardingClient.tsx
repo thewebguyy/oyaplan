@@ -95,6 +95,7 @@ export function PartnerOnboardingClient({
   const [minimumSpend, setMinimumSpend] = useState(venue.minimum_spend ?? 0);
   const [corkageFee, setCorkageFee] = useState(venue.corkage_fee ?? 0);
   const [entranceFee, setEntranceFee] = useState(venue.entrance_fee ?? 0);
+  const [reservationFee, setReservationFee] = useState(venue.reservation_fee ?? 0);
   const [weekendPricingNotes, setWeekendPricingNotes] = useState(venue.weekend_pricing_notes || '');
 
   // Step 3: Experience Fit
@@ -160,6 +161,7 @@ export function PartnerOnboardingClient({
         minimum_spend: Number(minimumSpend),
         corkage_fee: Number(corkageFee),
         entrance_fee: Number(entranceFee),
+        reservation_fee: Number(reservationFee),
         weekend_pricing_notes: weekendPricingNotes,
       };
     } else if (currentStep === 3) {
@@ -303,6 +305,20 @@ export function PartnerOnboardingClient({
           </h1>
           <p className="text-stone-600 text-sm mt-1">
             This information helps us show customers what they can realistically expect to spend at your venue.
+          </p>
+        </div>
+
+        {/* Transparent Commercial Partnership Card */}
+        <div className="mb-6 p-4 sm:p-5 bg-white border border-[#EAE4DC] rounded-2xl shadow-xs space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-[#008751] uppercase tracking-wider">
+              OyaPlan Marketplace Agreement
+            </span>
+            <span className="text-stone-300">·</span>
+            <span className="text-xs text-stone-500 font-semibold">Free Listing Model</span>
+          </div>
+          <p className="text-xs text-stone-700 leading-relaxed">
+            <strong>Listing your business on OyaPlan is completely free.</strong> Keep your pricing and policies accurate so customers can discover and plan outings around your business. If you accept table reservations, customers can request bookings — any required deposits are paid <strong>directly to your business</strong>. OyaPlan earns an attributed commission on qualifying reservations generated through the platform.
           </p>
         </div>
 
@@ -595,6 +611,24 @@ export function PartnerOnboardingClient({
                   />
                   <span className="text-[11px] text-stone-500 mt-1 block">Per person on entry</span>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                  Table Reservation Deposit (₦)
+                </label>
+                <input
+                  type="number"
+                  step="5000"
+                  min="0"
+                  value={reservationFee}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReservationFee(parseInt(e.target.value, 10) || 0)}
+                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#008751]"
+                  placeholder="0"
+                />
+                <span className="text-[11px] text-stone-500 mt-1 block">
+                  Required deposit to hold a table. Paid directly to your venue by the customer. OyaPlan does not hold customer deposits.
+                </span>
               </div>
 
               <div>

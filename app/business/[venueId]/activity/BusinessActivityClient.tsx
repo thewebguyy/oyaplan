@@ -207,13 +207,13 @@ export function BusinessActivityClient({
         <div className="space-y-1">
           <div className="flex items-center gap-1.5 text-brand-green font-bold text-xs">
             <Sparkles className="w-3.5 h-3.5" />
-            <span className="uppercase tracking-wider">Maintain Your Ranking</span>
+            <span className="uppercase tracking-wider">Maintain Squad Trust</span>
           </div>
           <h3 className="font-bold text-sm text-midnight-lagoon">
-            Keep your menu prices current to maximize plan recommendations
+            Keep your menu prices current so planners have total budget confidence
           </h3>
           <p className="text-xs text-text-muted max-w-xl leading-relaxed">
-            Planners prioritize venues with confirmed pricing over spots with stale data. Review your prices once every 30 days to stay at the top of recommendations.
+            Planners rely on venues with confirmed pricing for budget confidence. Review your prices once every 30 days to ensure squad outing estimates remain accurate.
           </p>
         </div>
 

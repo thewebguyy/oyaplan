@@ -3,6 +3,8 @@
 import React from "react";
 import { BusinessHero } from "@/components/business/BusinessHero";
 import { BusinessTypesSection } from "@/components/business/BusinessTypesSection";
+import { BusinessReservationSection } from "@/components/business/BusinessReservationSection";
+import { BusinessMarketplaceRelationship } from "@/components/business/BusinessMarketplaceRelationship";
 import { BusinessMarquee } from "@/components/business/motion/BusinessMarquee";
 import { BusinessProductDeepDive } from "@/components/business/BusinessProductDeepDive";
 import { BusinessNarrativeJourney } from "@/components/business/BusinessNarrativeJourney";
@@ -16,20 +18,26 @@ export function ForBusinessClient() {
       {/* ACT 1 — THE DECISION: Hero with composed Business Controller ↔ Consumer Plan UI */}
       <BusinessHero />
 
-      {/* ACT 2 — THE BUSINESS: Real categorization engine & venue types */}
+      {/* ACT 2 — THE BUSINESS: Broad Lagos supply and real category engine */}
       <BusinessTypesSection />
 
-      {/* ACT 3 — THE PRODUCT: Continuous Horizontal Marquee + Product Deep Dives */}
+      {/* ACT 3 — THE RESERVATION: 4-step reservation journey & direct venue deposits */}
+      <BusinessReservationSection />
+
+      {/* ACT 4 — THE MARKETPLACE: 3-way relationship (Customers, Businesses, OyaPlan) */}
+      <BusinessMarketplaceRelationship />
+
+      {/* ACT 5 — THE PRODUCT: Continuous Horizontal Marquee + Product Deep Dives */}
       <BusinessMarquee />
       <BusinessProductDeepDive />
 
-      {/* ACT 4 — THE CONNECTION: Business updates → Marketplace → Plan → Visit → Demand signals */}
+      {/* ACT 6 — THE CONNECTION: The complete marketplace loop (Discover → Decide → Reserve → Serve → Learn) */}
       <BusinessNarrativeJourney />
 
-      {/* ACT 5 — THE INVITATION: Founding Partner Cohort */}
+      {/* ACT 7 — THE INVITATION: Priority Partner Cohort */}
       <BusinessFoundingPartner />
 
-      {/* ACT 6 — THE TRUST: FAQ + Business Dedicated Footer */}
+      {/* ACT 8 — THE TRUST: Comprehensive FAQ + Business Dedicated Footer */}
       <BusinessFAQ />
       <BusinessFooter />
     </div>

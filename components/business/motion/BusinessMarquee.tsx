@@ -20,38 +20,40 @@ import {
 
 export function BusinessMarquee() {
   const cards = [
-    // Card 1: Your Venue Profile
+    // Card 1: Marketplace Presence
     {
-      id: "venue-profile",
-      eyebrow: "01 • VENUE PROFILE",
-      title: "Your Venue Presentation",
-      badge: "Verified Partner",
+      id: "marketplace-presence",
+      eyebrow: "01 • MARKETPLACE PRESENCE",
+      title: "Consumer Discovery Card",
+      badge: "Free Listing",
       content: (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">
-              Victoria Island, Lagos
-            </span>
-            <span className="text-[10px] font-bold text-emerald-800 bg-[#EAFDF3] px-2 py-0.5 rounded-full border border-[#A3F3C6]">
-              Verified Partner
-            </span>
-          </div>
-          <div>
-            <h4 className="text-base font-extrabold text-slate-900">Slow Lagos</h4>
-            <p className="text-xs text-slate-500">Fine Dining &amp; Botanical Lounge • ₦₦₦₦</p>
-          </div>
-          <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100 flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-medium">Tonight&apos;s Hours</span>
-            <span className="font-bold text-slate-900">5:00 PM – 1:00 AM</span>
+          <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EAE4DC] space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-900">Slow Lagos</span>
+              <span className="text-[10px] font-bold text-brand-green bg-white px-2 py-0.5 rounded-md border border-[#EAE4DC]">
+                Top Match
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 line-clamp-2">
+              Lush greenery, exceptional culinary precision, and sophisticated cocktails.
+            </p>
+            <div className="flex items-center justify-between pt-1 border-t border-[#EAE4DC]">
+              <span className="text-xs font-mono font-bold text-slate-800">~₦35k / person</span>
+              <span className="text-[10px] font-bold text-white bg-slate-900 px-2.5 py-1 rounded-lg flex items-center gap-1">
+                <Plus className="w-2.5 h-2.5" />
+                <span>Add to Plan</span>
+              </span>
+            </div>
           </div>
         </div>
       ),
     },
 
-    // Card 2: Your Pricing & Menus
+    // Card 2: Live Pricing & Menus
     {
       id: "pricing-menu",
-      eyebrow: "02 • PRICING & MENUS",
+      eyebrow: "02 • MENUS & PRICING",
       title: "Live Menu Accuracy",
       badge: "100% Up to Date",
       content: (
@@ -82,41 +84,12 @@ export function BusinessMarquee() {
       ),
     },
 
-    // Card 3: Your Venue Policies
-    {
-      id: "venue-policies",
-      eyebrow: "03 • HOUSE POLICIES",
-      title: "Clear Outing Logistics",
-      badge: "Zero DM Confusion",
-      content: (
-        <div className="space-y-3">
-          <p className="text-xs text-slate-500">
-            Rules customers check before leaving home:
-          </p>
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <span className="font-medium text-slate-700">Corkage Policy</span>
-              <span className="font-bold text-slate-900">₦20,000 / wine bottle</span>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <span className="font-medium text-slate-700">Dress Code</span>
-              <span className="font-bold text-slate-900">Smart Casual (No Slides)</span>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <span className="font-medium text-slate-700">Valet Parking</span>
-              <span className="font-bold text-emerald-700">Complimentary</span>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-
-    // Card 4: Your Demand Signals
+    // Card 3: Planning Demand
     {
       id: "demand-signals",
-      eyebrow: "04 • DEMAND SIGNALS",
+      eyebrow: "03 • PLANNING DEMAND",
       title: "Active Outing Planning",
-      badge: "Live Planner Data",
+      badge: "Real Intent",
       content: (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
@@ -143,56 +116,79 @@ export function BusinessMarquee() {
       ),
     },
 
-    // Card 5: Your Marketplace Presence
+    // Card 4: Reservation Requests
     {
-      id: "marketplace-presence",
-      eyebrow: "05 • MARKETPLACE PRESENCE",
-      title: "Consumer Discovery Card",
-      badge: "Native Placement",
+      id: "reservation-requests",
+      eyebrow: "04 • RESERVATIONS",
+      title: "Incoming Reservation Requests",
+      badge: "Direct Deposit",
       content: (
-        <div className="space-y-3">
-          <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EAE4DC] space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-900">Slow Lagos</span>
-              <span className="text-[10px] font-bold text-brand-green bg-white px-2 py-0.5 rounded-md border border-[#EAE4DC]">
-                Top Match
+        <div className="space-y-2.5">
+          <div className="p-3 bg-white rounded-xl border border-emerald-200/80 shadow-xs space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-900">4 Guests · Friday 8:00 PM</span>
+              <span className="text-[9px] font-bold text-brand-green bg-[#EAFDF3] px-1.5 py-0.5 rounded">
+                Pending Venue
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 line-clamp-2">
-              Lush greenery, exceptional culinary precision, and sophisticated cocktails.
+            <p className="text-[11px] text-slate-500 leading-snug">
+              Deposit required: ₦20,000 · Paid directly to venue account.
             </p>
-            <div className="flex items-center justify-between pt-1 border-t border-[#EAE4DC]">
-              <span className="text-xs font-mono font-bold text-slate-800">~₦35k / person</span>
-              <span className="text-[10px] font-bold text-white bg-slate-900 px-2.5 py-1 rounded-lg flex items-center gap-1">
-                <Plus className="w-2.5 h-2.5" />
-                <span>Add to Plan</span>
-              </span>
+            <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px] text-slate-400">
+              <span>Commission applies on completion</span>
+              <span className="font-bold text-slate-700">OyaPlan Attributed</span>
             </div>
           </div>
         </div>
       ),
     },
 
-    // Card 6: Your Emerging Insights
+    // Card 5: Visit Attribution
     {
-      id: "emerging-insights",
-      eyebrow: "06 • AUDIENCE INTELLIGENCE",
-      title: "Confidence-Gated Insights",
-      badge: "Commercially Honest",
+      id: "visit-attribution",
+      eyebrow: "05 • VISIT ATTRIBUTION",
+      title: "Confirm Guest Plan Code",
+      badge: "Verified Ops",
       content: (
         <div className="space-y-3">
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
-            <div className="flex items-center gap-2 text-slate-600">
-              <Lock className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-xs font-bold text-slate-800">Audience Flow Dynamics</span>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono font-bold text-slate-800">OYA-7K4M2P</span>
+              <span className="text-[9px] font-bold text-emerald-800 bg-[#EAFDF3] px-1.5 py-0.5 rounded border border-[#A3F3C6]">
+                Attributed
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-snug">
+              Guest presents plan on arrival. 1-tap confirmation connects planning demand to physical visits.
+            </p>
+            <div className="flex items-center gap-1.5 text-[10px] text-slate-500 pt-1 border-t border-slate-200/60">
+              <CheckCircle2 className="w-3 h-3 text-brand-green" />
+              <span>Confirmed visit intent · Not a payment</span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+
+    // Card 6: Actual Spend Feedback
+    {
+      id: "actual-spend",
+      eyebrow: "06 • SPEND INTELLIGENCE",
+      title: "Actual Spend Feedback",
+      badge: "Closed Loop",
+      content: (
+        <div className="space-y-3">
+          <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EAE4DC] space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-900">Post-Visit Bill Accuracy</span>
+              <span className="text-[10px] font-mono font-bold text-brand-green">100% Match</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-snug">
-              Insights unlock once a venue reaches 5+ verified planning itineraries in a 30-day window.
+              Planners report back that bills matched their budget estimate, eliminating bill shock and building squad loyalty.
             </p>
             <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-              <div className="bg-brand-green h-full w-3/4 rounded-full" />
+              <div className="bg-brand-green h-full w-full rounded-full" />
             </div>
-            <p className="text-[10px] font-mono text-slate-400 text-right">3 of 5 plans logged</p>
           </div>
         </div>
       ),

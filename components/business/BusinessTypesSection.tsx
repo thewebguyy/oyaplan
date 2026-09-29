@@ -52,15 +52,15 @@ export function BusinessTypesSection() {
     <section className="py-20 sm:py-28 bg-white" id="business-types">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
         {/* Section Header */}
-        <div className="max-w-2xl space-y-3">
+        <div className="max-w-3xl space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-            Act II • Built For Your Venue
+            Act II • Broad Lagos Marketplace Supply
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
-            Built for the places Lagosians actually go.
+            Free to list. Built for the places Lagosians go.
           </h2>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Whether you run an intimate chef&apos;s table in Ikoyi or a bustling rooftop lounge on the Mainland, OyaPlan is designed to accurately represent your experience.
+            Hundreds of venues across Lagos can be listed for free. From an intimate chef&apos;s table in Ikoyi to casual beach clubs in Ilashe, OyaPlan supports broad discovery with available data, while our priority partner cohort participates in deeper verification and reservations.
           </p>
         </div>
 
@@ -108,7 +108,7 @@ export function BusinessTypesSection() {
                     href="/business/claim"
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-green hover:underline"
                   >
-                    <span>Claim a {cat.group.toLowerCase()} venue</span>
+                    <span>List a {cat.group.toLowerCase()} venue — Free</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
