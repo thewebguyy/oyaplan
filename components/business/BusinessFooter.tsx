@@ -26,7 +26,7 @@ export function BusinessFooter() {
               </span>
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              The official portal for Lagos hospitality venues to manage prices, menus, and house policies, and turn planning intent into direct reservations.
+              The place for Lagos restaurants, bars, and lounges to share accurate menus, welcome new squads, and accept direct table reservations.
             </p>
             <div className="pt-2">
               <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-widest bg-emerald-950/80 px-2.5 py-1 rounded-md border border-emerald-800">
@@ -53,7 +53,7 @@ export function BusinessFooter() {
               </li>
               <li>
                 <a href="/for-business#marketplace-relationship" className="hover:text-white transition-colors">
-                  Marketplace Relationship
+                  How We Work Together
                 </a>
               </li>
               <li>

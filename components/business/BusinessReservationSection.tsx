@@ -12,8 +12,6 @@ import {
   ShieldCheck,
   Lock,
   Clock,
-  Sparkles,
-  AlertCircle,
 } from "lucide-react";
 
 export function BusinessReservationSection() {
@@ -21,41 +19,41 @@ export function BusinessReservationSection() {
     {
       step: "01",
       icon: Users,
-      title: "A customer plans",
-      subtitle: "Upstream budget calculation",
+      title: "Guests plan ahead",
+      subtitle: "Checking the budget",
       description:
-        "Lagosians use OyaPlan to decide where to go and calculate likely total spend before leaving home — matching menu prices, drinks, and house policies to their squad budget.",
-      badge: "Discovery & Planning",
+        "Lagos squads use OyaPlan to choose where to go and see what they will likely spend before leaving home — checking menu prices, drinks, and house rules so there are no surprises.",
+      badge: "Planning Ahead",
       badgeColor: "text-amber-800 bg-amber-50 border-amber-200",
     },
     {
       step: "02",
       icon: Calendar,
-      title: "They choose to reserve",
-      subtitle: "Reservation request submitted",
+      title: "They request a table",
+      subtitle: "Booking request sent",
       description:
-        "When the squad is ready to lock in their outing, the customer submits a reservation request through OyaPlan detailing date, time, party size, and seating preference.",
+        "When the squad agrees on the spot, the lead sends a reservation request with the date, time, party size, and seating choice.",
       badge: "Reservation Request",
       badgeColor: "text-indigo-800 bg-indigo-50 border-indigo-200",
     },
     {
       step: "03",
       icon: Building2,
-      title: "The venue receives and confirms",
-      subtitle: "Direct deposit collection",
+      title: "Your venue confirms",
+      subtitle: "Direct deposit to you",
       description:
-        "Your venue reviews the request and confirms availability. Any required table deposit is paid directly to your business account. OyaPlan does not hold your money.",
-      badge: "Direct Venue Deposit",
+        "Your team checks availability and accepts the booking. Any required table deposit is paid straight to your venue account. OyaPlan never touches your money.",
+      badge: "Direct Deposit",
       badgeColor: "text-emerald-800 bg-[#EAFDF3] border-[#A3F3C6]",
     },
     {
       step: "04",
       icon: Receipt,
       title: "OyaPlan earns a commission",
-      subtitle: "Attributed commercial outcome",
+      subtitle: "Pay only when booked",
       description:
-        "Once the qualifying reservation is fulfilled, the visit is attributed to OyaPlan. OyaPlan earns a commission for delivering qualified, ready-to-spend guests.",
-      badge: "Qualifying Commission",
+        "When the squad visits your venue, OyaPlan earns a commission for bringing you confirmed customers. No monthly software fees, ever.",
+      badge: "Fair Commission",
       badgeColor: "text-slate-800 bg-slate-100 border-slate-200",
     },
   ];
@@ -69,7 +67,7 @@ export function BusinessReservationSection() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#EAE4DC] text-brand-green shadow-2xs">
             <Calendar className="w-3.5 h-3.5" />
             <span className="text-[11px] font-black uppercase tracking-wider">
-              Act III • The Reservation Model
+              How Table Reservations Work
             </span>
           </div>
 
@@ -79,7 +77,7 @@ export function BusinessReservationSection() {
           </h2>
 
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-            OyaPlan connects upstream planning intent to real-world bookings. We guide customers from calculating spend to requesting a table, while your business keeps total operational control and collects deposits directly.
+            We help guests plan their budget and request a table, while your team stays in full control of availability and collects deposits directly.
           </p>
         </div>
 
@@ -121,7 +119,7 @@ export function BusinessReservationSection() {
 
                 <div className="pt-4 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
                   <Clock className="w-3 h-3 text-slate-400" />
-                  <span>Phase {idx + 1} of 4</span>
+                  <span>Step {idx + 1} of 4</span>
                 </div>
               </div>
             );
@@ -135,11 +133,11 @@ export function BusinessReservationSection() {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-brand-green" />
                 <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                  Two Critical Commitments to Lagos Hospitality Operators
+                  Two Simple Promises to Every Venue Owner
                 </h3>
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
-                Trust is foundational to OyaPlan. We preserve strict boundaries around payments and reservation state to protect both venues and customers.
+              <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
+                We run OyaPlan with straightforward rules so you always know where your money and bookings stand.
               </p>
             </div>
 
@@ -158,11 +156,11 @@ export function BusinessReservationSection() {
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4 text-emerald-800" />
                 <h4 className="text-sm font-bold text-slate-900">
-                  Customers Pay Deposits Directly to Your Venue
+                  Guests Pay Deposits Directly to You
                 </h4>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                OyaPlan is not an escrow service, digital wallet, or payment custodian. Any table commitment fee or reservation deposit required by your policy is transferred directly to your business account by the customer upon confirmation.
+                OyaPlan never holds your money. Any table commitment fee or reservation deposit you require is paid directly into your business bank account or POS by the guest.
               </p>
             </div>
 
@@ -171,11 +169,11 @@ export function BusinessReservationSection() {
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-800" />
                 <h4 className="text-sm font-bold text-slate-900">
-                  Reservation Request ≠ Confirmed Reservation
+                  A Request is Not Confirmed Until You Say Yes
                 </h4>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                We never tell a customer their table is instantly guaranteed unless your venue has confirmed it. A customer initiates a <strong>reservation request</strong>; only upon your venue&apos;s direct confirmation does it become a <strong>confirmed reservation</strong>.
+                We never tell a customer their table is guaranteed until your venue confirms it. A customer sends a <strong>reservation request</strong>; it only becomes a <strong>confirmed reservation</strong> once you accept it.
               </p>
             </div>
           </div>

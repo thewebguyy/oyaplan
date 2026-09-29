@@ -37,10 +37,10 @@ export function BusinessReservationsCard({
                 Reservations &amp; Bookings
               </span>
               <span className="text-gray-300">·</span>
-              <span className="text-xs text-text-muted">Turn Intent Into Table Outings</span>
+              <span className="text-xs text-text-muted">Table Bookings &amp; Deposits</span>
             </div>
             <h2 className="text-lg sm:text-xl font-extrabold text-midnight-lagoon tracking-tight">
-              Reservation Requests &amp; Attributed Bookings
+              Reservation Requests &amp; Bookings
             </h2>
             <p className="text-xs sm:text-sm text-text-muted max-w-xl leading-relaxed">
               When planners are ready to lock in their outing, they submit reservation requests through your listing.
@@ -67,7 +67,7 @@ export function BusinessReservationsCard({
             </div>
           </div>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-[#EAE4DC] text-[11px] font-semibold text-text-muted shrink-0">
-            Commission applies to reservations through OyaPlan
+            Commission only applies to bookings through OyaPlan
           </span>
         </div>
 
@@ -101,7 +101,7 @@ export function BusinessReservationsCard({
                 : 'text-text-muted hover:text-midnight-lagoon hover:bg-gray-100'
             }`}
           >
-            Commercial Terms &amp; Commission
+            How Payments Work
           </button>
         </div>
       </div>
@@ -151,10 +151,10 @@ export function BusinessReservationsCard({
             <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-2">
               <div className="flex items-center gap-2 font-bold text-midnight-lagoon">
                 <CreditCard className="w-4 h-4 text-brand-green" />
-                <span>How OyaPlan Monetization Works</span>
+                <span>How OyaPlan Works With Your Venue</span>
               </div>
               <p className="text-text-muted leading-relaxed">
-                OyaPlan is a free-to-list marketplace. There is zero recurring subscription fee simply to be listed. We monetize when your business gets value: OyaPlan earns an attributed commission on qualifying reservations generated through the platform.
+                Listing your venue is 100% free. There are no monthly fees or software charges. We only earn a commission when customers actually reserve a table through your listing.
               </p>
             </div>
 
@@ -162,14 +162,14 @@ export function BusinessReservationsCard({
               <div className="p-3.5 rounded-xl border border-border-default space-y-1">
                 <span className="font-bold text-midnight-lagoon block">100% Direct Deposits</span>
                 <p className="text-text-muted leading-relaxed text-[11px]">
-                  Customer table deposits are paid directly to your venue bank account or payment terminal. OyaPlan never holds your money in escrow or custody.
+                  Customer table deposits are paid directly into your venue bank account or POS. OyaPlan never holds your money.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-xl border border-border-default space-y-1">
-                <span className="font-bold text-midnight-lagoon block">Attributed Reservations</span>
+                <span className="font-bold text-midnight-lagoon block">Bookings Through OyaPlan</span>
                 <p className="text-text-muted leading-relaxed text-[11px]">
-                  Commission applies only to qualifying reservations and visits initiated through OyaPlan plans and attributed to our marketplace.
+                  Commission only applies to confirmed reservations made by customers through your OyaPlan listing.
                 </p>
               </div>
             </div>

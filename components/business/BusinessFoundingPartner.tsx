@@ -2,25 +2,25 @@
 
 import React from "react";
 import Link from "next/link";
-import { ShieldCheck, ArrowRight, Sparkles, CheckCircle2, MessageSquare } from "lucide-react";
+import { ArrowRight, Sparkles, CheckCircle2, MessageSquare } from "lucide-react";
 
 export function BusinessFoundingPartner() {
   const perks = [
     {
-      title: "Reservation Readiness",
-      desc: "Pilot structured reservation requests with deposits paid directly to your business account.",
+      title: "Table Reservations",
+      desc: "Accept table booking requests with deposits paid directly into your business account.",
     },
     {
-      title: "Deep Pricing & Menu Verification",
-      desc: "Direct concierge line with our team to keep your full menu, bottles, and house policies verified.",
+      title: "Verified Menus & Prices",
+      desc: "Direct WhatsApp contact with our team to keep your full menu, bottles, and house policies accurate.",
     },
     {
-      title: "Demand Feedback Loop",
-      desc: "Understand how Lagos squads evaluate your venue during their upstream planning process.",
+      title: "See What Planners Want",
+      desc: "See how often Lagos squads check your prices and include your venue in weekend plans.",
     },
     {
       title: "Always Free to List",
-      desc: "No setup fees, no software subscriptions. OyaPlan only earns when reservations happen.",
+      desc: "No signup fees, no monthly software bills. OyaPlan only earns when customers actually book a table.",
     },
   ];
 
@@ -33,7 +33,7 @@ export function BusinessFoundingPartner() {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-brand-green">
               <Sparkles className="w-3.5 h-3.5" />
               <span className="text-[11px] font-black uppercase tracking-wider">
-                Priority Partner Cohort
+                Partner Program
               </span>
             </div>
 
@@ -42,7 +42,7 @@ export function BusinessFoundingPartner() {
             </h2>
 
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              We are working directly with an initial cohort of priority Lagos venues for deep verification, rich pricing accuracy, and pilot reservation workflows. For every venue in Lagos, listing on OyaPlan remains completely free.
+              We work closely with partner venues across Lagos to verify menus and accept table reservations. For every venue in Lagos, listing on OyaPlan is completely free.
             </p>
 
             {/* 4 Pillars Grid */}
@@ -73,13 +73,13 @@ export function BusinessFoundingPartner() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Priority%20Partner%20Cohort"
+                href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Team%2C%20I%20would%20like%20to%20learn%20more%20about%20the%20Partner%20Program"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-12 px-6 bg-white hover:bg-slate-50 text-slate-800 border border-[#EAE4DC] text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all tap-feedback"
               >
                 <MessageSquare className="w-4 h-4 text-emerald-600" />
-                <span>Talk to product team on WhatsApp</span>
+                <span>Chat with our team on WhatsApp</span>
               </a>
             </div>
 

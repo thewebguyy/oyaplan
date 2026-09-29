@@ -96,40 +96,40 @@ export function BusinessMarketingHeader() {
   const featureGroups = [
     {
       group: "GET DISCOVERED",
-      desc: "Marketplace presence & fit",
+      desc: "How guests find you",
       items: [
         { name: "Business Profile", desc: "Accurate photos, location, and ambiance details", status: "Available" },
-        { name: "Marketplace Presence", desc: "Show up natively when Lagosians budget and plan", status: "Available" },
-        { name: "Experience & Category Fit", desc: "Vibe tags and audience filters built for real venues", status: "Available" },
+        { name: "Free Listing", desc: "Show up when Lagosians budget and plan outings", status: "Available" },
+        { name: "Vibe & Category Fit", desc: "Audience and occasion tags tailored for real venues", status: "Available" },
       ],
     },
     {
       group: "GET CHOSEN",
-      desc: "Remove decision friction",
+      desc: "Clear prices & rules",
       items: [
         { name: "Menus & Pricing", desc: "Keep dishes, bottles, and minimum spends accurate", status: "Available" },
-        { name: "Cost Transparency", desc: "Taxes, service charges, and corkage stated upfront", status: "Available" },
-        { name: "House Policies", desc: "Clear dress codes, cake fees, and celebration rules", status: "Available" },
-        { name: "Planning Context", desc: "Appear in squad budgets with realistic per-person estimates", status: "Available" },
+        { name: "Price Transparency", desc: "Taxes, service charges, and corkage stated upfront", status: "Available" },
+        { name: "House Rules", desc: "Clear dress codes, cake fees, and celebration rules", status: "Available" },
+        { name: "Budget Accuracy", desc: "Appear in squad budgets with realistic per-person estimates", status: "Available" },
       ],
     },
     {
       group: "GET BOOKED",
-      desc: "Intent into reservations",
+      desc: "Table bookings & deposits",
       items: [
-        { name: "Reservation Requests", desc: "Receive structured booking requests directly from squads", status: "In Development" },
-        { name: "Booking Attribution", desc: "Connect incoming reservations to OyaPlan outing plans", status: "Available" },
-        { name: "Customer Identification", desc: "Verify guest plan codes upon physical arrival", status: "Available" },
+        { name: "Reservation Requests", desc: "Receive table booking requests directly from squads", status: "In Development" },
+        { name: "Direct Deposits", desc: "Guests pay table deposits directly to your venue", status: "Available" },
+        { name: "Guest Check-In", desc: "Verify guest plan codes quickly when they arrive", status: "Available" },
       ],
     },
     {
       group: "LEARN & IMPROVE",
-      desc: "Decision intelligence",
+      desc: "Real spend & feedback",
       items: [
-        { name: "Demand Signals", desc: "Track when Lagosians include you in weekend plans", status: "Available" },
-        { name: "Planning Insights", desc: "Understand group size and intended spend distributions", status: "Available" },
-        { name: "Actual Spend Feedback", desc: "Post-visit verified bill feedback submitted by planners", status: "Available" },
-        { name: "Data Corrections", desc: "Keep venue details accurate with provenance tracking", status: "Available" },
+        { name: "Weekend Interest", desc: "See how many squads add you to their plans", status: "Available" },
+        { name: "Group Trends", desc: "See typical group sizes and budgets for your spot", status: "Available" },
+        { name: "Guest Bill Feedback", desc: "Real post-visit bill feedback from planners", status: "Available" },
+        { name: "Listing Updates", desc: "Keep hours, photos, and policies up to date", status: "Available" },
       ],
     },
   ];

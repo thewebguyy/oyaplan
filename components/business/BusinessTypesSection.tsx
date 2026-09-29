@@ -54,13 +54,13 @@ export function BusinessTypesSection() {
         {/* Section Header */}
         <div className="max-w-3xl space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-            Act II • Broad Lagos Marketplace Supply
+            Venues Across Lagos
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
-            Free to list. Built for the places Lagosians go.
+            Free to list. Built for the places Lagosians love.
           </h2>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Hundreds of venues across Lagos can be listed for free. From an intimate chef&apos;s table in Ikoyi to casual beach clubs in Ilashe, OyaPlan supports broad discovery with available data, while our priority partner cohort participates in deeper verification and reservations.
+            From an intimate dinner spot in Ikoyi to beach clubs in Ilashe, venues across Lagos can list for free. Guests can find your spot and understand typical spend, while partner venues work directly with us to keep menus verified and accept table bookings.
           </p>
         </div>
 

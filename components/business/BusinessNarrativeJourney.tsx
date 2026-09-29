@@ -8,32 +8,32 @@ export function BusinessNarrativeJourney() {
     {
       number: "01",
       icon: Compass,
-      title: "Get Discovered",
-      description: "Your business appears natively where Lagosians are actively deciding where to go and calculating their weekend budget.",
+      title: "Appear Where People Decide",
+      description: "Your venue shows up right when Lagosians are budgeting and planning their weekend outings.",
     },
     {
       number: "02",
       icon: Edit3,
-      title: "Help Them Decide",
-      description: "Accurate menus, pricing, policies, hours, and experience information eliminate hesitation and build total budget confidence.",
+      title: "Clear Prices, Zero Guesswork",
+      description: "Accurate menus, drink prices, and house rules help guests know what to expect before they leave home.",
     },
     {
       number: "03",
       icon: Users,
-      title: "Get The Reservation",
-      description: "When customers are ready, OyaPlan facilitates structured reservation requests directly to your business where supported.",
+      title: "Get Table Bookings",
+      description: "When a squad is ready to lock in their plans, they send a table reservation request directly to your team.",
     },
     {
       number: "04",
       icon: Store,
-      title: "Serve The Customer",
-      description: "The customer pays any required table deposit directly to your business account. OyaPlan attributes the booking without holding funds.",
+      title: "Host & Keep Your Deposit",
+      description: "Any table deposit is paid straight to your venue account. You welcome your guests and run service your way.",
     },
     {
       number: "05",
       icon: TrendingUp,
-      title: "Learn & Improve",
-      description: "Planning volume and post-visit actual spend feedback help OyaPlan improve the accuracy and conversion of future decisions.",
+      title: "Real Feedback Builds Trust",
+      description: "Guests confirm their bills after the outing, making your venue one of the most trusted spots on OyaPlan.",
     },
   ];
 
@@ -44,13 +44,13 @@ export function BusinessNarrativeJourney() {
         {/* Section Header */}
         <div className="max-w-2xl space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
-            Act V • The Complete Marketplace Loop
+            The Outing Journey
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            From first intent to confirmed reservation.
+            From picking a spot to sitting at your table.
           </h2>
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-            Planning is where spending happens before people even leave the house. Here is how your accurate data transforms into qualified visits and reservations.
+            Guests decide what to spend long before they leave home. When your prices and rules are accurate, squads pick your venue with confidence.
           </p>
         </div>
 

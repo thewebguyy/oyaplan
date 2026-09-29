@@ -10,55 +10,54 @@ import {
   CheckCircle2,
   Receipt,
   ShieldCheck,
-  Compass,
   CreditCard,
 } from "lucide-react";
 
 export function BusinessMarketplaceRelationship() {
   const roles = [
     {
-      actor: "CUSTOMERS",
-      badge: "The Spenders",
+      actor: "GUESTS & SQUADS",
+      badge: "People Going Out",
       icon: Users,
       color: "border-indigo-200 bg-indigo-50/50 text-indigo-900",
       accent: "text-indigo-700",
-      headline: "Use OyaPlan to plan outings without bill shock.",
+      headline: "Find great spots that fit their budget and vibe.",
       points: [
-        "Discover real-world Lagos venues matching their vibe and budget",
-        "Compare accurate prices, corkage fees, and house policies",
-        "Understand likely total spend before leaving home",
-        "Assemble squad itineraries and share links on WhatsApp",
-        "Submit reservation requests when ready to lock in their spot",
+        "Discover real Lagos spots with verified prices and menus",
+        "Know what the bill will look like before leaving home",
+        "Agree on food, drinks, and corkage rules in squad group chats",
+        "Send a reservation request when they are ready to book",
+        "Pay required table deposits directly to the venue",
       ],
     },
     {
-      actor: "BUSINESSES",
-      badge: "The Hosts",
+      actor: "YOUR VENUE",
+      badge: "Host & Management",
       icon: Store,
       color: "border-emerald-200 bg-[#EAFDF3] text-emerald-950",
       accent: "text-brand-green",
-      headline: "Be there when customers decide where to spend.",
+      headline: "Welcome guests who are ready to spend.",
       points: [
-        "Maintain a 100% free public marketplace listing",
-        "Publish accurate menus, signature dishes, bottles, and hours",
-        "Capture planning demand from groups budgeting their weekend",
-        "Receive structured reservation requests from ready-to-spend squads",
-        "Collect required table deposits directly into your business account",
+        "List your venue 100% free with complete control of your details",
+        "Publish your real menus, signature bottles, and kitchen hours",
+        "Receive table booking requests from groups planning ahead",
+        "Collect table deposits straight into your own bank account",
+        "Confirm bookings on your own terms — you stay in control",
       ],
     },
     {
       actor: "OYAPLAN",
-      badge: "The Marketplace Platform",
+      badge: "Discovery & Planning",
       icon: Sparkles,
       color: "border-slate-800 bg-[#010528] text-white",
       accent: "text-emerald-400",
-      headline: "Delivers decision confidence and qualified demand.",
+      headline: "Make planning easy and bring you real customers.",
       points: [
-        "Powers venue discovery, group coordination, and cost intelligence",
-        "Provides verified reservation infrastructure and visit attribution",
-        "Never holds customer deposits or acts as payment custodian",
-        "Earns an honest commission on qualifying platform reservations",
-        "Feeds post-outing spend feedback back into data accuracy",
+        "Helps groups agree on where to go and what they will spend",
+        "Sends structured table booking requests directly to your team",
+        "Never touches your table deposits — guests pay you directly",
+        "Only earns a commission when a customer reserves through OyaPlan",
+        "Collects honest bill feedback so squad budget estimates stay accurate",
       ],
     },
   ];
@@ -70,14 +69,14 @@ export function BusinessMarketplaceRelationship() {
         {/* Section Header */}
         <div className="max-w-3xl space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-green">
-            Act IV • The Two-Sided Marketplace
+            How It Works Together
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.1]">
-            Clear roles. Honest economics. <br className="hidden sm:inline" />
-            <span className="text-brand-green">Zero ambiguity.</span>
+            Simple rules. Direct deposits. <br className="hidden sm:inline" />
+            <span className="text-brand-green">Everyone wins.</span>
           </h2>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            Marketplaces thrive when every participant understands what they get and how the platform earns. Here is exactly how customers, businesses, and OyaPlan work together.
+            Guests find places they love, you get confirmed bookings and keep the deposit, and OyaPlan only makes money when you get real customers.
           </p>
         </div>
 
@@ -125,26 +124,26 @@ export function BusinessMarketplaceRelationship() {
                 </div>
 
                 <div className="pt-6">
-                  {role.actor === "BUSINESSES" ? (
+                  {role.actor === "YOUR VENUE" ? (
                     <Link
                       href="/business/claim"
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-green hover:underline"
                     >
-                      <span>List your business for free</span>
+                      <span>List your venue for free</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
-                  ) : role.actor === "CUSTOMERS" ? (
+                  ) : role.actor === "GUESTS & SQUADS" ? (
                     <Link
                       href="/"
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-brand-green hover:underline"
                     >
-                      <span>Explore consumer planner</span>
+                      <span>See what planners see</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   ) : (
                     <div className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
                       <Receipt className="w-3.5 h-3.5" />
-                      <span>Monetizes on qualifying reservations</span>
+                      <span>We only earn when you get bookings</span>
                     </div>
                   )}
                 </div>

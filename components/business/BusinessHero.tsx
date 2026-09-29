@@ -31,7 +31,7 @@ export function BusinessHero() {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-brand-green">
               <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
               <span className="text-[11px] font-black uppercase tracking-wider">
-                Lagos Decision &amp; Reservation Layer
+                For Lagos Restaurants, Bars &amp; Lounges
               </span>
             </div>
 
@@ -69,7 +69,7 @@ export function BusinessHero() {
                   href="/"
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-green transition-colors pt-1"
                 >
-                  <span>Explore the marketplace as a customer</span>
+                  <span>See what customers see on OyaPlan</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -83,11 +83,11 @@ export function BusinessHero() {
               </div>
               <div>
                 <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">100%</p>
-                <p className="text-xs text-slate-500 mt-0.5">Deposits direct to venue</p>
+                <p className="text-xs text-slate-500 mt-0.5">Deposits direct to you</p>
               </div>
               <div>
-                <p className="text-xl sm:text-2xl font-black text-emerald-700 tracking-tight">Attributed</p>
-                <p className="text-xs text-slate-500 mt-0.5">Commission on reservations</p>
+                <p className="text-xl sm:text-2xl font-black text-emerald-700 tracking-tight">₦0 Monthly</p>
+                <p className="text-xs text-slate-500 mt-0.5">Pay only when booked</p>
               </div>
             </div>
           </div>
@@ -105,7 +105,7 @@ export function BusinessHero() {
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-brand-green" />
                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-600">
-                      Step 1 • Consumer Outing Plan
+                      Step 1 • Squad Outing Plan
                     </span>
                   </div>
                   <span className="text-[10px] font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-[#EAE4DC]">
@@ -146,7 +146,7 @@ export function BusinessHero() {
               <div className="flex items-center justify-center -my-1 relative z-10">
                 <div className="px-3.5 py-1 rounded-full bg-slate-900 text-white text-[10px] font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5 border border-slate-700">
                   <Sparkles className="w-3 h-3 text-emerald-400" />
-                  <span>Planning Intent Becomes A Reservation Request</span>
+                  <span>Guests Decide &amp; Request A Table</span>
                   <ChevronRight className="w-3 h-3 text-slate-400" />
                 </div>
               </div>
@@ -158,7 +158,7 @@ export function BusinessHero() {
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-600">
-                      Step 2 • Business Portal Incoming Request
+                      Step 2 • Your Venue Receives The Request
                     </span>
                   </div>
                   <span className="text-[10px] font-bold text-emerald-800 bg-[#EAFDF3] px-2.5 py-0.5 rounded-full border border-[#A3F3C6]">
@@ -173,7 +173,7 @@ export function BusinessHero() {
                       <p className="text-xs text-slate-500">Friday, Oct 3 • 8:00 PM • Dining Room</p>
                     </div>
                     <span className="text-[10px] font-mono font-bold text-brand-green bg-[#EAFDF3] px-2 py-0.5 rounded-md border border-[#A3F3C6]">
-                      Attributed via OyaPlan
+                      Booked on OyaPlan
                     </span>
                   </div>
 

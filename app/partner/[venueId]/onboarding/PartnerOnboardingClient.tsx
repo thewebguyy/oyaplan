@@ -308,17 +308,17 @@ export function PartnerOnboardingClient({
           </p>
         </div>
 
-        {/* Transparent Commercial Partnership Card */}
+        {/* Partnership & Free Listing Notice */}
         <div className="mb-6 p-4 sm:p-5 bg-white border border-[#EAE4DC] rounded-2xl shadow-xs space-y-2">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold text-[#008751] uppercase tracking-wider">
-              OyaPlan Marketplace Agreement
+              How OyaPlan Works With Your Venue
             </span>
             <span className="text-stone-300">·</span>
-            <span className="text-xs text-stone-500 font-semibold">Free Listing Model</span>
+            <span className="text-xs text-stone-500 font-semibold">Free Listing</span>
           </div>
           <p className="text-xs text-stone-700 leading-relaxed">
-            <strong>Listing your business on OyaPlan is completely free.</strong> Keep your pricing and policies accurate so customers can discover and plan outings around your business. If you accept table reservations, customers can request bookings — any required deposits are paid <strong>directly to your business</strong>. OyaPlan earns an attributed commission on qualifying reservations generated through the platform.
+            <strong>Listing your venue on OyaPlan is completely free.</strong> Just keep your menu prices, opening hours, and house rules up to date so customers know what to expect. If you take reservations, guests pay deposits <strong>directly to your venue</strong>. OyaPlan only earns a commission when a customer books through your listing.
           </p>
         </div>
 

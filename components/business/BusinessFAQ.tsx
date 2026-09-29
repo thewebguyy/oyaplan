@@ -51,13 +51,13 @@ export function BusinessFAQ() {
         {/* Header */}
         <div className="text-center space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-[#008751]">
-            Act VI • Common Questions
+            Common Questions
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-midnight-lagoon tracking-tight">
             Frequently Asked Questions
           </h2>
           <p className="text-sm text-text-secondary">
-            Transparent answers about how OyaPlan works with Lagos hospitality operators.
+            Everything you need to know about listing your venue and taking reservations on OyaPlan.
           </p>
         </div>
 

@@ -20,11 +20,11 @@ import {
 
 export function BusinessMarquee() {
   const cards = [
-    // Card 1: Marketplace Presence
+    // Card 1: Free Listing
     {
       id: "marketplace-presence",
-      eyebrow: "01 • MARKETPLACE PRESENCE",
-      title: "Consumer Discovery Card",
+      eyebrow: "01 • FREE LISTING",
+      title: "How Guests Find You",
       badge: "Free Listing",
       content: (
         <div className="space-y-3">
@@ -53,9 +53,9 @@ export function BusinessMarquee() {
     // Card 2: Live Pricing & Menus
     {
       id: "pricing-menu",
-      eyebrow: "02 • MENUS & PRICING",
-      title: "Live Menu Accuracy",
-      badge: "100% Up to Date",
+      eyebrow: "02 • MENUS & PRICES",
+      title: "Clear Prices Upfront",
+      badge: "Always Accurate",
       content: (
         <div className="space-y-3">
           <div className="flex items-center justify-between text-[11px]">
@@ -87,9 +87,9 @@ export function BusinessMarquee() {
     // Card 3: Planning Demand
     {
       id: "demand-signals",
-      eyebrow: "03 • PLANNING DEMAND",
-      title: "Active Outing Planning",
-      badge: "Real Intent",
+      eyebrow: "03 • WEEKEND PLANS",
+      title: "Squads Planning Outings",
+      badge: "Real Outings",
       content: (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
@@ -120,7 +120,7 @@ export function BusinessMarquee() {
     {
       id: "reservation-requests",
       eyebrow: "04 • RESERVATIONS",
-      title: "Incoming Reservation Requests",
+      title: "Booking Requests &amp; Deposits",
       badge: "Direct Deposit",
       content: (
         <div className="space-y-2.5">
@@ -128,15 +128,15 @@ export function BusinessMarquee() {
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-slate-900">4 Guests · Friday 8:00 PM</span>
               <span className="text-[9px] font-bold text-brand-green bg-[#EAFDF3] px-1.5 py-0.5 rounded">
-                Pending Venue
+                Pending Your Review
               </span>
             </div>
             <p className="text-[11px] text-slate-500 leading-snug">
-              Deposit required: ₦20,000 · Paid directly to venue account.
+              Deposit required: ₦20,000 · Paid directly to your venue account.
             </p>
             <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[10px] text-slate-400">
-              <span>Commission applies on completion</span>
-              <span className="font-bold text-slate-700">OyaPlan Attributed</span>
+              <span>Pay only when booked</span>
+              <span className="font-bold text-slate-700">Booked via OyaPlan</span>
             </div>
           </div>
         </div>
@@ -146,24 +146,24 @@ export function BusinessMarquee() {
     // Card 5: Visit Attribution
     {
       id: "visit-attribution",
-      eyebrow: "05 • VISIT ATTRIBUTION",
-      title: "Confirm Guest Plan Code",
-      badge: "Verified Ops",
+      eyebrow: "05 • GUEST ARRIVAL",
+      title: "Simple Squad Check-In",
+      badge: "Plan Code",
       content: (
         <div className="space-y-3">
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-mono font-bold text-slate-800">OYA-7K4M2P</span>
               <span className="text-[9px] font-bold text-emerald-800 bg-[#EAFDF3] px-1.5 py-0.5 rounded border border-[#A3F3C6]">
-                Attributed
+                Guest Confirmed
               </span>
             </div>
             <p className="text-[11px] text-slate-600 leading-snug">
-              Guest presents plan on arrival. 1-tap confirmation connects planning demand to physical visits.
+              Guests show their plan code when they arrive so your team can verify the booking quickly.
             </p>
             <div className="flex items-center gap-1.5 text-[10px] text-slate-500 pt-1 border-t border-slate-200/60">
               <CheckCircle2 className="w-3 h-3 text-brand-green" />
-              <span>Confirmed visit intent · Not a payment</span>
+              <span>Table visit verified · Not a payment</span>
             </div>
           </div>
         </div>
@@ -173,9 +173,9 @@ export function BusinessMarquee() {
     // Card 6: Actual Spend Feedback
     {
       id: "actual-spend",
-      eyebrow: "06 • SPEND INTELLIGENCE",
-      title: "Actual Spend Feedback",
-      badge: "Closed Loop",
+      eyebrow: "06 • REAL BILLS",
+      title: "What Guests Actually Spent",
+      badge: "Real Receipts",
       content: (
         <div className="space-y-3">
           <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EAE4DC] space-y-2">
@@ -184,7 +184,7 @@ export function BusinessMarquee() {
               <span className="text-[10px] font-mono font-bold text-brand-green">100% Match</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-snug">
-              Planners report back that bills matched their budget estimate, eliminating bill shock and building squad loyalty.
+              Squads confirm that bills matched the menu prices on OyaPlan, building repeat trust for your venue.
             </p>
             <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
               <div className="bg-brand-green h-full w-full rounded-full" />

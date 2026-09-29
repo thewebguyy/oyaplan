@@ -11,13 +11,13 @@ export function BusinessProductDeepDive() {
         {/* Section Header */}
         <div className="max-w-2xl space-y-3">
           <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-            Act III • Product Deep Dive
+            What You Control
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
-            Take friction out of the customer&apos;s decision.
+            No surprises for your guests.
           </h2>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            When planners can&apos;t find accurate prices, corkage policies, or kitchen hours, they hesitate or choose somewhere else. OyaPlan gives you precise control over every detail.
+            When guests don&apos;t know your prices, corkage fees, or opening hours, they go somewhere else. OyaPlan lets you set the record straight so customers arrive ready to spend.
           </p>
         </div>
 
