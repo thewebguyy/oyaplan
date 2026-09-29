@@ -95,39 +95,41 @@ export function BusinessMarketingHeader() {
 
   const featureGroups = [
     {
-      group: "MANAGE",
-      desc: "Total control of your profile",
+      group: "GET DISCOVERED",
+      desc: "Marketplace presence & fit",
       items: [
-        { name: "Venue Profile", desc: "Accurate photos, location, and ambiance details", status: "Available" },
-        { name: "Live Menus & Pricing", desc: "Keep dishes, bottles, and minimum spends accurate", status: "Available" },
-        { name: "Operating Hours", desc: "Regular schedules and kitchen last-call times", status: "Available" },
+        { name: "Business Profile", desc: "Accurate photos, location, and ambiance details", status: "Available" },
+        { name: "Marketplace Presence", desc: "Show up natively when Lagosians budget and plan", status: "Available" },
+        { name: "Experience & Category Fit", desc: "Vibe tags and audience filters built for real venues", status: "Available" },
       ],
     },
     {
-      group: "INFORM",
-      desc: "Prevent customer friction",
+      group: "GET CHOSEN",
+      desc: "Remove decision friction",
       items: [
-        { name: "Venue Policies", desc: "Corkage fees, dress codes, and group guidelines", status: "Available" },
-        { name: "Special Updates", desc: "Holiday hours, private closures, and event notices", status: "Available" },
-        { name: "Freshness Badges", desc: "Signal recent menu and pricing verification", status: "Available" },
+        { name: "Menus & Pricing", desc: "Keep dishes, bottles, and minimum spends accurate", status: "Available" },
+        { name: "Cost Transparency", desc: "Taxes, service charges, and corkage stated upfront", status: "Available" },
+        { name: "House Policies", desc: "Clear dress codes, cake fees, and celebration rules", status: "Available" },
+        { name: "Planning Context", desc: "Appear in squad budgets with realistic per-person estimates", status: "Available" },
       ],
     },
     {
-      group: "UNDERSTAND",
-      desc: "Lagos planning signals",
+      group: "GET BOOKED",
+      desc: "Intent into reservations",
       items: [
-        { name: "Planning Activity", desc: "Track when Lagosians include you in weekend plans", status: "Available" },
-        { name: "Visit Signals", desc: "Understand group size and intended spend levels", status: "Available" },
-        { name: "Demand Intelligence", desc: "Audience insights once confidence threshold is met", status: "Coming Soon" },
+        { name: "Reservation Requests", desc: "Receive structured booking requests directly from squads", status: "In Development" },
+        { name: "Booking Attribution", desc: "Connect incoming reservations to OyaPlan outing plans", status: "Available" },
+        { name: "Customer Identification", desc: "Verify guest plan codes upon physical arrival", status: "Available" },
       ],
     },
     {
-      group: "GROW",
-      desc: "Marketplace presence",
+      group: "LEARN & IMPROVE",
+      desc: "Decision intelligence",
       items: [
-        { name: "Marketplace Discovery", desc: "Show up natively when people budget and plan", status: "Available" },
-        { name: "Founding Partner Cohort", desc: "Direct concierge support and priority placement", status: "Available" },
-        { name: "Direct Inquiries", desc: "Table and celebration inquiries via WhatsApp", status: "Coming Soon" },
+        { name: "Demand Signals", desc: "Track when Lagosians include you in weekend plans", status: "Available" },
+        { name: "Planning Insights", desc: "Understand group size and intended spend distributions", status: "Available" },
+        { name: "Actual Spend Feedback", desc: "Post-visit verified bill feedback submitted by planners", status: "Available" },
+        { name: "Data Corrections", desc: "Keep venue details accurate with provenance tracking", status: "Available" },
       ],
     },
   ];
@@ -208,12 +210,12 @@ export function BusinessMarketingHeader() {
             <ArrowUpRight className="w-3.5 h-3.5 text-brand-green" />
           </Link>
 
-          {/* Business Sign Up CTA */}
+          {/* Business Get Started CTA */}
           <Link
             href="/business/claim"
             className="h-9 sm:h-10 px-4 sm:px-5 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all shadow-xs tap-feedback cursor-pointer"
           >
-            <span>Sign Up</span>
+            <span>Get Started</span>
           </Link>
 
           {/* Desktop Utility Menu Trigger */}
