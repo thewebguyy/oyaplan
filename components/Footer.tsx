@@ -104,17 +104,17 @@ export default function Footer() {
             <h3 className="font-semibold text-white tracking-wide mb-6">Community</h3>
             <ul className="flex flex-col gap-4">
               <li>
-                <Link href="/suggest-a-spot" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
+                <Link href="/suggest-a-spot" className="text-sm text-white/60 hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5">
                   <span>Suggest a Spot</span>
                 </Link>
               </li>
               <li>
-                <Link href="/explore" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/explore" className="text-sm text-white/60 hover:text-[#F9E828] hover:translate-x-1 transition-all inline-block">
                   Lagos Spot Catalog
                 </Link>
               </li>
               <li>
-                <Link href="/feedback" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/feedback" className="text-sm text-white/60 hover:text-[#F9E828] hover:translate-x-1 transition-all inline-block">
                   Give Beta Feedback
                 </Link>
               </li>
@@ -133,9 +133,6 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} OyaPlan Technologies Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/for-business" className="text-sm text-white/40 hover:text-white transition-colors">
-              For Venues
-            </Link>
             <Link href="/privacy" className="text-sm text-white/40 hover:text-white transition-colors">
               Privacy
             </Link>

@@ -290,18 +290,6 @@ export default function PlannerAuthForm() {
           )}
         </div>
 
-        {/* World Switch Notice */}
-        <div className="mt-6 text-center">
-          <p className="text-xs text-text-secondary">
-            Are you a venue operator?{" "}
-            <Link
-              href={`/login/business${returnTo && returnTo !== "/" ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
-              className="font-bold text-[#008751] hover:underline"
-            >
-              Sign in to Business Portal →
-            </Link>
-          </p>
-        </div>
       </div>
 
       <footer className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 border-t border-[#EAE4DC] flex items-center justify-between text-xs text-text-muted">

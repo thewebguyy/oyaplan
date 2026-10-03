@@ -62,7 +62,7 @@ export function PublicVenueClient({
       areaSlug: areaSlug,
       areaName: areaName,
       category: venue.category || "restaurant",
-      pricePerPerson: venue.derived_typical_cost || 15000,
+      pricePerPerson: venue.derived_typical_cost > 0 ? venue.derived_typical_cost : 0,
       imageUrl: venue.cover_url || (photos.length > 0 ? photos[0].url : undefined),
       coverUrl: venue.cover_url,
       vibeTags: venue.vibe_tags || ["Chill"],

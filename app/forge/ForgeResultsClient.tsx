@@ -318,21 +318,21 @@ export default function ForgeResultsClient({
     return (
       <div className="max-w-md mx-auto space-y-8 py-10 px-4 animate-slide-up">
         <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 sm:p-8 shadow-lagoon text-center space-y-6">
-          <div className="w-16 h-16 bg-[#008751]/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
-            <MapPin className="w-8 h-8 text-[#008751]" />
+          <div className="w-16 h-16 bg-[#111111] rounded-full flex items-center justify-center mx-auto shadow-xs">
+            <MapPin className="w-8 h-8 text-[#F9E828]" />
           </div>
           
           <div className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight">
               Where are you starting from?
             </h2>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F3F4F6] rounded-full text-xs text-text-secondary font-bold">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F6F6F2] border border-[#E5E5DE] rounded-full text-xs text-[#111111] font-bold">
               <span>You picked:</span>
-              <span className="text-midnight-lagoon">{getVibeLabel(forgeInput.vibe)}</span>
+              <span className="text-[#111111]">{getVibeLabel(forgeInput.vibe)}</span>
               <span className="text-gray-300">•</span>
-              <span className="text-[#008751]">₦{forgeInput.budget.toLocaleString()}</span>
+              <span className="text-[#111111] font-mono">₦{forgeInput.budget.toLocaleString()}</span>
               <span className="text-gray-300">•</span>
-              <span className="text-midnight-lagoon">{forgeInput.squadSize === 1 ? "Just me" : `${forgeInput.squadSize} people`}</span>
+              <span className="text-[#111111]">{forgeInput.squadSize === 1 ? "Just me" : `${forgeInput.squadSize} people`}</span>
             </div>
             <p className="text-xs text-text-secondary pt-1">
               Select your starting area to calculate travel time, transport costs, and get accurate local recommendations.
@@ -350,16 +350,16 @@ export default function ForgeResultsClient({
               type="button"
               onClick={handleUseCurrentLocation}
               disabled={isLocating || isPending}
-              className="w-full h-12 bg-[#008751] hover:brightness-90 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm disabled:opacity-50"
+              className="w-full h-12 bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] font-black uppercase tracking-wider text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm disabled:opacity-50"
             >
               {isLocating || isPending ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#F9E828]" />
                   <span>Locating...</span>
                 </>
               ) : (
                 <>
-                  <MapPin className="w-4 h-4" />
+                  <MapPin className="w-4 h-4 text-[#F9E828]" />
                   <span>Use My Location</span>
                 </>
               )}
@@ -379,7 +379,7 @@ export default function ForgeResultsClient({
                 type="button"
                 onClick={() => applyAreaAndReload(area.id)}
                 disabled={isPending}
-                className="px-3.5 py-2 bg-[#F3F4F6] text-[#1A1A1A] hover:bg-[#D1E7DB] hover:text-[#008751] rounded-full text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                className="px-3.5 py-2 bg-[#F6F6F2] text-[#111111] hover:bg-[#111111] hover:text-[#F9E828] rounded-full text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
               >
                 {area.name}
               </button>
@@ -522,7 +522,7 @@ export default function ForgeResultsClient({
             <button
               onClick={handleApplyInlineAdjust}
               disabled={isPending}
-              className="px-5 h-9 bg-[#008751] hover:bg-[#006b41] text-white text-xs font-bold uppercase rounded-lg flex items-center gap-1 transition-colors"
+              className="px-5 h-9 bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] text-xs font-black uppercase rounded-lg flex items-center gap-1 transition-colors"
             >
               {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
               <span>Update Plan</span>
@@ -551,12 +551,12 @@ export default function ForgeResultsClient({
           )}
 
           {evaluations[0].plan.explanation?.reason === "semantic_classification_missing" && (
-            <div className="bg-trust-warning-15 border border-trust-warning text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
+            <div className="bg-[#F6F6F2] border border-[#E5E5DE] text-text-primary p-5 rounded-2xl mb-8 flex items-start gap-4">
               <div className="mt-0.5">
-                <AlertCircle className="w-5 h-5 text-brand-green" />
+                <AlertCircle className="w-5 h-5 text-[#111111]" />
               </div>
               <div className="space-y-1">
-                <h3 className="type-label">We haven&apos;t classified enough <span className="lowercase">{forgeInput.vibe}</span> venues yet.</h3>
+                <h3 className="type-label font-bold text-[#111111]">We haven&apos;t classified enough <span className="lowercase">{forgeInput.vibe}</span> venues yet.</h3>
                 <p className="type-caption text-text-secondary">Here are the best places within your budget while we continue verifying venue personalities.</p>
               </div>
             </div>
@@ -653,15 +653,15 @@ export default function ForgeResultsClient({
                       key={idx}
                       href={getRecoveryUrl(sug)}
                       onClick={() => handleAcceptRecovery(sug)}
-                      className="w-full p-4 rounded-[16px] border border-border-default/80 hover:border-brand-green bg-[#FAFAF8] hover:bg-white transition-[colors,border-color,box-shadow] duration-200 shadow-xs flex items-center justify-between group cursor-pointer"
+                      className="w-full p-4 rounded-[16px] border border-[#E5E5DE] hover:border-[#111111] bg-white transition-[colors,border-color,box-shadow] duration-200 shadow-xs flex items-center justify-between group cursor-pointer"
                     >
                       <div className="flex items-center gap-3 pr-2">
                         <span className="text-lg select-none">💡</span>
-                        <span className="type-body font-semibold text-text-primary text-xs sm:text-sm">
+                        <span className="type-body font-semibold text-[#111111] text-xs sm:text-sm">
                           {message}
                         </span>
                       </div>
-                      <span className="text-text-muted group-hover:text-brand-green transition-colors font-bold text-lg select-none">→</span>
+                      <span className="text-text-muted group-hover:text-[#111111] transition-colors font-bold text-lg select-none">→</span>
                     </Link>
                   );
                 })}
@@ -679,8 +679,8 @@ export default function ForgeResultsClient({
                   <div key={spot.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 bg-surface-grey border border-border-default rounded-[16px] gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="type-subheading text-text-primary">{spot.name}</span>
-                        <div className="bg-brand-green-5 text-brand-green px-2 py-0.5 rounded-[4px] text-[10px] font-[700] uppercase tracking-tighter">
+                        <span className="type-subheading text-text-primary font-bold">{spot.name}</span>
+                        <div className="bg-[#111111] text-[#F9E828] px-2 py-0.5 rounded-[4px] text-[10px] font-mono font-bold uppercase tracking-wider">
                           {spot.category}
                         </div>
                       </div>
@@ -706,13 +706,13 @@ export default function ForgeResultsClient({
       {/* Separate Section: Check Out Other Locations */}
       {adjacentEvaluations && adjacentEvaluations.length > 0 && (
         <div className="pt-8 border-t border-border-default space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-white border border-border-default rounded-[20px] shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-white border border-[#E5E5DE] rounded-[20px] shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center font-bold text-lg shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#111111] text-[#F9E828] flex items-center justify-center font-bold text-lg shrink-0">
                 🚗
               </div>
               <div>
-                <h3 className="type-label text-midnight-lagoon font-black text-base">Check Out Other Locations</h3>
+                <h3 className="type-label text-[#111111] font-black text-base">Check Out Other Locations</h3>
                 <p className="type-caption text-text-muted">
                   {adjacentEvaluations.length} option{adjacentEvaluations.length > 1 ? "s" : ""} in nearby areas with matching vibe & budget fit
                 </p>
@@ -738,34 +738,34 @@ export default function ForgeResultsClient({
                 return (
                   <div 
                     key={spot.id} 
-                    className="bg-white border border-border-default hover:border-brand-green rounded-[20px] p-6 shadow-sm space-y-4 transition-all flex flex-col justify-between"
+                    className="bg-white border border-[#E5E5DE] hover:border-[#111111] rounded-[20px] p-6 shadow-sm space-y-4 transition-all flex flex-col justify-between"
                   >
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <span className="inline-block px-2.5 py-0.5 bg-brand-green/10 text-brand-green rounded-md type-caption font-black uppercase text-[10px] tracking-wider mb-1.5">
+                          <span className="inline-block px-2.5 py-0.5 bg-[#111111] text-[#F9E828] rounded-md font-mono font-bold uppercase text-[10px] tracking-wider mb-1.5">
                             {spot.category} • {areaName}
                           </span>
                           <h4 className="type-subheading text-text-primary text-lg font-bold">{spot.name}</h4>
                           <p className="type-caption text-text-muted mt-0.5">{spot.address}</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <span className="type-label text-brand-green font-black text-lg block">
+                          <span className="font-mono font-black text-[#111111] text-lg block">
                             ₦{plan.totalCost.toLocaleString()}
                           </span>
-                          <span className="type-caption text-text-muted text-[11px] block">total budget</span>
+                          <span className="text-[10px] text-text-muted font-mono block">total budget</span>
                         </div>
                       </div>
 
                       {/* Travel Info Badge */}
-                      <div className="p-3 bg-[#FAFAF8] border border-border-default rounded-xl flex items-center gap-2 type-caption text-text-secondary font-semibold">
-                        <MapPin className="w-4 h-4 text-brand-green shrink-0" />
+                      <div className="p-3 bg-[#F6F6F2] border border-[#E5E5DE] rounded-xl flex items-center gap-2 type-caption text-[#111111] font-semibold">
+                        <MapPin className="w-4 h-4 text-[#111111] shrink-0" />
                         <span>{travelLabel}</span>
                       </div>
                     </div>
 
                     {/* Cost Breakdown & CTA */}
-                    <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2 type-caption text-text-muted">
+                    <div className="pt-3 border-t border-[#E5E5DE] flex items-center justify-between gap-2 font-mono text-xs text-text-muted">
                       <div className="text-[11px] font-medium">
                         <span>Venue: ₦{plan.foodCost.toLocaleString()}</span>
                         <span className="mx-1">•</span>
@@ -776,7 +776,7 @@ export default function ForgeResultsClient({
                         variant="outline" 
                         disabled={loadingPlanId === spot.id}
                         onClick={(e) => handleViewAdjacentPlan(e, evalItem)}
-                        className="h-8 px-3 text-xs font-bold rounded-lg border-brand-green text-brand-green hover:bg-brand-green/10 flex items-center gap-1.5 cursor-pointer"
+                        className="h-8 px-3 text-xs font-bold rounded-lg border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9E828] flex items-center gap-1.5 cursor-pointer"
                       >
                         {loadingPlanId === spot.id && (
                           <Loader2 className="w-3 h-3 animate-spin mr-1" />
@@ -809,7 +809,7 @@ export default function ForgeResultsClient({
               </Button>
             </Link>
             <Button 
-              className="flex-1 bg-brand-green text-white type-label h-12 rounded-[12px] border-none tap-feedback shadow-lg shadow-brand-green/10"
+              className="flex-1 bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] type-label h-12 rounded-[12px] border-none tap-feedback shadow-sm"
               onClick={() => router.refresh()}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
@@ -904,7 +904,7 @@ function SpotSuggestionForm({ currentArea }: { currentArea: string }) {
         <div className="flex items-center gap-3">
           <Button 
             type="submit" 
-            className="bg-brand-green hover:bg-brand-green-70 text-white type-label h-10 px-6 rounded-[8px] tap-feedback shadow-none border-none flex items-center gap-2"
+            className="bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] type-label h-10 px-6 rounded-[8px] tap-feedback shadow-none border-none flex items-center gap-2"
           >
             Suggest spot
           </Button>

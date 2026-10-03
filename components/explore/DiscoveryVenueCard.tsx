@@ -8,6 +8,7 @@ import { VenueImage } from "@/components/ui/VenueImage";
 import { TrustBadge } from "@/components/ui/trust-badge";
 import { deriveTrustIndicator, getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+import { knownPerPerson, venueFoodTotal, suggestPlanBudget } from "@/lib/venue/venueSpend";
 
 interface DiscoveryVenueCardProps {
   spot: Spot;
@@ -19,7 +20,7 @@ interface DiscoveryVenueCardProps {
 }
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
-  restaurant: { bg: "bg-[#008751]/10", text: "text-[#008751]" },
+  restaurant: { bg: "bg-[#F6F6F2]", text: "text-[#111111]" },
   bar: { bg: "bg-purple-100", text: "text-purple-700" },
   cafe: { bg: "bg-sky-100", text: "text-sky-700" },
   activity: { bg: "bg-orange-100", text: "text-orange-700" },
@@ -37,10 +38,10 @@ export function DiscoveryVenueCard({
   onToggleSave,
   className = "",
 }: DiscoveryVenueCardProps) {
-  const pricePerPerson = spot.price_per_person || 12000;
-  const estimatedTotal = pricePerPerson * squadSize;
-  const budgetRemaining = budget ? budget - estimatedTotal : null;
-  const fitsBudget = budget ? estimatedTotal <= budget : true;
+  const pricePerPerson = knownPerPerson({ derived_typical_cost: spot.price_per_person });
+  const estimatedTotal = pricePerPerson !== null ? venueFoodTotal(pricePerPerson, squadSize) : null;
+  const budgetRemaining = budget && estimatedTotal !== null ? budget - estimatedTotal : null;
+  const fitsBudget = budget && estimatedTotal !== null ? estimatedTotal <= budget : true;
 
   const areaName = spot.areas?.name || spot.address_slug || "Lagos";
   const areaSlug = spot.areas?.slug || spot.address_slug || "lagos";
@@ -61,7 +62,7 @@ export function DiscoveryVenueCard({
     venueId: spot.id,
     area: areaSlug,
     squad: squadSize,
-    budget: budget || (spot.price_per_person * squadSize),
+    budget: budget || suggestPlanBudget(pricePerPerson, squadSize),
     vibe: spot.vibe_tags?.[0] || "chill",
   });
 
@@ -153,36 +154,45 @@ export function DiscoveryVenueCard({
               <span className="text-[10px] uppercase font-bold text-[#6B7280] block">
                 Typical Spend
               </span>
-              <div className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight">
-                ₦{pricePerPerson.toLocaleString("en-NG")}
-                <span className="text-[11px] font-normal text-[#6B7280] ml-1">/ person</span>
-              </div>
+              {pricePerPerson !== null ? (
+                <div className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight tabular-nums">
+                  ₦{pricePerPerson.toLocaleString("en-NG")}
+                  <span className="text-[11px] font-normal text-[#6B7280] ml-1">/ person</span>
+                </div>
+              ) : (
+                <div className="text-sm font-black text-[#111111] leading-tight pt-1">
+                  Price not verified yet
+                </div>
+              )}
             </div>
 
-            <div className="text-right">
-              <span className="text-[10px] font-bold text-[#6B7280] block">
-                {squadSize === 1 ? "Solo Landed" : `Squad (${squadSize}x)`}
-              </span>
-              <span className="text-xs font-black text-[#111111]">
-                ~₦{estimatedTotal.toLocaleString("en-NG")}
-              </span>
-            </div>
+            {estimatedTotal !== null && (
+              <div className="text-right">
+                <span className="text-[10px] font-bold text-[#6B7280] block">
+                  {squadSize === 1 ? "Solo" : `Squad (${squadSize}x)`}
+                </span>
+                <span className="text-xs font-black text-[#111111] tabular-nums">
+                  ~₦{estimatedTotal.toLocaleString("en-NG")}
+                </span>
+                <span className="text-[9px] text-[#6B7280] block">before transport</span>
+              </div>
+            )}
           </div>
 
           {/* Budget Fit Indicator (when budget entered) */}
-          {budget && (
+          {budget && estimatedTotal !== null && (
             <div className="mt-2 text-[11px] font-mono font-bold">
               {fitsBudget ? (
-                <span className="text-[#111111] flex items-center gap-1">
+                <span className="text-[#111111] flex items-center gap-1 flex-wrap">
                   <Check className="w-3.5 h-3.5 stroke-[3] text-[#111111]" />
-                  <span>Fits your ₦{budget.toLocaleString("en-NG")} target</span>
-                  {budgetRemaining && budgetRemaining > 0 && (
-                    <span className="text-[#6B7280]">(₦{budgetRemaining.toLocaleString("en-NG")} buffer)</span>
+                  <span>Fits ₦{budget.toLocaleString("en-NG")} before transport</span>
+                  {budgetRemaining !== null && budgetRemaining > 0 && (
+                    <span className="text-[#6B7280]">(₦{budgetRemaining.toLocaleString("en-NG")} left)</span>
                   )}
                 </span>
               ) : (
                 <span className="text-[#E54D2E]">
-                  ₦{Math.abs(budgetRemaining || 0).toLocaleString("en-NG")} over target budget
+                  ₦{Math.abs(budgetRemaining || 0).toLocaleString("en-NG")} over your budget — stretch
                 </span>
               )}
             </div>

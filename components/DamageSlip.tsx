@@ -30,31 +30,40 @@ export function DamageSlip({
   const [copied, setCopied] = useState(false);
 
   const spot = plan.spot;
-  const foodCost = plan.foodCost || (spot.price_per_person * squadSize);
-  const transportCost = plan.transportCost || 0;
-  const totalCost = plan.totalCost || (foodCost + transportCost);
-  const effectiveBudget = budget || totalCost;
-  const perPersonCost = Math.round(totalCost / Math.max(1, squadSize));
+  const safeSquad = Math.max(1, squadSize);
+  // Canonical cost model: plan.totalCost = activity (venue) cost + midpoint transport.
+  // Never recompute from other inputs; only fall back when the field is truly absent.
+  const foodCost = plan.foodCost ?? Math.round(spot.price_per_person * safeSquad);
+  const transportCost = plan.transportCost ?? 0;
+  const totalCost = plan.totalCost ?? (foodCost + transportCost);
+  const effectiveBudget = budget && budget > 0 ? budget : totalCost;
+  const perPersonCost = Math.round(totalCost / safeSquad);
 
   const diff = effectiveBudget - totalCost;
-  const isOverBudget = diff < 0;
   const isExactFit = diff === 0;
 
-  // Verification status
-  const isVerified = 
-    plan.explanation?.status === "verified" ||
-    plan.explanation?.status === "owner_verified" ||
-    spot.price_source === "owner_submitted" ||
-    Boolean(spot.price_updated_at);
+  // Verification status: only evidence-backed states may read as verified.
+  // A bare price_updated_at timestamp is freshness, not verification.
+  const status = plan.explanation?.status;
+  const isVerified =
+    status === "verified" ||
+    status === "owner_verified" ||
+    status === "community_verified" ||
+    status === "fresh" ||
+    spot.price_source === "owner_submitted";
 
-  const verificationDate = spot.price_updated_at 
+  const verificationDate = isVerified && spot.price_updated_at
     ? new Date(spot.price_updated_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short" }).toUpperCase()
     : null;
 
-  // Car calculation
-  const carsNeeded = Math.max(1, Math.ceil(squadSize / 4));
+  // Transport is an estimate: the total counts the midpoint, we surface the real range.
+  const tMin = plan.transportMinCost;
+  const tMax = plan.transportMaxCost;
+  const hasTransportRange = typeof tMin === "number" && typeof tMax === "number" && tMax > tMin;
+  const transportModeLabel =
+    plan.transportMode === "public-transit" ? "Public transit" : plan.transportMode === "driving" ? "Driving" : "Ride-hailing";
 
-  // Taxes calculation if applicable
+  // Taxes: pricing model embeds VAT in the venue price, so this only shows if the model ever adds a gap.
   const taxAndService = Math.max(0, totalCost - (foodCost + transportCost));
 
   // Microcopy for budget relationship
@@ -95,7 +104,11 @@ export function DamageSlip({
     const targetUrl = shareUrl || `${origin}/venue/${spot.id}`;
     const area = spot.areas?.name || spot.address_slug || "Lagos";
 
-    const text = `Found the spot.\n\n${spot.name}, ${area}\n\n₦${totalCost.toLocaleString("en-NG")} total\n₦${perPersonCost.toLocaleString("en-NG")} each\n\nFood + drinks + transport included.\n\nWe moving?\n\n${targetUrl}`;
+    const includes = transportCost > 0
+      ? `Food & drinks + est. transport (₦${transportCost.toLocaleString("en-NG")}).`
+      : "Food & drinks only (transport not counted).";
+    const trust = isVerified ? "Menu prices verified." : "Prices are estimates.";
+    const text = `Found the spot.\n\n${spot.name}, ${area}\n\n₦${totalCost.toLocaleString("en-NG")} total for ${safeSquad}\n₦${perPersonCost.toLocaleString("en-NG")} each\n\n${includes}\n${trust}\n\nWe moving?\n\n${targetUrl}`;
 
     try {
       await navigator.clipboard.writeText(text);
@@ -166,7 +179,7 @@ export function DamageSlip({
               {spot.has_food === false ? "Admission & Activities" : "Food & Drinks"}
             </span>
             <span className="text-[10px] text-[#6B7280] font-mono block">
-              {squadSize} {squadSize === 1 ? "person" : "squad members"} • ~₦{(foodCost / squadSize).toLocaleString("en-NG")}/each
+              {safeSquad} {safeSquad === 1 ? "person" : "squad members"} • ~₦{Math.round(foodCost / safeSquad).toLocaleString("en-NG")}/each
             </span>
           </div>
           <span className="font-bold text-[#111111] tabular-nums text-sm">
@@ -178,9 +191,9 @@ export function DamageSlip({
         {taxAndService > 0 && (
           <div className="flex items-start justify-between gap-2">
             <div>
-              <span className="font-sans font-bold text-[#111111] block">Service &amp; Taxes</span>
+              <span className="font-sans font-bold text-[#111111] block">Fees &amp; Taxes</span>
               <span className="text-[10px] text-[#6B7280] font-mono block">
-                Standard Lagos hospitality service fee + VAT
+                Added on top of venue price
               </span>
             </div>
             <span className="font-bold text-[#111111] tabular-nums text-sm">
@@ -189,16 +202,24 @@ export function DamageSlip({
           </div>
         )}
 
-        {/* Transport */}
+        {/* Transport (estimate — midpoint is counted in the total) */}
         <div className="flex items-start justify-between gap-2">
           <div>
-            <span className="font-sans font-bold text-[#111111] block">Round-Trip Transport</span>
-            <span className="text-[10px] text-[#6B7280] font-mono block">
-              {startAreaName} ↔ {spot.areas?.name || spot.address_slug || "Venue"} • {carsNeeded} {carsNeeded > 1 ? "cars" : "ride-hailing car"}
+            <span className="font-sans font-bold text-[#111111] block">
+              Transport <span className="font-mono text-[10px] text-[#6B7280] uppercase">· est.</span>
             </span>
+            <span className="text-[10px] text-[#6B7280] font-mono block">
+              {startAreaName} ↔ {spot.areas?.name || spot.address_slug || "Venue"} • {transportModeLabel}
+              {plan.transportConfidenceLabel ? ` • ${plan.transportConfidenceLabel}` : ""}
+            </span>
+            {hasTransportRange && (
+              <span className="text-[10px] text-[#6B7280] font-mono block">
+                Range ₦{(tMin as number).toLocaleString("en-NG")}–₦{(tMax as number).toLocaleString("en-NG")} • midpoint counted
+              </span>
+            )}
           </div>
           <span className="font-bold text-[#111111] tabular-nums text-sm">
-            {transportCost === 0 ? "₦0 (Walking/Own)" : `₦${transportCost.toLocaleString("en-NG")}`}
+            {transportCost === 0 ? "₦0" : `₦${transportCost.toLocaleString("en-NG")}`}
           </span>
         </div>
       </div>

@@ -180,27 +180,19 @@ export default function AuthModal() {
               <Button
                 type="submit"
                 disabled={loading || googleLoading}
-                className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-bold text-sm tracking-wide transition-all shadow-sm cursor-pointer disabled:opacity-60"
+                className="w-full h-12 rounded-xl bg-[#111111] hover:bg-[#2a2a2a] text-white font-bold text-sm tracking-wide transition-all shadow-sm cursor-pointer disabled:opacity-60"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Send Instant Magic Link 🚀"}
               </Button>
             </form>
 
-            <div className="pt-2 flex items-center justify-between text-[11px] text-text-muted border-t border-[#EAE4DC]">
+            <div className="pt-2 flex items-center justify-start text-[11px] text-text-muted border-t border-[#EAE4DC]">
               <Link
-                href={`/login${safeReturnTo !== '/' ? `?returnTo=${encodeURIComponent(safeReturnTo)}` : ''}`}
+                href={`/login/planner${safeReturnTo !== '/' ? `?returnTo=${encodeURIComponent(safeReturnTo)}` : ''}`}
                 onClick={handleClose}
-                className="hover:text-[#008751] font-bold transition-colors"
+                className="hover:text-[#111111] underline-offset-2 hover:underline font-bold transition-colors"
               >
                 All login options →
-              </Link>
-              <Link
-                href="/for-business"
-                onClick={handleClose}
-                className="hover:text-midnight-lagoon transition-colors flex items-center gap-1"
-              >
-                <Building2 className="w-3 h-3 text-midnight-lagoon" />
-                <span>For Businesses</span>
               </Link>
             </div>
           </div>

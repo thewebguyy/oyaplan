@@ -17,6 +17,7 @@ import { useSavedSpots } from "@/hooks/useSavedSpots";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+import { knownPerPerson, suggestPlanBudget } from "@/lib/venue/venueSpend";
 import ScrubbablePhotos from "@/components/explore/ScrubbablePhotos";
 import { RecentlyViewedRow } from "@/components/venue/RecentlyViewedRow";
 import { toast } from "sonner";
@@ -190,7 +191,8 @@ export default function SavedClient({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-5 sm:gap-6">
               {savedSpots.map((spot) => {
                 const firstVibe = spot.vibe_tags?.[0] || "Chill";
-                const estimatedBudget = Math.round((spot.price_per_person || 15000) * 2 * 1.1);
+                const knownPrice = knownPerPerson({ derived_typical_cost: spot.price_per_person });
+                const estimatedBudget = suggestPlanBudget(knownPrice, 2);
 
                 const planUrl = buildVenuePlanUrl({
                   venueId: spot.id,
@@ -216,9 +218,9 @@ export default function SavedClient({
                         <button
                           type="button"
                           onClick={() => handleRemoveSpot(spot.id, spot.name)}
-                          aria-label={`Remove ${spot.name} from Saved Spots`}
+                          aria-label={`Remove ${spot.name} from your Shortlist`}
                           className="p-2 bg-white/95 backdrop-blur-md rounded-full border border-[#EAE4DC] text-red-500 hover:bg-red-50 transition-all tap-feedback cursor-pointer shadow-xs"
-                          title="Remove from Saved Spots"
+                          title="Remove from Shortlist"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -235,7 +237,7 @@ export default function SavedClient({
                     <div className="p-5 flex flex-col flex-grow text-left justify-between space-y-4">
                       <div className="space-y-1">
                         <Link href={`/venue/${spot.id}`}>
-                          <h3 className="font-black text-base sm:text-lg text-midnight-lagoon uppercase leading-tight group-hover:text-[#008751] transition-colors">
+                          <h3 className="font-black text-base sm:text-lg text-[#111111] uppercase leading-tight group-hover:underline underline-offset-4 transition-colors">
                             {spot.name}
                           </h3>
                         </Link>
@@ -247,12 +249,20 @@ export default function SavedClient({
 
                       <div className="pt-3 border-t border-[#E5E5DE] flex justify-between items-center">
                         <div className="flex flex-col">
-                          <span className="font-black text-[#111111] text-base sm:text-lg font-mono tabular-nums">
-                            ₦{(spot.price_per_person || 0).toLocaleString("en-NG")}
-                          </span>
-                          <span className="text-[9px] text-[#6B7280] font-mono font-bold uppercase tracking-wider">
-                            / person
-                          </span>
+                          {knownPrice !== null ? (
+                            <>
+                              <span className="font-black text-[#111111] text-base sm:text-lg font-mono tabular-nums">
+                                ₦{knownPrice.toLocaleString("en-NG")}
+                              </span>
+                              <span className="text-[9px] text-[#6B7280] font-mono font-bold uppercase tracking-wider">
+                                / person
+                              </span>
+                            </>
+                          ) : (
+                            <span className="font-black text-[#111111] text-xs leading-tight">
+                              Price not verified yet
+                            </span>
+                          )}
                         </div>
 
                         <Link href={planUrl}>

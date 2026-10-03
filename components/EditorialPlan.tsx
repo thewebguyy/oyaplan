@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { ForgeInput, PlanEvaluation, PlanExplanation } from "@/lib/types";
 import { PlanHeader } from "./editorial/PlanHeader";
-import { BudgetConfidenceCard } from "./editorial/BudgetConfidenceCard";
 import { AdjustmentPanel } from "./editorial/AdjustmentPanel";
 import { PlanActions } from "./editorial/PlanActions";
 import { TrustFooter } from "./editorial/TrustFooter";
@@ -83,11 +82,11 @@ export default function EditorialPlan({
 
         {/* 3. Decision Summary Callout */}
         {plan.decisionSummary && (
-          <div className="bg-[#FAFAF8] border border-border-default/50 rounded-[20px] p-6 shadow-xs relative overflow-hidden flex items-start gap-4">
-            <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#008751]" />
+          <div className="bg-[#FAF7F2] border border-[#E5E5DE] rounded-[20px] p-6 shadow-xs relative overflow-hidden flex items-start gap-4">
+            <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#111111]" />
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-wider text-[#008751] block">Decision Summary</span>
-              <p className="type-body text-text-primary text-sm font-semibold leading-relaxed">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#111111] block">Decision Summary</span>
+              <p className="type-body text-[#111111] text-sm font-semibold leading-relaxed">
                 {plan.decisionSummary}
               </p>
             </div>
@@ -95,7 +94,7 @@ export default function EditorialPlan({
         )}
 
         {/* 4. Unified Landed Guarantee & Why We Picked This Spot (Collapsible Accordion for Mobile Simplicity) */}
-        <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-[24px] overflow-hidden shadow-xs transition-all">
+        <div className="bg-[#FAF7F2] border border-[#E5E5DE] rounded-[24px] overflow-hidden shadow-xs transition-all">
           <button
             type="button"
             onClick={() => setIsWhyDropdownOpen(!isWhyDropdownOpen)}
@@ -103,17 +102,17 @@ export default function EditorialPlan({
             aria-expanded={isWhyDropdownOpen}
           >
             <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-[#008751]/10 flex items-center justify-center text-[#008751] shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#111111] flex items-center justify-center text-[#F9E828] shrink-0">
                 <Shield className="w-5 h-5 stroke-[2.5]" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] uppercase tracking-widest font-black text-[#008751] block">Anti-Deception Check</span>
-                  <span className="text-[10px] font-bold text-white bg-[#008751] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  <span className="text-[10px] uppercase tracking-widest font-mono font-bold text-[#111111] block">Anti-Deception Check</span>
+                  <span className="text-[10px] font-bold text-[#111111] bg-[#F9E828] px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">
                     100% Transparent
                   </span>
                 </div>
-                <h4 className="text-sm sm:text-base font-black text-[#111827] truncate mt-0.5">
+                <h4 className="text-sm sm:text-base font-black text-[#111111] truncate mt-0.5">
                   Lagos Landed Guarantee & Match Reasons
                 </h4>
                 <p className="text-xs text-text-muted font-medium truncate">
@@ -122,8 +121,8 @@ export default function EditorialPlan({
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-white border border-[#E5E7EB] flex items-center justify-center shrink-0 text-[#4B5563] shadow-xs">
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isWhyDropdownOpen ? 'rotate-180 text-[#008751]' : ''}`} />
+            <div className="w-8 h-8 rounded-full bg-white border border-[#E5E5DE] flex items-center justify-center shrink-0 text-[#111111] shadow-xs">
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isWhyDropdownOpen ? 'rotate-180 text-[#111111]' : ''}`} />
             </div>
           </button>
 
@@ -134,28 +133,28 @@ export default function EditorialPlan({
                 <span className="text-[10px] font-black uppercase tracking-wider text-text-muted block">
                   Price Protection & Inclusions
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-white p-4 rounded-xl border border-border-default/60">
-                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-white p-4 rounded-xl border border-[#E5E5DE]">
+                  <div className="flex items-center gap-2.5 text-xs text-[#111111] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
                     </div>
                     <span>{plan.spot.has_food === false ? "Verified admission & entry rate" : "Real menu & drink prices"}</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                  <div className="flex items-center gap-2.5 text-xs text-[#111111] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
                     </div>
                     <span>Round-trip ride-hailing covered</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                  <div className="flex items-center gap-2.5 text-xs text-[#111111] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
                     </div>
                     <span>{plan.spot.has_food === false ? "Access & gate fees accounted for" : "VAT 7.5% & service charges included"}</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-[#374151] font-semibold">
-                    <div className="w-4 h-4 rounded-full bg-[#008751]/15 flex items-center justify-center shrink-0">
-                      <Check className="w-2.5 h-2.5 text-[#008751] stroke-[3]" />
+                  <div className="flex items-center gap-2.5 text-xs text-[#111111] font-semibold">
+                    <div className="w-4 h-4 rounded-full bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
                     </div>
                     <span>Zero hidden cover or surprise fees</span>
                   </div>
@@ -172,14 +171,14 @@ export default function EditorialPlan({
                     {(explanation.ordered_reasons || []).length > 0 ? (
                       explanation.ordered_reasons?.map((reason, idx) => (
                         <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
-                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span className="text-[#111111] font-bold select-none">•</span>
                           <span>{reason}</span>
                         </li>
                       ))
                     ) : (
                       <>
                         <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
-                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span className="text-[#111111] font-bold select-none">•</span>
                           <span>
                             {diff < 0 
                               ? `Stays near your budget limits, costing ₦${plan.totalCost.toLocaleString()} total`
@@ -188,7 +187,7 @@ export default function EditorialPlan({
                           </span>
                         </li>
                         <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
-                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span className="text-[#111111] font-bold select-none">•</span>
                           <span>
                             {input.startArea && input.startArea !== "anywhere"
                               ? calculateTransportTime(input.startArea, plan.spot.coordinates).displayCopy
@@ -197,11 +196,11 @@ export default function EditorialPlan({
                           </span>
                         </li>
                         <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
-                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span className="text-[#111111] font-bold select-none">•</span>
                           <span>{getVibeConfig(input.vibe).receiptFull}</span>
                         </li>
                         <li className="flex items-start gap-2.5 text-xs sm:text-sm text-text-secondary font-medium">
-                          <span className="text-[#008751] font-bold select-none">•</span>
+                          <span className="text-[#111111] font-bold select-none">•</span>
                           <span>Perfect for a squad size of {getSquadWord(input.squadSize)}</span>
                         </li>
                       </>

@@ -3,9 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, ArrowLeft, ArrowRight, Users, Wallet, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Users, Wallet, Receipt } from "lucide-react";
 import { Venue } from "@/lib/types";
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+import { knownPerPerson, venueFoodTotal, suggestPlanBudget } from "@/lib/venue/venueSpend";
 
 interface VenuePlanContextCardProps {
   venue: Venue;
@@ -19,7 +20,6 @@ interface VenuePlanContextCardProps {
 export function VenuePlanContextCard({
   venue,
   areaSlug = "ikeja",
-  areaName = "Lagos",
   planSquad,
   planBudget,
   planVibe,
@@ -27,11 +27,18 @@ export function VenuePlanContextCard({
   const router = useRouter();
 
   const squadSize = planSquad && planSquad > 0 ? planSquad : 2;
-  const perPersonCost = venue.derived_typical_cost > 0 ? venue.derived_typical_cost : 18000;
-  const estimatedSquadCost = Math.round((perPersonCost * squadSize * 0.9) / 1000) * 1000;
-  const targetBudget = planBudget && planBudget > 0 ? planBudget : estimatedSquadCost;
-  const isWithinBudget = targetBudget >= estimatedSquadCost;
+  const perPerson = knownPerPerson(venue);
+  const foodTotal = perPerson !== null ? venueFoodTotal(perPerson, squadSize) : null;
+  const hasBudget = Boolean(planBudget && planBudget > 0);
+  const targetBudget = hasBudget ? (planBudget as number) : suggestPlanBudget(perPerson, squadSize);
   const vibe = planVibe || venue.vibe_tags?.[0] || "chill";
+
+  // Honest status: venue spend alone (before transport) vs the user's ceiling.
+  let status: string;
+  if (foodTotal === null) status = "Price not verified yet";
+  else if (!hasBudget) status = "Before transport";
+  else if (foodTotal > targetBudget) status = "Over budget before transport";
+  else status = "Before transport";
 
   const forgeUrl = buildVenuePlanUrl({
     venueId: venue.id,
@@ -42,18 +49,18 @@ export function VenuePlanContextCard({
   });
 
   return (
-    <div className="bg-gradient-to-br from-[#008751]/10 via-white to-[#FAF7F2] border border-[#008751]/30 rounded-[24px] p-5 sm:p-6 shadow-xs space-y-4 animate-in fade-in duration-300">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#008751]/20 pb-3">
+    <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-[24px] p-5 sm:p-6 shadow-xs space-y-4 animate-in fade-in duration-300">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-dashed border-[#E5E5DE] pb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-[#008751] text-white flex items-center justify-center shrink-0 shadow-xs">
-            <Sparkles className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-xl bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0 shadow-xs">
+            <Receipt className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#008751]">
-              Recommended In Your Plan
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-text-muted">
+              From your plan
             </span>
-            <h3 className="font-black text-base sm:text-lg text-midnight-lagoon">
-              {venue.name} fits your {vibe} outing
+            <h3 className="font-black text-base sm:text-lg text-[#111111]">
+              {venue.name}
             </h3>
           </div>
         </div>
@@ -61,55 +68,52 @@ export function VenuePlanContextCard({
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-midnight-lagoon transition-colors py-1 px-2.5 rounded-lg hover:bg-black/5 self-start sm:self-auto tap-feedback cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-[#111111] transition-colors py-2 px-3 rounded-lg hover:bg-black/5 self-start sm:self-auto tap-feedback cursor-pointer min-h-[44px]"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Return to Plan</span>
+          <span>Back to your plan</span>
         </button>
       </div>
 
-      {/* Plan Parameters & Matching Reasons */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-3 bg-white rounded-xl border border-[#EAE4DC] flex items-center gap-3">
-          <Users className="w-4 h-4 text-[#008751] shrink-0" />
+        <div className="p-3 bg-white rounded-xl border border-[#E5E5DE] flex items-center gap-3">
+          <Users className="w-4 h-4 text-[#111111] shrink-0" />
           <div>
-            <p className="text-[10px] font-bold text-text-muted uppercase">Squad Size</p>
-            <p className="text-sm font-black text-midnight-lagoon">{squadSize} People</p>
+            <p className="text-[10px] font-bold text-text-muted uppercase">Squad</p>
+            <p className="text-sm font-black text-[#111111]">{squadSize} {squadSize === 1 ? "person" : "people"}</p>
           </div>
         </div>
 
-        <div className="p-3 bg-white rounded-xl border border-[#EAE4DC] flex items-center gap-3">
-          <Wallet className="w-4 h-4 text-[#008751] shrink-0" />
+        <div className="p-3 bg-white rounded-xl border border-[#E5E5DE] flex items-center gap-3">
+          <Wallet className="w-4 h-4 text-[#111111] shrink-0" />
           <div>
-            <p className="text-[10px] font-bold text-text-muted uppercase">Target Budget</p>
-            <p className="text-sm font-black text-midnight-lagoon">₦{targetBudget.toLocaleString("en-NG")}</p>
+            <p className="text-[10px] font-bold text-text-muted uppercase">{hasBudget ? "Your budget" : "Starting budget"}</p>
+            <p className="text-sm font-black text-[#111111] font-mono tabular-nums">₦{targetBudget.toLocaleString("en-NG")}</p>
           </div>
         </div>
 
-        <div className="p-3 bg-white rounded-xl border border-[#EAE4DC] flex items-center gap-3">
-          <CheckCircle2 className="w-4 h-4 text-[#008751] shrink-0" />
+        <div className="p-3 bg-white rounded-xl border border-[#E5E5DE] flex items-center gap-3">
+          <Receipt className="w-4 h-4 text-[#111111] shrink-0" />
           <div>
-            <p className="text-[10px] font-bold text-text-muted uppercase">Estimated Outing</p>
-            <p className="text-sm font-black text-[#008751]">
-              ~₦{estimatedSquadCost.toLocaleString("en-NG")} ({isWithinBudget ? "On Budget" : "Near Budget"})
+            <p className="text-[10px] font-bold text-text-muted uppercase">Venue spend</p>
+            <p className={`text-sm font-black font-mono tabular-nums ${status.startsWith("Over") ? "text-[#E54D2E]" : "text-[#111111]"}`}>
+              {foodTotal !== null ? `₦${foodTotal.toLocaleString("en-NG")}` : "—"}
             </p>
+            <p className="text-[10px] text-text-muted">{status}</p>
           </div>
         </div>
       </div>
 
-      {/* Action Footer */}
       <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <p className="text-xs text-text-secondary leading-relaxed">
-          Ready to lock in this plan or tweak your budget parameters?
+          Want the full damage with transport? Re-run the plan with this spot locked in.
         </p>
-        <Link href={forgeUrl}>
-          <button
-            type="button"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all tap-feedback cursor-pointer"
-          >
-            <span>Plan This Venue in Forge</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+        <Link
+          href={forgeUrl}
+          className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs transition-all tap-feedback cursor-pointer"
+        >
+          <span>Plan this spot</span>
+          <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     </div>

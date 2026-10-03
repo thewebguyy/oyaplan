@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+import { knownPerPerson, suggestPlanBudget } from "@/lib/venue/venueSpend";
 import { toast } from "sonner";
 
 interface VenueHeroGalleryProps {
@@ -68,18 +69,17 @@ export function VenueHeroGallery({
   const trustStatus = isVerified ? "verified" : venue.operational_status === "needs_review" ? "pending" : "estimated";
   const freshnessText = getVerificationText(venue.last_price_updated_at);
 
-  const lowSpend = venue.derived_typical_cost > 0 ? Math.round((venue.derived_typical_cost * 1.8) / 1000) * 1000 : 25000;
-  const highSpend = Math.round((lowSpend * 1.5) / 1000) * 1000;
+  const perPerson = knownPerPerson(venue);
 
   const handleToggleSave = () => {
     if (saved) {
       removeSpot(venue.id);
-      toast.success(`${venue.name} removed from Saved Spots`);
+      toast.success(`${venue.name} removed from your Shortlist`);
     } else {
       saveSpot({
         id: venue.id,
         name: venue.name,
-        price_per_person: venue.derived_typical_cost || 15000,
+        price_per_person: perPerson ?? 0,
         image_url: allPhotos[0] || venue.cover_url || "",
         vibe_tags: venue.vibe_tags || ["Chill"],
         address: venue.address,
@@ -90,7 +90,7 @@ export function VenueHeroGallery({
         active: venue.active,
         computed_confidence_score: venue.computed_confidence_score || 80,
       });
-      toast.success(`${venue.name} saved to your spots!`);
+      toast.success(`${venue.name} added to your Shortlist`);
     }
   };
 
@@ -99,7 +99,7 @@ export function VenueHeroGallery({
   const todayHours = venue.opening_hours ? (venue.opening_hours as Record<string, string>)[currentDayName] : null;
 
   const targetSquad = planSquad && planSquad > 0 ? planSquad : 2;
-  const targetBudget = planBudget && planBudget > 0 ? planBudget : lowSpend;
+  const targetBudget = planBudget && planBudget > 0 ? planBudget : suggestPlanBudget(perPerson, targetSquad);
   const targetVibe = planVibe || venue.vibe_tags?.[0] || "chill";
 
   const forgeUrl = buildVenuePlanUrl({
@@ -240,7 +240,7 @@ export function VenueHeroGallery({
               </span>
 
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-midnight-lagoon bg-surface-grey border border-[#EAE4DC]">
-                <MapPin className="w-3.5 h-3.5 text-[#008751]" />
+                <MapPin className="w-3.5 h-3.5 text-[#111111]" />
                 <span>{areaName}</span>
               </span>
 
@@ -268,7 +268,7 @@ export function VenueHeroGallery({
                 {venue.name}
               </h1>
               <p className="text-xs sm:text-sm text-text-secondary mt-1 flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-[#008751] shrink-0" />
+                <MapPin className="w-4 h-4 text-[#111111] shrink-0" />
                 <span>{venue.address}</span>
               </p>
             </div>
@@ -277,22 +277,23 @@ export function VenueHeroGallery({
               <button
                 type="button"
                 onClick={handleToggleSave}
-                aria-label={saved ? "Remove from saved spots" : "Save this spot"}
+                aria-label={saved ? "Remove from your Shortlist" : "Add to your Shortlist"}
+                aria-pressed={saved}
                 className={`h-11 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all tap-feedback cursor-pointer ${
                   saved
-                    ? "bg-red-50 border-red-200 text-red-600"
+                    ? "bg-[#E54D2E]/10 border-[#E54D2E]/30 text-[#E54D2E]"
                     : "bg-white border-[#EAE4DC] hover:border-midnight-lagoon text-midnight-lagoon"
                 }`}
               >
-                <Heart className={`w-4 h-4 ${saved ? "fill-red-600 text-red-600" : ""}`} />
-                <span>{saved ? "Saved" : "Save Spot"}</span>
+                <Heart className={`w-4 h-4 ${saved ? "fill-[#E54D2E] text-[#E54D2E]" : ""}`} />
+                <span>{saved ? "On your Shortlist" : "Add to Shortlist"}</span>
               </button>
 
               <Link
                 href={forgeUrl}
-                className="h-11 px-5 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs transition-all tap-feedback"
+                className="h-11 px-5 rounded-xl bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2 shadow-xs transition-all tap-feedback"
               >
-                <span>Plan This Venue</span>
+                <span>Plan this spot</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -301,7 +302,7 @@ export function VenueHeroGallery({
           {/* Sub-bar: Operating Hours & Direct Map link */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#EAE4DC] text-xs text-text-secondary">
             <div className="flex items-center gap-2 font-medium">
-              <Clock className="w-4 h-4 text-[#008751]" />
+              <Clock className="w-4 h-4 text-[#111111]" />
               {todayHours ? (
                 <span>
                   Today ({currentDayName}): <strong className="text-midnight-lagoon">{todayHours}</strong>
@@ -316,7 +317,7 @@ export function VenueHeroGallery({
                 href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-bold text-[#008751] hover:underline"
+                className="inline-flex items-center gap-1 font-bold text-[#111111] hover:underline"
               >
                 <Navigation className="w-3.5 h-3.5" />
                 <span>Get directions ↗</span>
