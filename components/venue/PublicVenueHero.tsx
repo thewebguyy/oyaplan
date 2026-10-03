@@ -209,7 +209,7 @@ export function PublicVenueHero({
             </div>
           </div>
 
-          {/* Venue Claim & Verification / Flag Incorrect */}
+          {/* Venue Verification / Flag Incorrect */}
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-t border-border-default/50">
             <div className="flex items-center gap-2 text-text-secondary font-medium">
               <Store className="w-4 h-4 text-brand-green shrink-0" />
@@ -219,16 +219,9 @@ export function PublicVenueHero({
                   <span>Official Venue Managed Profile</span>
                 </span>
               ) : (
-                <>
-                  <span>Are you the owner or manager?</span>
-                  <Link
-                    href={`/venue/${venue.id}/claim`}
-                    className="font-black text-brand-green hover:underline tap-feedback inline-flex items-center gap-1"
-                  >
-                    <span>Claim this venue</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </>
+                <span className="text-text-secondary font-medium">
+                  Community verified menu & pricing
+                </span>
               )}
             </div>
 

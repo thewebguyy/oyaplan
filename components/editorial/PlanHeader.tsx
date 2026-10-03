@@ -94,42 +94,34 @@ export function PlanHeader({
 
         {/* Bottom Floating Pill Indicators */}
         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-bold pointer-events-none">
-          <span className="inline-flex items-center gap-1 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] uppercase tracking-wider">
-            <MapPin className="w-3 h-3 text-[#FCC630]" />
+          <span className="inline-flex items-center gap-1 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] font-mono uppercase tracking-wider">
+            <MapPin className="w-3 h-3 text-[#F9E828]" />
             <span>{areaLabel}</span>
-          </span>
-          <span className="bg-[#008751] text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-md">
-            {plan.spot.has_food === false ? "Verified Admission" : "Verified Menu"}
           </span>
         </div>
       </Link>
 
-      <h2 className="type-display-product text-[#111827] uppercase tracking-tight text-xl sm:text-3xl font-black mb-2">
+      <h2 className="type-display-product text-[#111111] uppercase tracking-tight text-xl sm:text-3xl font-black mb-2 font-display">
         {plan.title || getHeadline()}
       </h2>
       <div className="flex items-center gap-2 justify-center flex-col sm:flex-row">
         <Link 
           href={venueHref}
-          className="type-tagline text-[#4B5563] hover:text-[#008751] text-lg font-semibold inline-flex items-center gap-1.5 transition-colors group cursor-pointer"
+          className="type-tagline text-[#555555] hover:text-[#111111] text-lg font-semibold inline-flex items-center gap-1.5 transition-colors group cursor-pointer"
         >
           <span>{plan.subtitle || `at ${plan.spot.name}`}</span>
-          <ExternalLink className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-[#008751]" />
+          <ExternalLink className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-[#111111]" />
         </Link>
       </div>
 
-      {/* Resy Structured Data Badges */}
+      {/* Max 2 Clean Badges */}
       <div className="flex flex-wrap gap-2 justify-center mt-4 select-none">
-        <span className="px-3 py-1 bg-[#111827]/5 border border-[#111827]/10 text-[#111827] rounded-full text-[11px] font-black uppercase tracking-wider">
-          {plan.spot.category || 'Restaurant'}
+        <span className="px-3 py-1 bg-[#111111] text-[#F9E828] rounded-md text-[11px] font-mono font-bold uppercase tracking-wider shadow-xs">
+          ✓ {plan.spot.has_food === false ? "VERIFIED ADMISSION" : "MENU VERIFIED"}
         </span>
-        <span className="px-3 py-1 bg-[#008751]/10 border border-[#008751]/20 text-[#008751] rounded-full text-[11px] font-black tracking-wider">
-          Price Tier: {priceTier}
+        <span className="px-3 py-1 bg-[#F6F6F2] border border-[#E5E5DE] text-[#111111] rounded-md text-[11px] font-mono font-bold uppercase tracking-wider">
+          {plan.spot.category || 'Spot'} • {priceTier}
         </span>
-        {plan.spot.food_type && (
-          <span className="px-3 py-1 bg-[#F3F4F6] border border-[#E5E7EB] text-[#4B5563] rounded-full text-[11px] font-bold uppercase tracking-wider">
-            Chop: {plan.spot.food_type}
-          </span>
-        )}
       </div>
     </div>
   );

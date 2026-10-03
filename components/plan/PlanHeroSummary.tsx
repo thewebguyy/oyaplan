@@ -150,13 +150,13 @@ export function PlanHeroSummary({
       </div>
 
       {/* 3. The 3-Pillar Budget Relationship Card */}
-      <div className="bg-[#FAF7F2] border border-[#E5E0D8] rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-[#E5E0D8]/60">
-          <span className="text-[10px] uppercase font-black tracking-wider text-text-muted">
+      <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between pb-2 border-b border-[#E5E5DE]">
+          <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-[#6B7280]">
             Outing Budget Relationship
           </span>
-          <span className="text-[11px] font-bold text-[#008751] flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5" />
+          <span className="text-[11px] font-mono font-bold text-[#111111] flex items-center gap-1 bg-white px-2.5 py-0.5 rounded-full border border-[#E5E5DE]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#111111]" />
             <span>Landed Cost Model</span>
           </span>
         </div>
@@ -165,39 +165,39 @@ export function PlanHeroSummary({
         <div className="grid grid-cols-3 gap-2 sm:gap-4 items-center">
           {/* User Budget */}
           <div className="space-y-0.5 min-w-0">
-            <p className="text-[11px] sm:text-xs font-semibold text-text-secondary truncate">
+            <p className="text-[11px] sm:text-xs font-semibold text-[#6B7280] truncate">
               Your Budget
             </p>
-            <p className="text-base sm:text-xl font-black text-midnight-lagoon font-mono tabular-nums tracking-tight truncate">
+            <p className="text-base sm:text-xl font-black text-[#111111] font-mono tabular-nums tracking-tight truncate">
               ₦{budget.toLocaleString('en-NG')}
             </p>
-            <p className="text-[10px] text-text-muted hidden sm:block">Limit specified</p>
+            <p className="text-[10px] text-[#6B7280] font-mono hidden sm:block">Target specified</p>
           </div>
 
           {/* Estimated Spend */}
-          <div className="space-y-0.5 text-center min-w-0 bg-white/80 py-2.5 px-1.5 sm:px-3 rounded-xl border border-border-default/60 shadow-xs">
-            <p className="text-[11px] sm:text-xs font-bold text-[#008751] truncate">
-              Estimated Spend
+          <div className="space-y-0.5 text-center min-w-0 bg-white py-2.5 px-1.5 sm:px-3 rounded-xl border border-[#E5E5DE] shadow-xs">
+            <p className="text-[11px] sm:text-xs font-bold text-[#111111] truncate">
+              Total Landed
             </p>
-            <p className="text-lg sm:text-2xl font-black text-[#008751] font-mono tabular-nums tracking-tight truncate">
+            <p className="text-lg sm:text-2xl font-black text-[#111111] font-mono tabular-nums tracking-tight truncate">
               ~₦<NumericCounter value={estimatedSpend} />
             </p>
-            <p className="text-[10px] text-text-muted hidden sm:block">Food, rides & tax</p>
+            <p className="text-[10px] text-[#6B7280] font-mono hidden sm:block">Food, rides &amp; tax</p>
           </div>
 
           {/* Remaining */}
           <div className="space-y-0.5 text-right min-w-0">
-            <p className="text-[11px] sm:text-xs font-semibold text-text-secondary truncate">
+            <p className="text-[11px] sm:text-xs font-semibold text-[#6B7280] truncate">
               {isOverBudget ? 'Over Budget' : 'Remaining'}
             </p>
             <p
               className={`text-base sm:text-xl font-black font-mono tabular-nums tracking-tight truncate ${
-                isOverBudget ? 'text-amber-700' : 'text-midnight-lagoon'
+                isOverBudget ? 'text-[#E54D2E]' : 'text-[#111111]'
               }`}
             >
               {isOverBudget ? '-' : ''}₦{Math.abs(remaining).toLocaleString('en-NG')}
             </p>
-            <p className="text-[10px] text-text-muted hidden sm:block">
+            <p className="text-[10px] text-[#6B7280] font-mono hidden sm:block">
               {isOverBudget ? 'Exceeds budget' : 'Left to spare'}
             </p>
           </div>
@@ -205,21 +205,20 @@ export function PlanHeroSummary({
 
         {/* Contextual Guidance */}
         {isWellUnderBudget && (
-          <div className="flex items-start gap-2 bg-[#ECFDF5] border border-[#A7F3D0] rounded-xl p-3 text-xs text-[#065F46] font-medium leading-relaxed">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#008751] mt-0.5" />
+          <div className="flex items-start gap-2 bg-white border border-[#E5E5DE] rounded-xl p-3 text-xs text-[#111111] font-medium leading-relaxed font-mono">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#111111] mt-0.5" />
             <p>
-              <strong>This plan comes in well below your budget.</strong> You have ₦
-              {remaining.toLocaleString('en-NG')} left to flex for extra drinks, dessert, or a premium table.
+              <strong>Clean fit below your budget.</strong> You have ₦
+              {remaining.toLocaleString('en-NG')} left for bad decisions or extra rounds.
             </p>
           </div>
         )}
 
         {isOverBudget && (
-          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 font-medium leading-relaxed">
-            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-[#E54D2E] font-medium leading-relaxed font-mono">
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#E54D2E] mt-0.5" />
             <p>
-              This plan stretches ₦{Math.abs(remaining).toLocaleString('en-NG')} over your target. Consider
-              adjusting squad transport or meal selection.
+              This plan stretches ₦{Math.abs(remaining).toLocaleString('en-NG')} over target — considered a stretch option.
             </p>
           </div>
         )}

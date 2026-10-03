@@ -1,7 +1,6 @@
 import React from 'react';
 import { Venue } from '@/lib/types';
 import { Clock, MapPin, Car, Shirt, Navigation, ShieldCheck, Store, CheckCircle2, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
 
 interface PublicOverviewSectionProps {
   venue: Venue;
@@ -60,18 +59,9 @@ export function PublicOverviewSection({ venue }: PublicOverviewSectionProps) {
             <p className="text-xs leading-relaxed opacity-90">
               {isPartnerVerified
                 ? `Menu prices, hours, and policies for ${venue.name} are directly updated and verified by the venue's management.`
-                : `This spot's pricing and details were curated from public menus and Lagos outing reports. Are you the operator? Claim this venue to manage directly.`}
+                : `This spot's pricing and details were curated and verified from public menus and Lagos outing reports.`}
             </p>
           </div>
-
-          {!isPartnerVerified && (
-            <Link
-              href={`/venue/${venue.id}/claim`}
-              className="px-3 py-1.5 rounded-xl bg-white border border-[#EAE4DC] text-xs font-bold text-brand-green hover:bg-slate-50 shrink-0 transition-colors shadow-xs"
-            >
-              Claim Spot
-            </Link>
-          )}
         </div>
       </div>
 

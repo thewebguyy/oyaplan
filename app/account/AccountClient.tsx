@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
   User, 
@@ -13,15 +13,17 @@ import {
   Layers, 
   Shield, 
   FileText, 
-  Building2, 
   LogOut,
-  ArrowRight,
-  Lock
+  MapPin,
+  Sparkles,
+  Lock,
+  ArrowRight
 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { UserProfile } from "@/lib/services/identity/sessionResolver";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useSavedSpots } from "@/hooks/useSavedSpots";
 import { toast } from "sonner";
 
 interface AccountClientProps {
@@ -34,14 +36,12 @@ interface AccountClientProps {
 export default function AccountClient({
   isAuthenticated,
   profile,
+  savedPlansCount,
 }: AccountClientProps) {
   const { signOut, openModal, avatarUrl } = useAuth();
-  const searchParams = useSearchParams();
+  const { savedSpots } = useSavedSpots();
   const router = useRouter();
   const [, startTransition] = useTransition();
-
-  const nextParam = searchParams.get("next");
-  const isBusinessContext = searchParams.get("context") === "business" || nextParam?.startsWith("/business");
 
   const handleSignOut = () => {
     startTransition(async () => {
@@ -53,64 +53,30 @@ export default function AccountClient({
 
   // 1. Unauthenticated State
   if (!isAuthenticated || !profile) {
-    if (isBusinessContext) {
-      return (
-        <main className="min-h-[100dvh] bg-[#FAF7F2] pt-24 pb-20 px-4 flex flex-col items-center justify-center selection:bg-[#008751]/20">
-          <div className="w-full max-w-md space-y-6 text-center bg-white rounded-3xl border border-[#EAE4DC] p-8 shadow-xs animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <div className="w-14 h-14 bg-[#EAFDF3] text-[#008751] border border-[#A3F3C6] rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
-              <Building2 className="w-7 h-7" />
-            </div>
-            <div className="space-y-2">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#EAFDF3] text-[#008751] text-[10px] font-black uppercase tracking-wider">
-                Partner Portal
-              </span>
-              <h1 className="text-2xl font-black text-midnight-lagoon tracking-tight">
-                OyaPlan for Business
-              </h1>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed px-2">
-                Sign in with your operator credentials to manage venue pricing, menu updates, and real-world planner visibility.
-              </p>
-            </div>
-            <div className="space-y-3 pt-2">
-              <Button 
-                onClick={() => openModal("Sign in to Business Portal", nextParam || "/business")}
-                className="w-full bg-[#008751] hover:bg-[#007043] text-white rounded-xl h-12 text-xs font-bold transition-all tap-feedback"
-              >
-                <span>Sign In to Business Portal</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1" />
-              </Button>
-              <Link
-                href="/for-business"
-                className="block text-xs font-bold text-text-muted hover:text-midnight-lagoon transition-colors pt-1"
-              >
-                Back to Business Overview
-              </Link>
-            </div>
-          </div>
-        </main>
-      );
-    }
-
     return (
-      <main className="min-h-[100dvh] bg-[#FAF7F2] pt-24 pb-20 px-4 flex flex-col items-center justify-center selection:bg-[#008751]/20">
-        <div className="w-full max-w-md space-y-6 text-center bg-white rounded-3xl border border-[#EAE4DC] p-8 shadow-xs animate-in fade-in slide-in-from-bottom-4 duration-400">
-          <div className="w-16 h-16 bg-[#EAFDF3] text-[#008751] rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
-            <Lock className="w-8 h-8" />
+      <main className="min-h-[100dvh] bg-[#F6F6F2] pt-24 pb-20 px-4 flex flex-col items-center justify-center">
+        <div className="w-full max-w-md space-y-6 text-center bg-white rounded-2xl border border-[#E5E5DE] p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-400">
+          <div className="w-16 h-16 bg-[#111111] text-[#F9E828] rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+            <Lock className="w-7 h-7" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-black text-midnight-lagoon tracking-tight">
-              Your OyaPlan
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#111111] text-[#F9E828] text-[10px] font-black uppercase tracking-widest font-mono">
+              Resident Pass
+            </span>
+            <h1 className="text-2xl font-black text-obsidian tracking-tight font-display">
+              Access Your OyaPlan
             </h1>
-            <p className="text-xs sm:text-sm text-text-secondary leading-relaxed px-2">
-              Sign in to manage your personal profile, access saved spots and plans, and customize outing preferences.
+            <p className="text-xs sm:text-sm text-text-muted leading-relaxed px-2">
+              Sign in to manage your Lagos outing shortlist, review saved squad plans, and track your outing preferences.
             </p>
           </div>
           <div className="pt-2">
             <Button 
-              onClick={() => openModal("Sign in to access your account")}
-              className="w-full bg-[#008751] hover:bg-[#007043] text-white rounded-xl h-12 text-sm font-bold shadow-xs transition-all tap-feedback"
+              onClick={() => openModal("Sign in to access your Resident Pass")}
+              className="w-full bg-[#111111] hover:bg-black text-[#F9E828] rounded-xl h-12 text-xs font-black uppercase tracking-wider transition-all tap-feedback cursor-pointer shadow-sm"
             >
-              Sign In / Create Account
+              <span>Sign In / Create Account</span>
+              <ArrowRight className="w-4 h-4 ml-1.5" />
             </Button>
           </div>
         </div>
@@ -118,86 +84,130 @@ export default function AccountClient({
     );
   }
 
-  // 2. Authenticated State
+  // 2. Authenticated State — Resident Pass Direction
   const hasValidName = Boolean(profile.display_name && !profile.display_name.includes("@") && profile.display_name.trim() !== "");
-  const displayName = hasValidName ? profile.display_name!.trim() : "Add your name";
+  const displayName = hasValidName ? profile.display_name!.trim() : "Lagos Planner";
   const displayEmail = profile.email || "";
 
   return (
-    <main className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon pt-20 sm:pt-24 pb-28 selection:bg-[#008751]/20">
+    <main className="min-h-[100dvh] bg-[#F6F6F2] text-obsidian pt-20 sm:pt-24 pb-28">
       <div className="max-w-xl mx-auto px-4 sm:px-6 space-y-6 animate-in fade-in duration-200">
         
-        {/* 1. PROFILE HEADER — Restrained, Polished, Consumer Grade */}
-        <Link 
-          href="/account/profile"
-          prefetch={true}
-          className="group block bg-white rounded-[24px] border border-[#EAE4DC] p-5 shadow-xs tap-feedback transition-all hover:border-[#008751]/40"
-          aria-label="Edit your account profile"
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 min-w-0">
-              <Avatar 
-                name={hasValidName ? displayName : "Planner"} 
-                src={avatarUrl || profile.avatar_url} 
-                size="lg"
-                className="ring-2 ring-[#008751]/20 group-hover:ring-[#008751] transition-all shrink-0"
-              />
-              <div className="min-w-0">
-                <h1 className={`text-lg sm:text-xl font-black truncate transition-colors ${hasValidName ? "text-midnight-lagoon group-hover:text-[#008751]" : "text-text-muted italic group-hover:text-[#008751]"}`}>
-                  {displayName}
-                </h1>
-                {displayEmail && (
-                  <p className="text-xs text-text-secondary truncate mt-0.5 font-medium">
-                    {displayEmail}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-text-muted group-hover:text-[#008751] shrink-0 transition-colors">
-              <span className="hidden sm:inline">Profile</span>
-              <ChevronRight className="w-5 h-5" />
-            </div>
-          </div>
-        </Link>
+        {/* RESIDENT PASS CARD */}
+        <div className="relative bg-white rounded-2xl border-2 border-[#111111] p-6 shadow-[0_8px_24px_rgba(17,17,17,0.06),0_3px_0_0_#111111] overflow-hidden">
+          {/* Card Accent Strip */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#F9E828]" />
 
-        {/* 2. SECTION: YOUR OYAPLAN */}
-        <div className="space-y-2">
-          <div className="px-2 text-[11px] font-black uppercase tracking-wider text-text-muted">
-            Your OyaPlan
+          {/* Pass Header */}
+          <div className="flex items-center justify-between border-b border-[#E5E5DE] pb-4 mb-5">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#111111]" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-obsidian font-mono">
+                Lagos Resident Pass
+              </span>
+            </div>
+            <span className="text-[10px] font-bold text-text-muted font-mono uppercase tracking-wider">
+              OyaPlan ID
+            </span>
           </div>
-          <div className="bg-white rounded-[24px] border border-[#EAE4DC] overflow-hidden shadow-xs divide-y divide-[#EAE4DC]">
-            
-            {/* Account Profile */}
-            <Link 
-              href="/account/profile" 
-              prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
+
+          {/* User Info */}
+          <div className="flex items-center gap-4">
+            <Avatar 
+              name={displayName} 
+              src={avatarUrl} 
+              size="lg" 
+              className="w-14 h-14 rounded-xl ring-2 ring-[#111111] shrink-0"
+            />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl font-black text-obsidian truncate font-display">
+                {displayName}
+              </h1>
+              {displayEmail && (
+                <p className="text-xs text-text-muted truncate mt-0.5 font-medium">
+                  {displayEmail}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Resident Details Grid */}
+          <div className="grid grid-cols-2 gap-3 mt-6 pt-5 border-t border-dashed border-[#E5E5DE]">
+            <div className="bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE]">
+              <span className="text-[10px] font-black uppercase tracking-widest text-text-muted font-mono block">
+                Outing Archetype
+              </span>
+              <span className="text-xs font-bold text-obsidian flex items-center gap-1.5 mt-1">
+                <Sparkles className="w-3.5 h-3.5 text-[#111111]" />
+                <span>Squad Strategist</span>
+              </span>
+            </div>
+
+            <div className="bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE]">
+              <span className="text-[10px] font-black uppercase tracking-widest text-text-muted font-mono block">
+                Default Hub
+              </span>
+              <span className="text-xs font-bold text-obsidian flex items-center gap-1.5 mt-1">
+                <MapPin className="w-3.5 h-3.5 text-[#111111]" />
+                <span>Lagos Central</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Stat Pillars */}
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            <Link
+              href="/saved"
+              className="bg-white hover:bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE] transition-colors flex items-center justify-between group"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
-                  <User className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Account Profile</h2>
-                  <p className="text-[11px] text-text-muted">Personal info, display name &amp; photo</p>
-                </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-muted font-mono block">
+                  The Shortlist
+                </span>
+                <span className="text-base font-black text-obsidian font-mono">
+                  {savedSpots.length} {savedSpots.length === 1 ? 'spot' : 'spots'}
+                </span>
               </div>
-              <ChevronRight className="w-4 h-4 text-text-muted" />
+              <ChevronRight className="w-4 h-4 text-text-muted group-hover:translate-x-0.5 transition-transform" />
             </Link>
 
-            {/* Saved Spots */}
+            <Link
+              href="/saved?tab=plans"
+              className="bg-white hover:bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE] transition-colors flex items-center justify-between group"
+            >
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-muted font-mono block">
+                  Saved Plans
+                </span>
+                <span className="text-base font-black text-obsidian font-mono">
+                  {savedPlansCount} {savedPlansCount === 1 ? 'plan' : 'plans'}
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+        </div>
+
+        {/* SECTION: NAVIGATION ITEMS */}
+        <div className="space-y-2">
+          <div className="px-2 text-[11px] font-black uppercase tracking-wider text-text-muted font-mono">
+            Navigation
+          </div>
+          <div className="bg-white rounded-2xl border border-[#E5E5DE] overflow-hidden shadow-xs divide-y divide-[#E5E5DE]">
+            
+            {/* The Shortlist */}
             <Link 
               href="/saved" 
               prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[56px]"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
-                  <Heart className="w-4.5 h-4.5" />
+                <div className="w-9 h-9 rounded-xl bg-[#F6F6F2] text-obsidian border border-[#E5E5DE] flex items-center justify-center shrink-0">
+                  <Heart className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Saved Spots</h2>
-                  <p className="text-[11px] text-text-muted">Bookmarked venues &amp; destinations</p>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">The Shortlist</h2>
+                  <p className="text-[11px] text-text-muted">Bookmarked Lagos spots &amp; favorites</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-text-muted" />
@@ -207,15 +217,33 @@ export default function AccountClient({
             <Link 
               href="/saved?tab=plans" 
               prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[56px]"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
-                  <Bookmark className="w-4.5 h-4.5" />
+                <div className="w-9 h-9 rounded-xl bg-[#F6F6F2] text-obsidian border border-[#E5E5DE] flex items-center justify-center shrink-0">
+                  <Bookmark className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Saved Plans</h2>
-                  <p className="text-[11px] text-text-muted">Outing itineraries &amp; squad plans</p>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">Saved Plans</h2>
+                  <p className="text-[11px] text-text-muted">Outing itineraries &amp; squad calculations</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-text-muted" />
+            </Link>
+
+            {/* Account Profile */}
+            <Link 
+              href="/account/profile" 
+              prefetch={true} 
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[56px]"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 rounded-xl bg-[#F6F6F2] text-obsidian border border-[#E5E5DE] flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">Profile Settings</h2>
+                  <p className="text-[11px] text-text-muted">Display name &amp; photo</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-text-muted" />
@@ -225,15 +253,15 @@ export default function AccountClient({
             <Link 
               href="/settings" 
               prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[56px]"
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[56px]"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
-                  <Settings className="w-4.5 h-4.5" />
+                <div className="w-9 h-9 rounded-xl bg-[#F6F6F2] text-obsidian border border-[#E5E5DE] flex items-center justify-center shrink-0">
+                  <Settings className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Settings</h2>
-                  <p className="text-[11px] text-text-muted">Security, logins &amp; preferences</p>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">Settings</h2>
+                  <p className="text-[11px] text-text-muted">Security &amp; preferences</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-text-muted" />
@@ -242,25 +270,25 @@ export default function AccountClient({
           </div>
         </div>
 
-        {/* 3. SECTION: COMPANY & SUPPORT */}
+        {/* SECTION: COMPANY & TRUST */}
         <div className="space-y-2">
-          <div className="px-2 text-[11px] font-black uppercase tracking-wider text-text-muted">
-            Company &amp; Support
+          <div className="px-2 text-[11px] font-black uppercase tracking-wider text-text-muted font-mono">
+            Trust &amp; Information
           </div>
-          <div className="bg-white rounded-[24px] border border-[#EAE4DC] overflow-hidden shadow-xs divide-y divide-[#EAE4DC]">
+          <div className="bg-white rounded-2xl border border-[#E5E5DE] overflow-hidden shadow-xs divide-y divide-[#E5E5DE]">
             
             <Link 
               href="/feedback" 
               prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[52px]"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
-                  <HelpCircle className="w-4.5 h-4.5" />
+                <div className="w-8 h-8 rounded-lg bg-[#F6F6F2] text-text-muted flex items-center justify-center shrink-0">
+                  <HelpCircle className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Help / Feedback</h2>
-                  <p className="text-[11px] text-text-muted">Report an issue or suggest a feature</p>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">Help / Feedback</h2>
+                  <p className="text-[11px] text-text-muted">Report price mismatch or share ideas</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-text-muted" />
@@ -269,15 +297,15 @@ export default function AccountClient({
             <Link 
               href="/about" 
               prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[52px]"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
-                  <Layers className="w-4.5 h-4.5" />
+                <div className="w-8 h-8 rounded-lg bg-[#F6F6F2] text-text-muted flex items-center justify-center shrink-0">
+                  <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">About OyaPlan</h2>
-                  <p className="text-[11px] text-text-muted">Our story, mission &amp; budget confidence thesis</p>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">About OyaPlan</h2>
+                  <p className="text-[11px] text-text-muted">Our mission &amp; budget confidence thesis</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-text-muted" />
@@ -286,15 +314,15 @@ export default function AccountClient({
             <Link 
               href="/privacy" 
               prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[52px]"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
-                  <Shield className="w-4.5 h-4.5" />
+                <div className="w-8 h-8 rounded-lg bg-[#F6F6F2] text-text-muted flex items-center justify-center shrink-0">
+                  <Shield className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Privacy Policy</h2>
-                  <p className="text-[11px] text-text-muted">How we protect your identity &amp; data</p>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">Privacy Policy</h2>
+                  <p className="text-[11px] text-text-muted">How your data stays protected</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-text-muted" />
@@ -303,15 +331,15 @@ export default function AccountClient({
             <Link 
               href="/terms" 
               prefetch={true} 
-              className="flex items-center justify-between p-4 sm:p-4.5 hover:bg-[#FAF7F2] transition-colors tap-feedback min-h-[52px]"
+              className="flex items-center justify-between p-4 hover:bg-[#F6F6F2] transition-colors tap-feedback min-h-[52px]"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-9 h-9 rounded-xl bg-surface-grey text-text-secondary flex items-center justify-center shrink-0">
-                  <FileText className="w-4.5 h-4.5" />
+                <div className="w-8 h-8 rounded-lg bg-[#F6F6F2] text-text-muted flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">Terms of Service</h2>
-                  <p className="text-[11px] text-text-muted">Consumer terms &amp; guidelines</p>
+                  <h2 className="text-xs sm:text-sm font-bold text-obsidian">Terms of Service</h2>
+                  <p className="text-[11px] text-text-muted">Consumer guidelines</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-text-muted" />
@@ -320,27 +348,7 @@ export default function AccountClient({
           </div>
         </div>
 
-        {/* 4. SECTION: FOR BUSINESS (Restrained Bridge) */}
-        <div className="bg-white rounded-[24px] border border-[#EAE4DC] p-4.5 shadow-xs flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-midnight-lagoon text-white flex items-center justify-center shrink-0">
-              <Building2 className="w-4.5 h-4.5" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-xs sm:text-sm font-bold text-midnight-lagoon">OyaPlan for Business</h2>
-              <p className="text-[11px] text-text-muted truncate">Venue verification &amp; partner tools</p>
-            </div>
-          </div>
-          <Link
-            href="/for-business"
-            prefetch={true}
-            className="text-xs font-bold text-midnight-lagoon hover:text-[#008751] px-3.5 py-2 rounded-xl border border-[#EAE4DC] bg-[#FAF7F2] hover:bg-white transition-colors shrink-0 tap-feedback"
-          >
-            Explore ↗
-          </Link>
-        </div>
-
-        {/* 5. LOGOUT — Quiet, Restrained, Non-Alarming */}
+        {/* LOGOUT */}
         <div className="pt-2 text-center">
           <button
             type="button"

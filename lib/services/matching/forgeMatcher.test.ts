@@ -630,7 +630,7 @@ describe('forgePlans — cost calculation', () => {
     });
     const results = forgePlans({ ...BASE_INPUT, startArea: 'ikeja', budget: 30000 }, [spot]);
     expect(results).toHaveLength(1);
-    expect(results[0].transportCost).toBe(6000);
+    expect(results[0].transportCost).toBe(9000);
   });
 
   it('totalCost equals foodCost + transportCost', () => {

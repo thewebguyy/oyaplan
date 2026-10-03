@@ -39,87 +39,87 @@ export function PlanCostBreakdown({
   const remaining = budget - totalCost;
 
   return (
-    <section className="bg-white border border-border-default rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
-      <div className="flex items-center justify-between pb-3 border-b border-border-default/60">
+    <section className="bg-white border border-[#E5E5DE] rounded-[16px] p-5 sm:p-6 shadow-xs space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-[#E5E5DE]">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#008751]/10 text-[#008751] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-[#111111] text-[#F9E828] flex items-center justify-center">
             <Calculator className="w-4 h-4" />
           </div>
-          <h2 className="text-base font-black text-midnight-lagoon">Estimated Cost Breakdown</h2>
+          <h2 className="text-base font-black text-[#111111] font-display uppercase tracking-tight">Damage Slip Breakdown</h2>
         </div>
-        <span className="text-[11px] font-bold text-text-muted">Total Landed Cost</span>
+        <span className="text-[11px] font-mono font-bold text-[#6B7280] uppercase tracking-wider">Lagos Landed</span>
       </div>
 
       {/* Itemized Rows */}
-      <div className="space-y-2.5 text-xs sm:text-sm">
-        <div className="flex items-center justify-between py-1">
-          <span className="font-semibold text-text-secondary">
-            {hasFood ? 'Food & Drinks (Squad)' : 'Admission & Venue (Squad)'}
+      <div className="space-y-2.5 text-xs sm:text-sm font-mono">
+        <div className="flex items-center justify-between py-1 border-b border-dashed border-[#111111]/10">
+          <span className="text-[#555555]">
+            {hasFood ? 'Food & Drinks (Squad)' : 'Admission & Passes (Squad)'}
           </span>
-          <span className="font-mono font-bold text-midnight-lagoon tabular-nums">
+          <span className="font-bold text-[#111111] tabular-nums">
             ₦{foodCost.toLocaleString('en-NG')}
           </span>
         </div>
 
-        <div className="flex items-center justify-between py-1">
+        <div className="flex items-center justify-between py-1 border-b border-dashed border-[#111111]/10">
           <div className="flex flex-col">
-            <span className="font-semibold text-text-secondary">
-              {hasCar ? 'Transport (Driving/Car)' : 'Ride-Hailing Transport (Round Trip)'}
+            <span className="text-[#555555]">
+              {hasCar ? 'Transport (Self Drive)' : 'Round-Trip Ride-Hailing'}
             </span>
             {!hasCar && transportCost > 0 && squadSize > 1 && (
-              <span className="text-[10px] text-text-muted font-mono">
+              <span className="text-[10px] text-[#6B7280]">
                 ~₦{Math.round(transportCost / squadSize).toLocaleString('en-NG')}/person • {Math.ceil(squadSize / 4)} {Math.ceil(squadSize / 4) > 1 ? 'cars' : 'car'}
               </span>
             )}
           </div>
-          <span className="font-mono font-bold text-midnight-lagoon tabular-nums">
+          <span className="font-bold text-[#111111] tabular-nums">
             {hasCar || transportCost === 0 ? '₦0' : `~₦${transportCost.toLocaleString('en-NG')}`}
           </span>
         </div>
 
         {taxesCost > 0 && (
-          <div className="flex items-center justify-between py-1">
-            <span className="font-semibold text-text-secondary">
-              Service & VAT ({serviceChargePct}% + {vatPct}%)
+          <div className="flex items-center justify-between py-1 border-b border-dashed border-[#111111]/10">
+            <span className="text-[#555555]">
+              Service &amp; VAT ({serviceChargePct}% + {vatPct}%)
             </span>
-            <span className="font-mono font-bold text-midnight-lagoon tabular-nums">
+            <span className="font-bold text-[#111111] tabular-nums">
               ₦{taxesCost.toLocaleString('en-NG')}
             </span>
           </div>
         )}
 
         {/* Total Cost Row */}
-        <div className="pt-3 border-t border-dashed border-gray-200 flex items-center justify-between font-bold">
+        <div className="pt-3 border-t-2 border-dashed border-[#111111]/25 flex items-center justify-between font-bold">
           <div>
-            <span className="text-midnight-lagoon text-sm sm:text-base font-black block">
-              Estimated Outing Total
+            <span className="text-[#111111] text-sm sm:text-base font-black uppercase tracking-wider block">
+              Total Landed Damage
             </span>
             {squadSize > 1 && (
-              <span className="text-[11px] font-bold text-[#008751] font-mono block">
-                ~₦{Math.round(totalCost / squadSize).toLocaleString('en-NG')} per person
+              <span className="text-[11px] font-bold text-[#111111] block">
+                ~₦{Math.round(totalCost / squadSize).toLocaleString('en-NG')} / person
               </span>
             )}
           </div>
-          <span className="font-mono font-black text-[#008751] text-base sm:text-lg tabular-nums">
+          <span className="font-black text-[#111111] text-lg sm:text-xl tabular-nums">
             ~₦{totalCost.toLocaleString('en-NG')}
           </span>
         </div>
 
         {/* Budget vs Remaining Comparison */}
-        <div className="bg-[#FAF7F2] p-3 rounded-xl border border-[#E5E0D8]/60 flex items-center justify-between text-xs">
+        <div className="bg-[#F6F6F2] p-3.5 rounded-xl border border-[#E5E5DE] flex items-center justify-between text-xs font-mono">
           <div>
-            <span className="text-text-muted font-medium block">Your Budget</span>
-            <span className="font-mono font-bold text-midnight-lagoon">
+            <span className="text-[#6B7280] font-medium block">Squad Target</span>
+            <span className="font-bold text-[#111111]">
               ₦{budget.toLocaleString('en-NG')}
             </span>
           </div>
           <div className="text-right">
-            <span className="text-text-muted font-medium block">
-              {remaining < 0 ? 'Over Budget' : 'Remaining Left Over'}
+            <span className="text-[#6B7280] font-medium block">
+              {remaining < 0 ? 'Over Target' : 'Left Over'}
             </span>
             <span
-              className={`font-mono font-bold ${
-                remaining < 0 ? 'text-amber-700' : 'text-[#008751]'
+              className={`font-bold ${
+                remaining < 0 ? 'text-[#E54D2E]' : 'text-[#111111]'
               }`}
             >
               {remaining < 0 ? '-' : ''}₦{Math.abs(remaining).toLocaleString('en-NG')}

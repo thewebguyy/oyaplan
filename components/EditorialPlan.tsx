@@ -17,6 +17,8 @@ import RouteCard from "./dossier/RouteCard";
 import TransportEstimateCard from "./TransportEstimateCard";
 import { LocationService } from "@/lib/services/LocationService";
 
+import { DamageSlip } from "@/components/DamageSlip";
+
 interface EditorialPlanProps {
   evaluation: PlanEvaluation;
   input: ForgeInput;
@@ -50,14 +52,14 @@ export default function EditorialPlan({
 
   const getCardClasses = () => {
     if (isTopPick) {
-      return "border-none shadow-[0px_28px_56px_-10px_rgba(1,5,40,0.15),0px_4px_0px_0px_rgba(0,135,81,0.9)] rounded-[32px] bg-white";
+      return "border border-[#111111] shadow-[0px_24px_48px_-12px_rgba(17,17,17,0.12)] rounded-[24px] bg-white";
     }
-    // Alternative 1: Subtle warm accent
+    // Alternative 1: Subtle warm ecru accent
     if (alternativeIndex === 0) {
-      return "bg-[#FEFCE8] border border-[#FCC630]/60 shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
+      return "bg-[#F6F6F2] border border-[#E5E5DE] shadow-xs hover:shadow-md card-lift rounded-[20px]";
     }
     // Alternative 2: Clean neutral style
-    return "bg-white border border-border-default shadow-lagoon hover:shadow-lift-lagoon card-lift rounded-[28px]";
+    return "bg-white border border-[#E5E5DE] shadow-xs hover:shadow-md card-lift rounded-[20px]";
   };
 
   return (
@@ -69,8 +71,15 @@ export default function EditorialPlan({
       <div className="w-full h-px bg-border-default/50" />
 
       <div className={`${isTopPick ? 'px-6 sm:px-10 py-10 bg-white' : 'px-6 sm:px-10 py-8 bg-transparent'} space-y-6`}>
-        {/* 2. Total Expected Landed Cost & Itemized Spend Breakdown & Status/Reason */}
-        <BudgetConfidenceCard plan={plan} originalBudget={originalBudget || plan.totalCost} />
+        {/* 2. Flagship Damage Slip */}
+        <DamageSlip
+          plan={plan}
+          squadSize={input.squadSize || 1}
+          budget={originalBudget || input.budget}
+          startAreaName={input.startArea || "Lagos"}
+          shareUrl={typeof window !== "undefined" ? `${window.location.origin}/venue/${plan.spot.id}` : undefined}
+          isCompact={!isTopPick}
+        />
 
         {/* 3. Decision Summary Callout */}
         {plan.decisionSummary && (

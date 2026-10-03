@@ -402,38 +402,38 @@ export default function ForgeResultsClient({
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-12 pb-20 animate-holdup-slam">
+    <div className="max-w-4xl mx-auto space-y-10 pb-20 animate-holdup-slam">
       {/* Recommendations Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase rounded-full tracking-wider">
-              Evaluated {allSpots.length > 0 ? Math.min(allSpots.length, 24) : 18} venues in {startAreaLabel}
+            <span className="px-3 py-1 bg-[#111111] text-[#F9E828] text-[10px] font-mono font-bold uppercase rounded-full tracking-wider">
+              {allSpots.length > 0 ? Math.min(allSpots.length, 24) : 18} Venues Screened in {startAreaLabel}
             </span>
           </div>
-          <h1 className="type-display-product text-midnight-lagoon text-2xl sm:text-3xl tracking-tight font-black">
-            Your plan is ready 🎉
+          <h1 className="font-display text-[#111111] text-2xl sm:text-3xl lg:text-4xl tracking-tight font-black uppercase">
+            Your Damage Slip &amp; Plan
           </h1>
-          <p className="type-body text-text-secondary">
-            Here&apos;s a plan that fits your budget of <span className="text-text-primary font-[600]">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-text-primary font-[600]">{forgeInput.squadSize} people</span> around <span className="text-text-primary font-[600] lowercase">{startAreaLabel}</span>.
+          <p className="type-body text-[#555555] font-medium text-sm sm:text-base">
+            Verified landed cost under <span className="text-[#111111] font-bold font-mono">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-[#111111] font-bold">{forgeInput.squadSize} {forgeInput.squadSize === 1 ? "person" : "people"}</span> starting from <span className="text-[#111111] font-bold">{startAreaLabel}</span>.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsAdjustingInline(!isAdjustingInline)}
-            className={`type-label text-text-secondary transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-[10px] ${
-              isAdjustingInline ? "bg-[#008751]/10 text-[#008751]" : "hover:text-midnight-lagoon"
+            className={`type-label text-[#555555] transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-xl text-xs font-bold border border-[#E5E5DE] ${
+              isAdjustingInline ? "bg-[#111111] text-[#F9E828]" : "bg-white hover:bg-[#F6F6F2]"
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
             Adjust parameters
           </button>
           <button 
-            className="bg-midnight-lagoon hover:bg-charcoal text-white type-label h-[44px] px-6 rounded-[10px] tap-feedback btn-spring flex items-center gap-2 border-none shadow-none transition-colors duration-[250ms]"
+            className="bg-[#111111] hover:bg-black text-[#F9E828] font-black text-xs uppercase tracking-wider h-[42px] px-5 rounded-xl tap-feedback btn-spring flex items-center gap-2 border-none shadow-xs transition-colors cursor-pointer"
             onClick={() => router.refresh()}
           >
-            <RefreshCw className="w-4 h-4" />
-            Try different spots
+            <RefreshCw className="w-3.5 h-3.5" />
+            Shuffle Spots
           </button>
         </div>
       </div>

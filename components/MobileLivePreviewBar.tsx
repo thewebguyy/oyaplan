@@ -159,28 +159,28 @@ export default function MobileLivePreviewBar({
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 20, opacity: 0 }}
-          className="bg-[#111827] text-white rounded-2xl p-3 shadow-2xl border border-white/10 flex items-center justify-between backdrop-blur-xl"
+          className="bg-[#111111] text-white rounded-2xl p-3 shadow-2xl border border-white/10 flex items-center justify-between backdrop-blur-xl"
         >
           <div 
             onClick={() => setIsOpen(true)} 
             className="flex items-center gap-3 min-w-0 cursor-pointer select-none active:opacity-80 transition-opacity flex-1 mr-2"
             title="Tap to review cost breakdown"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#008751] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-inner">
+            <div className="w-10 h-10 rounded-xl bg-[#111111] border border-white/20 text-[#F9E828] flex items-center justify-center font-black text-sm shrink-0 shadow-inner">
               <Sparkles className="w-5 h-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FCC630] uppercase tracking-wider">
+              <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#F9E828] uppercase tracking-wider">
                 <span>{spotsToUse.length > 1 ? `Top ${spotsToUse.length} Matches` : "Top Match"}</span>
                 <span>•</span>
                 <span className="truncate">{vibe || "Outing"}</span>
                 <ChevronUp className="w-3 h-3 text-white/50 shrink-0" />
               </div>
-              <p className="text-sm font-bold text-white truncate leading-tight">
+              <p className="text-sm font-black text-white truncate leading-tight font-display uppercase tracking-tight">
                 {topSpot.name} {spotsToUse.length > 1 ? `& ${spotsToUse.length - 1} more` : ""}
               </p>
-              <p className="text-[11px] text-white/70">
-                <strong className="text-white font-bold">{displayCostStr}</strong> / person
+              <p className="text-[11px] text-white/80 font-mono">
+                <strong className="text-[#F9E828] font-bold">{displayCostStr}</strong> / person
               </p>
             </div>
           </div>
@@ -190,10 +190,10 @@ export default function MobileLivePreviewBar({
               e.stopPropagation();
               handleGeneratePlan(topSpot);
             }}
-            className="h-10 px-4 bg-white hover:bg-white/90 text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] shrink-0 shadow-sm flex items-center gap-1.5 cursor-pointer"
+            className="h-10 px-4 bg-[#F9E828] hover:bg-[#F9E828]/90 text-[#111111] font-black text-xs uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] shrink-0 shadow-sm flex items-center gap-1.5 cursor-pointer"
             aria-label="Start planning and view full options"
           >
-            <span>{CTA_LABELS.start_planning}</span>
+            <span>Lock In</span>
           </button>
         </motion.div>
       </div>
@@ -217,24 +217,24 @@ export default function MobileLivePreviewBar({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="fixed bottom-0 inset-x-0 bg-white rounded-t-[32px] z-50 max-h-[85vh] overflow-y-auto shadow-2xl flex flex-col"
+              className="fixed bottom-0 inset-x-0 bg-white rounded-t-[28px] z-50 max-h-[85vh] overflow-y-auto shadow-2xl flex flex-col font-sans"
             >
               {/* Header handle indicator */}
-              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto my-3 shrink-0" />
+              <div className="w-12 h-1 bg-[#111111]/20 rounded-full mx-auto my-3 shrink-0" />
 
               {/* Sheet Title */}
-              <div className="px-6 pb-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+              <div className="px-6 pb-4 border-b border-[#E5E5DE] flex items-center justify-between shrink-0">
                 <div>
-                  <h3 className="text-lg font-black text-black uppercase tracking-wide">
-                    Cost Estimator
+                  <h3 className="text-base font-black text-[#111111] uppercase tracking-wider font-mono">
+                    Damage Slip Estimator
                   </h3>
-                  <p className="text-xs text-gray-500 font-medium">
-                    Calculated for squad of {squadSize}
+                  <p className="text-xs text-[#6B7280] font-mono">
+                    Squad of {squadSize} • Lagos Landed Cost
                   </p>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-black"
+                  className="w-8 h-8 rounded-full bg-[#F6F6F2] border border-[#E5E5DE] flex items-center justify-center text-[#555555] hover:text-[#111111]"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -248,65 +248,68 @@ export default function MobileLivePreviewBar({
                   const sTransportCost = isUnavailable ? 0 : sEstimate.midpointCost;
                   const sFoodCost = Math.round(((spot.price_per_person || 12000) * squadSize) / 100) * 100;
                   const sTotalCost = sFoodCost + sTransportCost;
+                  const sPerPerson = Math.round(sTotalCost / Math.max(1, squadSize));
                   
                   return (
-                    <div key={spot.id || idx} className="space-y-3 pb-6 border-b border-gray-200 last:border-b-0 last:pb-0">
+                    <div key={spot.id || idx} className="space-y-3 pb-6 border-b border-[#E5E5DE] last:border-b-0 last:pb-0">
                       {/* Spot Title Card */}
-                      <div className="bg-[#FAFAF8] border border-[#E5E7EB] rounded-2xl p-4 space-y-1.5">
+                      <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-xl p-4 space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#008751]/10 text-[#008751]">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111] text-[#F9E828]">
                             <ShieldCheck className="w-3 h-3" /> {idx === 0 ? "Top Match" : "Great Alternative"}
                           </span>
-                          <span className="text-xs font-bold text-[#6B7280]">
+                          <span className="text-xs font-mono font-bold text-[#6B7280]">
                             Squad of {squadSize}
                           </span>
                         </div>
-                        <h4 className="text-xl font-black text-[#1A1A1A]">
+                        <h4 className="text-lg font-black text-[#111111] font-display uppercase tracking-tight">
                           {spot.name}
                         </h4>
-                        <p className="text-xs text-[#6B7280] flex items-center gap-1 font-medium">
-                          <MapPin className="w-3.5 h-3.5 text-[#008751]" />
+                        <p className="text-xs text-[#6B7280] flex items-center gap-1 font-mono">
+                          <MapPin className="w-3.5 h-3.5 text-[#111111]" />
                           {spot.address || spot.address_slug}
                         </p>
                       </div>
 
                       {/* Cost Line Item Breakdown */}
-                      <div className="border border-[#E5E7EB] bg-[#FAFAF8]/40 p-4 rounded-2xl space-y-2.5 text-xs sm:text-sm">
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="text-gray-600 font-medium">
+                      <div className="border border-[#E5E5DE] bg-white p-4 rounded-xl space-y-2 text-xs font-mono">
+                        <div className="flex justify-between items-center py-1 border-b border-dashed border-[#111111]/15">
+                          <span className="text-[#555555]">
                             Food &amp; Dining ({squadSize}x)
                           </span>
-                          <span className="font-bold text-[#1A1A1A]">
+                          <span className="font-bold text-[#111111]">
                             ₦{sFoodCost.toLocaleString()}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                          <span className="text-gray-600 font-medium flex items-center gap-1">
-                            Estimated Transport (Round-trip)
+                        <div className="flex justify-between items-center py-1 border-b border-dashed border-[#111111]/15">
+                          <span className="text-[#555555] flex items-center gap-1">
+                            Round-Trip Transport
                           </span>
-                          <span className={`font-bold ${isUnavailable ? "text-amber-600" : "text-[#1A1A1A]"}`}>
+                          <span className={`font-bold ${isUnavailable ? "text-amber-600" : "text-[#111111]"}`}>
                             {isUnavailable ? "Unavailable" : `₦${sTransportCost.toLocaleString()}`}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center pt-2 font-black text-base text-black">
-                          <span className="uppercase tracking-wide">Total Expected Cost</span>
-                          <span className="text-[#008751]">
+                        <div className="flex justify-between items-center pt-2 font-black text-sm text-[#111111]">
+                          <span className="uppercase tracking-wider">Landed Damage</span>
+                          <span className="text-[#111111] text-base">
                             {isUnavailable ? `₦${sTotalCost.toLocaleString()} + transport` : `₦${sTotalCost.toLocaleString()}`}
                           </span>
                         </div>
+                        <div className="flex justify-between items-center text-[11px] text-[#6B7280] pt-0.5">
+                          <span>Per person:</span>
+                          <span className="font-bold text-[#111111]">₦{sPerPerson.toLocaleString()} each</span>
+                        </div>
                       </div>
 
-                      {/* Direct Explore CTA - Clean Next-State Label */}
-                      <div className="px-4">
-                        <div className="flex flex-col gap-2">
-                          <button
-                            onClick={() => handleGeneratePlan(spot)}
-                            className="w-full h-10 bg-[#008751] hover:bg-[#006b41] text-white font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
-                          >
-                            <span>{CTA_LABELS.view_plan}</span>
-                            <Check className="w-3.5 h-3.5 stroke-[3]" />
-                          </button>
-                        </div>
+                      {/* Direct Explore CTA */}
+                      <div className="pt-1">
+                        <button
+                          onClick={() => handleGeneratePlan(spot)}
+                          className="w-full h-11 bg-[#111111] hover:bg-black text-[#F9E828] font-black text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+                        >
+                          <span>Lock In This Plan</span>
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        </button>
                       </div>
 
                       {/* Route Card — only when venue has coordinates and user has a start area */}

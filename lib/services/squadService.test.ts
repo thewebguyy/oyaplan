@@ -152,9 +152,9 @@ describe("SquadService (OyaSquad Collaborative Decision Engine & Tier 1)", () =>
       expect(data.liveEconomics.foodSpend).toBe(45000);
       expect(data.liveEconomics.vehiclesRequired).toBe(1);
       expect(data.liveEconomics.transportNote).toContain("1 ride-hailing vehicle");
-      // Total = 45,000 + 13,000 = 58,000
-      expect(data.liveEconomics.totalSpend).toBe(58000);
-      expect(data.liveEconomics.perPersonSpend).toBe(19334);
+      // Total = 45,000 + 26,000 = 71,000
+      expect(data.liveEconomics.totalSpend).toBe(71000);
+      expect(data.liveEconomics.perPersonSpend).toBe(23667);
       // Settlement info present
       expect(data.settlement?.account_name).toBe("Bode Olusegun");
     });

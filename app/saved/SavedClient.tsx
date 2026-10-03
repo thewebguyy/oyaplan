@@ -72,37 +72,61 @@ export default function SavedClient({
     );
   }
 
+  const STARTER_PACKS = [
+    {
+      title: "Island Rooftops",
+      description: "Sunset drinks, breezy skyline vibes in VI & Lekki.",
+      href: "/explore?category=bar&area=vi",
+      badge: "Vibe Pack",
+    },
+    {
+      title: "Mainland Weekends",
+      description: "Affordable squad turnups and chops in Yaba & Ikeja.",
+      href: "/explore?area=ikeja&budget=40000",
+      badge: "Budget Saver",
+    },
+    {
+      title: "Date Night Under ₦30k",
+      description: "Intimate dinners and romantic corners that don't sting.",
+      href: "/forge?vibe=date-night&budget=30000&squad=2&fresh=true",
+      badge: "Date Pack",
+    },
+  ];
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 bg-white-sand min-h-[100dvh] text-text-primary antialiased">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 bg-[#F6F6F2] min-h-[100dvh] text-[#111111] antialiased font-sans">
       {/* Header & Navigation Context */}
       <div className="space-y-4">
         <Link href="/">
-          <button className="type-label text-text-secondary hover:text-brand-green transition-colors flex items-center gap-1.5 tap-feedback py-1 text-xs">
+          <button className="type-label text-[#555555] hover:text-[#111111] transition-colors flex items-center gap-1.5 tap-feedback py-1 text-xs font-mono font-bold cursor-pointer">
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Planner</span>
+            <span>← Back to Planner</span>
           </button>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EAE4DC] pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E5DE] pb-5">
           <div>
-            <h1 className="type-display-product text-2xl sm:text-3xl font-black text-midnight-lagoon tracking-tight">
-              Saved Experience
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#F9E828] bg-[#111111] px-3 py-1 rounded-full shadow-xs mb-2">
+              <span>RESIDENT SHORTLIST</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#111111] font-display uppercase tracking-tight">
+              The Shortlist
             </h1>
-            <p className="text-xs sm:text-sm text-text-muted mt-1">
-              Your bookmarked Lagos spots and saved squad outing plans.
+            <p className="text-xs sm:text-sm text-[#555555] mt-1 font-medium">
+              Your vetted Lagos spots and saved outing plans. Ready when you move.
             </p>
           </div>
 
           {/* Segmented Tab Switcher */}
-          <div className="flex items-center gap-1 bg-surface-grey p-1.5 rounded-full border border-[#EAE4DC] w-fit self-start sm:self-auto shadow-2xs">
+          <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-[#E5E5DE] w-fit self-start sm:self-auto shadow-2xs">
             <button
               type="button"
               onClick={() => setActiveTab("spots")}
               aria-label={`Show saved spots (${savedSpots.length})`}
-              className={`px-4 py-1.5 font-black text-xs rounded-full transition-all tap-feedback cursor-pointer ${
+              className={`px-4 py-1.5 font-bold text-xs rounded-full transition-all tap-feedback cursor-pointer font-mono ${
                 activeTab === "spots"
-                  ? "bg-midnight-lagoon text-white shadow-xs"
-                  : "text-text-secondary hover:text-midnight-lagoon"
+                  ? "bg-[#111111] text-[#F9E828] shadow-xs"
+                  : "text-[#555555] hover:text-[#111111]"
               }`}
             >
               Saved Spots ({savedSpots.length})
@@ -112,14 +136,49 @@ export default function SavedClient({
               type="button"
               onClick={() => setActiveTab("plans")}
               aria-label={`Show saved plans (${serverSavedPlans.length})`}
-              className={`px-4 py-1.5 font-black text-xs rounded-full transition-all tap-feedback cursor-pointer ${
+              className={`px-4 py-1.5 font-bold text-xs rounded-full transition-all tap-feedback cursor-pointer font-mono ${
                 activeTab === "plans"
-                  ? "bg-midnight-lagoon text-white shadow-xs"
-                  : "text-text-secondary hover:text-midnight-lagoon"
+                  ? "bg-[#111111] text-[#F9E828] shadow-xs"
+                  : "text-[#555555] hover:text-[#111111]"
               }`}
             >
               Saved Plans ({serverSavedPlans.length})
             </button>
+          </div>
+        </div>
+
+        {/* Starter Packs Rail */}
+        <div className="space-y-2.5 pt-1">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#6B7280]">
+            Starter Packs &amp; Curated Filters
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {STARTER_PACKS.map((pack) => (
+              <Link
+                key={pack.title}
+                href={pack.href}
+                className="p-3.5 bg-white rounded-xl border border-[#E5E5DE] hover:border-[#111111] transition-all shadow-xs hover:shadow-sm flex flex-col justify-between group cursor-pointer"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#F6F6F2] text-[#111111] border border-[#E5E5DE]">
+                      {pack.badge}
+                    </span>
+                    <Sparkles className="w-3.5 h-3.5 text-[#111111] opacity-60 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <h4 className="text-sm font-black text-[#111111] group-hover:text-[#111111] font-display uppercase tracking-tight pt-1">
+                    {pack.title}
+                  </h4>
+                  <p className="text-[11px] text-[#6B7280] leading-snug">
+                    {pack.description}
+                  </p>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-[#111111] flex items-center gap-1 pt-2">
+                  <span>Explore Pack</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
@@ -180,25 +239,25 @@ export default function SavedClient({
                             {spot.name}
                           </h3>
                         </Link>
-                        <p className="text-xs text-text-muted flex items-center gap-1 line-clamp-1">
-                          <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                        <p className="text-xs text-[#6B7280] font-mono flex items-center gap-1 line-clamp-1">
+                          <MapPin className="w-3.5 h-3.5 text-[#111111] shrink-0" />
                           <span>{spot.address || spot.areas?.name || 'Lagos'}</span>
                         </p>
                       </div>
 
-                      <div className="pt-3 border-t border-[#EAE4DC] flex justify-between items-center">
+                      <div className="pt-3 border-t border-[#E5E5DE] flex justify-between items-center">
                         <div className="flex flex-col">
-                          <span className="font-black text-midnight-lagoon text-base sm:text-lg tabular-nums">
+                          <span className="font-black text-[#111111] text-base sm:text-lg font-mono tabular-nums">
                             ₦{(spot.price_per_person || 0).toLocaleString("en-NG")}
                           </span>
-                          <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider">
+                          <span className="text-[9px] text-[#6B7280] font-mono font-bold uppercase tracking-wider">
                             / person
                           </span>
                         </div>
 
                         <Link href={planUrl}>
-                          <Button className="bg-[#008751] hover:bg-[#007043] text-white text-xs uppercase font-black px-4 py-2 rounded-xl tap-feedback cursor-pointer shadow-xs">
-                            Forge Plan
+                          <Button className="bg-[#111111] hover:bg-black text-[#F9E828] text-xs uppercase font-black px-4 py-2 rounded-xl tap-feedback cursor-pointer shadow-xs">
+                            Plan Outing
                           </Button>
                         </Link>
                       </div>
@@ -208,20 +267,20 @@ export default function SavedClient({
               })}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-white rounded-[24px] border border-[#EAE4DC] space-y-4 shadow-xs">
-              <div className="w-14 h-14 bg-[#008751]/10 text-[#008751] rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
+            <div className="text-center py-16 px-4 bg-white rounded-[20px] border border-[#E5E5DE] space-y-4 shadow-xs">
+              <div className="w-14 h-14 bg-[#111111] text-[#F9E828] rounded-2xl flex items-center justify-center mx-auto shadow-xs">
                 <Bookmark className="w-7 h-7" />
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
-                <h2 className="font-black text-lg text-midnight-lagoon">
+                <h2 className="font-black text-lg text-[#111111] font-display uppercase tracking-tight">
                   No saved spots yet.
                 </h2>
-                <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
                   Bookmark places as you explore to easily pre-fill budget outing plans later.
                 </p>
               </div>
               <Link href="/explore" className="inline-block pt-2">
-                <Button className="bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs px-6 py-2.5 rounded-full shadow-xs tap-feedback">
+                <Button className="bg-[#111111] hover:bg-black text-[#F9E828] font-bold text-xs px-6 py-2.5 rounded-full shadow-xs tap-feedback">
                   Explore Lagos Spots
                 </Button>
               </Link>
@@ -234,21 +293,21 @@ export default function SavedClient({
       {activeTab === "plans" && (
         <section aria-label="Saved plans list" className="space-y-6">
           {!isAuthenticated ? (
-            <div className="bg-white rounded-[24px] border border-[#EAE4DC] p-8 text-center space-y-4 shadow-xs max-w-md mx-auto">
-              <div className="w-12 h-12 rounded-2xl bg-[#008751]/10 text-[#008751] flex items-center justify-center mx-auto">
+            <div className="bg-white rounded-[20px] border border-[#E5E5DE] p-8 text-center space-y-4 shadow-xs max-w-md mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-[#111111] text-[#F9E828] flex items-center justify-center mx-auto">
                 <Calendar className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="font-black text-base text-midnight-lagoon">
+                <h3 className="font-black text-base text-[#111111] font-display uppercase tracking-tight">
                   Sign in to view saved plans
                 </h3>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  Your outings and cost breakdowns sync across devices when signed in.
+                <p className="text-xs text-[#555555] leading-relaxed">
+                  Your outings and damage slips sync across devices when signed in.
                 </p>
               </div>
               <Button
                 onClick={() => openModal("Sign in to view saved plans", "/saved")}
-                className="w-full bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs py-2.5 rounded-xl tap-feedback"
+                className="w-full bg-[#111111] hover:bg-black text-[#F9E828] font-bold text-xs py-2.5 rounded-xl tap-feedback"
               >
                 Sign In
               </Button>
@@ -273,44 +332,44 @@ export default function SavedClient({
                 return (
                   <div
                     key={plan.id || index}
-                    className="bg-white border border-[#EAE4DC] rounded-[24px] p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                    className="bg-white border border-[#E5E5DE] rounded-[20px] p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 font-sans"
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#008751]/10 text-[#008751]">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111] text-[#F9E828]">
                           {plan.vibe || "Outing"}
                         </span>
-                        <span className="text-[11px] font-bold text-text-muted">
+                        <span className="text-[11px] font-mono font-bold text-[#6B7280]">
                           Saved {dateText}
                         </span>
                       </div>
 
-                      <h3 className="font-black text-base sm:text-lg text-midnight-lagoon leading-snug">
+                      <h3 className="font-black text-base sm:text-lg text-[#111111] font-display uppercase tracking-tight leading-snug">
                         {spotName}
                       </h3>
 
                       {spot?.address && (
-                        <p className="text-xs text-text-muted flex items-center gap-1 line-clamp-1">
-                          <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                        <p className="text-xs text-[#6B7280] font-mono flex items-center gap-1 line-clamp-1">
+                          <MapPin className="w-3.5 h-3.5 text-[#111111] shrink-0" />
                           <span>{spot.address}</span>
                         </p>
                       )}
                     </div>
 
-                    <div className="pt-3 border-t border-[#EAE4DC] flex items-center justify-between">
+                    <div className="pt-3 border-t border-[#E5E5DE] flex items-center justify-between font-mono">
                       <div>
-                        <div className="font-black text-midnight-lagoon text-base sm:text-lg">
+                        <div className="font-black text-[#111111] text-base sm:text-lg">
                           ₦{plan.total_cost.toLocaleString("en-NG")}
                         </div>
-                        <div className="text-[10px] text-text-muted font-bold flex items-center gap-1">
-                          <Users className="w-3 h-3 text-[#008751]" />
+                        <div className="text-[10px] text-[#6B7280] font-bold flex items-center gap-1">
+                          <Users className="w-3 h-3 text-[#111111]" />
                           <span>Squad of {plan.squad_size || 2}</span>
                         </div>
                       </div>
 
                       <Link href={`/plan/${plan.id}`}>
-                        <Button className="bg-midnight-lagoon hover:bg-black text-white text-xs font-black px-4 py-2 rounded-xl tap-feedback flex items-center gap-1.5">
-                          <span>View Plan</span>
+                        <Button className="bg-[#111111] hover:bg-black text-[#F9E828] text-xs font-black px-4 py-2 rounded-xl tap-feedback flex items-center gap-1.5 cursor-pointer">
+                          <span>View Slip</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </Button>
                       </Link>
@@ -320,20 +379,20 @@ export default function SavedClient({
               })}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-white rounded-[24px] border border-[#EAE4DC] space-y-4 shadow-xs">
-              <div className="w-14 h-14 bg-[#008751]/10 text-[#008751] rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
+            <div className="text-center py-16 px-4 bg-white rounded-[20px] border border-[#E5E5DE] space-y-4 shadow-xs">
+              <div className="w-14 h-14 bg-[#111111] text-[#F9E828] rounded-2xl flex items-center justify-center mx-auto shadow-xs">
                 <Calendar className="w-7 h-7" />
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
-                <h2 className="font-black text-lg text-midnight-lagoon">
+                <h2 className="font-black text-lg text-[#111111] font-display uppercase tracking-tight">
                   No saved plans yet.
                 </h2>
-                <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
-                  When you forge a plan for you and your squad, save it to access the price breakdown anytime.
+                <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
+                  When you plan an outing for you and your squad, save it to access the damage slip anytime.
                 </p>
               </div>
               <Link href="/" className="inline-block pt-2">
-                <Button className="bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs px-6 py-2.5 rounded-full shadow-xs tap-feedback">
+                <Button className="bg-[#111111] hover:bg-black text-[#F9E828] font-bold text-xs px-6 py-2.5 rounded-full shadow-xs tap-feedback">
                   Plan an Outing
                 </Button>
               </Link>

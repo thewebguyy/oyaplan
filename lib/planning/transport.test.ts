@@ -163,31 +163,31 @@ describe('Transport pricing and confidence engine logic', () => {
       const oshodiToVi = TransportPricingProvider.calculateEstimate('oshodi', 'vi', 2);
       expect(oshodiToVi.status).toBe('available');
       expect(oshodiToVi.isCrossWater).toBe(true);
-      expect(oshodiToVi.midpointCost).toBe(17000); // 8500 * 2 round trip
+      expect(oshodiToVi.midpointCost).toBe(26000); // 13000 * 2 round trip
 
       // Bariga (mainland) to Ikeja (mainland) same zone
       const barigaToIkeja = TransportPricingProvider.calculateEstimate('bariga', 'ikeja', 2);
       expect(barigaToIkeja.status).toBe('available');
       expect(barigaToIkeja.isCrossWater).toBe(false);
-      expect(barigaToIkeja.midpointCost).toBe(7000); // 3500 * 2 round trip
+      expect(barigaToIkeja.midpointCost).toBe(10000); // 5000 * 2 round trip
 
       // Sangotedo (island) to Lekki Phase 1 (island) same zone
       const sangotedoToLekki = TransportPricingProvider.calculateEstimate('sangotedo', 'lekki-phase-1', 2);
       expect(sangotedoToLekki.status).toBe('available');
       expect(sangotedoToLekki.isCrossWater).toBe(false);
-      expect(sangotedoToLekki.midpointCost).toBe(7000);
+      expect(sangotedoToLekki.midpointCost).toBe(10000);
 
       // Lagos Island to Yaba (island to central)
       const islandToYaba = TransportPricingProvider.calculateEstimate('lagos-island', 'yaba', 2);
       expect(islandToYaba.status).toBe('available');
-      expect(islandToYaba.midpointCost).toBe(11000); // 5500 * 2 round trip
+      expect(islandToYaba.midpointCost).toBe(16000); // 8000 * 2 round trip
     });
 
     it('handles casing and whitespace gracefully', () => {
       const estimate = TransportPricingProvider.calculateEstimate('  Oshodi  ', 'VI', 1);
       expect(estimate.status).toBe('available');
       expect(estimate.isCrossWater).toBe(true);
-      expect(estimate.midpointCost).toBe(17000);
+      expect(estimate.midpointCost).toBe(26000);
     });
   });
 

@@ -198,7 +198,7 @@ export default function PlannerWidget({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative overflow-hidden bg-white rounded-[16px] border border-[#E5E7EB] p-4 sm:p-6 md:p-8 shadow-[0_4px_16px_rgba(0,0,0,0.06)] w-full max-w-[500px] flex flex-col gap-6 sm:gap-8"
+      className="relative overflow-hidden bg-white rounded-[20px] border border-[#E5E5DE] p-5 sm:p-7 md:p-8 shadow-[0_8px_30px_rgba(17,17,17,0.06)] w-full max-w-[520px] flex flex-col gap-6 sm:gap-7"
       noValidate
     >
       <AnimatePresence>
@@ -207,16 +207,16 @@ export default function PlannerWidget({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="absolute inset-0 bg-white/98 backdrop-blur-xs rounded-[16px] z-20 flex flex-col items-center justify-center p-6 text-center gap-6"
+            className="absolute inset-0 bg-white/98 backdrop-blur-xs rounded-[20px] z-20 flex flex-col items-center justify-center p-6 text-center gap-6"
           >
             <div className="flex flex-col gap-2">
               <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">
                 <AlertTriangle className="w-6 h-6 text-amber-600" />
               </div>
-              <h3 className="text-lg font-black text-text-primary">
+              <h3 className="text-lg font-black text-[#111111]">
                 We don&apos;t support your area yet
               </h3>
-              <p className="text-xs text-text-muted max-w-[280px] leading-relaxed">
+              <p className="text-xs text-[#555555] max-w-[280px] leading-relaxed">
                 OyaPlan currently operates in Lagos. Select an area manually to start planning.
               </p>
             </div>
@@ -225,7 +225,7 @@ export default function PlannerWidget({
               <button
                 type="button"
                 onClick={resetStatus}
-                className="w-full bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-xs cursor-pointer min-h-[44px]"
+                className="w-full bg-[#111111] hover:bg-black text-[#F9E828] text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-xs cursor-pointer min-h-[44px]"
               >
                 Choose an area
               </button>
@@ -240,12 +240,12 @@ export default function PlannerWidget({
         {/* LOCATION SELECTOR LAYER */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between flex-wrap gap-1">
-            <label htmlFor="area-selection-input" className="text-sm font-semibold text-[#6B7280] flex items-center gap-1.5 flex-wrap">
-              <MapPin className="w-4 h-4 text-[#008751]" />
-              <span>Starting Location{selectedArea ? ` (${selectedArea.name})` : ""}</span>
+            <label htmlFor="area-selection-input" className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555] flex items-center gap-1.5 flex-wrap">
+              <MapPin className="w-3.5 h-3.5 text-[#111111]" />
+              <span>Starting From{selectedArea ? `: ${selectedArea.name}` : ""}</span>
               {(status === "permission-denied" || status === "unsupported" || status === "error") && (
                 <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                  Defaulted to {selectedArea?.name || "Lagos"} (tap to change)
+                  Defaulted to {selectedArea?.name || "Lagos"}
                 </span>
               )}
             </label>
@@ -253,20 +253,20 @@ export default function PlannerWidget({
               type="button"
               onClick={handleUseCurrentLocation}
               disabled={status === "locating"}
-              className="text-xs font-bold text-[#008751] hover:underline cursor-pointer flex items-center gap-1.5 min-h-[44px]"
+              className="text-xs font-bold text-[#111111] hover:underline cursor-pointer flex items-center gap-1.5 min-h-[36px]"
             >
               {status === "locating" ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#008751]" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#111111]" />
                   <span>Locating...</span>
                 </>
               ) : (
-                "Use My Location"
+                "Use My GPS"
               )}
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto pr-1">
+          <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto pr-1">
             {LocationService.getVerifiedAreas().map((area) => {
               const isSelected = selectedArea?.id === area.id;
               return (
@@ -279,23 +279,22 @@ export default function PlannerWidget({
                       setControlledArea(area);
                     }
                   }}
-                  className={`px-3.5 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[36px] ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer min-h-[32px] ${
                     isSelected
-                      ? "bg-[#008751] text-white shadow-xs"
-                      : "bg-[#F3F4F6] text-[#1A1A1A] hover:bg-[#D1E7DB]"
+                      ? "bg-[#111111] text-white shadow-xs"
+                      : "bg-[#F6F6F2] text-[#111111] hover:bg-[#EAEAE2] border border-[#E5E5DE]"
                   }`}
                 >
-                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                  {isSelected && <Check className="w-3 h-3 stroke-[3] text-[#F9E828]" />}
                   <span>{area.name}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* Planning area transparency notice — only shown when display location differs from planning area */}
           {status === "gps" && origin && origin.displayArea.slug !== origin.planningAreaSlug && (
-            <p className="text-xs text-text-muted mt-1">
-              Planning in <span className="font-bold text-text-secondary">
+            <p className="text-xs text-[#6B7280] mt-1 font-mono">
+              Planning zone: <span className="font-bold text-[#111111]">
                 {LocationService.getVerifiedAreas().find((a) => a.id === origin.planningAreaSlug)?.name ?? origin.planningAreaSlug}
               </span>
             </p>
@@ -303,16 +302,16 @@ export default function PlannerWidget({
         </div>
 
         {/* INPUT: Progressive Social Presets (Who's going?) */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-[#6B7280]">
-              Who&apos;s going?
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555]">
+              Who&apos;s Going?
             </span>
-            <span className="text-xs font-bold text-brand-green bg-brand-green/10 px-2.5 py-0.5 rounded-full">
+            <span className="text-xs font-mono font-bold text-[#111111] bg-[#F6F6F2] border border-[#E5E5DE] px-2.5 py-0.5 rounded-full">
               {squadSize === 1
-                ? "Solo Outing"
+                ? "Solo"
                 : squadSize === 2
-                ? "Date / Plus One"
+                ? "Date / +1"
                 : `${squadSize} people`}
             </span>
           </div>
@@ -325,15 +324,15 @@ export default function PlannerWidget({
                 setSquadSize(1);
                 setGroupId(null);
               }}
-              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback min-h-[72px] ${
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border tap-feedback min-h-[68px] ${
                 squadSize === 1 && !groupId
-                  ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
-                  : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
+                  ? "bg-[#111111] text-white border-[#111111] shadow-xs"
+                  : "bg-[#F6F6F2] hover:bg-[#EAEAE2] text-[#111111] border-[#E5E5DE]"
               }`}
             >
-              <User className="w-4 h-4 mb-1" />
+              <User className={`w-4 h-4 mb-1 ${squadSize === 1 && !groupId ? "text-[#F9E828]" : ""}`} />
               <span>Just Me</span>
-              <span className="text-[10px] opacity-75 font-normal">1 person</span>
+              <span className="text-[10px] opacity-75 font-mono">1 person</span>
             </button>
 
             <button
@@ -342,15 +341,15 @@ export default function PlannerWidget({
                 setSquadSize(2);
                 setGroupId(null);
               }}
-              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback min-h-[72px] ${
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border tap-feedback min-h-[68px] ${
                 squadSize === 2 && !groupId
-                  ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
-                  : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
+                  ? "bg-[#111111] text-white border-[#111111] shadow-xs"
+                  : "bg-[#F6F6F2] hover:bg-[#EAEAE2] text-[#111111] border-[#E5E5DE]"
               }`}
             >
-              <Heart className="w-4 h-4 mb-1" />
+              <Heart className={`w-4 h-4 mb-1 ${squadSize === 2 && !groupId ? "text-[#F9E828]" : ""}`} />
               <span>Date / +1</span>
-              <span className="text-[10px] opacity-75 font-normal">2 people</span>
+              <span className="text-[10px] opacity-75 font-mono">2 people</span>
             </button>
 
             <button
@@ -358,24 +357,24 @@ export default function PlannerWidget({
               onClick={() => {
                 if (squadSize < 3) setSquadSize(4);
               }}
-              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 tap-feedback min-h-[72px] ${
+              className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border tap-feedback min-h-[68px] ${
                 squadSize >= 3 || groupId
-                  ? "bg-midnight-lagoon text-white border-midnight-lagoon shadow-xs"
-                  : "bg-surface-grey hover:bg-surface-grey/80 text-text-primary border-transparent"
+                  ? "bg-[#111111] text-white border-[#111111] shadow-xs"
+                  : "bg-[#F6F6F2] hover:bg-[#EAEAE2] text-[#111111] border-[#E5E5DE]"
               }`}
             >
-              <Users className="w-4 h-4 mb-1" />
+              <Users className={`w-4 h-4 mb-1 ${squadSize >= 3 || groupId ? "text-[#F9E828]" : ""}`} />
               <span>Squad</span>
-              <span className="text-[10px] opacity-75 font-normal">3+ people</span>
+              <span className="text-[10px] opacity-75 font-mono">3+ people</span>
             </button>
           </div>
 
           {/* Secondary Layer: Squad Details (only if squadSize >= 3 or groupId selected) */}
           {(squadSize >= 3 || groupId) && (
-            <div className="p-3 bg-surface-grey/60 rounded-2xl border border-border-default/60 space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="p-3 bg-[#F6F6F2] rounded-xl border border-[#E5E5DE] space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
-                  Squad Size
+                <span className="text-[10px] font-mono font-bold text-[#555555] uppercase tracking-wider">
+                  Squad Headcount
                 </span>
                 <div className="flex gap-1.5">
                   {[3, 4, 6, 8].map((size) => (
@@ -386,10 +385,10 @@ export default function PlannerWidget({
                         setSquadSize(size);
                         setGroupId(null);
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer min-h-[36px] ${
+                      className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer min-h-[32px] ${
                         squadSize === size && !groupId
-                          ? "bg-brand-green text-white shadow-xs"
-                          : "bg-white text-text-secondary hover:bg-white/80 border border-border-default/60"
+                          ? "bg-[#111111] text-[#F9E828] shadow-xs"
+                          : "bg-white text-[#111111] hover:bg-gray-100 border border-[#E5E5DE]"
                       }`}
                     >
                       {size === 8 ? "8+" : size}
@@ -411,15 +410,15 @@ export default function PlannerWidget({
         </div>
 
         {/* INPUT: Budget Slider */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <label htmlFor="budget-input" className="text-sm font-semibold text-[#6B7280]">
-                What&apos;s your budget?
+              <label htmlFor="budget-input" className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555]">
+                Squad Target Budget
               </label>
-              <span className="text-[11px] text-[#6B7280] font-normal leading-tight">Total or per person</span>
+              <span className="text-[11px] text-[#777777] font-normal leading-tight">Total spend limit for all</span>
             </div>
-            <span className="text-base font-bold text-[#1A1A1A]">
+            <span className="text-lg font-black font-mono text-[#111111] tabular-nums">
               {budget === 100000 ? "₦100,000+" : formatCurrency(budget)}
             </span>
           </div>
@@ -431,18 +430,18 @@ export default function PlannerWidget({
             step="5000"
             value={budget}
             onChange={(e) => setBudget(Number(e.target.value))}
-            className="premium-range-slider"
+            className="premium-range-slider cursor-pointer"
             style={{
-              background: `linear-gradient(to right, #008751 ${budgetPct}%, #F3F4F6 ${budgetPct}%)`,
+              background: `linear-gradient(to right, #111111 ${budgetPct}%, #E5E5DE ${budgetPct}%)`,
             }}
             aria-label={`Budget: current value ${formatCurrency(budget)}. Choose between ₦10,000 and ₦100,000+`}
           />
         </div>
 
         {/* INPUT: Vibe Selection Chips */}
-        <div className="flex flex-col gap-3">
-          <span className="text-sm font-semibold text-[#6B7280]">What vibe?</span>
-          <div className="grid grid-cols-2 gap-3" role="group" aria-label="Select outing vibe">
+        <div className="flex flex-col gap-2.5">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555]">Outing Vibe</span>
+          <div className="grid grid-cols-2 gap-2.5" role="group" aria-label="Select outing vibe">
             {PRIMARY_VIBES.map((item) => {
               const isActive = vibe === item.value;
               const Icon = item.icon;
@@ -451,18 +450,18 @@ export default function PlannerWidget({
                   key={item.value}
                   type="button"
                   onClick={() => handleVibeClick(item.value)}
-                  className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none min-h-[48px]
+                  className={`flex items-center gap-2.5 px-3.5 h-12 rounded-xl font-bold text-xs text-left transition-all duration-150 cursor-pointer select-none outline-none min-h-[48px]
                     ${
                       isActive
-                        ? "bg-[#FCC630] text-[#1A1A1A] border-2 border-[#008751]"
-                        : "bg-[#F3F4F6] text-[#1A1A1A] border-2 border-transparent hover:bg-[#D1E7DB]"
+                        ? "bg-[#111111] text-white border-2 border-[#111111] shadow-xs"
+                        : "bg-[#F6F6F2] text-[#111111] border border-[#E5E5DE] hover:bg-[#EAEAE2]"
                     }
-                    focus-visible:ring-3 focus-visible:ring-[#008751]/50`}
+                    focus-visible:ring-2 focus-visible:ring-[#111111]/30`}
                   role="button"
                   aria-pressed={isActive}
                   aria-label={`${item.label} vibe selection`}
                 >
-                  <Icon className="w-5 h-5 shrink-0 text-midnight-lagoon" aria-hidden="true" />
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#F9E828]" : "text-[#111111]"}`} aria-hidden="true" />
                   <span className="truncate">{item.label}</span>
                 </button>
               );
@@ -483,18 +482,18 @@ export default function PlannerWidget({
                       exit={{ opacity: 0, y: 8, filter: "blur(1.5px)" }}
                       transition={{ type: "spring", stiffness: 120, damping: 18 }}
                       onClick={() => handleVibeClick(item.value)}
-                      className={`flex items-center gap-2.5 px-4 h-14 rounded-[12px] font-bold text-sm text-left transition-all duration-200 cursor-pointer select-none outline-none min-h-[48px]
+                      className={`flex items-center gap-2.5 px-3.5 h-12 rounded-xl font-bold text-xs text-left transition-all duration-150 cursor-pointer select-none outline-none min-h-[48px]
                         ${
                           isActive
-                            ? "bg-[#FCC630] text-[#1A1A1A] border-2 border-[#008751]"
-                            : "bg-[#F3F4F6] text-[#1A1A1A] border-2 border-transparent hover:bg-[#D1E7DB]"
+                            ? "bg-[#111111] text-white border-2 border-[#111111] shadow-xs"
+                            : "bg-[#F6F6F2] text-[#111111] border border-[#E5E5DE] hover:bg-[#EAEAE2]"
                         }
-                        focus-visible:ring-3 focus-visible:ring-[#008751]/50`}
+                        focus-visible:ring-2 focus-visible:ring-[#111111]/30`}
                       role="button"
                       aria-pressed={isActive}
                       aria-label={`${item.label} vibe selection`}
                     >
-                      <Icon className="w-5 h-5 shrink-0 text-midnight-lagoon" aria-hidden="true" />
+                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#F9E828]" : "text-[#111111]"}`} aria-hidden="true" />
                       <span className="truncate">{item.label}</span>
                     </motion.button>
                   );
@@ -506,9 +505,9 @@ export default function PlannerWidget({
             <button
               type="button"
               onClick={() => setShowMoreVibes(!showMoreVibes)}
-              className="text-sm font-bold text-[#008751] hover:underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#008751]/20 rounded px-2.5 py-3 min-h-[44px] inline-flex items-center -ml-2 transition-all tap-feedback"
+              className="text-xs font-bold text-[#111111] hover:underline cursor-pointer focus:outline-none rounded py-1 min-h-[36px] inline-flex items-center transition-all tap-feedback"
             >
-              {showMoreVibes ? "Less vibes" : "More vibes >"}
+              {showMoreVibes ? "← Less vibes" : "+ More vibes"}
             </button>
           </div>
         </div>
@@ -522,7 +521,7 @@ export default function PlannerWidget({
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -6, filter: "blur(1px)" }}
             transition={{ type: "spring", stiffness: 150, damping: 15 }}
-            className="text-sm text-red-600 font-semibold -mt-2"
+            className="text-xs font-mono font-bold text-[#E54D2E] bg-red-50 p-2.5 rounded-lg border border-red-200 -mt-2"
             role="alert"
           >
             {validationError}
@@ -534,10 +533,10 @@ export default function PlannerWidget({
       <button
         id="planner-submit-btn"
         type="submit"
-        className="w-full h-14 bg-[#008751] text-white font-bold text-lg rounded-[12px] flex items-center justify-center cursor-pointer shadow-sm hover:brightness-90 active:scale-[0.98] active:shadow-md transition-all duration-150 outline-none focus-visible:outline focus-visible:outline-3 focus-visible:outline-[#008751] focus-visible:outline-offset-2"
+        className="w-full h-14 bg-[#111111] hover:bg-black text-[#F9E828] font-black uppercase tracking-wider text-sm rounded-[14px] flex items-center justify-center cursor-pointer shadow-[0_4px_16px_rgba(17,17,17,0.15)] active:scale-[0.98] transition-all duration-150 outline-none focus-visible:ring-3 focus-visible:ring-[#F9E828]"
         aria-label="Submit criteria and view plan"
       >
-        Start Planning
+        Lock In Damage &amp; Plan
       </button>
     </form>
   );

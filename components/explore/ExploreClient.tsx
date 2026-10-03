@@ -34,8 +34,8 @@ export function ExploreClient({
   availableAreas,
   preselectedAreaSlug,
   preselectedAreaName,
-  title = "Where do you feel like?",
-  subtitle = "Tell us your area, budget, and vibe. We'll narrow down vetted spots you can actually afford.",
+  title = "Find your spot. Know the damage.",
+  subtitle = "Real menus, verified prices, and round-trip transport for Lagos outings.",
 }: ExploreClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -232,28 +232,36 @@ export function ExploreClient({
     return found?.name || filters.areaSlug;
   }, [filters.areaSlug, availableAreas]);
 
+  const BUDGET_PILLS = [
+    { label: "Any Budget", value: null },
+    { label: "Under ₦20k", value: 20000 },
+    { label: "Under ₦40k", value: 40000 },
+    { label: "Under ₦60k", value: 60000 },
+    { label: "Under ₦100k", value: 100000 },
+  ];
+
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAF8] pt-24 pb-20 px-4 sm:px-6 md:px-8">
+    <div className="min-h-[100dvh] bg-[#F6F6F2] pt-20 sm:pt-24 pb-20 px-4 sm:px-6 md:px-8 font-sans">
       <div className="max-w-5xl mx-auto space-y-8">
         
         {/* Editorial Discovery Hero */}
         <div className="text-left space-y-3">
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase text-[#008751] bg-[#008751]/10 px-3 py-1 rounded-full">
-            ✨ Budget Confidence Outing Guide
-          </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-midnight-lagoon tracking-tight">
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#F9E828] bg-[#111111] px-3 py-1 rounded-full shadow-xs">
+            <span>OYAPLAN SPOT DIRECTORY</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#111111] tracking-tight font-display uppercase">
             {title}
           </h1>
-          <p className="text-sm md:text-base text-text-muted max-w-2xl leading-relaxed">
+          <p className="text-sm md:text-base text-[#555555] max-w-2xl font-medium leading-relaxed">
             {subtitle}
           </p>
         </div>
 
-        {/* Factual Recently Viewed Shelf (No algorithmic preference inference) */}
-        <RecentlyViewedRow className="pt-2" />
+        {/* Factual Recently Viewed Shelf */}
+        <RecentlyViewedRow className="pt-1" />
 
         {/* Master Discovery & Filter Dashboard */}
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           
           {/* Top Row: Instant Search + Filter Sheet Trigger */}
           <div className="flex items-center gap-3">
@@ -261,7 +269,7 @@ export function ExploreClient({
               <DiscoverySearchInput
                 value={searchQuery}
                 onChange={handleSearchChange}
-                placeholder="Search venue name, area, cuisine, or vibe..."
+                placeholder="Search spot name, area, cuisine, or vibe..."
               />
             </div>
 
@@ -269,32 +277,56 @@ export function ExploreClient({
               type="button"
               onClick={() => setIsFilterSheetOpen(true)}
               aria-label={`Open filters. ${activeFilterCount} active filters`}
-              className={`h-[52px] px-4 rounded-2xl border font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 tap-feedback cursor-pointer ${
+              className={`h-[50px] px-4 rounded-xl border font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 tap-feedback cursor-pointer ${
                 activeFilterCount > 0
-                  ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-xs"
-                  : "bg-white border-[#EAE4DC] text-midnight-lagoon hover:border-[#008751]/40 shadow-2xs"
+                  ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
+                  : "bg-white border-[#E5E5DE] text-[#111111] hover:border-[#111111] shadow-2xs"
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>
               {activeFilterCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-[#008751] text-white text-[10px] flex items-center justify-center font-black">
+                <span className="w-5 h-5 rounded-full bg-[#F9E828] text-[#111111] text-[10px] flex items-center justify-center font-black">
                   {activeFilterCount}
                 </span>
               )}
             </button>
           </div>
 
+          {/* Quick Budget Pills (Horizontal Rail) */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280] font-bold shrink-0 mr-1">
+              Budget:
+            </span>
+            {BUDGET_PILLS.map((pill) => {
+              const isSelected = filters.budget === pill.value;
+              return (
+                <button
+                  key={pill.label}
+                  type="button"
+                  onClick={() => handleUpdateFilters({ budget: pill.value })}
+                  className={`py-1.5 px-3 rounded-full border text-xs font-mono font-bold shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                    isSelected
+                      ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
+                      : "bg-white border-[#E5E5DE] text-[#555555] hover:text-[#111111] hover:border-[#111111]"
+                  }`}
+                >
+                  {pill.label}
+                </button>
+              );
+            })}
+          </div>
+
           {/* Quick Area Chips (Scrollable Horizontal Strip) */}
           {!preselectedAreaSlug && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none snap-x">
               <button
                 type="button"
                 onClick={() => handleUpdateFilters({ areaSlug: "all" })}
-                className={`py-2 px-3.5 rounded-full border text-xs font-extrabold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                className={`py-1.5 px-3 rounded-full border text-xs font-bold uppercase tracking-wider shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                   filters.areaSlug === "all"
-                    ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-xs"
-                    : "bg-white border-[#EAE4DC] text-text-secondary hover:border-midnight-lagoon"
+                    ? "bg-[#111111] border-[#111111] text-white shadow-xs"
+                    : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
                 }`}
               >
                 All Lagos ({initialSpots.length})

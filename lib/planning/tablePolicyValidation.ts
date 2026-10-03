@@ -233,9 +233,24 @@ export function getApplicableTablePolicy(
 
   let dayOfWeek: DayOfWeek | null = null;
   if (context.date) {
-    const d = typeof context.date === 'string' ? new Date(context.date) : context.date;
-    if (!Number.isNaN(d.getTime())) {
-      dayOfWeek = DAY_NAMES[d.getDay()];
+    if (typeof context.date === 'string') {
+      const parts = context.date.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const localDate = new Date(year, month, day);
+        if (!Number.isNaN(localDate.getTime())) {
+          dayOfWeek = DAY_NAMES[localDate.getDay()];
+        }
+      } else {
+        const d = new Date(context.date);
+        if (!Number.isNaN(d.getTime())) {
+          dayOfWeek = DAY_NAMES[d.getUTCDay()];
+        }
+      }
+    } else if (context.date instanceof Date && !Number.isNaN(context.date.getTime())) {
+      dayOfWeek = DAY_NAMES[context.date.getDay()];
     }
   }
 

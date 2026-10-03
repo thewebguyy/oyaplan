@@ -1,11 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800;900&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+
+  /* Approved Consumer Palette */
+  --color-obsidian: var(--obsidian);
+  --color-warm-ecru: var(--warm-ecru);
+  --color-solar-yellow: var(--solar-yellow);
+  --color-coral-alert: var(--coral-alert);
+
   --color-brand-green: var(--brand-green);
   --color-brand-green-70: var(--brand-green-70);
   --color-brand-green-40: var(--brand-green-40);
@@ -37,23 +47,23 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
 
-  /* New theme additions */
-  --color-midnight-lagoon: #010528;
-  --color-lasgidi-yellow: #F6C642;
+  /* Lagos contextual tones */
+  --color-midnight-lagoon: #111111;
+  --color-lasgidi-yellow: #F9E828;
   --color-atlantic-blue: #004B8E;
   --color-palm-green: #008751;
-  --color-white-sand: #FAFAF8;
+  --color-white-sand: #F6F6F2;
   --color-charcoal: #1D1D1F;
   --color-lagos-earth: #4E2D15;
   --color-lagos-earth-subtle: #F7F3EE;
   --color-lagos-clay: #7A3E1D;
-  --color-lagos-warm-surface: #FAF7F2;
-  --color-lagos-warm-border: #EAE4DC;
+  --color-lagos-warm-surface: #F6F6F2;
+  --color-lagos-warm-border: #E8E8E2;
 
-  /* New Tokens */
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
+  /* Restrained Consumer Tokens */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
 
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
@@ -70,11 +80,18 @@
 }
 
 :root {
-  /* Font Family System */
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* Font Family System — Gen-Z Lagos Architectural Grotesque & Tabular Monospace */
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: 'Syne', 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Color System */
+  /* Master Palette */
+  --obsidian: #111111;
+  --warm-ecru: #F6F6F2;
+  --pure-white: #FFFFFF;
+  --solar-yellow: #F9E828;
+  --coral-alert: #E54D2E;
+
   --brand-green: #008751;
   --brand-green-70: #008751b3;
   --brand-green-40: #00875166;
@@ -85,48 +102,48 @@
   --trust-warning-40: #F59E0B66;
   --trust-warning-15: #F59E0B26;
 
-  --intent-yellow: #F6C642;
-  --intent-yellow-40: #F6C64266;
-  --intent-yellow-15: #F6C64226;
+  --intent-yellow: #F9E828;
+  --intent-yellow-40: #F9E82866;
+  --intent-yellow-15: #F9E82826;
 
-  --text-primary: #010528;      /* Midnight Lagoon */
-  --text-secondary: #1D1D1F;    /* Charcoal */
-  --text-muted: #6B6B6B;
+  --text-primary: #111111;      /* Obsidian */
+  --text-secondary: #2C2C2C;
+  --text-muted: #6B7280;
   --text-on-green: #FFFFFF;
 
-  --pastel-cream: #FDFBF7;
+  --pastel-cream: #F6F6F2;
   --pastel-yellow: #FEF7D2;
   --pastel-blue: #E8F2FC;
   --pastel-pink: #FDE8E9;
 
   --surface-white: #FFFFFF;
-  --surface-grey: #FAFAF8;      /* White Sand */
+  --surface-grey: #F6F6F2;      /* Warm Ecru */
   
-  --border-default: #E8E8E8;
-  --border-strong: #D0D0D0;
+  --border-default: #E5E5DE;
+  --border-strong: #C8C8BE;
   
-  --error: #D72638;             /* Red Rail */
+  --error: #E54D2E;             /* Coral Alert */
   --success: #008751;
 
   --lagos-earth: #4E2D15;
   --lagos-earth-subtle: #F7F3EE;
   --lagos-clay: #7A3E1D;
-  --lagos-warm-surface: #FAF7F2;
-  --lagos-warm-border: #EAE4DC;
+  --lagos-warm-surface: #F6F6F2;
+  --lagos-warm-border: #E8E8E2;
 
-  --background: #FAFAF8;        /* White Sand default page background */
-  --foreground: #010528;        /* Midnight Lagoon */
+  --background: #F6F6F2;        /* Warm Ecru default page background */
+  --foreground: #111111;        /* Obsidian */
 
   --popover: #FFFFFF;
-  --popover-foreground: #010528;
+  --popover-foreground: #111111;
   
-  --accent: #FAFAF8;
-  --accent-foreground: #010528;
+  --accent: #F6F6F2;
+  --accent-foreground: #111111;
 
-  /* Radius Scale */
-  --radius-sm: 12px;
-  --radius-md: 24px;
-  --radius-lg: 32px;
+  /* Radius Scale: Restrained, sharp, paper-like */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
   --radius: var(--radius-md);
 
   /* Shadow & Elevation Scale */
@@ -1271,6 +1288,30 @@ html, body {
 
 .snap-card {
   scroll-snap-align: start;
+}
+
+/* ── OyaPlan Damage Slip Primitives & Styling ── */
+.damage-slip-surface {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5DE;
+  box-shadow: 0 4px 16px -2px rgba(17, 17, 17, 0.05), 0 1px 3px 0 rgba(17, 17, 17, 0.03);
+}
+
+.damage-slip-perforated {
+  border-top: 1.5px dashed #D4D4CA;
+  position: relative;
+}
+
+.tabular-nums-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.type-display-editorial {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 

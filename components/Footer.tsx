@@ -4,24 +4,24 @@ import { ArrowRight } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#010528] text-[#FAFAF8] rounded-t-[28px] sm:rounded-t-[40px] overflow-hidden">
+    <footer className="w-full bg-[#111111] text-[#F6F6F2] rounded-t-[20px] sm:rounded-t-[32px] overflow-hidden border-t border-[#222222]">
       {/* ── CTA Banner ── */}
       <div className="border-b border-white/10">
         <div className="max-w-4xl mx-auto px-4 py-16 sm:py-20 flex flex-col sm:flex-row items-center justify-between gap-8">
           <div className="text-center sm:text-left">
-            <h2 className="text-3xl font-bold tracking-tight mb-2">
-              Know what you&apos;ll spend. No surprises.
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2 text-white font-display">
+              Know the damage before you leave home.
             </h2>
-            <p className="text-white/70 text-lg">
-              Start planning your next Lagos outing with confidence.
+            <p className="text-white/70 text-sm sm:text-base font-medium">
+              Start planning your next Lagos outing with total budget confidence.
             </p>
           </div>
           <Link
             href="/explore"
-            className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-[#008751] px-8 py-4 text-base font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+            className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-[#F9E828] px-7 py-3.5 text-sm font-black text-[#111111] shadow-md transition-all hover:bg-[#ebd915] active:scale-95"
           >
-            Plan an Outing
-            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            <span>Find Your Spot</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </div>
@@ -119,12 +119,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/for-business" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
-                  OyaPlan for Business
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-sm text-white/60 hover:text-[#008751] hover:translate-x-1 transition-all inline-block">
+                <Link href="/about" className="text-sm text-white/60 hover:text-[#F9E828] hover:translate-x-1 transition-all inline-block">
                   About OyaPlan
                 </Link>
               </li>

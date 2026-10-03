@@ -82,45 +82,59 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     return topSpots.length > 0 ? topSpots : [DEFAULT_FALLBACK_SPOT];
   }, [plans]);
 
+  const vibePhrase = useMemo(() => {
+    if (!vibe) return "a date night";
+    if (vibe.toLowerCase().includes("dinner")) return "a date night";
+    if (vibe.toLowerCase().includes("chill")) return "a squad linkup";
+    if (vibe.toLowerCase().includes("party")) return "a birthday turn up";
+    if (vibe.toLowerCase().includes("quick")) return "quick bites";
+    if (vibe.toLowerCase().includes("foodie")) return "serious chop";
+    if (vibe.toLowerCase().includes("brunch")) return "a brunch vibe";
+    return `${vibe.toLowerCase()} hangout`;
+  }, [vibe]);
+
+  const squadPhrase = useMemo(() => {
+    if (squadSize === 1) return "just me";
+    if (squadSize === 2) return "2 people";
+    return `${squadSize} people`;
+  }, [squadSize]);
+
+  const perPersonBudget = Math.round(budget / Math.max(1, squadSize));
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{ type: "spring", stiffness: 100, damping: 15, duration: 0.8 }}
-      className="relative w-full bg-[#FAF9F6] pt-20 pb-16 px-4 sm:px-8 md:px-16 border-b border-[#F3F4F6] overflow-hidden"
+      className="relative w-full bg-[#F6F6F2] pt-16 sm:pt-20 pb-16 px-4 sm:px-8 md:px-16 border-b border-[#E5E5DE] overflow-hidden"
     >
       {/* Subtle hero background */}
       <div className="hero-background" aria-hidden="true" />
 
-      <div className="max-w-5xl mx-auto flex flex-col gap-10 md:gap-12 text-left relative z-10">
-        {/* Header and Subhead Area */}
-        <div className="max-w-3xl">
-          <h1 className="text-[32px] sm:text-[40px] md:text-[50px] font-black text-[#1A1A1A] leading-[1.1] tracking-[-1px]">
-            Plan an outing you can actually afford.
+      <div className="max-w-5xl mx-auto flex flex-col gap-8 md:gap-10 text-left relative z-10">
+        {/* Interactive Phrase Header Area */}
+        <div className="max-w-3xl space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111111] text-[#F9E828] text-[11px] font-mono font-bold uppercase tracking-widest shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828] animate-pulse" />
+            <span>KNOW THE DAMAGE BEFORE YOU LEAVE HOME</span>
+          </div>
+
+          <h1 className="text-[34px] sm:text-[44px] md:text-[54px] font-black text-[#111111] leading-[1.1] tracking-[-1.5px] font-display">
+            Plan <span className="underline decoration-[#F9E828] decoration-4 underline-offset-4">{vibePhrase}</span> from{" "}
+            <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{selectedArea?.name || "Yaba"}</span> for{" "}
+            <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{squadPhrase}</span> under{" "}
+            <span className="underline decoration-[#111111] decoration-2 underline-offset-4 font-mono">₦{budget.toLocaleString("en-NG")}</span>.
           </h1>
-          <p className="text-base sm:text-lg leading-relaxed text-[#6B7280] font-semibold max-w-[600px] mt-2">
-            See the venue, its verified price, and your estimated round-trip transport before you leave home.
-          </p>
-          <div className="relative flex items-center gap-1.5 text-sm md:text-base text-[#6B7280] font-semibold mt-3 h-[24px] overflow-hidden w-full">
-            <span>Planning:</span>
-            <div className="relative h-full flex-1">
-              <AnimatePresence mode="popLayout">
-                <motion.span
-                  key={phraseIndex}
-                  initial={{ y: 8, opacity: 0, filter: "blur(1px)" }}
-                  animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                  exit={{ y: -8, opacity: 0, filter: "blur(1px)" }}
-                  transition={{
-                    type: "tween",
-                    ease: [0.16, 1, 0.3, 1],
-                    duration: 0.5,
-                  }}
-                  className="text-[#008751] font-bold text-sm md:text-base absolute left-0 whitespace-nowrap"
-                >
-                  {PHRASES[phraseIndex]}
-                </motion.span>
-              </AnimatePresence>
+
+          <div className="flex items-center gap-3 flex-wrap pt-1">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white border border-[#E5E5DE] text-xs font-mono font-bold text-[#111111] shadow-xs">
+              <span className="text-[#111111]">₦{budget.toLocaleString("en-NG")} TOTAL</span>
+              <span className="text-gray-300">•</span>
+              <span className="text-[#111111]">₦{perPersonBudget.toLocaleString("en-NG")} EACH</span>
             </div>
+            <p className="text-xs sm:text-sm text-[#555555] font-medium">
+              Verified menu items, round-trip rides, and zero cover charge surprises.
+            </p>
           </div>
         </div>
 

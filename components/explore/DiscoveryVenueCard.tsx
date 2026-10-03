@@ -71,10 +71,10 @@ export function DiscoveryVenueCard({
 
   return (
     <article
-      className={`group bg-white rounded-[28px] border border-[#EAE4DC] hover:border-[#008751]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative ${className}`}
+      className={`group bg-white rounded-[20px] border border-[#E5E5DE] hover:border-[#111111] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative font-sans ${className}`}
     >
       {/* Top Image Section (Aspect 16:10) */}
-      <div className="relative aspect-[16/10] w-full bg-[#F4F1EB] overflow-hidden shrink-0">
+      <div className="relative aspect-[16/10] w-full bg-[#F6F6F2] overflow-hidden shrink-0">
         <Link 
           href={`/venue/${spot.id}`} 
           className="absolute inset-0 block"
@@ -91,12 +91,12 @@ export function DiscoveryVenueCard({
         </Link>
 
         {/* Subtle Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent pointer-events-none" />
 
-        {/* Top Badges Row */}
+        {/* Top Badges Row — Max 2 Badges */}
         <div className="absolute top-3 inset-x-3 flex items-start justify-between z-10 pointer-events-none">
           <span 
-            className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-xs ${catStyle.bg} ${catStyle.text}`}
+            className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider backdrop-blur-md shadow-xs bg-[#111111] text-[#F9E828]"
           >
             {spot.category || "Spot"}
           </span>
@@ -105,53 +105,28 @@ export function DiscoveryVenueCard({
             status={trustStatus}
             freshnessText={verificationText}
             size="sm"
-            className="shadow-sm backdrop-blur-md bg-white/95 text-midnight-lagoon border-none"
+            className="shadow-xs backdrop-blur-md bg-white/95 text-[#111111] border-none font-mono text-[10px]"
           />
         </div>
-
-        {/* Gallery Thumbnails Overlay (if multiple photos available) */}
-        {spot.gallery_urls && spot.gallery_urls.length > 1 && (
-          <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 z-10 pointer-events-auto">
-            {spot.gallery_urls.slice(0, 3).map((imgUrl, i) => (
-              <div 
-                key={i} 
-                className="relative w-8 h-8 rounded-md border border-white/90 overflow-hidden shadow-xs bg-black/30 shrink-0"
-              >
-                <VenueImage 
-                  src={imgUrl} 
-                  alt={`${spot.name} view ${i+1}`} 
-                  fill 
-                  sizes="32px" 
-                  className="object-cover" 
-                />
-              </div>
-            ))}
-            {spot.gallery_urls.length > 3 && (
-              <span className="w-8 h-8 rounded-md bg-black/60 backdrop-blur-xs text-white text-[10px] font-black flex items-center justify-center border border-white/90 shadow-xs">
-                +{spot.gallery_urls.length - 3}
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Card Content Body */}
-      <div className="p-5 flex flex-col flex-1 justify-between gap-4 text-left">
+      <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-3.5 text-left">
         <div>
           {/* Header Row: Title & Save Bookmark */}
           <div className="flex items-start justify-between gap-2">
             <div className="space-y-1 min-w-0">
               <Link 
                 href={`/venue/${spot.id}`} 
-                className="group-hover:text-[#008751] transition-colors block"
+                className="group-hover:text-[#111111] transition-colors block"
               >
-                <h3 className="text-xl font-black text-midnight-lagoon tracking-tight truncate">
+                <h3 className="text-lg sm:text-xl font-black text-[#111111] font-display uppercase tracking-tight truncate">
                   {spot.name}
                 </h3>
               </Link>
-              <p className="text-xs text-text-muted flex items-center gap-1 truncate">
-                <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
-                <span className="font-bold text-text-secondary truncate">{areaName}</span>
+              <p className="text-xs text-[#6B7280] font-mono flex items-center gap-1 truncate">
+                <MapPin className="w-3.5 h-3.5 text-[#111111] shrink-0" />
+                <span className="font-bold text-[#111111] truncate">{areaName}</span>
                 <span>•</span>
                 <span className="truncate">{spot.address}</span>
               </p>
@@ -162,48 +137,51 @@ export function DiscoveryVenueCard({
               type="button"
               onClick={onToggleSave}
               aria-label={isSaved ? `Remove ${spot.name} from saved` : `Save ${spot.name}`}
-              className={`p-2.5 rounded-xl border transition-all shrink-0 tap-feedback cursor-pointer ${
+              className={`p-2 rounded-xl border transition-all shrink-0 tap-feedback cursor-pointer ${
                 isSaved
-                  ? "bg-[#008751]/10 border-[#008751] text-[#008751]"
-                  : "bg-surface-grey border-transparent text-text-muted hover:text-midnight-lagoon hover:bg-gray-200"
+                  ? "bg-[#111111] border-[#111111] text-[#F9E828]"
+                  : "bg-[#F6F6F2] border-[#E5E5DE] text-[#6B7280] hover:text-[#111111] hover:border-[#111111]"
               }`}
             >
-              {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
+              {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
             </button>
           </div>
 
-          {/* Pricing Highlight Container */}
-          <div className="mt-3.5 p-3.5 rounded-2xl bg-[#FAFAF8] border border-[#EAE4DC] flex items-baseline justify-between">
+          {/* Pricing Highlight Container: Prominent Per Person */}
+          <div className="mt-3 p-3.5 rounded-xl bg-[#F6F6F2] border border-[#E5E5DE] flex items-baseline justify-between font-mono">
             <div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-text-muted block">
-                {squadSize === 1 ? "Estimated Outing" : `Estimated for Squad (${squadSize})`}
+              <span className="text-[10px] uppercase font-bold text-[#6B7280] block">
+                Typical Spend
               </span>
-              <div className="text-2xl font-black text-[#008751] tracking-tight">
-                ₦{estimatedTotal.toLocaleString("en-NG")}
+              <div className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight">
+                ₦{pricePerPerson.toLocaleString("en-NG")}
+                <span className="text-[11px] font-normal text-[#6B7280] ml-1">/ person</span>
               </div>
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] font-bold text-text-muted block">Per Person</span>
-              <span className="text-xs font-black text-midnight-lagoon">
-                ~₦{pricePerPerson.toLocaleString("en-NG")}
+              <span className="text-[10px] font-bold text-[#6B7280] block">
+                {squadSize === 1 ? "Solo Landed" : `Squad (${squadSize}x)`}
+              </span>
+              <span className="text-xs font-black text-[#111111]">
+                ~₦{estimatedTotal.toLocaleString("en-NG")}
               </span>
             </div>
           </div>
 
           {/* Budget Fit Indicator (when budget entered) */}
           {budget && (
-            <div className="mt-2 text-[11px] font-bold">
+            <div className="mt-2 text-[11px] font-mono font-bold">
               {fitsBudget ? (
-                <span className="text-[#008751] flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                <span className="text-[#111111] flex items-center gap-1">
+                  <Check className="w-3.5 h-3.5 stroke-[3] text-[#111111]" />
                   <span>Fits your ₦{budget.toLocaleString("en-NG")} target</span>
                   {budgetRemaining && budgetRemaining > 0 && (
-                    <span className="text-text-muted">(₦{budgetRemaining.toLocaleString("en-NG")} left)</span>
+                    <span className="text-[#6B7280]">(₦{budgetRemaining.toLocaleString("en-NG")} buffer)</span>
                   )}
                 </span>
               ) : (
-                <span className="text-amber-700">
+                <span className="text-[#E54D2E]">
                   ₦{Math.abs(budgetRemaining || 0).toLocaleString("en-NG")} over target budget
                 </span>
               )}
@@ -211,33 +189,33 @@ export function DiscoveryVenueCard({
           )}
 
           {/* Context Snippet */}
-          <div className="mt-3 pt-3 border-t border-[#EAE4DC]/60 flex items-center justify-between text-xs">
-            <span className="font-bold text-text-secondary line-clamp-1 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+          <div className="mt-3 pt-2.5 border-t border-[#E5E5DE] flex items-center justify-between text-xs font-mono">
+            <span className="font-bold text-[#555555] line-clamp-1 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-[#111111] shrink-0" />
               <span>{firstVibe}</span>
             </span>
-            <span className="text-[10px] font-bold text-text-muted shrink-0">
+            <span className="text-[10px] font-bold text-[#6B7280] shrink-0">
               {verificationText}
             </span>
           </div>
         </div>
 
         {/* Action Buttons Row — Primary Plan, Secondary View Venue */}
-        <div className="pt-2 flex items-center gap-2.5">
+        <div className="pt-1 flex items-center gap-2">
           <Link
             href={`/venue/${spot.id}`}
-            className="px-4 py-3 rounded-xl border border-[#EAE4DC] hover:border-midnight-lagoon bg-white hover:bg-surface-grey text-midnight-lagoon text-center text-xs font-bold uppercase tracking-wider transition-colors tap-feedback shrink-0"
+            className="px-3.5 py-2.5 rounded-xl border border-[#E5E5DE] hover:border-[#111111] bg-white text-[#111111] text-center text-xs font-bold uppercase tracking-wider transition-colors tap-feedback shrink-0"
           >
-            View Venue
+            Menu
           </Link>
 
           <Link
             href={forgeUrl}
             aria-label={`Plan outing at ${spot.name}`}
-            className="flex-1 py-3 px-4 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-center text-xs font-black uppercase tracking-wider transition-all shadow-xs tap-feedback flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 py-2.5 px-4 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] text-center text-xs font-black uppercase tracking-wider transition-all shadow-xs tap-feedback flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>Plan Outing</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>

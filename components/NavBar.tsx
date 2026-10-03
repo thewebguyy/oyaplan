@@ -183,13 +183,6 @@ export default function NavBar() {
             
             {/* Desktop Navigation Items */}
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                href="/for-business"
-                className="text-xs font-bold text-text-secondary hover:text-[#008751] transition-colors px-3 py-1.5 rounded-full hover:bg-surface-grey"
-              >
-                For Businesses ↗
-              </Link>
-
               <ClientOnly fallback={<div className="w-9 h-9 rounded-full bg-surface-grey animate-pulse" />}>
                 {session ? (
                   /* Authenticated Avatar Menu */
@@ -200,13 +193,13 @@ export default function NavBar() {
                       aria-label="Open user menu"
                       aria-haspopup="menu"
                       aria-expanded={profileDropdownOpen}
-                      className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#008751]/20 transition-all tap-feedback focus-visible:outline-2 focus-visible:outline-[#008751] min-h-[44px] min-w-[44px] justify-center"
+                      className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#111111]/20 transition-all tap-feedback focus-visible:outline-2 focus-visible:outline-[#111111] min-h-[44px] min-w-[44px] justify-center"
                     >
                       <Avatar 
                         name={effectiveDisplayName} 
                         src={avatarUrl} 
                         size="sm" 
-                        className="w-8 h-8 cursor-pointer"
+                        className="w-8 h-8 cursor-pointer ring-1 ring-[#111111]/10"
                       />
                     </button>
 
@@ -214,11 +207,11 @@ export default function NavBar() {
                     {profileDropdownOpen && (
                       <div
                         role="menu"
-                        className="absolute right-0 top-full mt-2 w-56 bg-white border border-[#EAE4DC] rounded-[20px] shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                        className="absolute right-0 top-full mt-2 w-56 bg-white border border-[#E5E5DE] rounded-[16px] shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
                       >
                         {/* User Header */}
                         <div className="px-4 py-2.5 border-b border-border-default/60">
-                          <p className="text-xs font-black text-midnight-lagoon truncate">
+                          <p className="text-xs font-black text-obsidian truncate">
                             {effectiveDisplayName}
                           </p>
                           <p className="text-[11px] text-text-muted truncate">
@@ -231,11 +224,11 @@ export default function NavBar() {
                             href="/account"
                             role="menuitem"
                             onClick={() => setProfileDropdownOpen(false)}
-                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#FAF7F2] hover:text-[#008751] flex items-center justify-between transition-colors"
+                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#F6F6F2] hover:text-obsidian flex items-center justify-between transition-colors"
                           >
                             <div className="flex items-center gap-2.5">
                               <User className="w-4 h-4 text-text-muted" />
-                              <span>Profile</span>
+                              <span>Resident Pass</span>
                             </div>
                           </Link>
 
@@ -243,11 +236,11 @@ export default function NavBar() {
                             href="/saved"
                             role="menuitem"
                             onClick={() => setProfileDropdownOpen(false)}
-                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#FAF7F2] hover:text-[#008751] flex items-center justify-between transition-colors"
+                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#F6F6F2] hover:text-obsidian flex items-center justify-between transition-colors"
                           >
                             <div className="flex items-center gap-2.5">
                               <Heart className="w-4 h-4 text-text-muted" />
-                              <span>Saved Spots</span>
+                              <span>The Shortlist</span>
                             </div>
                           </Link>
 
@@ -255,7 +248,7 @@ export default function NavBar() {
                             href="/saved?tab=plans"
                             role="menuitem"
                             onClick={() => setProfileDropdownOpen(false)}
-                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#FAF7F2] hover:text-[#008751] flex items-center justify-between transition-colors"
+                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#F6F6F2] hover:text-obsidian flex items-center justify-between transition-colors"
                           >
                             <div className="flex items-center gap-2.5">
                               <Bookmark className="w-4 h-4 text-text-muted" />
@@ -267,31 +260,12 @@ export default function NavBar() {
                             href="/settings"
                             role="menuitem"
                             onClick={() => setProfileDropdownOpen(false)}
-                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#FAF7F2] hover:text-[#008751] flex items-center justify-between transition-colors"
+                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#F6F6F2] hover:text-obsidian flex items-center justify-between transition-colors"
                           >
                             <div className="flex items-center gap-2.5">
                               <Settings className="w-4 h-4 text-text-muted" />
                               <span>Settings</span>
                             </div>
-                          </Link>
-                        </div>
-
-                        <div className="h-[1px] bg-border-default/60 my-1" />
-
-                        <div className="py-1">
-                          <Link
-                            href="/for-business"
-                            role="menuitem"
-                            onClick={() => setProfileDropdownOpen(false)}
-                            className="w-full text-left px-4 py-2 text-xs font-semibold text-midnight-lagoon hover:bg-[#FAF7F2] flex items-center justify-between transition-colors"
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Building2 className="w-4 h-4 text-midnight-lagoon" />
-                              <span>For Businesses</span>
-                            </div>
-                            <span className="text-[9px] font-bold text-[#008751] bg-[#EAFDF3] px-1.5 py-0.5 rounded">
-                              Venues
-                            </span>
                           </Link>
                         </div>
 
@@ -318,7 +292,7 @@ export default function NavBar() {
                   /* Anonymous Sign In Button */
                   <Link
                     href={`/login${pathname !== "/" ? `?returnTo=${encodeURIComponent(pathname)}` : ""}`}
-                    className="h-9 px-4 rounded-full bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold flex items-center justify-center transition-all shadow-xs tap-feedback"
+                    className="h-9 px-4 rounded-full bg-[#111111] hover:bg-black text-white text-xs font-bold flex items-center justify-center transition-all shadow-xs tap-feedback hover:ring-2 hover:ring-[#F9E828]"
                   >
                     Log In
                   </Link>
@@ -411,19 +385,30 @@ export default function NavBar() {
                 <span>Plan</span>
               </Link>
 
-              <div className="h-[1px] bg-[#EAE4DC] my-2" />
-
               <Link
-                href="/for-business"
+                href="/saved"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all min-h-[48px] tap-feedback ${
-                  pathname === "/for-business" || pathname.startsWith("/business")
-                    ? "text-[#008751] bg-[#008751]/10"
-                    : "text-midnight-lagoon hover:bg-surface-grey active:bg-[#EAE4DC]/50"
+                  pathname.startsWith("/saved")
+                    ? "text-obsidian bg-obsidian/10"
+                    : "text-obsidian hover:bg-surface-grey active:bg-[#EAE4DC]/50"
                 }`}
               >
-                <Building2 className="w-5 h-5 text-midnight-lagoon shrink-0" />
-                <span>OyaPlan for Business</span>
+                <Heart className="w-5 h-5 text-obsidian shrink-0" />
+                <span>The Shortlist</span>
+              </Link>
+
+              <Link
+                href="/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all min-h-[48px] tap-feedback ${
+                  pathname.startsWith("/account")
+                    ? "text-obsidian bg-obsidian/10"
+                    : "text-obsidian hover:bg-surface-grey active:bg-[#EAE4DC]/50"
+                }`}
+              >
+                <User className="w-5 h-5 text-obsidian shrink-0" />
+                <span>Resident Pass</span>
               </Link>
             </div>
 

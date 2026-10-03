@@ -97,23 +97,9 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled', sq
       return;
     }
     const perPersonCost = Math.round(plan.totalCost / input.squadSize);
-    
-    const header = squadName ? `*Oya ${squadName} — The Plan: ${plan.spot.name}*` : `*The Plan: ${plan.spot.name}*`;
+    const area = plan.spot.areas?.name || plan.spot.address_slug || "Lagos";
 
-    const text = `${header} 
-
-*The Vibe:* ${input.vibe}
-*Estimated Spend:* ₦${perPersonCost.toLocaleString()} per person
-
-*Why we should go:* 
-${plan.whyItFits}
-Prices are verified, so no unexpected billing surprises.
-
-*What's covered in the ₦${perPersonCost.toLocaleString()}:*
-Food, drinks, verified charges, and round-trip transport. 
-
-Check the full breakdown and let's lock it in: 
-${url}`;
+    const text = `Found the spot.\n\n${plan.spot.name}, ${area}\n\n₦${plan.totalCost.toLocaleString("en-NG")} total\n₦${perPersonCost.toLocaleString("en-NG")} each\n\nFood + drinks + transport included.\n\nWe moving?\n\n${url}`;
 
     if (isMobile) {
       const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -126,9 +112,9 @@ ${url}`;
     } else {
       navigator.clipboard.writeText(text);
       setCopied(true);
-      toast.success('Link copied to clipboard!');
+      toast.success('Copied ✓ Go win the group chat.');
       triggerMoment("plan_shared");
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2500);
     }
   };
 
@@ -137,9 +123,9 @@ ${url}`;
     if (url) {
       navigator.clipboard.writeText(url);
       setLinkCopied(true);
-      toast.success('Link copied to clipboard!');
+      toast.success('Copied ✓ Now send it before someone suggests somewhere else.');
       triggerMoment("plan_shared");
-      setTimeout(() => setLinkCopied(false), 2000);
+      setTimeout(() => setLinkCopied(false), 2500);
     }
   };
 

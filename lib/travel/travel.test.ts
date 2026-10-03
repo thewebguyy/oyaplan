@@ -16,8 +16,8 @@ describe('Travel Domain Tests', () => {
 
     const estimator = new MatrixTravelEstimator();
 
-    // 1. Mock off-peak hours (e.g., 2:00 PM)
-    const offPeakTime = new Date('2026-08-03T14:00:00Z'); // Monday 2:00 PM
+    // 1. Mock off-peak hours (e.g., 2:00 PM local time)
+    const offPeakTime = new Date(2026, 7, 3, 14, 0, 0); // Monday 2:00 PM
     vi.setSystemTime(offPeakTime);
 
     const offPeakEstimate = estimator.estimateTravel(yabaCoords, lekkiCoords);
@@ -25,11 +25,11 @@ describe('Travel Domain Tests', () => {
     expect(offPeakEstimate.mode).toBe('car');
     expect(offPeakEstimate.distanceKm).toBeGreaterThan(5);
     expect(offPeakEstimate.estimatedMinutes).toBeGreaterThan(10);
-    // Yaba to Lekki zone fare is central to island -> roundtrip 11000
-    expect(offPeakEstimate.transportCost).toBe(11000);
+    // Yaba to Lekki zone fare is central to island -> roundtrip 16000 (8000 * 2)
+    expect(offPeakEstimate.transportCost).toBe(16000);
 
-    // 2. Mock peak hours (e.g., 8:00 AM)
-    const peakTime = new Date('2026-08-03T08:00:00Z'); // Monday 8:00 AM
+    // 2. Mock peak hours (e.g., 8:00 AM local time)
+    const peakTime = new Date(2026, 7, 3, 8, 0, 0); // Monday 8:00 AM
     vi.setSystemTime(peakTime);
 
     const peakEstimate = estimator.estimateTravel(yabaCoords, lekkiCoords);
