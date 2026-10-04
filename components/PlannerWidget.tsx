@@ -197,6 +197,20 @@ export default function PlannerWidget({
     setValidationError(null);
   };
 
+  const currentVibeLabel = useMemo(() => {
+    if (!vibe) return "a date night";
+    const found = [...PRIMARY_VIBES, ...EXTENDED_VIBES].find((v) => v.value === vibe);
+    return found ? found.label.toLowerCase() : vibe.toLowerCase();
+  }, [vibe]);
+
+  const currentSquadLabel = useMemo(() => {
+    if (squadSize === 1) return "just me";
+    if (squadSize === 2) return "2 people";
+    return `${squadSize} people`;
+  }, [squadSize]);
+
+  const perPersonAmount = Math.round(budget / Math.max(1, squadSize));
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -235,6 +249,30 @@ export default function PlannerWidget({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Live Coherent Phrase Builder Header */}
+      <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-2xl p-4 sm:p-5 text-left space-y-2.5">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#6B7280]">
+            Planning Statement
+          </span>
+          <span className="text-[10px] font-mono font-bold text-[#111111] bg-white border border-[#E5E5DE] px-2.5 py-0.5 rounded-full shadow-2xs">
+            ₦{perPersonAmount.toLocaleString("en-NG")} / person
+          </span>
+        </div>
+
+        <p className="text-base sm:text-lg md:text-xl font-black text-[#111111] leading-snug font-display">
+          Plan <span className="underline decoration-[#F9E828] decoration-4 underline-offset-4">{currentVibeLabel}</span> from{" "}
+          <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{selectedArea?.name || "Yaba"}</span> for{" "}
+          <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{currentSquadLabel}</span> under{" "}
+          <span className="underline decoration-[#111111] decoration-2 underline-offset-4 font-mono">₦{budget.toLocaleString("en-NG")}</span>.
+        </p>
+
+        <div className="flex items-center justify-between pt-1 border-t border-dashed border-[#111111]/15 text-[11px] font-mono text-[#555555]">
+          <span>Total outing spend:</span>
+          <span className="font-bold text-[#111111] font-mono">₦{budget.toLocaleString("en-NG")}</span>
+        </div>
+      </div>
 
       <fieldset className="flex flex-col gap-6 p-0 m-0 border-none">
         <legend className="sr-only">Configure your outing constraints</legend>

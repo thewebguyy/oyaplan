@@ -70,7 +70,7 @@ export function PublicVenueClient({
   }, [venue, areaSlug, areaName, photos, recordView]);
 
   return (
-    <main className="min-h-[100dvh] bg-[#FAF7F2] antialiased pb-28 md:pb-20">
+    <main className="min-h-[100dvh] bg-[#F6F6F2] antialiased pb-28 md:pb-20">
       
       {/* 1. Hero & Visual Gallery */}
       <VenueHeroGallery

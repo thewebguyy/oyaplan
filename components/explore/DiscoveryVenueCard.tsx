@@ -188,7 +188,9 @@ export function DiscoveryVenueCard({
                 <span className="text-xs font-black text-[#111111] tabular-nums">
                   ~₦{estimatedTotal.toLocaleString("en-NG")}
                 </span>
-                <span className="text-[9px] text-[#6B7280] block">before transport</span>
+                <span className="text-[9px] text-[#6B7280] block">
+                  {spot.has_food === false ? "Covers entry/access" : "Covers food & drinks"}
+                </span>
               </div>
             )}
           </div>
@@ -205,8 +207,12 @@ export function DiscoveryVenueCard({
                   )}
                 </span>
               ) : (
-                <span className="text-[#E54D2E]">
-                  ₦{Math.abs(budgetRemaining || 0).toLocaleString("en-NG")} over your budget — stretch
+                <span className="text-[#E54D2E] font-bold">
+                  {(() => {
+                    const diffOver = Math.abs(budgetRemaining || 0);
+                    const kOver = diffOver >= 1000 ? `${(diffOver / 1000).toFixed(diffOver % 1000 === 0 ? 0 : 1)}k` : `${diffOver}`;
+                    return `Exceeds target by ₦${kOver} — the stretch option.`;
+                  })()}
                 </span>
               )}
             </div>

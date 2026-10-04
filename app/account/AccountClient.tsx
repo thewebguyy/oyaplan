@@ -24,6 +24,7 @@ import { UserProfile } from "@/lib/services/identity/sessionResolver";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
+import { useOrigin } from "@/lib/location/OriginContext";
 import { toast } from "sonner";
 
 interface AccountClientProps {
@@ -40,6 +41,7 @@ export default function AccountClient({
 }: AccountClientProps) {
   const { signOut, openModal, avatarUrl } = useAuth();
   const { savedSpots } = useSavedSpots();
+  const { origin } = useOrigin();
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -124,7 +126,7 @@ export default function AccountClient({
                 {displayName}
               </h1>
               {displayEmail && (
-                <p className="text-xs text-text-muted truncate mt-0.5 font-medium">
+                <p className="text-xs text-text-muted truncate mt-0.5 font-medium break-all" title={displayEmail}>
                   {displayEmail}
                 </p>
               )}
@@ -133,23 +135,23 @@ export default function AccountClient({
 
           {/* Resident Details Grid */}
           <div className="grid grid-cols-2 gap-3 mt-6 pt-5 border-t border-dashed border-[#E5E5DE]">
-            <div className="bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE]">
+            <div className="bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE] min-w-0">
               <span className="text-[10px] font-black uppercase tracking-widest text-text-muted font-mono block">
                 Outing Archetype
               </span>
-              <span className="text-xs font-bold text-obsidian flex items-center gap-1.5 mt-1">
-                <Sparkles className="w-3.5 h-3.5 text-[#111111]" />
-                <span>Squad Strategist</span>
+              <span className="text-xs font-bold text-obsidian flex items-center gap-1.5 mt-1 truncate">
+                <Sparkles className="w-3.5 h-3.5 text-[#111111] shrink-0" />
+                <span className="truncate">Squad Strategist</span>
               </span>
             </div>
 
-            <div className="bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE]">
+            <div className="bg-[#F6F6F2] p-3 rounded-xl border border-[#E5E5DE] min-w-0">
               <span className="text-[10px] font-black uppercase tracking-widest text-text-muted font-mono block">
                 Default Hub
               </span>
-              <span className="text-xs font-bold text-obsidian flex items-center gap-1.5 mt-1">
-                <MapPin className="w-3.5 h-3.5 text-[#111111]" />
-                <span>Lagos Central</span>
+              <span className="text-xs font-bold text-obsidian flex items-center gap-1.5 mt-1 truncate">
+                <MapPin className="w-3.5 h-3.5 text-[#111111] shrink-0" />
+                <span className="truncate">{origin?.displayArea.name || "Lagos Central"}</span>
               </span>
             </div>
           </div>

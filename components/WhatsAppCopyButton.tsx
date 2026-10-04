@@ -97,9 +97,7 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled', sq
       return;
     }
     const perPersonCost = Math.round(plan.totalCost / input.squadSize);
-    const area = plan.spot.areas?.name || plan.spot.address_slug || "Lagos";
-
-    const text = `Found the spot.\n\n${plan.spot.name}, ${area}\n\n₦${plan.totalCost.toLocaleString("en-NG")} total\n₦${perPersonCost.toLocaleString("en-NG")} each\n\nFood + drinks + transport included.\n\nWe moving?\n\n${url}`;
+    const text = `Found the spot.\n\n${plan.spot.name}\n\n• Squad: ${input.squadSize} people\n• Landed Damage: ~₦${perPersonCost.toLocaleString("en-NG")} each (~₦${plan.totalCost.toLocaleString("en-NG")} total)\n• Verified food, drinks & round-trip rides accounted for.\n\nWe moving?\n\n${url}`;
 
     if (isMobile) {
       const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;

@@ -23,6 +23,11 @@ export function NumericCounter({
   const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayValue(value);
+      return;
+    }
+
     startValueRef.current = displayValue;
     startTimeRef.current = null;
 

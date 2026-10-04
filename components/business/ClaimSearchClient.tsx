@@ -138,11 +138,11 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
 
       {/* Search Header */}
       <div className="space-y-3 text-center sm:text-left">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-[#008751] text-xs font-black uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Venue Claim</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#111111] text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider">
+          <Sparkles className="w-3.5 h-3.5 text-[#F9E828]" />
+          <span>Operator&apos;s Desk • Venue Claim</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon uppercase tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight">
           Find your business on OyaPlan
         </h1>
         <p className="text-xs sm:text-sm text-text-muted leading-relaxed max-w-xl">
@@ -152,20 +152,20 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         {/* 4 simple steps */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-left">
           <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 1</span>
-            <span className="text-xs font-bold text-midnight-lagoon">Find your spot</span>
+            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 1</span>
+            <span className="text-xs font-bold text-slate-900">Find your spot</span>
           </div>
           <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 2</span>
-            <span className="text-xs font-bold text-midnight-lagoon">See customer view</span>
+            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 2</span>
+            <span className="text-xs font-bold text-slate-900">See customer view</span>
           </div>
           <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 3</span>
-            <span className="text-xs font-bold text-midnight-lagoon">Submit claim</span>
+            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 3</span>
+            <span className="text-xs font-bold text-slate-900">Submit claim</span>
           </div>
           <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-bold text-brand-green uppercase block">Step 4</span>
-            <span className="text-xs font-bold text-midnight-lagoon">Control pricing</span>
+            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 4</span>
+            <span className="text-xs font-bold text-slate-900">Control pricing</span>
           </div>
         </div>
       </div>
@@ -174,7 +174,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
       <div className="p-4 bg-[#FAF7F2] border border-[#EAE4DC] rounded-2xl flex items-start gap-3 text-text-secondary text-xs leading-relaxed">
         <Link2 className="w-4 h-4 text-[#7A3E1D] shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold text-midnight-lagoon">Have a direct invitation link?</span> If OyaPlan sent you a direct link via WhatsApp or email, open that link directly to connect to your pre-verified venue listing immediately.
+          <span className="font-bold text-slate-900">Have a direct invitation link?</span> If OyaPlan sent you a direct link via WhatsApp or email, open that link directly to connect to your pre-verified venue listing immediately.
         </div>
       </div>
 
@@ -186,21 +186,21 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
           value={searchQuery}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           placeholder="Search by venue name (e.g. The House, Circa, Cactus, Landmark)..."
-          className="w-full h-14 pl-11 pr-11 bg-white border border-border-default rounded-2xl text-sm font-medium text-text-primary focus:outline-none focus:border-brand-green shadow-xs transition-all"
+          className="w-full h-14 pl-11 pr-11 bg-white border border-border-default rounded-2xl text-sm font-medium text-text-primary focus:outline-none focus:border-[#111111] shadow-xs transition-all"
         />
         {isSearching && (
-          <Loader2 className="w-4 h-4 text-brand-green animate-spin absolute right-4 top-1/2 -translate-y-1/2" />
+          <Loader2 className="w-4 h-4 text-[#111111] animate-spin absolute right-4 top-1/2 -translate-y-1/2" />
         )}
       </div>
 
       {/* Results List */}
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs text-text-muted px-1">
-          <span className="font-bold uppercase tracking-wider text-[11px]">
+          <span className="font-mono font-bold uppercase tracking-wider text-[11px]">
             {searchQuery.trim() ? `Search Results (${displayVenues.length})` : 'Indexed Venues in Lagos'}
           </span>
           {isSearching && (
-            <span className="text-[10px] font-bold text-brand-green flex items-center gap-1">
+            <span className="text-[10px] font-mono font-bold text-[#111111] flex items-center gap-1">
               <span>Searching live database...</span>
             </span>
           )}
@@ -209,7 +209,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         {displayVenues.length === 0 ? (
           <div className="bg-white rounded-2xl border border-border-default p-8 text-center space-y-3">
             <Building2 className="w-8 h-8 text-text-muted mx-auto stroke-[1.5]" />
-            <h3 className="font-bold text-sm text-midnight-lagoon uppercase">Can&apos;t find your business?</h3>
+            <h3 className="font-bold text-sm text-slate-900 uppercase">Can&apos;t find your business?</h3>
             <p className="text-xs text-text-secondary max-w-sm mx-auto leading-relaxed">
               We may not have created an initial listing for your venue yet. Message us and we&apos;ll get it listed promptly.
             </p>
@@ -218,7 +218,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
                 href={addVenueWaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#EAFDF3] text-[#008751] font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-[#d5f9e3] transition-colors"
+                className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#111111] text-[#F9E828] font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-black transition-colors"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>Message Us on WhatsApp to Add It</span>
@@ -242,22 +242,22 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
                   className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-[#FAF7F2] transition-colors tap-feedback group"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-11 h-11 rounded-2xl bg-[#008751]/10 text-[#008751] flex items-center justify-center shrink-0 border border-[#008751]/15 group-hover:bg-[#008751] group-hover:text-white transition-all">
+                    <div className="w-11 h-11 rounded-2xl bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0 border border-black/10 group-hover:scale-105 transition-all">
                       <Building2 className="w-5 h-5" />
                     </div>
 
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="font-bold text-sm text-midnight-lagoon group-hover:text-[#008751] transition-colors truncate">
+                        <h2 className="font-serif font-black text-base text-slate-900 group-hover:text-black transition-colors truncate">
                           {venue.name}
                         </h2>
                         {venue.category && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-surface-grey text-text-secondary border border-[#EAE4DC] shrink-0">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-black uppercase tracking-wider bg-surface-grey text-text-secondary border border-[#EAE4DC] shrink-0">
                             {venue.category}
                           </span>
                         )}
                         {isVerified && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
                             <ShieldCheck className="w-3 h-3" />
                             <span>Verified Partner</span>
                           </span>

@@ -255,9 +255,15 @@ export default function MobileLivePreviewBar({
                       {/* Spot Title Card */}
                       <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-xl p-4 space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111] text-[#F9E828]">
-                            <ShieldCheck className="w-3 h-3" /> {idx === 0 ? "Top Match" : "Great Alternative"}
-                          </span>
+                          {budget && sTotalCost > budget ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#E54D2E] text-white">
+                              THE STRETCH OPTION
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111] text-[#F9E828]">
+                              <ShieldCheck className="w-3 h-3" /> {idx === 0 ? "Top Match" : "Great Alternative"}
+                            </span>
+                          )}
                           <span className="text-xs font-mono font-bold text-[#6B7280]">
                             Squad of {squadSize}
                           </span>
@@ -299,6 +305,15 @@ export default function MobileLivePreviewBar({
                           <span>Per person:</span>
                           <span className="font-bold text-[#111111]">₦{sPerPerson.toLocaleString()} each</span>
                         </div>
+                        {budget && sTotalCost > budget && (() => {
+                          const diffOver = sTotalCost - budget;
+                          const kOver = diffOver >= 1000 ? `${(diffOver / 1000).toFixed(diffOver % 1000 === 0 ? 0 : 1)}k` : `${diffOver}`;
+                          return (
+                            <div className="text-[11px] font-mono font-bold text-[#E54D2E] pt-1">
+                              Exceeds target by ₦{kOver} — the stretch option.
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* Direct Explore CTA */}

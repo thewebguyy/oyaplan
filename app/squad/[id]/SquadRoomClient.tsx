@@ -147,14 +147,16 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
 
   const generateWhatsAppMessage = () => {
     const shareUrl = getShareUrl();
-    const confirmedText = data.confirmedCount > 0 ? `${data.confirmedCount} confirmed` : `${data.plan.squad_size} planned`;
+    const confirmedCount = data.confirmedCount > 0 ? data.confirmedCount : data.plan.squad_size;
 
     return (
-      `*OyaPlan Squad Outing: ${spotName}*\n\n` +
-      `• *Squad:* ${confirmedText} (~₦${perPersonSpend.toLocaleString("en-NG")} each)\n` +
-      `• *Estimated Outing Total:* ~₦${totalSpend.toLocaleString("en-NG")}\n` +
-      `• *Location:* ${spotAddress}\n\n` +
-      `Tap the link to check the plan and say "I'm in":\n${shareUrl}`
+      `Found the spot.\n\n` +
+      `*${spotName}*\n` +
+      `• Squad: ${confirmedCount} people\n` +
+      `• Landed Damage: ~₦${perPersonSpend.toLocaleString("en-NG")} each (~₦${totalSpend.toLocaleString("en-NG")} total)\n` +
+      `• Verified food, drinks & round-trip rides accounted for.\n\n` +
+      `We moving?\n` +
+      `${shareUrl}`
     );
   };
 

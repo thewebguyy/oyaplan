@@ -48,24 +48,18 @@ export function PlanMobileStickyBar({
   const editUrl = `/?${editParams.toString()}`;
 
   const handleWhatsAppShare = () => {
-    const remaining = budget - totalCost;
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://oyaplan.vercel.app';
     const shareUrl = `${origin}/plan/${planId}`;
-    const taxes = Math.max(0, totalCost - (foodCost + transportCost));
-    const perPerson = Math.ceil(totalCost / squadSize);
+    const perPerson = Math.ceil(totalCost / Math.max(1, squadSize));
 
     const message = encodeURIComponent(
-      `*OyaPlan Outing: ${venueName}*\n\n` +
-      `• *Squad:* ${squadSize} people (~₦${perPerson.toLocaleString('en-NG')} each)\n` +
-      `• *Estimated Total Spend:* ~₦${totalCost.toLocaleString('en-NG')}\n` +
-      `• *Your Budget:* ₦${budget.toLocaleString('en-NG')} (${
-        remaining >= 0 ? `₦${remaining.toLocaleString('en-NG')} remaining` : 'near budget limit'
-      })\n\n` +
-      `*Verified Breakdown:*\n` +
-      `• Food & Drinks: ₦${foodCost.toLocaleString('en-NG')}\n` +
-      `• Estimated Transport (Round-Trip): ₦${transportCost.toLocaleString('en-NG')}\n` +
-      (taxes > 0 ? `• Mandatory Charges & Buffer: ₦${taxes.toLocaleString('en-NG')}\n` : '') +
-      `\nSee full breakdown & menu items:\n${shareUrl}`
+      `Found the spot.\n\n` +
+      `*${venueName}*\n` +
+      `• Squad: ${squadSize} people\n` +
+      `• Landed Damage: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
+      `• Verified food, drinks & round-trip rides accounted for.\n\n` +
+      `We moving?\n` +
+      `${shareUrl}`
     );
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };

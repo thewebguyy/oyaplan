@@ -215,6 +215,9 @@ export function PlanCodeSquadPass({
                 <span>oyaplan.com</span>
                 <span className="text-[#F9E828] font-bold">KNOW THE DAMAGE</span>
               </div>
+              <div className="text-[8px] font-mono text-gray-500 uppercase tracking-widest text-center">
+                THIS IS THE PLAN • NOT A TABLE RESERVATION
+              </div>
             </div>
 
             <div className="space-y-2">

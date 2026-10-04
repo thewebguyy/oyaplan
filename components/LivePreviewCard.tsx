@@ -123,7 +123,7 @@ export default function LivePreviewCard({
     const kOver = Math.abs(diff) >= 1000 ? `${(Math.abs(diff) / 1000).toFixed(Math.abs(diff) % 1000 === 0 ? 0 : 1)}k` : `${Math.abs(diff)}`;
     return (
       <span className="text-[#E54D2E] font-bold">
-        Exceeds target by ₦{kOver} — stretch option.
+        Exceeds target by ₦{kOver} — the stretch option.
       </span>
     );
   };
@@ -171,9 +171,15 @@ export default function LivePreviewCard({
         
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-white text-[10px] font-mono font-bold uppercase tracking-wider">
-          <span className="bg-[#111111] text-[#F9E828] px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1 border border-white/10">
-            <Sparkles className="w-3 h-3 text-[#F9E828]" /> Top Match
-          </span>
+          {diff < 0 ? (
+            <span className="bg-[#E54D2E] text-white px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1 font-mono font-bold tracking-wider">
+              THE STRETCH OPTION
+            </span>
+          ) : (
+            <span className="bg-[#111111] text-[#F9E828] px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1 border border-white/10">
+              <Sparkles className="w-3 h-3 text-[#F9E828]" /> Top Match
+            </span>
+          )}
           <span className="bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-md border border-white/20">
             {vibe || "Date Night"}
           </span>

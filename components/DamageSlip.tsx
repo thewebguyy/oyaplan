@@ -95,7 +95,7 @@ export function DamageSlip({
     return (
       <span className="text-[#E54D2E] font-bold flex items-center gap-1">
         <AlertCircle className="w-3.5 h-3.5 shrink-0 text-[#E54D2E]" />
-        <span>Exceeds target by ₦{kOver} — stretch option.</span>
+        <span>Exceeds target by ₦{kOver} — the stretch option.</span>
       </span>
     );
   };
@@ -106,11 +106,7 @@ export function DamageSlip({
     const targetUrl = shareUrl || `${origin}/venue/${spot.id}`;
     const area = spot.areas?.name || spot.address_slug || "Lagos";
 
-    const includes = transportCost > 0
-      ? `Food & drinks + est. transport (₦${transportCost.toLocaleString("en-NG")}).`
-      : "Food & drinks only (transport not counted).";
-    const trust = isVerified ? "Menu prices verified." : "Prices are estimates.";
-    const text = `Found the spot.\n\n${spot.name}, ${area}\n\n₦${totalCost.toLocaleString("en-NG")} total for ${safeSquad}\n₦${perPersonCost.toLocaleString("en-NG")} each\n\n${includes}\n${trust}\n\nWe moving?\n\n${targetUrl}`;
+    const text = `Found the spot.\n\n${spot.name}\n\n• Squad: ${safeSquad} people\n• Landed Damage: ~₦${perPersonCost.toLocaleString("en-NG")} each (~₦${totalCost.toLocaleString("en-NG")} total)\n• Verified food, drinks & round-trip rides accounted for.\n\nWe moving?\n\n${targetUrl}`;
 
     try {
       await navigator.clipboard.writeText(text);

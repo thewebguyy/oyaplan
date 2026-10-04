@@ -49,7 +49,12 @@ export default function EditorialPlan({
     return words[size - 1] || size.toString();
   };
 
+  const isStretch = Boolean((originalBudget || input.budget) && plan.totalCost > (originalBudget || input.budget));
+
   const getCardClasses = () => {
+    if (isStretch) {
+      return "border-2 border-[#E54D2E]/40 shadow-[0px_24px_48px_-12px_rgba(229,77,46,0.12)] rounded-[24px] bg-white";
+    }
     if (isTopPick) {
       return "border border-[#111111] shadow-[0px_24px_48px_-12px_rgba(17,17,17,0.12)] rounded-[24px] bg-white";
     }
@@ -79,6 +84,25 @@ export default function EditorialPlan({
           shareUrl={typeof window !== "undefined" ? `${window.location.origin}/venue/${plan.spot.id}` : undefined}
           isCompact={!isTopPick}
         />
+
+        {/* Stretch Option Explicit Notification */}
+        {isStretch && (() => {
+          const diffOver = plan.totalCost - (originalBudget || input.budget);
+          const kOver = diffOver >= 1000 ? `${(diffOver / 1000).toFixed(diffOver % 1000 === 0 ? 0 : 1)}k` : `${diffOver}`;
+          return (
+            <div className="bg-[#FFF5F3] border border-[#E54D2E]/30 rounded-[20px] p-5 shadow-xs relative overflow-hidden flex items-start gap-4">
+              <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#E54D2E]" />
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E54D2E] block">
+                  The Stretch Option
+                </span>
+                <p className="type-body text-[#111111] text-sm font-semibold leading-relaxed">
+                  Exceeds target by ₦{kOver} — the stretch option.
+                </p>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* 3. Decision Summary Callout */}
         {plan.decisionSummary && (

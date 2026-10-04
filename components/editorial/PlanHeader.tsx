@@ -52,15 +52,29 @@ export function PlanHeader({
 
   const venueHref = `/venue/${plan.spot.id || plan.spot.address_slug || 'lagos'}`;
 
+  const isStretch = Boolean(plan.totalCost && input.budget && plan.totalCost > input.budget);
+  const overDiff = isStretch ? (plan.totalCost! - input.budget!) : 0;
+  const kOver = overDiff >= 1000 ? `${(overDiff / 1000).toFixed(overDiff % 1000 === 0 ? 0 : 1)}k` : `${overDiff}`;
+
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
-      {isTopPick ? (
-        <div className="mb-6 flex items-center gap-1.5 bg-[#F6C642]/15 border border-[#F6C642]/40 text-[#7A5D00] px-4 py-1.5 rounded-full shadow-xs">
-          <Sparkles className="w-3.5 h-3.5" />
+      {isStretch ? (
+        <div className="mb-6 flex items-center gap-2 bg-[#E54D2E]/10 border border-[#E54D2E]/30 text-[#E54D2E] px-4 py-1.5 rounded-full shadow-xs">
+          <span className="text-[11px] font-black uppercase tracking-[0.14em]">
+            THE STRETCH OPTION
+          </span>
+          <span className="text-[#E54D2E]/40">•</span>
+          <span className="text-[11px] font-mono font-bold">
+            Exceeds target by ₦{kOver} — the stretch option.
+          </span>
+        </div>
+      ) : isTopPick ? (
+        <div className="mb-6 flex items-center gap-1.5 bg-[#111111] text-[#F9E828] px-4 py-1.5 rounded-full shadow-xs">
+          <Sparkles className="w-3.5 h-3.5 text-[#F9E828]" />
           <span className="text-[11px] font-black uppercase tracking-[0.14em]">Top Vibe Match</span>
         </div>
       ) : (
-        <div className="mb-6 flex items-center gap-2 bg-[#008751]/10 border border-[#008751]/25 text-[#008751] px-4 py-1.5 rounded-full shadow-xs">
+        <div className="mb-6 flex items-center gap-2 bg-[#F6F6F2] border border-[#E5E5DE] text-[#111111] px-4 py-1.5 rounded-full shadow-xs">
           <span className="text-[11px] font-black uppercase tracking-[0.14em]">
             {getAlternativeLabel()}
           </span>
@@ -72,8 +86,10 @@ export function PlanHeader({
         href={venueHref}
         aria-label={`Explore verified details and full menu for ${plan.spot.name}`}
         className={`w-full max-w-2xl aspect-[16/9] mb-8 rounded-[24px] overflow-hidden img-zoom-container relative border block group cursor-pointer ${
-          isTopPick 
-            ? "border-[#008751]/30 shadow-[0_16px_36px_-8px_rgba(0,135,81,0.18)] ring-1 ring-[#008751]/20" 
+          isStretch
+            ? "border-[#E54D2E]/40 shadow-xl ring-1 ring-[#E54D2E]/30"
+            : isTopPick 
+            ? "border-[#111111] shadow-[0_16px_36px_-8px_rgba(17,17,17,0.18)] ring-1 ring-[#111111]/20" 
             : "border-black/5 shadow-xl"
         }`}
       >
@@ -87,7 +103,7 @@ export function PlanHeader({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/20 group-hover:from-black/80 transition-colors" />
         
         {/* Top hover indicator */}
-        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md text-[#111827] px-3 py-1.5 rounded-full text-xs font-bold shadow-md opacity-90 group-hover:opacity-100 group-hover:bg-[#008751] group-hover:text-white transition-all flex items-center gap-1">
+        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md text-[#111827] px-3 py-1.5 rounded-full text-xs font-bold shadow-md opacity-90 group-hover:opacity-100 group-hover:bg-[#111111] group-hover:text-[#F9E828] transition-all flex items-center gap-1">
           <span>View Venue &amp; Menu</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </div>

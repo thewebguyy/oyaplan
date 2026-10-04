@@ -218,12 +218,12 @@ export function VenueHeroGallery({
           </div>
         ) : (
           /* Graceful Empty Photo State */
-          <div className="w-full h-48 sm:h-64 rounded-[28px] bg-[#FAF7F2] border-2 border-dashed border-[#EAE4DC] flex flex-col items-center justify-center text-center p-6 space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-white border border-[#EAE4DC] flex items-center justify-center text-text-muted shadow-xs">
+          <div className="w-full h-48 sm:h-64 rounded-[28px] bg-[#F6F6F2] border-2 border-dashed border-[#E5E5DE] flex flex-col items-center justify-center text-center p-6 space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-white border border-[#E5E5DE] flex items-center justify-center text-[#6B7280] shadow-xs">
               <Camera className="w-6 h-6" />
             </div>
-            <p className="text-sm font-black text-midnight-lagoon">Photos coming soon</p>
-            <p className="text-xs text-text-secondary max-w-sm">
+            <p className="text-sm font-black text-[#111111]">Photos coming soon</p>
+            <p className="text-xs text-[#555555] max-w-sm">
               We&apos;re still gathering verified atmosphere and menu photos for {venue.name}.
             </p>
           </div>
@@ -235,17 +235,17 @@ export function VenueHeroGallery({
           {/* Category & Status Row */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-midnight-lagoon text-white">
+              <span className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-[#111111] text-[#F9E828]">
                 {venue.category || "Spot"}
               </span>
 
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-midnight-lagoon bg-surface-grey border border-[#EAE4DC]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold text-[#111111] bg-[#F6F6F2] border border-[#E5E5DE]">
                 <MapPin className="w-3.5 h-3.5 text-[#111111]" />
                 <span>{areaName}</span>
               </span>
 
               {isPartnerVerified && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Verified Partner</span>
                 </span>
@@ -264,10 +264,10 @@ export function VenueHeroGallery({
           {/* Title & Save Row */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-black text-midnight-lagoon uppercase tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-[#111111] tracking-tight">
                 {venue.name}
               </h1>
-              <p className="text-xs sm:text-sm text-text-secondary mt-1 flex items-center gap-1.5">
+              <p className="text-xs sm:text-sm text-[#555555] mt-1 flex items-center gap-1.5 font-mono">
                 <MapPin className="w-4 h-4 text-[#111111] shrink-0" />
                 <span>{venue.address}</span>
               </p>
@@ -279,10 +279,10 @@ export function VenueHeroGallery({
                 onClick={handleToggleSave}
                 aria-label={saved ? "Remove from your Shortlist" : "Add to your Shortlist"}
                 aria-pressed={saved}
-                className={`h-11 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all tap-feedback cursor-pointer ${
+                className={`h-11 px-4 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all tap-feedback cursor-pointer font-mono ${
                   saved
                     ? "bg-[#E54D2E]/10 border-[#E54D2E]/30 text-[#E54D2E]"
-                    : "bg-white border-[#EAE4DC] hover:border-midnight-lagoon text-midnight-lagoon"
+                    : "bg-white border-[#E5E5DE] hover:border-[#111111] text-[#111111]"
                 }`}
               >
                 <Heart className={`w-4 h-4 ${saved ? "fill-[#E54D2E] text-[#E54D2E]" : ""}`} />
@@ -291,7 +291,7 @@ export function VenueHeroGallery({
 
               <Link
                 href={forgeUrl}
-                className="h-11 px-5 rounded-xl bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2 shadow-xs transition-all tap-feedback"
+                className="h-11 px-5 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2 shadow-xs transition-all tap-feedback font-mono"
               >
                 <span>Plan this spot</span>
                 <ArrowRight className="w-4 h-4" />
@@ -300,12 +300,12 @@ export function VenueHeroGallery({
           </div>
 
           {/* Sub-bar: Operating Hours & Direct Map link */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#EAE4DC] text-xs text-text-secondary">
-            <div className="flex items-center gap-2 font-medium">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#E5E5DE] text-xs text-[#555555]">
+            <div className="flex items-center gap-2 font-medium font-mono">
               <Clock className="w-4 h-4 text-[#111111]" />
               {todayHours ? (
                 <span>
-                  Today ({currentDayName}): <strong className="text-midnight-lagoon">{todayHours}</strong>
+                  Today ({currentDayName}): <strong className="text-[#111111]">{todayHours}</strong>
                 </span>
               ) : (
                 <span>Opening hours verification in progress</span>

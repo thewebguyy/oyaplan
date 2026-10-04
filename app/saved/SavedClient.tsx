@@ -108,7 +108,7 @@ export default function SavedClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E5DE] pb-5">
           <div>
             <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#F9E828] bg-[#111111] px-3 py-1 rounded-full shadow-xs mb-2">
-              <span>RESIDENT SHORTLIST</span>
+              <span>RESIDENT SHORTLIST • YOUR BLACK BOOK</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#111111] font-display uppercase tracking-tight">
               The Shortlist
@@ -283,10 +283,10 @@ export default function SavedClient({
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
                 <h2 className="font-black text-lg text-[#111111] font-display uppercase tracking-tight">
-                  Your shortlist is looking suspiciously empty.
+                  Your Lagos roster is empty.
                 </h2>
                 <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
-                  Bookmark places as you explore Lagos to easily build and share outing plans with your squad later.
+                  The group chat is depending on you. Bookmark places as you explore Lagos to easily build and share outing plans with your squad later.
                 </p>
               </div>
               <Link href="/explore" className="inline-block pt-2">

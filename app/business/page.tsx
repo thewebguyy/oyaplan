@@ -37,13 +37,13 @@ export default async function BusinessIndexPage() {
                 className="h-6 w-auto object-contain shrink-0"
                 priority
               />
-              <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider px-2 py-0.5 rounded bg-surface-grey border border-border-default/60">
-                Business
+              <span className="text-[10px] font-mono font-bold text-[#111111] uppercase tracking-wider px-2 py-0.5 rounded bg-white border border-[#E5E5DE]">
+                Operator&apos;s Desk
               </span>
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight">
                 Your Managed Venues
               </h1>
               <p className="text-xs sm:text-sm text-text-muted">
@@ -56,15 +56,15 @@ export default async function BusinessIndexPage() {
                 <Link
                   key={venue.id}
                   href={`/business/${venue.id}`}
-                  className="block bg-white rounded-2xl border border-border-default p-5 shadow-xs hover:border-brand-green/60 transition-all tap-feedback"
+                  className="block bg-white rounded-2xl border border-border-default p-5 shadow-xs hover:border-slate-900 transition-all tap-feedback"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div className="space-y-1 min-w-0">
-                      <h2 className="text-base font-bold text-midnight-lagoon truncate">
+                      <h2 className="text-base font-serif font-black text-slate-900 truncate">
                         {venue.name}
                       </h2>
                       <p className="text-xs text-text-muted truncate">{venue.address}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#F6F6F2] text-[#111111] border border-[#E5E5DE]">
                         {role}
                       </span>
                     </div>
