@@ -34,6 +34,18 @@ interface ClaimSearchClientProps {
   initialSpots?: Spot[];
 }
 
+function getVenueMonogram(name: string): string {
+  const clean = name.trim();
+  const words = clean.split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  if (clean.length >= 2) {
+    return clean.slice(0, 2).toUpperCase();
+  }
+  return clean.slice(0, 1).toUpperCase();
+}
+
 export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchClientProps) {
   const searchParams = useSearchParams();
   const isFirstTime = searchParams?.get('firstTime') === 'true';
@@ -41,6 +53,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [liveResults, setLiveResults] = useState<VenueSearchItem[] | null>(null);
+  const [monthlyBookingVol, setMonthlyBookingVol] = useState<number>(500000);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Unify venues or legacy spots into standardized initial list
@@ -119,170 +132,174 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
   const addVenueWaUrl = getBusinessWhatsAppUrl('add_venue', { query: searchQuery.trim() });
   const generalClaimWaUrl = getBusinessWhatsAppUrl('claim_support');
 
+  // Savings math: 15% typical aggregator commission vs ₦0 on OyaPlan
+  const typicalAggregatorFee = Math.round(monthlyBookingVol * 0.15);
+
   return (
-    <div className="space-y-8 max-w-2xl mx-auto">
+    <div className="space-y-8 max-w-2xl mx-auto font-sans text-[#F6F6F2]">
       {/* First-time welcoming state */}
       {isFirstTime && (
-        <div className="p-4 bg-[#EAFDF3] border border-[#A3F3C6] rounded-2xl flex items-start gap-3 text-[#0A7C3F] text-xs leading-relaxed animate-in fade-in duration-200">
-          <Sparkles className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
+        <div className="p-4 bg-[#1E1E1E] border border-[#333333] rounded-2xl flex items-start gap-3 text-gray-200 text-xs leading-relaxed animate-in fade-in duration-200">
+          <Sparkles className="w-4 h-4 text-[#F9E828] shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold text-midnight-lagoon block text-sm">
-              You&apos;re signed in! Now let&apos;s find your business.
+            <span className="font-bold text-white block text-sm">
+              Operator Authenticated. Select Your Venue Plaque.
             </span>
-            <p className="mt-0.5 text-[#0A7C3F]">
-              Search below for your spot so you can connect it to your account and review what Lagos outing planners see.
+            <p className="mt-0.5 text-gray-400">
+              Search below for your pre-indexed venue profile to link it to your account and manage what Lagos outing squads see.
             </p>
           </div>
         </div>
       )}
 
-      {/* Search Header */}
-      <div className="space-y-3 text-center sm:text-left">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#111111] text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5 text-[#F9E828]" />
-          <span>Operator&apos;s Desk • Venue Claim</span>
+      {/* Operator's Desk Search Header */}
+      <div className="space-y-4 text-center sm:text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C1C1C] border border-[#2D2D2D] text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider shadow-xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828] animate-pulse" />
+          <span>Operator&apos;s Desk • Digital Plaque Claim</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight">
-          Find your business on OyaPlan
+        <h1 className="text-3xl sm:text-4xl font-serif font-black text-white tracking-tight">
+          Find your venue on OyaPlan
         </h1>
-        <p className="text-xs sm:text-sm text-text-muted leading-relaxed max-w-xl">
-          Find your business, check how it appears on OyaPlan, and take control of the information customers use to plan a visit.
+        <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-xl">
+          Search for your pre-indexed digital plaque, review your live menu items, and take control of the pricing data customers use to plan visits.
         </p>
 
-        {/* 4 simple steps */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-left">
-          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 1</span>
-            <span className="text-xs font-bold text-slate-900">Find your spot</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 2</span>
-            <span className="text-xs font-bold text-slate-900">See customer view</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 3</span>
-            <span className="text-xs font-bold text-slate-900">Submit claim</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-white border border-border-default/60">
-            <span className="text-[10px] font-mono font-bold text-[#111111] uppercase block">Step 4</span>
-            <span className="text-xs font-bold text-slate-900">Control pricing</span>
-          </div>
+        {/* 01 Find -> 02 Inspect -> 03 Claim -> 04 Control Slim Editorial Timeline */}
+        <div className="flex items-center gap-2 sm:gap-3 text-[11px] font-mono font-bold text-gray-400 overflow-x-auto py-2.5 border-y border-[#262626] scrollbar-none">
+          <span className="text-[#F9E828] flex items-center gap-1.5 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828]" />
+            <span>01 Find Plaque</span>
+          </span>
+          <span className="text-[#444444]">→</span>
+          <span className="shrink-0 text-gray-300">02 Inspect View</span>
+          <span className="text-[#444444]">→</span>
+          <span className="shrink-0 text-gray-300">03 Submit Claim</span>
+          <span className="text-[#444444]">→</span>
+          <span className="shrink-0 text-gray-300">04 Control Pricing</span>
         </div>
       </div>
 
-      {/* Direct Invitation Callout - Friendly, helpful path */}
-      <div className="p-4 bg-[#FAF7F2] border border-[#EAE4DC] rounded-2xl flex items-start gap-3 text-text-secondary text-xs leading-relaxed">
-        <Link2 className="w-4 h-4 text-[#7A3E1D] shrink-0 mt-0.5" />
+      {/* Truthful Lagos Squad Demand Signal */}
+      <div className="p-4 rounded-2xl bg-[#181818] border border-[#262626] flex items-center gap-3 text-xs font-mono text-gray-300">
+        <div className="w-2 h-2 rounded-full bg-[#F9E828] animate-ping shrink-0" />
         <div>
-          <span className="font-bold text-slate-900">Have a direct invitation link?</span> If OyaPlan sent you a direct link via WhatsApp or email, open that link directly to connect to your pre-verified venue listing immediately.
+          <span className="text-white font-bold">Lagos Squad Planning Demand: </span>
+          <span>Planners actively build and budget itineraries across Lagos daily. Claim your plaque to control verified pricing and capture squad outings.</span>
+        </div>
+      </div>
+
+      {/* Direct Invitation Callout */}
+      <div className="p-4 bg-[#181818] border border-[#262626] rounded-2xl flex items-start gap-3 text-gray-300 text-xs leading-relaxed">
+        <Link2 className="w-4 h-4 text-[#F9E828] shrink-0 mt-0.5" />
+        <div>
+          <span className="font-bold text-white">Have a direct verification link?</span> If OyaPlan sent you a direct liaison link via WhatsApp or email, open that link directly to access your pre-verified venue plaque.
         </div>
       </div>
 
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-          placeholder="Search by venue name (e.g. The House, Circa, Cactus, Landmark)..."
-          className="w-full h-14 pl-11 pr-11 bg-white border border-border-default rounded-2xl text-sm font-medium text-text-primary focus:outline-none focus:border-[#111111] shadow-xs transition-all"
+          placeholder="Search venue name (e.g. The House, Circa, Cactus, Landmark)..."
+          className="w-full h-14 pl-11 pr-11 bg-[#181818] border border-[#2D2D2D] rounded-2xl text-sm font-medium text-white placeholder:text-gray-500 focus:outline-none focus:border-[#F9E828] shadow-xs transition-all font-sans"
         />
         {isSearching && (
-          <Loader2 className="w-4 h-4 text-[#111111] animate-spin absolute right-4 top-1/2 -translate-y-1/2" />
+          <Loader2 className="w-4 h-4 text-[#F9E828] animate-spin absolute right-4 top-1/2 -translate-y-1/2" />
         )}
       </div>
 
-      {/* Results List */}
+      {/* Results List: Digital Plaques */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs text-text-muted px-1">
+        <div className="flex items-center justify-between text-xs text-gray-400 px-1">
           <span className="font-mono font-bold uppercase tracking-wider text-[11px]">
-            {searchQuery.trim() ? `Search Results (${displayVenues.length})` : 'Indexed Venues in Lagos'}
+            {searchQuery.trim() ? `Search Results (${displayVenues.length})` : 'Indexed Digital Plaques in Lagos'}
           </span>
           {isSearching && (
-            <span className="text-[10px] font-mono font-bold text-[#111111] flex items-center gap-1">
-              <span>Searching live database...</span>
+            <span className="text-[10px] font-mono font-bold text-[#F9E828] flex items-center gap-1">
+              <span>Searching database...</span>
             </span>
           )}
         </div>
 
         {displayVenues.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-border-default p-8 text-center space-y-3">
-            <Building2 className="w-8 h-8 text-text-muted mx-auto stroke-[1.5]" />
-            <h3 className="font-bold text-sm text-slate-900 uppercase">Can&apos;t find your business?</h3>
-            <p className="text-xs text-text-secondary max-w-sm mx-auto leading-relaxed">
-              We may not have created an initial listing for your venue yet. Message us and we&apos;ll get it listed promptly.
+          <div className="bg-[#181818] rounded-2xl border border-[#262626] p-8 text-center space-y-3">
+            <Building2 className="w-8 h-8 text-gray-500 mx-auto stroke-[1.5]" />
+            <h3 className="font-bold text-sm text-white uppercase font-display">Can&apos;t find your venue plaque?</h3>
+            <p className="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed">
+              We may not have created an initial digital plaque for your venue yet. Contact our desk and we will list and verify it promptly.
             </p>
             {addVenueWaUrl ? (
               <a
                 href={addVenueWaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#111111] text-[#F9E828] font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-black transition-colors"
+                className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#F9E828] text-[#111111] font-mono font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-[#F9E828]/90 transition-colors cursor-pointer"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
-                <span>Message Us on WhatsApp to Add It</span>
+                <span>Message Desk on WhatsApp to Add It</span>
               </a>
-            ) : (
-              <p className="text-xs text-text-muted font-medium">
-                Reach out to our Lagos ops team to create your spot listing.
-              </p>
-            )}
+            ) : null}
           </div>
         ) : (
-          <div className="divide-y divide-[#EAE4DC] bg-white rounded-3xl border border-[#EAE4DC] overflow-hidden shadow-xs">
+          <div className="space-y-2.5">
             {displayVenues.map((venue: VenueSearchItem) => {
               const isVerified = venue.partner_state === 'verified_partner';
               const isPending = venue.partner_state === 'verification_pending';
+              const monogram = getVenueMonogram(venue.name);
 
               return (
                 <Link
                   key={venue.id}
                   href={`/venue/${venue.id}/claim`}
-                  className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-[#FAF7F2] transition-colors tap-feedback group"
+                  className="p-4 sm:p-5 flex items-center justify-between gap-4 bg-[#181818] hover:bg-[#202020] border border-[#2B2B2B] hover:border-[#F9E828]/60 rounded-2xl shadow-xs transition-all tap-feedback group"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-11 h-11 rounded-2xl bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0 border border-black/10 group-hover:scale-105 transition-all">
-                      <Building2 className="w-5 h-5" />
+                    {/* Typographic Monogram Digital Plaque */}
+                    <div className="w-12 h-12 rounded-xl bg-[#222222] border border-[#333333] text-[#F9E828] font-mono font-black text-sm flex items-center justify-center shrink-0 group-hover:border-[#F9E828] group-hover:scale-105 transition-all shadow-inner">
+                      {monogram}
                     </div>
 
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="font-serif font-black text-base text-slate-900 group-hover:text-black transition-colors truncate">
+                        <h2 className="font-serif font-black text-base sm:text-lg text-white group-hover:text-[#F9E828] transition-colors truncate">
                           {venue.name}
                         </h2>
                         {venue.category && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-black uppercase tracking-wider bg-surface-grey text-text-secondary border border-[#EAE4DC] shrink-0">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#262626] text-gray-300 border border-[#333333] shrink-0">
                             {venue.category}
                           </span>
                         )}
                         {isVerified && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#1C2E1F] text-[#6EE7B7] border border-[#065F46]">
                             <ShieldCheck className="w-3 h-3" />
-                            <span>Verified Partner</span>
+                            <span>Verified Plaque</span>
                           </span>
                         )}
                         {isPending && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#2E2415] text-[#FCD34D] border border-[#78350F]">
                             <Clock className="w-3 h-3" />
-                            <span>Verification in Progress</span>
+                            <span>Verification Pending</span>
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-text-muted truncate">
-                        <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                      <div className="flex items-center gap-1 text-xs text-gray-400 font-mono truncate">
+                        <MapPin className="w-3.5 h-3.5 text-[#F9E828] shrink-0" />
                         <span className="truncate">{venue.address || venue.district_name || 'Lagos'}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="shrink-0 flex items-center">
-                    <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all ${
                       isVerified
-                        ? 'bg-surface-grey text-midnight-lagoon border border-[#EAE4DC] group-hover:bg-midnight-lagoon group-hover:text-white'
-                        : 'bg-[#EAFDF3] text-[#008751] border border-[#A3F3C6] group-hover:bg-[#008751] group-hover:text-white'
+                        ? 'bg-[#262626] text-white border border-[#3D3D3D] group-hover:bg-white group-hover:text-[#111111]'
+                        : 'bg-[#F9E828] text-[#111111] group-hover:bg-white'
                     }`}>
-                      <span>{isVerified ? 'Manage' : 'Claim Venue'}</span>
+                      <span>{isVerified ? 'Manage' : 'Claim Plaque'}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
@@ -293,12 +310,63 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         )}
       </div>
 
-      {/* WhatsApp Help Footer */}
-      <div className="p-6 bg-surface-grey rounded-2xl border border-border-default/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <div>
-          <h4 className="font-bold text-xs uppercase text-midnight-lagoon">Can&apos;t find your business?</h4>
-          <p className="text-xs text-text-muted mt-0.5">
-            Message our Lagos team directly and we&apos;ll help get your spot listed and verified.
+      {/* Interactive Deposit Savings Calculator */}
+      <div className="p-6 bg-[#181818] rounded-2xl border border-[#2B2B2B] space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#F9E828] block">
+              OPERATOR ECONOMICS CALCULATOR
+            </span>
+            <h3 className="font-serif font-black text-lg text-white">
+              ₦0 Commission vs. Industry Aggregators
+            </h3>
+          </div>
+          <span className="text-xl font-mono font-black text-[#F9E828] tabular-nums">
+            ₦{typicalAggregatorFee.toLocaleString('en-NG')} Saved / mo
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs font-mono text-gray-400">
+            <span>Estimated Monthly Outing Volume:</span>
+            <span className="text-white font-bold">₦{monthlyBookingVol.toLocaleString('en-NG')}</span>
+          </div>
+          <input
+            type="range"
+            min="100000"
+            max="3000000"
+            step="50000"
+            value={monthlyBookingVol}
+            onChange={(e) => setMonthlyBookingVol(Number(e.target.value))}
+            className="w-full h-2 bg-[#2D2D2D] rounded-lg appearance-none cursor-pointer accent-[#F9E828]"
+            aria-label="Monthly booking volume slider"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-mono">
+          <div className="p-3 bg-[#111111] rounded-xl border border-[#262626]">
+            <span className="text-[10px] text-gray-500 uppercase block">OyaPlan Partner Rate</span>
+            <span className="text-base font-black text-[#F9E828] block mt-0.5">0% Commission</span>
+            <span className="text-[10px] text-gray-400 mt-1 block">₦0 deductions. Customers pay you directly.</span>
+          </div>
+          <div className="p-3 bg-[#111111] rounded-xl border border-[#262626]">
+            <span className="text-[10px] text-gray-500 uppercase block">Aggregator Comparison (15%)</span>
+            <span className="text-base font-black text-red-400 block mt-0.5">₦{typicalAggregatorFee.toLocaleString('en-NG')} lost</span>
+            <span className="text-[10px] text-gray-400 mt-1 block">Assumes 15% booking fees standard in food delivery/booking apps.</span>
+          </div>
+        </div>
+      </div>
+
+      {/* VIP Concierge Fast-Track Banner */}
+      <div className="p-6 bg-[#161616] rounded-2xl border border-[#2D2D2D] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#F9E828] uppercase tracking-wider">
+            <Sparkles className="w-3 h-3 text-[#F9E828]" />
+            <span>VIP Concierge Fast-Track</span>
+          </div>
+          <h4 className="font-serif font-black text-base text-white">Can&apos;t find your venue plaque?</h4>
+          <p className="text-xs text-gray-400 max-w-md">
+            Our Lagos operations desk will index, verify, and mint your digital plaque within 24 hours.
           </p>
         </div>
         {generalClaimWaUrl && (
@@ -306,10 +374,10 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
             href={generalClaimWaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 h-10 px-4 bg-white border border-border-default text-midnight-lagoon font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-1.5 hover:bg-gray-50 transition-colors shadow-2xs cursor-pointer"
+            className="shrink-0 h-11 px-5 bg-[#F9E828] hover:bg-[#F9E828]/90 text-[#111111] font-mono font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-2 transition-colors cursor-pointer tap-feedback"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-brand-green" />
-            <span>Chat on WhatsApp</span>
+            <MessageSquare className="w-4 h-4 text-[#111111]" />
+            <span>Direct WhatsApp Desk</span>
           </a>
         )}
       </div>

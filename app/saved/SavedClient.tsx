@@ -87,24 +87,17 @@ export default function SavedClient({
       badge: "Budget Saver",
     },
     {
-      title: "Date Night Under ₦30k",
-      description: "Intimate dinners and romantic corners that don't sting.",
-      href: "/forge?vibe=date-night&budget=30000&squad=2&fresh=true",
-      badge: "Date Pack",
+      title: "Late-Night Grills",
+      description: "Verified suya houses, grills, and late-night chop spots.",
+      href: "/explore?category=restaurant&area=lekki",
+      badge: "Grill Pack",
     },
   ];
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 bg-[#F6F6F2] min-h-[100dvh] text-[#111111] antialiased font-sans">
       {/* Header & Navigation Context */}
-      <div className="space-y-4">
-        <Link href="/">
-          <button className="type-label text-[#555555] hover:text-[#111111] transition-colors flex items-center gap-1.5 tap-feedback py-1 text-xs font-mono font-bold cursor-pointer">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>← Back to Planner</span>
-          </button>
-        </Link>
-
+      <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E5DE] pb-5">
           <div>
             <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#F9E828] bg-[#111111] px-3 py-1 rounded-full shadow-xs mb-2">
@@ -118,7 +111,7 @@ export default function SavedClient({
             </p>
           </div>
 
-          {/* Segmented Tab Switcher */}
+          {/* Segmented Tab Switcher — Suppress (0) when empty */}
           <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-[#E5E5DE] w-fit self-start sm:self-auto shadow-2xs">
             <button
               type="button"
@@ -130,7 +123,7 @@ export default function SavedClient({
                   : "text-[#555555] hover:text-[#111111]"
               }`}
             >
-              Saved Spots ({savedSpots.length})
+              {savedSpots.length > 0 ? `Saved Spots (${savedSpots.length})` : "Saved Spots"}
             </button>
 
             <button
@@ -143,45 +136,17 @@ export default function SavedClient({
                   : "text-[#555555] hover:text-[#111111]"
               }`}
             >
-              Saved Plans ({serverSavedPlans.length})
+              {serverSavedPlans.length > 0 ? `Saved Plans (${serverSavedPlans.length})` : "Saved Plans"}
             </button>
           </div>
         </div>
 
-        {/* Starter Packs Rail */}
-        <div className="space-y-2.5 pt-1">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#6B7280]">
-            Starter Packs &amp; Curated Filters
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {STARTER_PACKS.map((pack) => (
-              <Link
-                key={pack.title}
-                href={pack.href}
-                className="p-3.5 bg-white rounded-xl border border-[#E5E5DE] hover:border-[#111111] transition-all shadow-xs hover:shadow-sm flex flex-col justify-between group cursor-pointer"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#F6F6F2] text-[#111111] border border-[#E5E5DE]">
-                      {pack.badge}
-                    </span>
-                    <Sparkles className="w-3.5 h-3.5 text-[#111111] opacity-60 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <h4 className="text-sm font-black text-[#111111] group-hover:text-[#111111] font-display uppercase tracking-tight pt-1">
-                    {pack.title}
-                  </h4>
-                  <p className="text-[11px] text-[#6B7280] leading-snug">
-                    {pack.description}
-                  </p>
-                </div>
-                <span className="text-[10px] font-mono font-bold text-[#111111] flex items-center gap-1 pt-2">
-                  <span>Explore Pack</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* Recently Viewed Deck — Native horizontal swipe deck directly below header tabs */}
+        <RecentlyViewedRow 
+          title="Recently Viewed in Lagos" 
+          subtitle="Quick access to spots you examined on this device."
+          className="p-4 sm:p-5 bg-white rounded-2xl shadow-xs border border-[#E5E5DE]"
+        />
       </div>
 
       {/* TAB 1: SAVED SPOTS */}
@@ -237,7 +202,7 @@ export default function SavedClient({
                     <div className="p-5 flex flex-col flex-grow text-left justify-between space-y-4">
                       <div className="space-y-1">
                         <Link href={`/venue/${spot.id}`}>
-                          <h3 className="font-black text-base sm:text-lg text-[#111111] uppercase leading-tight group-hover:underline underline-offset-4 transition-colors">
+                          <h3 className="font-black text-base sm:text-lg text-[#111111] uppercase leading-tight group-hover:underline underline-offset-4 transition-colors font-display">
                             {spot.name}
                           </h3>
                         </Link>
@@ -277,23 +242,89 @@ export default function SavedClient({
               })}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-white rounded-[20px] border border-[#E5E5DE] space-y-4 shadow-xs">
-              <div className="w-14 h-14 bg-[#111111] text-[#F9E828] rounded-2xl flex items-center justify-center mx-auto shadow-xs">
-                <Bookmark className="w-7 h-7" />
+            /* THE PHANTOM ROSTER — Empty State with Ghosted Polaroid Stack & Curator Starter Packs */
+            <div className="relative overflow-hidden bg-white rounded-[24px] shadow-[0_12px_40px_rgba(17,17,17,0.06)] border border-[#E5E5DE]/80 p-6 sm:p-12 text-center space-y-8">
+              {/* Ghosted Polaroid Stack Graphic */}
+              <div className="relative w-48 h-32 mx-auto flex items-center justify-center select-none" aria-hidden="true">
+                {/* Back card (Tilted left) */}
+                <div className="absolute w-36 h-24 bg-[#E5E5DE]/60 rounded-xl border border-[#D5D5CD] -rotate-6 scale-95 shadow-xs" />
+                {/* Middle card (Tilted right) */}
+                <div className="absolute w-36 h-24 bg-[#F6F6F2] rounded-xl border border-[#E5E5DE] rotate-3 shadow-xs flex items-center justify-center">
+                  <div className="w-16 h-2 bg-[#E5E5DE] rounded-full" />
+                </div>
+                {/* Front card (Sharp Obsidian till slip) */}
+                <div className="relative z-10 w-40 h-26 bg-[#111111] text-white rounded-xl border border-black shadow-md flex flex-col justify-between p-3 rotate-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[8px] font-mono uppercase tracking-widest text-[#F9E828]">PHANTOM ROSTER</span>
+                    <Sparkles className="w-3 h-3 text-[#F9E828]" />
+                  </div>
+                  <div className="space-y-1 text-left">
+                    <div className="w-20 h-2 bg-white/20 rounded" />
+                    <div className="w-12 h-1.5 bg-white/10 rounded" />
+                  </div>
+                  <div className="pt-1 border-t border-dashed border-white/20 text-[9px] font-mono text-[#F9E828] text-right">
+                    ₦0 DAMAGE
+                  </div>
+                </div>
               </div>
-              <div className="space-y-1 max-w-sm mx-auto">
-                <h2 className="font-black text-lg text-[#111111] font-display uppercase tracking-tight">
+
+              {/* Empty State Copy */}
+              <div className="space-y-2 max-w-md mx-auto">
+                <h2 className="font-black text-xl sm:text-2xl text-[#111111] font-display uppercase tracking-tight">
                   Your Lagos roster is empty.
                 </h2>
                 <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
-                  The group chat is depending on you. Bookmark places as you explore Lagos to easily build and share outing plans with your squad later.
+                  The group chat is depending on you. You haven&apos;t built your Lagos hitlist yet. Bookmark places as you explore, or steal a trending verified itinerary below.
                 </p>
               </div>
-              <Link href="/explore" className="inline-block pt-2">
-                <Button className="bg-[#111111] hover:bg-black text-[#F9E828] font-bold text-xs px-6 py-2.5 rounded-full shadow-xs tap-feedback">
-                  Explore Lagos Spots
-                </Button>
-              </Link>
+
+              {/* Action Buttons: Primary Explore + Steal a Trending Plan */}
+              <div className="flex items-center justify-center gap-3 flex-wrap pt-1">
+                <Link href="/explore">
+                  <Button className="bg-[#111111] hover:bg-black text-[#F9E828] font-mono font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl shadow-xs tap-feedback cursor-pointer">
+                    Explore Lagos Spots
+                  </Button>
+                </Link>
+                <Link href="/forge?vibe=chill&budget=45000&squad=2&area=lekki&fresh=true">
+                  <Button variant="outline" className="border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9E828] font-mono font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition-all tap-feedback cursor-pointer">
+                    Steal a Trending Plan →
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Inline Curator Starter Packs */}
+              <div className="pt-6 border-t border-dashed border-[#E5E5DE] text-left space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#6B7280]">
+                    Or start with a Curated Starter Pack
+                  </span>
+                  <span className="text-[10px] font-mono text-[#111111] font-bold">1-Tap Discovery</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {STARTER_PACKS.map((pack) => (
+                    <Link
+                      key={pack.title}
+                      href={pack.href}
+                      className="p-3.5 bg-[#F6F6F2] hover:bg-white rounded-xl border border-[#E5E5DE] hover:border-[#111111] transition-all shadow-2xs hover:shadow-xs flex flex-col justify-between group cursor-pointer"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white text-[#111111] border border-[#E5E5DE]">
+                            {pack.badge}
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#111111] opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                        <h4 className="text-sm font-black text-[#111111] font-display uppercase tracking-tight pt-1">
+                          {pack.title}
+                        </h4>
+                        <p className="text-[11px] text-[#6B7280] leading-snug">
+                          {pack.description}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </section>

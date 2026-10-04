@@ -8,9 +8,12 @@ import { DiscoverySearchInput } from "./DiscoverySearchInput";
 import { DiscoveryVenueCard } from "./DiscoveryVenueCard";
 import { DiscoveryFilterSheet, FilterState, SortMode } from "./DiscoveryFilterSheet";
 import { DiscoveryEmptyState } from "./DiscoveryEmptyState";
+import { DiscoveryReceiptDrawer } from "./DiscoveryReceiptDrawer";
 import { RecentlyViewedRow } from "@/components/venue/RecentlyViewedRow";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
 import { triggerHaptic } from "@/lib/ui/haptics";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+import { knownPerPerson, suggestPlanBudget } from "@/lib/venue/venueSpend";
 
 interface ExploreClientProps {
   initialSpots: Spot[];
@@ -63,6 +66,7 @@ export function ExploreClient({
   });
 
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [selectedReceiptSpot, setSelectedReceiptSpot] = useState<Spot | null>(null);
 
   // Sync state to URL without full-page reloads
   const updateUrlParams = useCallback((newFilters: FilterState, query: string) => {
@@ -236,11 +240,11 @@ export function ExploreClient({
   }, [filters.areaSlug, availableAreas]);
 
   const BUDGET_PILLS = [
-    { label: "Any Budget", value: null },
+    { label: "All Budgets", value: null },
     { label: "Under ₦20k", value: 20000 },
     { label: "Under ₦40k", value: 40000 },
-    { label: "Under ₦60k", value: 60000 },
-    { label: "Under ₦100k", value: 100000 },
+    { label: "Under ₦70k", value: 70000 },
+    { label: "₦100k+", value: 100000 },
   ];
 
   return (
@@ -465,6 +469,7 @@ export function ExploreClient({
                     saveSpot(spot);
                   }
                 }}
+                onOpenReceipt={() => setSelectedReceiptSpot(spot)}
               />
             ))}
           </div>
@@ -481,6 +486,26 @@ export function ExploreClient({
         onResetFilters={handleResetFilters}
         availableAreas={availableAreas}
         matchCount={filteredSpots.length}
+      />
+
+      {/* Slide-Up Sample Receipt Preview Drawer */}
+      <DiscoveryReceiptDrawer
+        isOpen={selectedReceiptSpot !== null}
+        onClose={() => setSelectedReceiptSpot(null)}
+        spot={selectedReceiptSpot}
+        squadSize={filters.squadSize}
+        budget={filters.budget}
+        planUrl={
+          selectedReceiptSpot
+            ? buildVenuePlanUrl({
+                venueId: selectedReceiptSpot.id,
+                area: selectedReceiptSpot.areas?.slug || selectedReceiptSpot.address_slug || "lagos",
+                squad: filters.squadSize,
+                budget: filters.budget || suggestPlanBudget(knownPerPerson({ derived_typical_cost: selectedReceiptSpot.price_per_person }), filters.squadSize),
+                vibe: selectedReceiptSpot.vibe_tags?.[0] || "chill",
+              })
+            : "/"
+        }
       />
     </div>
   );

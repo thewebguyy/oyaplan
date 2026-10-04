@@ -16,6 +16,7 @@ interface DiscoveryVenueCardProps {
   budget: number | null; // Total squad budget
   isSaved: boolean;
   onToggleSave: () => void;
+  onOpenReceipt?: () => void;
   className?: string;
 }
 
@@ -162,12 +163,26 @@ export function DiscoveryVenueCard({
             </button>
           </div>
 
-          {/* Pricing Highlight Container: Prominent Per Person */}
-          <div className="mt-3 p-3.5 rounded-xl bg-[#F6F6F2] border border-[#E5E5DE] flex items-baseline justify-between font-mono">
+          {/* Pricing Highlight Container: Prominent Per Person + Drawer Trigger */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onOpenReceipt?.();
+            }}
+            className="mt-3 p-3.5 rounded-xl bg-[#F6F6F2] hover:bg-[#EAEAE2] border border-[#E5E5DE] hover:border-[#111111] flex items-baseline justify-between font-mono text-left w-full transition-all cursor-pointer group/price tap-feedback"
+            aria-label={`View sample damage slip for ${spot.name}`}
+          >
             <div>
-              <span className="text-[10px] uppercase font-bold text-[#6B7280] block">
-                Typical Spend
-              </span>
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="text-[10px] uppercase font-bold text-[#6B7280] block">
+                  Typical Spend
+                </span>
+                <span className="text-[9px] font-mono font-bold text-[#111111] bg-white border border-[#E5E5DE] px-1.5 py-0.2 rounded group-hover/price:border-[#111111]">
+                  Receipt ▾
+                </span>
+              </div>
               {pricePerPerson !== null ? (
                 <div className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight tabular-nums">
                   ₦{pricePerPerson.toLocaleString("en-NG")}
@@ -193,7 +208,7 @@ export function DiscoveryVenueCard({
                 </span>
               </div>
             )}
-          </div>
+          </button>
 
           {/* Budget Fit Indicator (when budget entered) */}
           {budget && estimatedTotal !== null && (

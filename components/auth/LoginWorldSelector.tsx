@@ -16,10 +16,10 @@ export default function LoginWorldSelector() {
   const businessHref = `/login/business${returnTo && returnTo !== "/" ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`;
 
   return (
-    <main className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon flex flex-col justify-between selection:bg-[#008751]/20">
+    <main className="min-h-[100dvh] bg-[#F6F6F2] text-[#111111] flex flex-col justify-between selection:bg-[#F9E828]/40 font-sans">
       {/* Top Brand Bar */}
-      <header className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 tap-feedback focus-visible:outline-2 focus-visible:outline-[#008751] rounded-lg">
+      <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 tap-feedback focus-visible:outline-2 focus-visible:outline-[#111111] rounded-lg">
           <Image
             src="/logo.png"
             alt="OyaPlan"
@@ -29,103 +29,131 @@ export default function LoginWorldSelector() {
             priority
           />
         </Link>
+
+        {/* Elevate Anonymous CTA: Meaningful primary-style action, not a tiny footnote */}
         <Link
           href="/"
-          className="text-xs font-bold text-text-secondary hover:text-[#008751] transition-colors py-1 px-3 rounded-full hover:bg-white border border-transparent hover:border-[#EAE4DC]"
+          className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#111111] bg-white hover:bg-[#111111] hover:text-[#F9E828] border border-[#111111] px-4 py-2 rounded-full transition-all duration-200 shadow-xs tap-feedback"
         >
-          Explore anonymously →
+          <span>Skip the line. Explore anonymously</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </header>
 
       {/* Main Container */}
-      <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 my-auto">
-        <div className="text-center space-y-3 mb-8 sm:mb-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#008751]/10 text-[#008751] text-[11px] font-black uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Choose Your Experience</span>
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10 my-auto flex flex-col gap-6 sm:gap-8">
+        <div className="text-center space-y-2.5 max-w-xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111111] text-[#F9E828] text-[10px] font-mono font-bold uppercase tracking-widest shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828] animate-pulse" />
+            <span>PORTAL SELECTION</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-black text-midnight-lagoon tracking-tight">
-            How are you using OyaPlan?
+          <h1 className="text-3xl sm:text-5xl font-black text-[#111111] tracking-tight font-display uppercase">
+            Enter the City.
           </h1>
-          <p className="text-xs sm:text-sm text-text-secondary max-w-md mx-auto leading-relaxed">
-            Select how you want to sign in. Consumers and venue partners use dedicated spaces.
+          <p className="text-xs sm:text-sm text-[#555555] font-medium leading-relaxed">
+            Select your portal. Lagos leisure seekers and venue operators enter dedicated spaces.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          {/* Option 1: OyaPlanner (Consumer) */}
+        {/* The Split Reality: 50/50 Desktop Split, Stacked on Mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch">
+          {/* World 1: Consumer (Nightlife / Atmospheric) */}
           <Link
             href={plannerHref}
-            className="group relative bg-white rounded-[24px] p-6 sm:p-7 border-2 border-[#EAE4DC] hover:border-[#008751] shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between tap-feedback focus-visible:outline-2 focus-visible:outline-[#008751]"
+            className="group relative bg-[#111111] text-white rounded-[24px] p-6 sm:p-8 border border-black shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden tap-feedback min-h-[300px]"
           >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#EAFDF3] text-[#008751] border border-[#A3F3C6] flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Compass className="w-6 h-6" />
+            {/* Contextual Nightlife Atmosphere Glow */}
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity duration-500"
+              style={{
+                background: "radial-gradient(ellipse at 80% 20%, rgba(249, 232, 40, 0.18), transparent 70%), radial-gradient(ellipse at 20% 80%, rgba(229, 77, 46, 0.12), transparent 60%)"
+              }}
+              aria-hidden="true"
+            />
+
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#111111] bg-[#F9E828] px-2.5 py-1 rounded-md">
+                  OyaPlanner
+                </span>
+                <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">
+                  Consumer World
+                </span>
               </div>
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-[#008751] bg-[#008751]/10 px-2 py-0.5 rounded-md">
-                  Consumer
-                </div>
-                <h2 className="text-lg sm:text-xl font-black text-midnight-lagoon group-hover:text-[#008751] transition-colors">
+
+              <div className="space-y-2 pt-2">
+                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-display uppercase group-hover:text-[#F9E828] transition-colors">
                   For OyaPlanners
                 </h2>
-                <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                  Discover Lagos venues, know what you&apos;ll spend before leaving home, save spots, and lock in group plans.
+                <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-sans">
+                  Discover curated Lagos spots, know the exact landed damage, and lock in group plans before stepping out.
                 </p>
               </div>
             </div>
 
-            <div className="pt-6 mt-4 border-t border-border-default/60 flex items-center justify-between text-xs sm:text-sm font-bold text-[#008751]">
-              <span>Continue as an OyaPlanner</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="relative z-10 pt-6 mt-6 border-t border-white/15 flex items-center justify-between text-xs sm:text-sm font-mono font-bold text-[#F9E828]">
+              <span>Enter as an OyaPlanner</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
             </div>
           </Link>
 
-          {/* Option 2: Business (Operator) */}
+          {/* World 2: Operator's Desk (Architectural / Dark Mode) */}
           <Link
             href={businessHref}
-            className="group relative bg-white rounded-[24px] p-6 sm:p-7 border-2 border-[#EAE4DC] hover:border-midnight-lagoon shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between tap-feedback focus-visible:outline-2 focus-visible:outline-midnight-lagoon"
+            className="group relative bg-[#1A1A1A] text-[#F6F6F2] rounded-[24px] p-6 sm:p-8 border border-[#2D2D2D] hover:border-[#F9E828]/50 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden tap-feedback min-h-[300px]"
           >
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#010528]/5 text-midnight-lagoon border border-[#EAE4DC] flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Building2 className="w-6 h-6" />
+            {/* Architectural Grid Glow */}
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity duration-500"
+              style={{
+                background: "radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.12), transparent 70%)"
+              }}
+              aria-hidden="true"
+            />
+
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#F9E828] bg-white/10 px-2.5 py-1 rounded-md border border-white/10">
+                  Operator&apos;s Desk
+                </span>
+                <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">
+                  Business World
+                </span>
               </div>
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-midnight-lagoon bg-midnight-lagoon/10 px-2 py-0.5 rounded-md">
-                  Venue Operator
-                </div>
-                <h2 className="text-lg sm:text-xl font-black text-midnight-lagoon transition-colors">
-                  For Businesses
+
+              <div className="space-y-2 pt-2">
+                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-serif group-hover:text-white transition-colors">
+                  For Venue Operators
                 </h2>
-                <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                  Manage your venue profile, sync live pricing, update hours and policies, and review planning demand.
+                <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-sans">
+                  Claim your pre-indexed venue plaque, verify live pricing, update house policies, and inspect customer demand.
                 </p>
               </div>
             </div>
 
-            <div className="pt-6 mt-4 border-t border-border-default/60 flex items-center justify-between text-xs sm:text-sm font-bold text-midnight-lagoon">
-              <span>Continue as a Business</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="relative z-10 pt-6 mt-6 border-t border-white/15 flex items-center justify-between text-xs sm:text-sm font-mono font-bold text-white group-hover:text-[#F9E828] transition-colors">
+              <span>Enter the Operator&apos;s Desk</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
             </div>
           </Link>
         </div>
 
         {/* Reassurance Footer */}
-        <div className="mt-8 text-center flex items-center justify-center gap-2 text-xs font-medium text-text-muted">
-          <ShieldCheck className="w-4 h-4 text-[#008751]" />
-          <span>Anonymous first. You can always plan without signing in.</span>
+        <div className="text-center flex items-center justify-center gap-2 text-xs font-mono font-medium text-[#555555]">
+          <ShieldCheck className="w-4 h-4 text-[#111111]" />
+          <span>Anonymous first. You can always plan and calculate damage without signing in.</span>
         </div>
       </div>
 
       {/* Simple Footer Links */}
-      <footer className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 border-t border-[#EAE4DC] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted">
+      <footer className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 border-t border-[#E5E5DE] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#777777]">
         <div>© {new Date().getFullYear()} OyaPlan. Built for Lagos.</div>
         <div className="flex items-center gap-4">
-          <Link href="/privacy" className="hover:text-text-primary transition-colors">Privacy</Link>
+          <Link href="/privacy" className="hover:text-[#111111] transition-colors">Privacy</Link>
           <span>•</span>
-          <Link href="/terms" className="hover:text-text-primary transition-colors">Terms</Link>
+          <Link href="/terms" className="hover:text-[#111111] transition-colors">Terms</Link>
           <span>•</span>
-          <Link href="/for-business" className="hover:text-[#008751] transition-colors font-bold">For Businesses</Link>
+          <Link href="/for-business" className="hover:text-[#111111] transition-colors font-bold">For Businesses</Link>
         </div>
       </footer>
     </main>
