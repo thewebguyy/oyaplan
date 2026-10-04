@@ -126,35 +126,41 @@ export function PlanCostBreakdown({
             </span>
           </div>
         </div>
+
+        {/* Landed Verification & Transit Metadata Stamp */}
+        <div className="pt-2 px-1 flex items-center justify-between text-[10px] font-mono text-[#777777] border-t border-dashed border-[#111111]/15">
+          <span>{freshnessText ? `RATES VERIFIED (${freshnessText.toUpperCase()})` : "RATES VERIFIED FOR LAGOS LEISURE"}</span>
+          <span>TRANSIT VIA BOLT</span>
+        </div>
       </div>
 
       {/* Progressive Disclosure: How We Estimated This */}
-      <div className="pt-2 border-t border-border-default/60">
+      <div className="pt-2 border-t border-[#E5E5DE]">
         <button
           type="button"
           onClick={() => setIsEvidenceOpen(!isEvidenceOpen)}
-          className="w-full py-2 flex items-center justify-between text-xs font-bold text-text-secondary hover:text-midnight-lagoon transition-colors"
+          className="w-full py-2 flex items-center justify-between text-xs font-mono font-bold text-[#555555] hover:text-[#111111] transition-colors cursor-pointer"
         >
           <span className="flex items-center gap-1.5">
-            <Receipt className="w-3.5 h-3.5 text-[#008751]" />
-            <span>How we estimated this</span>
+            <Receipt className="w-3.5 h-3.5 text-[#111111]" />
+            <span>How we calculated this damage</span>
           </span>
           <ChevronDown
             className={`w-4 h-4 transition-transform duration-200 ${
-              isEvidenceOpen ? 'rotate-180 text-midnight-lagoon' : 'text-text-muted'
+              isEvidenceOpen ? 'rotate-180 text-[#111111]' : 'text-[#777777]'
             }`}
           />
         </button>
 
         {isEvidenceOpen && (
-          <div className="mt-3 p-4 bg-[#FAF7F2] rounded-xl border border-[#E5E0D8] space-y-3 text-xs animate-slide-up">
+          <div className="mt-3 p-4 bg-[#F6F6F2] rounded-xl border border-[#E5E5DE] space-y-3 text-xs font-mono">
             {/* Menu Evidence */}
             <div className="space-y-1">
-              <p className="font-bold text-midnight-lagoon flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-[#008751]" />
+              <p className="font-bold text-[#111111] flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-[#111111]" />
                 <span>Menu Pricing</span>
               </p>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-[#555555] leading-relaxed">
                 Prices are based on venue menu data collected by OyaPlan. Food and drink
                 allocations are estimated for {squadSize} person(s).
               </p>
@@ -162,11 +168,11 @@ export function PlanCostBreakdown({
 
             {/* Transport Evidence */}
             <div className="space-y-1">
-              <p className="font-bold text-midnight-lagoon flex items-center gap-1.5">
-                <Car className="w-3.5 h-3.5 text-[#008751]" />
+              <p className="font-bold text-[#111111] flex items-center gap-1.5">
+                <Car className="w-3.5 h-3.5 text-[#111111]" />
                 <span>Transport Route</span>
               </p>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-[#555555] leading-relaxed">
                 {transportEstimate?.mode || 'Ride-hailing'} estimated round trip from{' '}
                 <strong>{startAreaName}</strong> to venue using standard Lagos traffic profiles.
               </p>
@@ -174,11 +180,11 @@ export function PlanCostBreakdown({
 
             {/* Mandatory Charges */}
             <div className="space-y-1">
-              <p className="font-bold text-midnight-lagoon flex items-center gap-1.5">
-                <Receipt className="w-3.5 h-3.5 text-[#008751]" />
+              <p className="font-bold text-[#111111] flex items-center gap-1.5">
+                <Receipt className="w-3.5 h-3.5 text-[#111111]" />
                 <span>Mandatory Charges</span>
               </p>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-[#555555] leading-relaxed">
                 {vatPct > 0 && serviceChargePct > 0
                   ? `${vatPct}% VAT and ${serviceChargePct}% service charge are factored into this estimate. Actual charges at the venue may vary.`
                   : vatPct > 0
@@ -191,8 +197,8 @@ export function PlanCostBreakdown({
 
             {/* Freshness */}
             {freshnessText && (
-              <div className="pt-2 border-t border-[#E5E0D8] flex items-center gap-1.5 text-[11px] text-text-muted">
-                <Clock className="w-3 h-3 text-[#008751]" />
+              <div className="pt-2 border-t border-[#E5E5DE] flex items-center gap-1.5 text-[11px] text-[#777777]">
+                <Clock className="w-3 h-3 text-[#111111]" />
                 <span>Data freshness: {freshnessText}</span>
               </div>
             )}

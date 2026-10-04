@@ -37,6 +37,7 @@ export function DiscoveryVenueCard({
   budget,
   isSaved,
   onToggleSave,
+  onOpenReceipt,
   className = "",
 }: DiscoveryVenueCardProps) {
   const pricePerPerson = knownPerPerson({ derived_typical_cost: spot.price_per_person });

@@ -211,6 +211,13 @@ export default function PlannerWidget({
 
   const perPersonAmount = Math.round(budget / Math.max(1, squadSize));
 
+  const getBudgetMicroCopy = (val: number): string => {
+    if (val <= 20000) return "Just a quick chill";
+    if (val <= 45000) return "Balanced outing";
+    if (val <= 75000) return "Soft life cruise";
+    return "We are balling today";
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -457,7 +464,10 @@ export default function PlannerWidget({
               <label htmlFor="budget-input" className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555]">
                 Squad Target Budget
               </label>
-              <span className="text-[11px] text-[#777777] font-normal leading-tight">Total spend limit for all</span>
+              <span className="text-[11px] text-[#111111] font-mono font-bold leading-tight flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828]" />
+                <span>{getBudgetMicroCopy(budget)}</span>
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 bg-[#F6F6F2] p-1 rounded-lg border border-[#E5E5DE]">
@@ -603,11 +613,11 @@ export default function PlannerWidget({
         )}
       </AnimatePresence>
 
-      {/* Primary CTA Submit Button */}
+      {/* Primary CTA Submit Button — Sticky-aware above mobile keyboard */}
       <button
         id="planner-submit-btn"
         type="submit"
-        className="w-full h-14 bg-[#111111] hover:bg-black text-[#F9E828] font-black uppercase tracking-wider text-sm rounded-[14px] flex items-center justify-center cursor-pointer shadow-[0_4px_16px_rgba(17,17,17,0.15)] active:scale-[0.98] transition-all duration-150 outline-none focus-visible:ring-3 focus-visible:ring-[#F9E828]"
+        className="w-full h-14 bg-[#111111] hover:bg-black text-[#F9E828] font-black uppercase tracking-wider text-sm rounded-[14px] flex items-center justify-center cursor-pointer shadow-[0_4px_16px_rgba(17,17,17,0.15)] active:scale-[0.98] transition-all duration-150 outline-none focus-visible:ring-3 focus-visible:ring-[#F9E828] sticky bottom-3 z-10 sm:static sm:bottom-auto tap-feedback"
         aria-label="Submit criteria and view plan"
       >
         Lock In Damage &amp; Plan
