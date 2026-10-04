@@ -99,6 +99,12 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     return `${squadSize} people`;
   }, [squadSize]);
 
+  const isNightlifeVibe = useMemo(() => {
+    if (!vibe) return false;
+    const v = vibe.toLowerCase();
+    return v.includes("party") || v.includes("dinner");
+  }, [vibe]);
+
   const perPersonBudget = Math.round(budget / Math.max(1, squadSize));
 
   return (
@@ -110,6 +116,26 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     >
       {/* Subtle hero background */}
       <div className="hero-background" aria-hidden="true" />
+
+      {/* Contextual visual atmosphere: Daylight warm sand vs. Twilight nightlife atmosphere */}
+      <div 
+        className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ease-in-out ${
+          isNightlifeVibe ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          background: "radial-gradient(ellipse 90% 70% at 85% 15%, rgba(20, 24, 38, 0.08), transparent 70%), radial-gradient(ellipse 50% 50% at 10% 90%, rgba(249, 232, 40, 0.04), transparent 60%)"
+        }}
+        aria-hidden="true"
+      />
+      <div 
+        className={`absolute inset-0 pointer-events-none transition-opacity duration-700 ease-in-out ${
+          !isNightlifeVibe ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          background: "radial-gradient(ellipse 90% 70% at 85% 15%, rgba(249, 232, 40, 0.10), transparent 70%), radial-gradient(ellipse 50% 50% at 10% 90%, rgba(229, 77, 46, 0.03), transparent 60%)"
+        }}
+        aria-hidden="true"
+      />
 
       <div className="max-w-5xl mx-auto flex flex-col gap-8 md:gap-10 text-left relative z-10">
         {/* Interactive Phrase Header Area */}

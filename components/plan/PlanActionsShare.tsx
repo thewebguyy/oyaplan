@@ -140,18 +140,18 @@ export function PlanActionsShare({
     <section className="space-y-4">
       {/* 1. Share & Edit Primary Actions */}
       <div className="bg-white border border-border-default rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-border-default/60">
-          <h2 className="text-base font-black text-midnight-lagoon flex items-center gap-2">
-            <Share2 className="w-4 h-4 text-[#008751]" />
+        <div className="flex items-center justify-between pb-2 border-b border-[#E5E5DE]">
+          <h2 className="text-base font-black text-[#111111] flex items-center gap-2 font-display">
+            <Share2 className="w-4 h-4 text-[#111111]" />
             <span>Squad Decision &amp; Actions</span>
           </h2>
-          <span className="text-[11px] font-bold text-text-muted">1-Tap Distribution</span>
+          <span className="text-[11px] font-mono font-bold text-[#6B7280]">1-Tap Distribution</span>
         </div>
 
         {/* Squad Decision Room Hero CTA */}
         <Link
           href={`/squad/${planId}`}
-          className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all tap-feedback"
+          className="w-full h-12 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs transition-all tap-feedback font-mono"
         >
           <Share2 className="w-4 h-4" />
           <span>Open Squad Decision Room (&ldquo;Who&apos;s In?&rdquo;)</span>
@@ -162,7 +162,7 @@ export function PlanActionsShare({
           <button
             type="button"
             onClick={handleWhatsAppShare}
-            className="h-12 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer tap-feedback"
+            className="h-12 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer tap-feedback font-mono"
           >
             <MessageSquare className="w-4 h-4 fill-white" />
             <span>WhatsApp</span>
@@ -172,9 +172,9 @@ export function PlanActionsShare({
           <button
             type="button"
             onClick={handleNativeShare}
-            className="h-12 w-full bg-midnight-lagoon hover:bg-black text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer tap-feedback"
+            className="h-12 w-full bg-[#111111] hover:bg-black text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer tap-feedback font-mono"
           >
-            {copiedLink ? <Check className="w-4 h-4 text-[#A3F3C6]" /> : <Copy className="w-4 h-4" />}
+            {copiedLink ? <Check className="w-4 h-4 text-[#F9E828]" /> : <Copy className="w-4 h-4" />}
             <span>{copiedLink ? 'Link Copied!' : 'Copy Squad Link'}</span>
           </button>
 
@@ -183,11 +183,11 @@ export function PlanActionsShare({
         </div>
 
         {/* Edit Plan in Forge */}
-        <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-          <span className="text-xs text-text-muted">Need to change budget, squad, or area?</span>
+        <div className="pt-2 border-t border-[#E5E5DE] flex items-center justify-between">
+          <span className="text-xs text-[#6B7280] font-sans">Need to change budget, squad, or area?</span>
           <Link
             href={editUrl}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-default hover:border-midnight-lagoon text-xs font-bold text-midnight-lagoon bg-surface-grey hover:bg-white transition-all tap-feedback"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E5DE] hover:border-[#111111] text-xs font-bold text-[#111111] bg-[#F6F6F2] hover:bg-white transition-all tap-feedback font-mono"
           >
             <Sliders className="w-3.5 h-3.5" />
             <span>Edit Plan</span>

@@ -13,6 +13,7 @@ import {
 import { ActionCenterCard } from '@/components/partner/ActionCenterCard';
 import { InformationFreshnessCard } from '@/components/partner/InformationFreshnessCard';
 import { AttributionVerifyCard } from '@/components/business/AttributionVerifyCard';
+import { VenueDigitalPlaque } from '@/components/business/VenueDigitalPlaque';
 import { BusinessReservationsCard } from '@/components/business/BusinessReservationsCard';
 import { ProfileHealthCard } from '@/components/partner/ProfileHealthCard';
 import { DemandActivityCard } from '@/components/partner/DemandActivityCard';
@@ -49,13 +50,13 @@ export function BusinessHomeClient({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
-                OyaPlan for Business
+                Operator&apos;s Desk
               </span>
               <span className="text-gray-300">·</span>
               <span className="text-xs text-text-muted">Keep your venue listing accurate and up to date</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-serif font-black text-midnight-lagoon tracking-tight">
               {greeting}, {venue.name}
             </h1>
 
@@ -87,6 +88,9 @@ export function BusinessHomeClient({
           </div>
         </div>
       </div>
+
+      {/* ── Venue Digital Plaque ── */}
+      <VenueDigitalPlaque venue={venue} />
 
       {/* ── 1. Action Required: Needs Attention ── */}
       <ActionCenterCard venue={venue} menuItems={menuItems} baseRoute="business" />

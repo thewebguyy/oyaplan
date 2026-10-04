@@ -95,7 +95,7 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                   className="flex items-center gap-1.5 min-w-0 px-2.5 py-1 -mx-2 rounded-xl hover:bg-slate-100 transition-colors tap-feedback text-left"
                   aria-label="Switch venue"
                 >
-                  <span className="text-xs sm:text-sm font-bold text-slate-900 truncate max-w-[130px] sm:max-w-[200px]">
+                  <span className="text-xs sm:text-sm font-serif font-black text-slate-900 tracking-tight truncate max-w-[130px] sm:max-w-[200px]">
                     {venue.name}
                   </span>
                   {otherVenues.length > 0 && (

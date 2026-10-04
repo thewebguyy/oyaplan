@@ -12,6 +12,7 @@ import { triggerMoment } from "@/components/ui/moment-of-delight";
 import OyaSquadSelector from "@/components/squad/OyaSquadSelector";
 
 import { Spot } from "@/lib/types";
+import { triggerHaptic } from "@/lib/ui/haptics";
 
 import { 
   Loader2, 
@@ -191,6 +192,7 @@ export default function PlannerWidget({
   };
 
   const handleVibeClick = (value: string) => {
+    triggerHaptic("selection");
     setVibe(vibe === value ? null : value);
     setValidationError(null);
   };
@@ -274,6 +276,7 @@ export default function PlannerWidget({
                   key={area.id}
                   type="button"
                   onClick={() => {
+                    triggerHaptic("light");
                     setManualOrigin(area.id);
                     if (setControlledArea) {
                       setControlledArea(area);
@@ -321,6 +324,7 @@ export default function PlannerWidget({
             <button
               type="button"
               onClick={() => {
+                triggerHaptic("selection");
                 setSquadSize(1);
                 setGroupId(null);
               }}
@@ -338,6 +342,7 @@ export default function PlannerWidget({
             <button
               type="button"
               onClick={() => {
+                triggerHaptic("selection");
                 setSquadSize(2);
                 setGroupId(null);
               }}
@@ -355,6 +360,7 @@ export default function PlannerWidget({
             <button
               type="button"
               onClick={() => {
+                triggerHaptic("selection");
                 if (squadSize < 3) setSquadSize(4);
               }}
               className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer border tap-feedback min-h-[68px] ${
@@ -382,6 +388,7 @@ export default function PlannerWidget({
                       key={size}
                       type="button"
                       onClick={() => {
+                        triggerHaptic("selection");
                         setSquadSize(size);
                         setGroupId(null);
                       }}
@@ -418,9 +425,39 @@ export default function PlannerWidget({
               </label>
               <span className="text-[11px] text-[#777777] font-normal leading-tight">Total spend limit for all</span>
             </div>
-            <span className="text-lg font-black font-mono text-[#111111] tabular-nums">
-              {budget === 100000 ? "₦100,000+" : formatCurrency(budget)}
-            </span>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-[#F6F6F2] p-1 rounded-lg border border-[#E5E5DE]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextVal = Math.max(10000, budget - 5000);
+                    setBudget(nextVal);
+                    triggerHaptic("light");
+                  }}
+                  disabled={budget <= 10000}
+                  className="w-7 h-7 flex items-center justify-center rounded-md font-mono text-xs font-bold text-[#111111] hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer tap-feedback"
+                  aria-label="Decrease budget by ₦5,000"
+                >
+                  -5k
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextVal = Math.min(100000, budget + 5000);
+                    setBudget(nextVal);
+                    triggerHaptic("light");
+                  }}
+                  disabled={budget >= 100000}
+                  className="w-7 h-7 flex items-center justify-center rounded-md font-mono text-xs font-bold text-[#111111] hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer tap-feedback"
+                  aria-label="Increase budget by ₦5,000"
+                >
+                  +5k
+                </button>
+              </div>
+              <span className="text-lg font-black font-mono text-[#111111] tabular-nums">
+                {budget === 100000 ? "₦100,000+" : formatCurrency(budget)}
+              </span>
+            </div>
           </div>
           <input
             id="budget-input"
@@ -429,7 +466,10 @@ export default function PlannerWidget({
             max="100000"
             step="5000"
             value={budget}
-            onChange={(e) => setBudget(Number(e.target.value))}
+            onChange={(e) => {
+              setBudget(Number(e.target.value));
+              triggerHaptic("light");
+            }}
             className="premium-range-slider cursor-pointer"
             style={{
               background: `linear-gradient(to right, #111111 ${budgetPct}%, #E5E5DE ${budgetPct}%)`,

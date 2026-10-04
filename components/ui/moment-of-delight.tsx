@@ -36,7 +36,7 @@ export function MomentOfDelight({
   return (
     <div className="fixed inset-x-0 bottom-[100px] flex items-center justify-center z-[500] pointer-events-none">
       <div 
-        className="bg-brand-green text-white px-6 py-3 rounded-full shadow-lg font-medium text-sm flex items-center gap-2"
+        className="bg-[#111111] text-[#F9E828] border border-[#333333] px-5 py-2.5 rounded-full shadow-2xl font-mono font-black text-xs uppercase tracking-wider flex items-center gap-2"
         style={{
           animation: 'delight-pop 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
         }}

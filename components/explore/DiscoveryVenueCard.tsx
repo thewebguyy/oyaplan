@@ -69,6 +69,7 @@ export function DiscoveryVenueCard({
   const firstVibe = spot.vibe_tags?.slice(0, 2).join(" • ") || "Vetted Outing Spot";
 
   const venueHeroImage = spot.cover_url || spot.image_url || (spot.gallery_urls && spot.gallery_urls[0]) || null;
+  const secondaryImage = (spot.gallery_urls && spot.gallery_urls.find((u) => u && u !== venueHeroImage)) || null;
 
   return (
     <article
@@ -78,7 +79,7 @@ export function DiscoveryVenueCard({
       <div className="relative aspect-[16/10] w-full bg-[#F6F6F2] overflow-hidden shrink-0">
         <Link 
           href={`/venue/${spot.id}`} 
-          className="absolute inset-0 block"
+          className="absolute inset-0 block overflow-hidden"
           tabIndex={-1}
           aria-hidden="true"
         >
@@ -87,8 +88,21 @@ export function DiscoveryVenueCard({
             alt={`${spot.name} in ${areaName}`}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
             fallbackCategory={spot.category}
-            className="group-hover:scale-103 transition-transform duration-500 ease-out"
+            className={`transition-all duration-700 ease-out group-hover:scale-105 ${
+              secondaryImage ? "group-hover:opacity-0" : ""
+            }`}
           />
+          {secondaryImage && (
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+              <VenueImage
+                src={secondaryImage}
+                alt={`${spot.name} atmosphere in ${areaName}`}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                fallbackCategory={spot.category}
+                className="scale-105 transition-transform duration-700 ease-out"
+              />
+            </div>
+          )}
         </Link>
 
         {/* Subtle Dark Gradient Overlay */}
