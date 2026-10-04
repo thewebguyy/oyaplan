@@ -35,13 +35,56 @@ const PHRASES = [
 import { LocationService, Location } from "@/lib/services/LocationService";
 import { useRecommendations } from "@/lib/planning/useRecommendations";
 import { useOrigin } from "@/lib/location/OriginContext";
+import { KineticPhraseTumbler, PhraseField } from "./ui/KineticPhraseTumbler";
+
+interface PresetScenario {
+  vibe: string;
+  areaSlug: string;
+  squadSize: number;
+  budget: number;
+}
+
+const PRESET_SCENARIOS: PresetScenario[] = [
+  {
+    vibe: "Dinner",
+    areaSlug: "lekki",
+    squadSize: 2,
+    budget: 45000,
+  },
+  {
+    vibe: "Chill",
+    areaSlug: "yaba",
+    squadSize: 4,
+    budget: 40000,
+  },
+  {
+    vibe: "Party",
+    areaSlug: "vi",
+    squadSize: 6,
+    budget: 85000,
+  },
+  {
+    vibe: "Foodie",
+    areaSlug: "ikeja",
+    squadSize: 3,
+    budget: 50000,
+  },
+  {
+    vibe: "Brunch",
+    areaSlug: "ikoyi",
+    squadSize: 2,
+    budget: 35000,
+  },
+];
 
 export default function HeroSection({ spots }: HeroSectionProps) {
   // Shared state coordinated between inputs and live preview
-  const [squadSize, setSquadSize] = useState<number>(3);
-  const [budget, setBudget] = useState<number>(50000);
-  const [vibe, setVibe] = useState<string | null>(null);
-  const [manualArea, setManualArea] = useState<Location | null>(null);
+  const [squadSize, setSquadSizeState] = useState<number>(2);
+  const [budget, setBudgetState] = useState<number>(45000);
+  const [vibe, setVibeState] = useState<string | null>("Dinner");
+  const [manualArea, setManualAreaState] = useState<Location | null>(null);
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const [presetIndex, setPresetIndex] = useState(0);
 
   const { origin } = useOrigin();
 
@@ -50,17 +93,56 @@ export default function HeroSection({ spots }: HeroSectionProps) {
     if (origin) {
       return LocationService.getVerifiedAreas().find(a => a.id === origin.planningAreaSlug) || null;
     }
-    return LocationService.getVerifiedAreas()[0];
+    const defaultArea = LocationService.getVerifiedAreas().find(a => a.id === "lekki") || LocationService.getVerifiedAreas()[0];
+    return defaultArea;
   }, [manualArea, origin]);
 
-  const [phraseIndex, setPhraseIndex] = useState(0);
+  const setSquadSize = (val: number) => {
+    setUserHasInteracted(true);
+    setSquadSizeState(val);
+  };
 
+  const setBudget = (val: number) => {
+    setUserHasInteracted(true);
+    setBudgetState(val);
+  };
+
+  const setVibe = (val: string | null) => {
+    setUserHasInteracted(true);
+    setVibeState(val);
+  };
+
+  const setManualArea = (val: Location | null) => {
+    setUserHasInteracted(true);
+    setManualAreaState(val);
+  };
+
+  // Idle cycle loop: rotate presets every 4.2 seconds until user interacts
   useEffect(() => {
+    if (userHasInteracted) return;
+
     const interval = setInterval(() => {
-      setPhraseIndex((prev) => (prev + 1) % PHRASES.length);
-    }, 3800);
+      setPresetIndex((prev) => {
+        const nextIdx = (prev + 1) % PRESET_SCENARIOS.length;
+        const scenario = PRESET_SCENARIOS[nextIdx];
+
+        setVibeState(scenario.vibe);
+        setSquadSizeState(scenario.squadSize);
+        setBudgetState(scenario.budget);
+
+        const targetArea = LocationService.getVerifiedAreas().find(
+          (a) => a.id === scenario.areaSlug
+        );
+        if (targetArea) {
+          setManualAreaState(targetArea);
+        }
+
+        return nextIdx;
+      });
+    }, 4200);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [userHasInteracted]);
 
   const request = useMemo(() => ({
     squadSize,
@@ -107,6 +189,18 @@ export default function HeroSection({ spots }: HeroSectionProps) {
 
   const perPersonBudget = Math.round(budget / Math.max(1, squadSize));
 
+  const handleFieldClick = (field: PhraseField) => {
+    setUserHasInteracted(true);
+    const targetElement = document.getElementById(`planner-section-${field}`);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      targetElement.classList.add("ring-2", "ring-[#F9E828]", "rounded-xl", "transition-all");
+      setTimeout(() => {
+        targetElement.classList.remove("ring-2", "ring-[#F9E828]", "rounded-xl");
+      }, 1500);
+    }
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
@@ -145,12 +239,14 @@ export default function HeroSection({ spots }: HeroSectionProps) {
             <span>KNOW THE DAMAGE BEFORE YOU LEAVE HOME</span>
           </div>
 
-          <h1 className="text-[34px] sm:text-[44px] md:text-[54px] font-black text-[#111111] leading-[1.1] tracking-[-1.5px] font-display">
-            Plan <span className="underline decoration-[#F9E828] decoration-4 underline-offset-4">{vibePhrase}</span> from{" "}
-            <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{selectedArea?.name || "Yaba"}</span> for{" "}
-            <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{squadPhrase}</span> under{" "}
-            <span className="underline decoration-[#111111] decoration-2 underline-offset-4 font-mono">₦{budget.toLocaleString("en-NG")}</span>.
-          </h1>
+          {/* Kinetic Rolling Phrase Tumbler */}
+          <KineticPhraseTumbler
+            vibeText={vibePhrase}
+            areaText={selectedArea?.name || "Lekki Phase 1"}
+            squadText={squadPhrase}
+            budgetText={`₦${budget.toLocaleString("en-NG")}`}
+            onFieldClick={handleFieldClick}
+          />
 
           <div className="flex items-center gap-3 flex-wrap pt-1">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white border border-[#E5E5DE] text-xs font-mono font-bold text-[#111111] shadow-xs">

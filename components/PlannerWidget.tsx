@@ -250,27 +250,23 @@ export default function PlannerWidget({
         )}
       </AnimatePresence>
 
-      {/* Live Coherent Phrase Builder Header */}
-      <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-2xl p-4 sm:p-5 text-left space-y-2.5">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#6B7280]">
-            Planning Statement
+      {/* Live Financial Target Bar */}
+      <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-xl p-3.5 sm:p-4 text-left flex items-center justify-between font-mono">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280] block">
+            Target per person
           </span>
-          <span className="text-[10px] font-mono font-bold text-[#111111] bg-white border border-[#E5E5DE] px-2.5 py-0.5 rounded-full shadow-2xs">
-            ₦{perPersonAmount.toLocaleString("en-NG")} / person
+          <span className="text-base sm:text-lg font-black text-[#111111] tabular-nums">
+            ~₦{perPersonAmount.toLocaleString("en-NG")} / person
           </span>
         </div>
-
-        <p className="text-base sm:text-lg md:text-xl font-black text-[#111111] leading-snug font-display">
-          Plan <span className="underline decoration-[#F9E828] decoration-4 underline-offset-4">{currentVibeLabel}</span> from{" "}
-          <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{selectedArea?.name || "Yaba"}</span> for{" "}
-          <span className="underline decoration-[#111111] decoration-2 underline-offset-4">{currentSquadLabel}</span> under{" "}
-          <span className="underline decoration-[#111111] decoration-2 underline-offset-4 font-mono">₦{budget.toLocaleString("en-NG")}</span>.
-        </p>
-
-        <div className="flex items-center justify-between pt-1 border-t border-dashed border-[#111111]/15 text-[11px] font-mono text-[#555555]">
-          <span>Total outing spend:</span>
-          <span className="font-bold text-[#111111] font-mono">₦{budget.toLocaleString("en-NG")}</span>
+        <div className="text-right">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280] block">
+            Squad of {squadSize}
+          </span>
+          <span className="text-xs font-bold text-[#111111]">
+            ₦{budget.toLocaleString("en-NG")} total
+          </span>
         </div>
       </div>
 
@@ -278,7 +274,7 @@ export default function PlannerWidget({
         <legend className="sr-only">Configure your outing constraints</legend>
 
         {/* LOCATION SELECTOR LAYER */}
-        <div className="flex flex-col gap-3">
+        <div id="planner-section-area" className="flex flex-col gap-3 scroll-mt-24">
           <div className="flex items-center justify-between flex-wrap gap-1">
             <label htmlFor="area-selection-input" className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555] flex items-center gap-1.5 flex-wrap">
               <MapPin className="w-3.5 h-3.5 text-[#111111]" />
@@ -343,7 +339,7 @@ export default function PlannerWidget({
         </div>
 
         {/* INPUT: Progressive Social Presets (Who's going?) */}
-        <div className="flex flex-col gap-2.5">
+        <div id="planner-section-squad" className="flex flex-col gap-2.5 scroll-mt-24">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555]">
               Who&apos;s Going?
@@ -455,7 +451,7 @@ export default function PlannerWidget({
         </div>
 
         {/* INPUT: Budget Slider */}
-        <div className="flex flex-col gap-2.5">
+        <div id="planner-section-budget" className="flex flex-col gap-2.5 scroll-mt-24">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <label htmlFor="budget-input" className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555]">
@@ -517,7 +513,7 @@ export default function PlannerWidget({
         </div>
 
         {/* INPUT: Vibe Selection Chips */}
-        <div className="flex flex-col gap-2.5">
+        <div id="planner-section-vibe" className="flex flex-col gap-2.5 scroll-mt-24">
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#555555]">Outing Vibe</span>
           <div className="grid grid-cols-2 gap-2.5" role="group" aria-label="Select outing vibe">
             {PRIMARY_VIBES.map((item) => {
