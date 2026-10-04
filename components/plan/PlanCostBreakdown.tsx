@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, Calculator, Car, Receipt, Shield, Clock } from 'lucide-react';
+import { ChevronDown, Calculator, Car, Receipt, Shield, Clock, CloudRain } from 'lucide-react';
 import { TransportEstimate } from '@/lib/types';
 
 interface PlanCostBreakdownProps {
@@ -34,9 +34,15 @@ export function PlanCostBreakdown({
   vatPct = 7.5,
 }: PlanCostBreakdownProps) {
   const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
+  const [isRainSimulated, setIsRainSimulated] = useState(false);
 
   const taxesCost = Math.max(0, totalCost - (foodCost + transportCost));
   const remaining = budget - totalCost;
+
+  // Surge Simulator (Worst-Case Lagos Downpour scenario calculation)
+  const simulatedRainTransport = Math.round((transportCost * 1.45) / 500) * 500;
+  const surgeBuffer = Math.max(0, simulatedRainTransport - transportCost);
+  const simulatedTotalCost = totalCost + surgeBuffer;
 
   return (
     <section className="bg-white border border-[#E5E5DE] rounded-[16px] p-5 sm:p-6 shadow-xs space-y-4">
@@ -126,6 +132,61 @@ export function PlanCostBreakdown({
             </span>
           </div>
         </div>
+
+        {/* Surge Simulator: Worst-Case Lagos Downpour (Only if transit involved) */}
+        {!hasCar && transportCost > 0 && (
+          <div className="p-3.5 rounded-xl border border-dashed border-[#111111]/30 bg-[#F6F6F2] space-y-2.5 font-mono">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <CloudRain className="w-4 h-4 text-[#111111]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#111111]">
+                  Surge Simulator • Lagos Downpour
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsRainSimulated(!isRainSimulated)}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer tap-feedback ${
+                  isRainSimulated
+                    ? "bg-[#111111] text-[#F9E828]"
+                    : "bg-white border border-[#E5E5DE] text-[#6B7280] hover:text-[#111111] hover:border-[#111111]"
+                }`}
+              >
+                {isRainSimulated ? "Active 🌧" : "Simulate Rain"}
+              </button>
+            </div>
+
+            {isRainSimulated && (
+              <div className="pt-2 border-t border-dashed border-[#111111]/20 space-y-2 animate-in fade-in duration-200">
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="bg-white p-2 rounded-lg border border-[#E5E5DE]">
+                    <span className="text-[9px] uppercase text-[#6B7280] block font-bold">Base Ride</span>
+                    <span className="font-bold text-[#111111]">₦{transportCost.toLocaleString('en-NG')}</span>
+                  </div>
+                  <div className="bg-white p-2 rounded-lg border border-[#E5E5DE]">
+                    <span className="text-[9px] uppercase text-[#6B7280] block font-bold">Rain Scenario</span>
+                    <span className="font-bold text-[#111111]">₦{simulatedRainTransport.toLocaleString('en-NG')}</span>
+                  </div>
+                  <div className="bg-[#111111] text-[#F9E828] p-2 rounded-lg">
+                    <span className="text-[9px] uppercase text-gray-400 block font-bold">Rain Buffer</span>
+                    <span className="font-black">+₦{surgeBuffer.toLocaleString('en-NG')}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs pt-1 px-1">
+                  <span className="text-[#555555]">Simulated Outing Damage:</span>
+                  <span className="font-black text-[#111111] text-sm tabular-nums">
+                    ~₦{simulatedTotalCost.toLocaleString('en-NG')}
+                  </span>
+                </div>
+
+                <p className="text-[10px] text-[#6B7280] leading-relaxed italic px-1">
+                  &ldquo;Lagos rain tax. Plan for it.&rdquo; — Worst-case scenario buffer for island/mainland bridge traffic. Not a live Bolt price guarantee.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Landed Verification & Transit Metadata Stamp */}
         <div className="pt-2 px-1 flex items-center justify-between text-[10px] font-mono text-[#777777] border-t border-dashed border-[#111111]/15">

@@ -31,7 +31,7 @@ export function RecentlyViewedRow({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#008751]/10 text-[#008751] flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0">
             <History className="w-4 h-4" />
           </div>
           <div>
@@ -94,28 +94,28 @@ export function RecentlyViewedRow({
               <div className="p-3.5 flex flex-col flex-grow justify-between space-y-3">
                 <div className="space-y-1">
                   <Link href={`/venue/${venue.id}`} className="block">
-                    <h3 className="font-black text-sm text-midnight-lagoon line-clamp-1 group-hover:text-[#008751] transition-colors">
+                    <h3 className="font-black text-sm text-[#111111] line-clamp-1 group-hover:text-black transition-colors font-display uppercase tracking-tight">
                       {venue.name}
                     </h3>
                   </Link>
-                  <p className="text-[11px] text-text-muted flex items-center gap-1 line-clamp-1">
-                    <MapPin className="w-3 h-3 text-[#008751] shrink-0" />
+                  <p className="text-[11px] text-[#6B7280] flex items-center gap-1 line-clamp-1 font-mono">
+                    <MapPin className="w-3 h-3 text-[#111111] shrink-0" />
                     <span>{areaDisplay}</span>
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-[#EAE4DC]/60 flex items-center justify-between">
+                <div className="pt-2 border-t border-dashed border-[#E5E5DE] flex items-center justify-between font-mono">
                   <div>
-                    <span className="font-black text-xs text-midnight-lagoon">
+                    <span className="font-black text-xs text-[#111111] tabular-nums">
                       {formattedPrice}
                     </span>
-                    <span className="text-[9px] text-text-muted font-bold ml-1">/ person</span>
+                    <span className="text-[9px] text-[#6B7280] font-bold ml-1 font-sans">/ person</span>
                   </div>
 
                   <Link
                     href={`/venue/${venue.id}`}
                     aria-label={`View ${venue.name} details`}
-                    className="inline-flex items-center gap-1 text-[11px] font-black text-[#008751] hover:text-[#007043] transition-colors tap-feedback"
+                    className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-[#111111] hover:text-black transition-colors tap-feedback"
                   >
                     <span>View</span>
                     <ArrowRight className="w-3 h-3" />

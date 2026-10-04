@@ -295,7 +295,7 @@ export default function MobileLivePreviewBar({
                             {isUnavailable ? "Unavailable" : `₦${sTransportCost.toLocaleString()}`}
                           </span>
                         </div>
-                        <div className="flex justify-between items-center pt-2 font-black text-sm text-[#111111]">
+                        <div className="flex justify-between items-center pt-2 border-t border-dashed border-[#111111]/25 font-black text-sm text-[#111111]">
                           <span className="uppercase tracking-wider">Landed Damage</span>
                           <span className="text-[#111111] text-base">
                             {isUnavailable ? `₦${sTotalCost.toLocaleString()} + transport` : `₦${sTotalCost.toLocaleString()}`}

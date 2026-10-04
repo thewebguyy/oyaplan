@@ -304,31 +304,33 @@ export default function ProfileClient({
             </div>
           </div>
 
-          {/* Action Buttons — Sticky-aware on mobile */}
-          <div className="flex items-center gap-3 pt-2">
-            <Link
-              href="/account"
-              className="flex-1 h-12 rounded-xl border border-[#E5E5DE] bg-white hover:bg-[#F6F6F2] text-[#111111] text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center transition-colors tap-feedback"
-            >
-              Cancel
-            </Link>
-            <button
-              type="submit"
-              disabled={isPending || !hasChanges}
-              className="flex-1 h-12 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all tap-feedback disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin text-[#F9E828]" />
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Check className="w-4 h-4 text-[#F9E828] stroke-[3]" />
-                  <span>Save Changes</span>
-                </>
-              )}
-            </button>
+          {/* Action Buttons — Sticky-aware above mobile software keyboard */}
+          <div className="sticky bottom-0 sm:static z-30 bg-[#F6F6F2]/95 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none border-t sm:border-t-0 border-[#E5E5DE] -mx-4 px-4 sm:mx-0 sm:px-0 py-3 sm:py-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sm:pb-2 transition-all">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/account"
+                className="flex-1 h-12 rounded-xl border border-[#E5E5DE] bg-white hover:bg-[#F6F6F2] text-[#111111] text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center transition-colors tap-feedback"
+              >
+                Cancel
+              </Link>
+              <button
+                type="submit"
+                disabled={isPending || !hasChanges}
+                className="flex-1 h-12 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all tap-feedback disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#F9E828]" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 text-[#F9E828] stroke-[3]" />
+                    <span>Save Changes</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
         </form>

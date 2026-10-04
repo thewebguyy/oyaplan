@@ -5,6 +5,7 @@ import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 import { trackEvent } from '@/lib/analytics/trackClient';
 import { Copy, Check, MessageSquare, Info, Smartphone, X } from 'lucide-react';
 import { triggerHaptic } from '@/lib/ui/haptics';
+import { shareOrDownloadHostPassStory } from '@/lib/share/generateHostPassStoryImage';
 
 interface PlanCodeSquadPassProps {
   planCode: string;
@@ -23,6 +24,7 @@ export function PlanCodeSquadPass({
 }: PlanCodeSquadPassProps) {
   const [copied, setCopied] = useState(false);
   const [showStoryModal, setShowStoryModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const perPerson = Math.ceil(totalCost / Math.max(1, squadSize));
 
@@ -220,18 +222,53 @@ export function PlanCodeSquadPass({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2.5">
+              {/* Primary: Real 9:16 Instagram Story Image Exporter */}
+              <button
+                type="button"
+                disabled={isExporting}
+                onClick={async () => {
+                  setIsExporting(true);
+                  triggerHaptic('selection');
+                  try {
+                    await shareOrDownloadHostPassStory({
+                      venueName,
+                      planCode,
+                      squadSize,
+                      totalCost,
+                      perPerson,
+                      dateStr: todayStr,
+                    });
+                  } catch (err) {
+                    console.error("Story export error:", err);
+                  } finally {
+                    setIsExporting(false);
+                  }
+                }}
+                className="w-full h-12 bg-[#F9E828] hover:bg-[#F0DE1A] text-[#111111] font-mono font-black text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback shadow-sm disabled:opacity-50"
+              >
+                {isExporting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-[#111111] border-t-transparent rounded-full animate-spin" />
+                    <span>Generating Story Image...</span>
+                  </>
+                ) : (
+                  <>
+                    <Smartphone className="w-4 h-4 text-[#111111]" />
+                    <span>Share to Instagram Story / Save Image</span>
+                  </>
+                )}
+              </button>
+
+              {/* Secondary: Copy Pass Code */}
               <button
                 type="button"
                 onClick={handleCopy}
-                className="w-full h-11 bg-[#F9E828] hover:bg-[#F0DE1A] text-[#111111] font-mono font-black text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback"
+                className="w-full h-10 bg-[#222222] hover:bg-[#2A2A2A] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback border border-[#333333]"
               >
-                {copied ? <Check className="w-4 h-4 text-[#111111]" /> : <Copy className="w-4 h-4 text-[#111111]" />}
-                <span>{copied ? 'Copied ✓ Go win the group chat.' : 'Copy Pass Code'}</span>
+                {copied ? <Check className="w-4 h-4 text-[#F9E828]" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                <span>{copied ? 'Pass Code Copied ✓' : 'Copy Pass Code'}</span>
               </button>
-              <p className="text-[11px] text-center text-gray-400">
-                Screenshot to share to your Instagram Story or squad group chat.
-              </p>
             </div>
           </div>
         </div>

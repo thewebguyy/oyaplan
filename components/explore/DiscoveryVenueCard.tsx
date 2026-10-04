@@ -31,6 +31,29 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   experience: { bg: "bg-pink-100", text: "text-pink-700" },
 };
 
+function getWhatThisCovers(category?: string, hasFood?: boolean | null, price?: number | null): string {
+  const cat = (category || "").toLowerCase();
+  if (hasFood === false) {
+    return "Covers: Entry / activity pass + service";
+  }
+  if (cat === "bar" || cat === "lounge" || cat === "pub") {
+    return "Covers: 2 Drinks + Small chops + Tax";
+  }
+  if (cat === "cafe" || cat === "bakery") {
+    return "Covers: 1 Coffee / Drink + 1 Pastry + Tax";
+  }
+  if (cat === "beach") {
+    return "Covers: Beach access + 2 Drinks + Tax";
+  }
+  if (cat === "activity" || cat === "experience" || cat === "entertainment") {
+    return "Covers: Activity session + Refreshments";
+  }
+  if (price && price >= 30000) {
+    return "Covers: 2 Mains + 2 Premium cocktails + Tax & Service";
+  }
+  return "Covers: 1 Main + 1 Drink + Tax & Service";
+}
+
 export function DiscoveryVenueCard({
   spot,
   squadSize,
@@ -44,6 +67,7 @@ export function DiscoveryVenueCard({
   const estimatedTotal = pricePerPerson !== null ? venueFoodTotal(pricePerPerson, squadSize) : null;
   const budgetRemaining = budget && estimatedTotal !== null ? budget - estimatedTotal : null;
   const fitsBudget = budget && estimatedTotal !== null ? estimatedTotal <= budget : true;
+  const whatThisCovers = getWhatThisCovers(spot.category, spot.has_food, pricePerPerson);
 
   const areaName = spot.areas?.name || spot.address_slug || "Lagos";
   const areaSlug = spot.areas?.slug || spot.address_slug || "lagos";
@@ -75,10 +99,10 @@ export function DiscoveryVenueCard({
 
   return (
     <article
-      className={`group bg-white rounded-[20px] border border-[#E5E5DE] hover:border-[#111111] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative font-sans ${className}`}
+      className={`group bg-white sm:rounded-[20px] rounded-none border-y sm:border border-[#E5E5DE] hover:border-[#111111] -mx-4 sm:mx-0 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative font-sans ${className}`}
     >
-      {/* Top Image Section (Aspect 16:10) */}
-      <div className="relative aspect-[16/10] w-full bg-[#F6F6F2] overflow-hidden shrink-0">
+      {/* Top Image Section (Aspect 16:9 for media-rich editorial presentation) */}
+      <div className="relative aspect-[16/9] w-full bg-[#F6F6F2] overflow-hidden shrink-0">
         <Link 
           href={`/venue/${spot.id}`} 
           className="absolute inset-0 block overflow-hidden"
@@ -107,8 +131,8 @@ export function DiscoveryVenueCard({
           )}
         </Link>
 
-        {/* Subtle Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent pointer-events-none" />
+        {/* Subtle Dark Gradient Overlay for bottom-left cost readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
 
         {/* Top Badges Row — Max 2 Badges */}
         <div className="absolute top-3 inset-x-3 flex items-start justify-between z-10 pointer-events-none">
@@ -124,6 +148,27 @@ export function DiscoveryVenueCard({
             size="sm"
             className="shadow-xs backdrop-blur-md bg-white/95 text-[#111111] border-none font-mono text-[10px]"
           />
+        </div>
+
+        {/* Bottom-left Overlaid Cost & Contextual "What This Covers" */}
+        <div className="absolute bottom-3 left-3 right-3 z-10 pointer-events-none">
+          {pricePerPerson !== null ? (
+            <div className="inline-flex flex-col bg-[#111111]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/15 shadow-md max-w-[90%]">
+              <div className="flex items-baseline gap-1 font-mono">
+                <span className="text-lg sm:text-xl font-black text-[#F9E828] tabular-nums tracking-tight">
+                  ₦{pricePerPerson.toLocaleString("en-NG")}
+                </span>
+                <span className="text-[10px] text-gray-300 font-medium font-sans">/ person</span>
+              </div>
+              <span className="text-[9px] font-mono text-gray-300 truncate">
+                {whatThisCovers}
+              </span>
+            </div>
+          ) : (
+            <div className="inline-block bg-[#111111]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/15 text-[10px] font-mono font-bold text-gray-300">
+              Price not verified yet
+            </div>
+          )}
         </div>
       </div>
 
@@ -164,7 +209,7 @@ export function DiscoveryVenueCard({
             </button>
           </div>
 
-          {/* Pricing Highlight Container: Prominent Per Person + Drawer Trigger */}
+          {/* Pricing Highlight Container: Drawer Trigger */}
           <button
             type="button"
             onClick={(e) => {
@@ -177,23 +222,16 @@ export function DiscoveryVenueCard({
           >
             <div>
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-[10px] uppercase font-bold text-[#6B7280] block">
-                  Typical Spend
+                <span className="text-[10px] uppercase font-bold text-[#6B7280] block font-mono">
+                  Landed Damage
                 </span>
-                <span className="text-[9px] font-mono font-bold text-[#111111] bg-white border border-[#E5E5DE] px-1.5 py-0.2 rounded group-hover/price:border-[#111111]">
-                  Receipt ▾
+                <span className="text-[9px] font-mono font-bold text-[#111111] bg-white border border-[#E5E5DE] px-1.5 py-0.5 rounded group-hover/price:border-[#111111]">
+                  Receipt Slip ▾
                 </span>
               </div>
-              {pricePerPerson !== null ? (
-                <div className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight tabular-nums">
-                  ₦{pricePerPerson.toLocaleString("en-NG")}
-                  <span className="text-[11px] font-normal text-[#6B7280] ml-1">/ person</span>
-                </div>
-              ) : (
-                <div className="text-sm font-black text-[#111111] leading-tight pt-1">
-                  Price not verified yet
-                </div>
-              )}
+              <div className="text-xs text-[#555555] font-mono">
+                {whatThisCovers}
+              </div>
             </div>
 
             {estimatedTotal !== null && (
@@ -203,9 +241,6 @@ export function DiscoveryVenueCard({
                 </span>
                 <span className="text-xs font-black text-[#111111] tabular-nums">
                   ~₦{estimatedTotal.toLocaleString("en-NG")}
-                </span>
-                <span className="text-[9px] text-[#6B7280] block">
-                  {spot.has_food === false ? "Covers entry/access" : "Covers food & drinks"}
                 </span>
               </div>
             )}

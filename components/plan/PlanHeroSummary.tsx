@@ -71,21 +71,21 @@ export function PlanHeroSummary({
       <div className="space-y-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#008751]/10 text-[#008751]">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#111111] text-[#F9E828] font-mono">
               <Users className="w-3.5 h-3.5" />
               <span>{squadSize === 1 ? 'Solo Outing' : `${squadSize} people`}</span>
             </span>
 
             {vibe && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#010528]/5 text-midnight-lagoon">
-                <Sparkles className="w-3.5 h-3.5 text-[#FCC630]" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#111111]/5 text-[#111111]">
+                <Sparkles className="w-3.5 h-3.5 text-[#111111]" />
                 <span>{vibe}</span>
               </span>
             )}
 
             {startAreaName && startAreaName !== 'anywhere' && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#010528]/5 text-text-secondary">
-                <MapPin className="w-3.5 h-3.5 text-text-muted" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#111111]/5 text-[#555555]">
+                <MapPin className="w-3.5 h-3.5 text-[#555555]" />
                 <span>From {startAreaName}</span>
               </span>
             )}
@@ -132,16 +132,16 @@ export function PlanHeroSummary({
           {/* Bottom Title & Action Gateway */}
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 text-white">
             <div className="min-w-0">
-              <h2 className="text-lg sm:text-xl font-black tracking-tight truncate drop-shadow-sm group-hover:text-[#A3F3C6] transition-colors">
+              <h2 className="text-lg sm:text-xl font-black tracking-tight truncate drop-shadow-sm group-hover:text-[#F9E828] transition-colors">
                 {spotName}
               </h2>
               <p className="text-xs text-white/85 font-medium truncate flex items-center gap-1 mt-0.5">
-                <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-[#F9E828] shrink-0" />
                 <span>{resolvedArea}</span>
               </p>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-midnight-lagoon text-xs font-black group-hover:bg-[#008751] group-hover:text-white transition-all shrink-0 shadow-sm tap-feedback">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-[#111111] text-xs font-black group-hover:bg-[#111111] group-hover:text-[#F9E828] transition-all shrink-0 shadow-sm tap-feedback">
               <span>View Venue</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </div>
