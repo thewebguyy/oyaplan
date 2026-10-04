@@ -141,7 +141,7 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled', sq
         }}
         className={`w-full type-subheading flex items-center justify-center gap-2 h-[52px] rounded-[10px] tap-feedback border-2 whatsapp-confirm ${
           copied 
-            ? "bg-brand-green border-brand-green text-white" 
+            ? "bg-[#111111] border-[#111111] text-[#F9E828]" 
             : variant === 'filled'
               ? "bg-[#25D366] border-[#25D366] text-white hover:bg-[#128C7E] hover:border-[#128C7E]"
               : "bg-white border-[#25D366] text-[#25D366] hover:bg-[#25D366]/5"

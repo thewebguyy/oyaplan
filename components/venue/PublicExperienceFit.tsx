@@ -16,30 +16,30 @@ export function PublicExperienceFit({ venue }: PublicExperienceFitProps) {
   const groupText = `${minGroup} – ${maxGroup} people`;
 
   return (
-    <div className="bg-white rounded-3xl border border-border-default p-6 sm:p-8 space-y-6 shadow-xs">
-      <div className="border-b border-border-default/60 pb-3">
-        <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon uppercase tracking-tight">
+    <div className="bg-white rounded-3xl border border-[#E5E5DE] p-6 sm:p-8 space-y-6 shadow-xs font-sans">
+      <div className="border-b border-[#E5E5DE] pb-3">
+        <h2 className="text-xl sm:text-2xl font-black text-[#111111] font-display uppercase tracking-tight">
           Experience &amp; Outing Fit
         </h2>
-        <p className="text-xs sm:text-sm text-text-muted mt-0.5">
+        <p className="text-xs sm:text-sm text-[#555555] mt-0.5 font-medium">
           How OyaPlan matches this venue to squad occasions and budgets.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Squad Size & Dynamics */}
-        <div className="p-5 bg-surface-grey rounded-2xl space-y-3">
-          <div className="flex items-center gap-2 text-xs font-black text-midnight-lagoon uppercase tracking-wider">
-            <Users className="w-4 h-4 text-brand-green" />
+        <div className="p-5 bg-[#F6F6F2] rounded-2xl space-y-3 border border-[#E5E5DE]">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#111111] uppercase tracking-wider">
+            <Users className="w-4 h-4 text-[#111111]" />
             <span>Optimal Squad Size</span>
           </div>
 
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-midnight-lagoon">{groupText}</span>
-            <span className="text-xs text-text-muted font-medium">per booking / plan</span>
+            <span className="text-2xl font-black text-[#111111] font-mono">{groupText}</span>
+            <span className="text-xs text-[#6B7280] font-medium">per booking / plan</span>
           </div>
 
-          <p className="text-xs text-text-secondary leading-relaxed">
+          <p className="text-xs text-[#555555] leading-relaxed">
             Comfortably accommodates both intimate outings and medium squads.
             {venue.date_suitability && " Highlighted for date nights and anniversaries."}
           </p>
@@ -49,7 +49,7 @@ export function PublicExperienceFit({ venue }: PublicExperienceFitProps) {
               {audienceTags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white border border-border-default text-text-primary capitalize"
+                  className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white border border-[#E5E5DE] text-[#111111] capitalize font-mono"
                 >
                   {tag}
                 </span>
@@ -59,13 +59,13 @@ export function PublicExperienceFit({ venue }: PublicExperienceFitProps) {
         </div>
 
         {/* Suitable Vibes & Occasions */}
-        <div className="p-5 bg-surface-grey rounded-2xl space-y-3">
-          <div className="flex items-center gap-2 text-xs font-black text-midnight-lagoon uppercase tracking-wider">
-            <Sparkles className="w-4 h-4 text-lasgidi-yellow" />
+        <div className="p-5 bg-[#F6F6F2] rounded-2xl space-y-3 border border-[#E5E5DE]">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#111111] uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 text-[#111111]" />
             <span>Occasion Fit</span>
           </div>
 
-          <p className="text-xs text-text-muted">
+          <p className="text-xs text-[#555555]">
             Frequently recommended for these planning intents:
           </p>
 
@@ -74,15 +74,15 @@ export function PublicExperienceFit({ venue }: PublicExperienceFitProps) {
               vibeTags.map((vibe) => (
                 <span
                   key={vibe}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-border-default text-midnight-lagoon shadow-xs capitalize"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-[#E5E5DE] text-[#111111] shadow-2xs capitalize font-mono"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-lasgidi-yellow" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#F9E828] fill-[#F9E828]" />
                   <span>{vibe}</span>
                 </span>
               ))
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-border-default text-midnight-lagoon">
-                <Sparkles className="w-3.5 h-3.5 text-lasgidi-yellow" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-[#E5E5DE] text-[#111111] font-mono">
+                <Sparkles className="w-3.5 h-3.5 text-[#F9E828] fill-[#F9E828]" />
                 <span>Chill Outing</span>
               </span>
             )}
@@ -90,7 +90,7 @@ export function PublicExperienceFit({ venue }: PublicExperienceFitProps) {
             {activityTags.map((act) => (
               <span
                 key={act}
-                className="px-3 py-1.5 rounded-full text-xs font-bold bg-brand-green/10 text-brand-green border border-brand-green/20 capitalize"
+                className="px-3 py-1.5 rounded-full text-xs font-bold bg-[#111111] text-[#F9E828] capitalize font-mono"
               >
                 {act}
               </span>

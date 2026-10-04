@@ -5,6 +5,7 @@ import { Plan, Spot } from "@/lib/types";
 import { NumericCounter } from "@/components/ui/NumericCounter";
 import { Check, ShieldCheck, Share2, Copy, Sparkles, AlertCircle, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
+import { triggerHaptic } from "@/lib/ui/haptics";
 
 export interface DamageSlipProps {
   plan: Plan;
@@ -100,6 +101,7 @@ export function DamageSlip({
   };
 
   const handleCopyText = async () => {
+    triggerHaptic("selection");
     const origin = typeof window !== "undefined" ? window.location.origin : "https://oyaplan.com";
     const targetUrl = shareUrl || `${origin}/venue/${spot.id}`;
     const area = spot.areas?.name || spot.address_slug || "Lagos";
@@ -234,9 +236,14 @@ export function DamageSlip({
       <div className="p-4 sm:p-6 pt-4 space-y-3 bg-[#FCFCFA]">
         <div className="flex items-baseline justify-between">
           <div>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#6B7280] block">
-              ESTIMATED TOTAL DAMAGE
-            </span>
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#111111]">
+                LANDED DAMAGE
+              </span>
+              <span className="text-[9px] font-mono font-bold text-[#6B7280] bg-[#F6F6F2] px-1.5 py-0.5 rounded border border-[#E5E5DE]">
+                SNAPSHOT
+              </span>
+            </div>
             <span className="text-xs font-mono font-semibold text-[#111111]">
               ₦{perPersonCost.toLocaleString("en-NG")} / person
             </span>
@@ -251,6 +258,12 @@ export function DamageSlip({
         {/* Budget Status Microcopy */}
         <div className="p-2.5 rounded-lg bg-[#F6F6F2] border border-[#E5E5DE] text-xs font-sans">
           {renderDelightCopy()}
+        </div>
+
+        {/* Factual Ledger Disclaimer */}
+        <div className="text-[9px] font-mono text-[#888888] flex items-center justify-between pt-1 border-t border-dashed border-[#E5E5DE]">
+          <span>OYAPLAN LEDGER SNAPSHOT</span>
+          <span>ESTIMATED SPEND • NOT A BOOKING</span>
         </div>
       </div>
 

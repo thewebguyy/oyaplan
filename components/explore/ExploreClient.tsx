@@ -10,6 +10,7 @@ import { DiscoveryFilterSheet, FilterState, SortMode } from "./DiscoveryFilterSh
 import { DiscoveryEmptyState } from "./DiscoveryEmptyState";
 import { RecentlyViewedRow } from "@/components/venue/RecentlyViewedRow";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
+import { triggerHaptic } from "@/lib/ui/haptics";
 
 interface ExploreClientProps {
   initialSpots: Spot[];
@@ -93,6 +94,7 @@ export function ExploreClient({
   }, [preselectedAreaSlug]);
 
   const handleUpdateFilters = (updates: Partial<FilterState>) => {
+    triggerHaptic("selection");
     const nextFilters = { ...filters, ...updates };
     setFilters(nextFilters);
     updateUrlParams(nextFilters, searchQuery);
@@ -104,6 +106,7 @@ export function ExploreClient({
   };
 
   const handleResetFilters = () => {
+    triggerHaptic("light");
     const defaultFilters: FilterState = {
       areaSlug: preselectedAreaSlug || "all",
       category: "all",
@@ -293,112 +296,115 @@ export function ExploreClient({
             </button>
           </div>
 
-          {/* Quick Budget Pills (Horizontal Rail) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280] font-bold shrink-0 mr-1">
-              Budget:
-            </span>
-            {BUDGET_PILLS.map((pill) => {
-              const isSelected = filters.budget === pill.value;
-              return (
-                <button
-                  key={pill.label}
-                  type="button"
-                  onClick={() => handleUpdateFilters({ budget: pill.value })}
-                  className={`py-1.5 px-3 rounded-full border text-xs font-mono font-bold shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
-                    isSelected
-                      ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
-                      : "bg-white border-[#E5E5DE] text-[#555555] hover:text-[#111111] hover:border-[#111111]"
-                  }`}
-                >
-                  {pill.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Quick Area Chips (Scrollable Horizontal Strip) */}
-          {!preselectedAreaSlug && (
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none snap-x">
-              <button
-                type="button"
-                onClick={() => handleUpdateFilters({ areaSlug: "all" })}
-                className={`py-1.5 px-3 rounded-full border text-xs font-bold uppercase tracking-wider shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
-                  filters.areaSlug === "all"
-                    ? "bg-[#111111] border-[#111111] text-white shadow-xs"
-                    : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
-                }`}
-              >
-                All Lagos ({initialSpots.length})
-              </button>
-              {availableAreas.map((area) => {
-                const isSelected = filters.areaSlug === area.slug;
+          {/* Sticky Horizontal Filter Rail for Mobile & Desktop */}
+          <div className="sticky top-[56px] z-30 bg-[#F6F6F2]/95 backdrop-blur-md py-2.5 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 border-y border-[#E5E5DE] space-y-2">
+            {/* Quick Budget Pills (Horizontal Snap Rail) */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none snap-x">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280] font-bold shrink-0 mr-1">
+                Budget:
+              </span>
+              {BUDGET_PILLS.map((pill) => {
+                const isSelected = filters.budget === pill.value;
                 return (
                   <button
-                    key={area.slug}
+                    key={pill.label}
                     type="button"
-                    onClick={() => handleUpdateFilters({ areaSlug: area.slug })}
-                    className={`py-2 px-3.5 rounded-full border text-xs font-extrabold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                    onClick={() => handleUpdateFilters({ budget: pill.value })}
+                    className={`py-1.5 px-3 rounded-full border text-xs font-mono font-bold shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                       isSelected
-                        ? "bg-midnight-lagoon border-midnight-lagoon text-white shadow-xs"
-                        : "bg-white border-[#EAE4DC] text-text-secondary hover:border-midnight-lagoon"
+                        ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
+                        : "bg-white border-[#E5E5DE] text-[#555555] hover:text-[#111111] hover:border-[#111111]"
                     }`}
                   >
-                    {area.name} {area.activeSpotCount ? `(${area.activeSpotCount})` : ""}
+                    {pill.label}
                   </button>
                 );
               })}
             </div>
-          )}
 
-          {/* Quick Category Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x">
-            {QUICK_CATEGORIES.map((cat) => {
-              const isSelected = filters.category === cat.value;
-              return (
+            {/* Quick Area Chips (Scrollable Horizontal Strip) */}
+            {!preselectedAreaSlug && (
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none snap-x">
                 <button
-                  key={cat.value}
                   type="button"
-                  onClick={() => handleUpdateFilters({ category: cat.value })}
-                  className={`py-2 px-3.5 rounded-full border text-xs font-extrabold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
-                    isSelected
-                      ? "bg-[#008751] border-[#008751] text-white shadow-xs"
-                      : "bg-white border-[#EAE4DC] text-text-secondary hover:border-[#008751]/40"
+                  onClick={() => handleUpdateFilters({ areaSlug: "all" })}
+                  className={`py-1 px-3 rounded-full border text-xs font-bold uppercase tracking-wider shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                    filters.areaSlug === "all"
+                      ? "bg-[#111111] border-[#111111] text-white shadow-xs"
+                      : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
                   }`}
                 >
-                  {cat.label}
+                  All Lagos ({initialSpots.length})
                 </button>
-              );
-            })}
+                {availableAreas.map((area) => {
+                  const isSelected = filters.areaSlug === area.slug;
+                  return (
+                    <button
+                      key={area.slug}
+                      type="button"
+                      onClick={() => handleUpdateFilters({ areaSlug: area.slug })}
+                      className={`py-1 px-3 rounded-full border text-xs font-bold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                        isSelected
+                          ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
+                          : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
+                      }`}
+                    >
+                      {area.name} {area.activeSpotCount ? `(${area.activeSpotCount})` : ""}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Quick Category Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none snap-x">
+              {QUICK_CATEGORIES.map((cat) => {
+                const isSelected = filters.category === cat.value;
+                return (
+                  <button
+                    key={cat.value}
+                    type="button"
+                    onClick={() => handleUpdateFilters({ category: cat.value })}
+                    className={`py-1 px-3 rounded-full border text-xs font-bold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                      isSelected
+                        ? "bg-[#111111] border-[#111111] text-white shadow-xs"
+                        : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Quick Active Controls Banner */}
-          <div className="p-3.5 bg-white rounded-2xl border border-[#EAE4DC] shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="p-3 bg-white rounded-xl border border-[#E5E5DE] shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
             <div className="flex items-center gap-4 flex-wrap">
               {/* Squad Selector Quick Indicator */}
-              <div className="flex items-center gap-1.5 text-text-secondary font-bold">
-                <Users className="w-4 h-4 text-[#008751]" />
+              <div className="flex items-center gap-1.5 text-[#555555] font-bold">
+                <Users className="w-4 h-4 text-[#111111]" />
                 <span>Squad:</span>
-                <span className="font-black text-midnight-lagoon">{filters.squadSize} people</span>
+                <span className="font-black text-[#111111]">{filters.squadSize} people</span>
               </div>
 
               {/* Budget Quick Indicator */}
-              <div className="flex items-center gap-1.5 text-text-secondary font-bold">
-                <Wallet className="w-4 h-4 text-[#008751]" />
+              <div className="flex items-center gap-1.5 text-[#555555] font-bold">
+                <Wallet className="w-4 h-4 text-[#111111]" />
                 <span>Budget:</span>
-                <span className="font-black text-[#008751]">
+                <span className="font-black text-[#111111]">
                   {filters.budget ? `₦${filters.budget.toLocaleString("en-NG")}` : "Any"}
                 </span>
               </div>
             </div>
 
             {/* Quick Sorting Dropdown */}
-            <div className="flex items-center gap-1.5 text-text-muted">
-              <ArrowUpDown className="w-3.5 h-3.5 text-[#008751]" />
+            <div className="flex items-center gap-1.5 text-[#6B7280]">
+              <ArrowUpDown className="w-3.5 h-3.5 text-[#111111]" />
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleUpdateFilters({ sortBy: e.target.value as SortMode })}
-                className="bg-transparent border-none text-xs font-black text-midnight-lagoon focus:ring-0 p-0 cursor-pointer"
+                className="bg-transparent border-none text-xs font-black text-[#111111] focus:ring-0 p-0 cursor-pointer font-mono"
                 aria-label="Sort venues"
               >
                 <option value="best-fit">Sort: Best Match</option>
@@ -413,7 +419,7 @@ export function ExploreClient({
 
         {/* Results Metadata Bar */}
         <div className="flex items-center justify-between pt-2">
-          <h2 className="text-sm font-black uppercase tracking-wider text-text-muted">
+          <h2 className="text-xs sm:text-sm font-mono font-black uppercase tracking-wider text-[#6B7280]">
             {sortedSpots.length === 1 ? "1 Verified Spot Fits" : `${sortedSpots.length} Verified Spots Fit`}
           </h2>
 
@@ -421,7 +427,7 @@ export function ExploreClient({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="text-xs font-extrabold text-[#008751] hover:underline cursor-pointer"
+              className="text-xs font-mono font-bold text-[#111111] hover:underline cursor-pointer"
             >
               Reset filters
             </button>

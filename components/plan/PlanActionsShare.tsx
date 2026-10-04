@@ -65,23 +65,17 @@ export function PlanActionsShare({
   };
 
   const generateWhatsAppMessage = () => {
-    const remaining = budget - totalCost;
+    const perPerson = Math.ceil(totalCost / Math.max(1, squadSize));
     const squadUrl = getSquadUrl();
-    const taxes = Math.max(0, totalCost - (foodCost + transportCost));
-    const perPerson = Math.ceil(totalCost / squadSize);
 
     return (
-      `*OyaPlan Outing: ${venueName}*\n\n` +
-      `• *Squad:* ${squadSize} people (~₦${perPerson.toLocaleString('en-NG')} each)\n` +
-      `• *Estimated Total Spend:* ~₦${totalCost.toLocaleString('en-NG')}\n` +
-      `• *Your Budget:* ₦${budget.toLocaleString('en-NG')} (${
-        remaining >= 0 ? `₦${remaining.toLocaleString('en-NG')} remaining` : 'near budget limit'
-      })\n\n` +
-      `*Verified Breakdown:*\n` +
-      `• Food & Drinks: ₦${foodCost.toLocaleString('en-NG')}\n` +
-      `• Estimated Transport (Round-Trip): ₦${transportCost.toLocaleString('en-NG')}\n` +
-      (taxes > 0 ? `• Mandatory Charges & Buffer: ₦${taxes.toLocaleString('en-NG')}\n` : '') +
-      `\nTap to check the squad plan & confirm "I'm in":\n${squadUrl}`
+      `Found the spot.\n\n` +
+      `*${venueName}*\n` +
+      `• Squad: ${squadSize} people\n` +
+      `• Landed Damage: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
+      `• Verified food, drinks & round-trip rides accounted for.\n\n` +
+      `We moving?\n` +
+      `${squadUrl}`
     );
   };
 

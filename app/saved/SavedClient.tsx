@@ -67,8 +67,8 @@ export default function SavedClient({
   if (!isLoaded) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <div className="w-8 h-8 border-2 border-[#008751] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="type-body text-text-muted text-sm">Loading your saved spots...</p>
+        <div className="w-8 h-8 border-2 border-[#111111] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="type-body text-[#6B7280] font-mono text-xs uppercase tracking-wider">Loading your shortlist...</p>
       </div>
     );
   }
@@ -283,10 +283,10 @@ export default function SavedClient({
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
                 <h2 className="font-black text-lg text-[#111111] font-display uppercase tracking-tight">
-                  No saved spots yet.
+                  Your shortlist is looking suspiciously empty.
                 </h2>
                 <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
-                  Bookmark places as you explore to easily pre-fill budget outing plans later.
+                  Bookmark places as you explore Lagos to easily build and share outing plans with your squad later.
                 </p>
               </div>
               <Link href="/explore" className="inline-block pt-2">
