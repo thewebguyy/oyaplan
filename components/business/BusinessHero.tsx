@@ -19,189 +19,150 @@ import {
 
 export function BusinessHero() {
   return (
-    <section className="relative pt-24 sm:pt-32 pb-16 sm:pb-24 overflow-hidden bg-white">
-      {/* Background ambient accents */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-radial from-emerald-50/60 via-slate-50/30 to-transparent pointer-events-none -z-10" />
+    <section className="relative pt-24 sm:pt-32 pb-16 sm:pb-24 overflow-hidden bg-[#0C0D0E] text-[#F7F5EE]">
+      {/* Subtle Architectural Road Grid Background */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px)
+          `,
+          backgroundSize: '48px 48px',
+        }}
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
-          {/* ── Left Column: Editorial Value Proposition ── */}
+          {/* ── Left Column: Operator Value Proposition ── */}
           <div className="lg:col-span-6 space-y-6 sm:space-y-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EAFDF3] border border-[#A3F3C6] text-brand-green">
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              <span className="text-[11px] font-black uppercase tracking-wider">
-                For Lagos Restaurants, Bars &amp; Lounges
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#F6C642]/10 border border-[#F6C642]/30 text-[#F6C642]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F6C642] animate-pulse" />
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase">
+                OPERATOR&apos;S DESK · LAGOS INFRASTRUCTURE
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
-              Be there when people{" "}
-              <span className="text-brand-green">decide where to spend.</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] font-serif">
+              Control your venue&apos;s place in{" "}
+              <span className="text-[#008751]">Lagos outing decisions.</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
-              Get discovered by Lagosians actively planning an outing, help them understand what their visit will cost, and turn that intent into reservations when they&apos;re ready.
+            <p className="text-base sm:text-lg text-white/70 leading-relaxed max-w-xl">
+              Manage how your venue appears to squads, control customer-facing prices and table policies, and capture high-intent reservations with 100% direct deposits.
             </p>
 
-            {/* Structured CTAs: Primary, Secondary, Supporting */}
+            {/* Structured CTAs */}
             <div className="space-y-3 pt-2">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 font-mono">
                 <Link
                   href="/business/claim"
-                  className="h-12 px-6 bg-brand-green hover:bg-[#007043] text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm tap-feedback cursor-pointer"
+                  className="h-12 px-6 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md tap-feedback cursor-pointer uppercase tracking-wider"
                 >
-                  <span>Get Started — It&apos;s Free</span>
+                  <span>Claim Your Venue</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
 
-                <a
-                  href="#reservations"
-                  className="h-12 px-5 bg-white hover:bg-slate-50 text-slate-800 border border-border-default text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all tap-feedback cursor-pointer"
+                <Link
+                  href="/login/business"
+                  className="h-12 px-5 bg-white/5 hover:bg-white/10 text-white border border-white/20 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all tap-feedback cursor-pointer uppercase tracking-wider"
                 >
-                  <Calendar className="w-4 h-4 text-emerald-700" />
-                  <span>See How Reservations Work</span>
-                </a>
+                  <ShieldCheck className="w-4 h-4 text-[#F6C642]" />
+                  <span>Enter Operator&apos;s Desk</span>
+                </Link>
               </div>
 
               <div>
                 <Link
-                  href="/"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-green transition-colors pt-1"
+                  href="/login/business"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-white/50 hover:text-[#F6C642] transition-colors pt-1"
                 >
-                  <span>See what customers see on OyaPlan</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <span>Already claimed? Sign in to your venue desk →</span>
                 </Link>
               </div>
             </div>
 
-            {/* Trust Anchors */}
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+            {/* Operational Anchors */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 font-mono">
               <div>
-                <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">₦0</p>
-                <p className="text-xs text-slate-500 mt-0.5">Free to list your venue</p>
+                <p className="text-xl sm:text-2xl font-black text-white tracking-tight">₦0</p>
+                <p className="text-[11px] text-white/50 uppercase mt-0.5">Pre-Indexed Listing</p>
               </div>
               <div>
-                <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">100%</p>
-                <p className="text-xs text-slate-500 mt-0.5">Deposits direct to you</p>
+                <p className="text-xl sm:text-2xl font-black text-[#008751] tracking-tight">100%</p>
+                <p className="text-[11px] text-white/50 uppercase mt-0.5">Direct Table Deposits</p>
               </div>
               <div>
-                <p className="text-xl sm:text-2xl font-black text-emerald-700 tracking-tight">₦0 Monthly</p>
-                <p className="text-xs text-slate-500 mt-0.5">Pay only when booked</p>
+                <p className="text-xl sm:text-2xl font-black text-[#F6C642] tracking-tight">1-Tap</p>
+                <p className="text-[11px] text-white/50 uppercase mt-0.5">Price Freshness</p>
               </div>
             </div>
           </div>
 
-          {/* ── Right Column: Composed Consumer Plan ↔ Business Reservation Specimen ── */}
+          {/* ── Right Column: Dual Tactical Specimen ── */}
           <div className="lg:col-span-6 relative">
-            {/* Structural glow backdrop */}
-            <div className="absolute -inset-4 bg-gradient-to-tr from-emerald-100/40 via-amber-50/30 to-slate-100 rounded-3xl -z-10 blur-xl opacity-70" />
-
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               
-              {/* Layer 1: Consumer Planning Decision */}
-              <div className="bg-[#FAF7F2] rounded-2xl border border-[#EAE4DC] p-5 shadow-xs">
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#EAE4DC]">
+              {/* Specimen 1: Operator's Desk Control Room Hero */}
+              <div className="bg-[#141517] rounded-2xl border-2 border-white/10 p-5 shadow-2xl space-y-3 font-sans">
+                <div className="flex items-center justify-between pb-3 border-b border-white/10">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-brand-green" />
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-600">
-                      Step 1 • Squad Outing Plan
+                    <span className="w-2 h-2 rounded-full bg-[#008751]" />
+                    <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest">
+                      01 VENUE CONTROL PANEL
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded-full border border-[#EAE4DC]">
-                    Friday Night • 4 Guests
+                  <span className="text-[10px] font-mono font-bold text-white/60 px-2 py-0.5 rounded bg-white/5 border border-white/10">
+                    PLAQUE-8492 · VI
                   </span>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-slate-600" />
-                      <span className="text-xs font-bold text-slate-900">Nok by Alara</span>
+                    <div>
+                      <h4 className="text-base font-serif font-black text-white">Nok by Alara</h4>
+                      <p className="text-xs text-white/60">Victoria Island, Lagos</p>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                      <Wallet className="w-4 h-4 text-brand-green" />
-                      <span>Est. ₦27,500 / person</span>
-                    </div>
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#008751]/15 text-[#008751] border border-[#008751]/30">
+                      ● VERIFIED SPOT
+                    </span>
                   </div>
 
-                  <div className="bg-white p-3 rounded-xl border border-[#EAE4DC] flex items-center justify-between">
+                  <div className="bg-black/40 rounded-xl p-3 border border-white/10 flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-brand-green" />
-                        <span className="text-xs font-bold text-slate-900">Menu &amp; house rules confirmed</span>
-                      </div>
-                      <p className="text-[11px] text-slate-500">
-                        Budget calculated with corkage &amp; transport included
-                      </p>
+                      <span className="text-[9px] font-mono font-bold text-white/40 uppercase block">PRICE FRESHNESS</span>
+                      <span className="text-xs font-bold text-white">Confirmed Current Today</span>
                     </div>
-                    <span className="text-[11px] font-bold text-brand-green bg-[#EAFDF3] px-2.5 py-1 rounded-lg border border-[#A3F3C6]">
-                      Ready to reserve
+                    <span className="text-[10px] font-mono font-bold text-[#F6C642] bg-[#F6C642]/10 px-2.5 py-1 rounded-lg border border-[#F6C642]/20">
+                      VALID: 30 DAYS
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Connecting Step: Intent to Reservation Request */}
-              <div className="flex items-center justify-center -my-1 relative z-10">
-                <div className="px-3.5 py-1 rounded-full bg-slate-900 text-white text-[10px] font-bold tracking-wider uppercase shadow-md flex items-center gap-1.5 border border-slate-700">
-                  <Sparkles className="w-3 h-3 text-emerald-400" />
-                  <span>Guests Decide &amp; Request A Table</span>
-                  <ChevronRight className="w-3 h-3 text-slate-400" />
-                </div>
-              </div>
-
-              {/* Layer 2: Business Portal Incoming Reservation */}
-              <div className="bg-white rounded-2xl border-2 border-emerald-500/30 p-5 shadow-lg relative">
-                {/* Header tag */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-600">
-                      Step 2 • Your Venue Receives The Request
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-800 bg-[#EAFDF3] px-2.5 py-0.5 rounded-full border border-[#A3F3C6]">
-                    New Reservation Request
+              {/* Specimen 2: What Customers See Mirror */}
+              <div className="bg-[#18191B] rounded-2xl border border-white/10 p-5 shadow-xl space-y-3 font-sans">
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                  <span className="text-[10px] font-mono font-bold text-white/60 uppercase tracking-widest">
+                    WHAT CUSTOMERS SEE BEFORE LEAVING HOME
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-[#008751]">
+                    LIVE SYNC
                   </span>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">Table for 4 Guests</h4>
-                      <p className="text-xs text-slate-500">Friday, Oct 3 • 8:00 PM • Dining Room</p>
-                    </div>
-                    <span className="text-[10px] font-mono font-bold text-brand-green bg-[#EAFDF3] px-2 py-0.5 rounded-md border border-[#A3F3C6]">
-                      Booked on OyaPlan
-                    </span>
+                <div className="p-3.5 bg-black/40 rounded-xl border border-white/5 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono text-white/50 uppercase block">Total Outing Cost</span>
+                    <span className="text-xl font-mono font-black text-white">₦35,100</span>
+                    <span className="text-[11px] text-white/60 block mt-0.5">₦17,550 / person · 2 guests</span>
                   </div>
-
-                  {/* Direct Deposit Callout */}
-                  <div className="bg-[#FAF7F2] rounded-xl p-3 border border-[#EAE4DC] space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-slate-700">Required Table Deposit:</span>
-                      <span className="font-mono font-bold text-slate-900">₦20,000</span>
-                    </div>
-                    <p className="text-[10px] text-slate-500 leading-snug">
-                      🔒 <strong>Direct Venue Deposit:</strong> Customer pays deposit directly to your business account. OyaPlan does not hold your funds.
-                    </p>
+                  <div className="text-right text-[10px] font-mono text-white/50 space-y-0.5">
+                    <div>Menu: ₦24,000</div>
+                    <div>Transport: ₦7,500</div>
+                    <div className="text-[#008751]">VAT + Service: ₦3,600</div>
                   </div>
-
-                  {/* Venue Action Controls */}
-                  <div className="flex items-center gap-2 pt-1 text-xs">
-                    <div className="flex-1 h-9 bg-slate-900 text-white font-bold rounded-lg flex items-center justify-center gap-1.5 shadow-xs">
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Confirm &amp; Share Bank Details</span>
-                    </div>
-                    <div className="px-3 h-9 bg-slate-100 text-slate-600 font-medium rounded-lg flex items-center justify-center">
-                      <span>Decline</span>
-                    </div>
-                  </div>
-
-                  <p className="text-[10px] text-slate-400 text-center pt-1 border-t border-slate-100">
-                    OyaPlan earns a commission on confirmed qualifying reservations.
-                  </p>
                 </div>
               </div>
 

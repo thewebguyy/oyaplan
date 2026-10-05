@@ -85,7 +85,7 @@ export default async function BusinessIndexPage() {
     }
   }
 
-  // Unauthenticated — send to the public front door
-  redirect('/for-business');
+  // Unauthenticated — send to the dedicated Operator's Desk sign in
+  redirect('/login/business?returnTo=/business');
   return null;
 }

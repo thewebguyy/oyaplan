@@ -137,7 +137,7 @@ export function BusinessMarketingHeader() {
   return (
     <header
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-border-default transition-all"
+      className="fixed top-0 left-0 right-0 z-50 bg-[#111111]/95 backdrop-blur-md border-b border-white/10 text-[#F7F5EE] transition-all"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
         {/* ── Left: Dedicated Business Wordmark ── */}
@@ -148,32 +148,32 @@ export function BusinessMarketingHeader() {
               alt="OyaPlan"
               width={610}
               height={143}
-              className="h-6 sm:h-7 w-auto object-contain shrink-0"
+              className="h-6 sm:h-7 w-auto object-contain shrink-0 invert"
               priority
             />
-            <div className="flex items-center gap-1.5 pl-2.5 border-l border-slate-300">
-              <span className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
-                For Business
+            <div className="flex items-center gap-1.5 pl-2.5 border-l border-white/20">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-[#111111] bg-[#F6C642] px-2 py-0.5 rounded uppercase">
+                OPERATOR&apos;S DESK
               </span>
             </div>
           </Link>
 
           {/* ── Desktop Primary Navigation (Mega Menu Triggers) ── */}
-          <nav className="hidden lg:flex items-center gap-2">
+          <nav className="hidden lg:flex items-center gap-2 font-mono">
             {/* Business Types Trigger */}
             <button
               onClick={() => setActiveMenu(activeMenu === "types" ? null : "types")}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all tap-feedback ${
                 activeMenu === "types"
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-white/15 text-white"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               }`}
               aria-expanded={activeMenu === "types"}
             >
-              <span>Business Types</span>
+              <span>01 VENUES</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeMenu === "types" ? "rotate-180 text-brand-green" : "text-slate-400"
+                  activeMenu === "types" ? "rotate-180 text-[#F6C642]" : "text-white/40"
                 }`}
               />
             </button>
@@ -183,39 +183,38 @@ export function BusinessMarketingHeader() {
               onClick={() => setActiveMenu(activeMenu === "features" ? null : "features")}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all tap-feedback ${
                 activeMenu === "features"
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-white/15 text-white"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               }`}
               aria-expanded={activeMenu === "features"}
             >
-              <span>Features</span>
+              <span>02 CAPABILITIES</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeMenu === "features" ? "rotate-180 text-brand-green" : "text-slate-400"
+                  activeMenu === "features" ? "rotate-180 text-[#F6C642]" : "text-white/40"
                 }`}
               />
             </button>
           </nav>
         </div>
 
-        {/* ── Right Actions: Marketplace Bridge, Sign Up, Menu ── */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* Marketplace Bridge (First-class switch to consumer app) */}
+        {/* ── Right Actions: Desk Login, Claim CTA, Menu ── */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Sign In to Operator's Desk */}
           <Link
-            href="/"
-            className="hidden sm:flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-brand-green transition-colors px-3 py-2 rounded-xl hover:bg-[#EAFDF3] tap-feedback"
-            title="See OyaPlan as a customer"
+            href="/login/business"
+            className="flex items-center gap-1 text-xs font-mono font-bold text-white/80 hover:text-[#F6C642] transition-colors px-3 py-2 rounded-xl hover:bg-white/10 tap-feedback"
+            title="Sign in to your venue control room"
           >
-            <span>Marketplace</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-brand-green" />
+            <span>SIGN IN</span>
           </Link>
 
           {/* Business Get Started CTA */}
           <Link
             href="/business/claim"
-            className="h-9 sm:h-10 px-4 sm:px-5 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all shadow-xs tap-feedback cursor-pointer"
+            className="h-9 sm:h-10 px-4 sm:px-5 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold font-mono rounded-xl flex items-center gap-2 transition-all shadow-xs tap-feedback cursor-pointer uppercase tracking-wider"
           >
-            <span>Get Started</span>
+            <span>CLAIM VENUE</span>
           </Link>
 
           {/* Desktop Utility Menu Trigger */}
@@ -224,8 +223,8 @@ export function BusinessMarketingHeader() {
               onClick={() => setUtilityMenuOpen(!utilityMenuOpen)}
               className={`p-2 rounded-xl transition-all tap-feedback ${
                 utilityMenuOpen
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-white/15 text-white"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               }`}
               aria-label="Toggle utility menu"
             >
@@ -234,18 +233,25 @@ export function BusinessMarketingHeader() {
 
             {/* Desktop Utility Dropdown */}
             {utilityMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white border border-border-default rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-2 border-b border-slate-100 mb-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    OyaPlan Business
+              <div className="absolute right-0 mt-2 w-56 bg-[#18191B] border border-white/15 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#F7F5EE]">
+                <div className="px-3 py-2 border-b border-white/10 mb-1">
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#F6C642]">
+                    OPERATOR INFRASTRUCTURE
                   </p>
                 </div>
                 <Link
-                  href="/account?next=/business&context=business"
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-slate-800 hover:bg-slate-50 rounded-xl transition-colors"
+                  href="/login/business"
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-white hover:bg-white/10 rounded-xl transition-colors font-mono"
                 >
-                  <Lock className="w-3.5 h-3.5 text-brand-green" />
-                  <span>Business Sign In</span>
+                  <Lock className="w-3.5 h-3.5 text-[#008751]" />
+                  <span>Sign In to Desk</span>
+                </Link>
+                <Link
+                  href="/business/claim"
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-white hover:bg-white/10 rounded-xl transition-colors font-mono"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#F6C642]" />
+                  <span>Claim Lagos Venue</span>
                 </Link>
                 <a
                   href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Business%20Team"

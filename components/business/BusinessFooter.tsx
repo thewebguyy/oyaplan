@@ -57,8 +57,8 @@ export function BusinessFooter() {
                 </a>
               </li>
               <li>
-                <Link href="/account?next=/business&context=business" className="hover:text-white transition-colors">
-                  Business Sign In
+                <Link href="/login/business" className="hover:text-white transition-colors">
+                  Operator&apos;s Desk Sign In
                 </Link>
               </li>
               <li>

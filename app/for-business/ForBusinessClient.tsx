@@ -14,7 +14,7 @@ import { BusinessFooter } from "@/components/business/BusinessFooter";
 
 export function ForBusinessClient() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 antialiased selection:bg-brand-green/10 selection:text-brand-green overflow-x-clip">
+    <div className="min-h-screen bg-[#0C0D0E] text-[#F7F5EE] antialiased selection:bg-[#008751]/30 selection:text-white overflow-x-clip">
       {/* ACT 1 — THE DECISION: Hero with composed Business Controller ↔ Consumer Plan UI */}
       <BusinessHero />
 
