@@ -29,7 +29,7 @@ export function VenueDecisionSummary({
   const isVerified = isPartnerVerified || venue.operational_status === "verified" || venue.operational_status === "fresh";
   const freshnessText = getVerificationText(venue.last_price_updated_at);
 
-  const transportInfo = getTemporaryTransportEstimate(venue.address_slug || areaSlug || venue.address);
+  const transportInfo = getTemporaryTransportEstimate(areaSlug || venue.address);
 
   // Canonical: real per-person spend or null. No invented ranges or fallback prices.
   const perPerson = knownPerPerson(venue);

@@ -79,11 +79,11 @@ export function PlanCostBreakdown({
         <div className="flex items-center justify-between py-1 border-b border-dashed border-[#111111]/10">
           <div className="flex flex-col">
             <span className="text-[#555555]">
-              {hasCar ? 'Transport (Self Drive)' : 'Round-Trip Ride-Hailing'}
+              {hasCar ? 'Transport (Self Drive)' : 'Estimated Transport (Round-Trip)'}
             </span>
-            {!hasCar && transportCost > 0 && squadSize > 1 && (
+            {!hasCar && transportCost > 0 && (
               <span className="text-[10px] text-[#6B7280]">
-                ~₦{Math.round(transportCost / squadSize).toLocaleString('en-NG')}/person • {Math.ceil(squadSize / 4)} {Math.ceil(squadSize / 4) > 1 ? 'cars' : 'car'}
+                {squadSize > 1 ? `~₦${Math.round(transportCost / squadSize).toLocaleString('en-NG')}/person • ` : ''}Transport estimate based on destination zone
               </span>
             )}
           </div>

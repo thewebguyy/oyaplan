@@ -204,17 +204,11 @@ export function DamageSlip({
         <div className="flex items-start justify-between gap-2">
           <div>
             <span className="font-sans font-bold text-[#111111] block">
-              Transport <span className="font-mono text-[10px] text-[#6B7280] uppercase">· est.</span>
+              Estimated transport
             </span>
             <span className="text-[10px] text-[#6B7280] font-mono block">
-              {startAreaName} ↔ {spot.areas?.name || spot.address_slug || "Venue"} • {transportModeLabel}
-              {plan.transportConfidenceLabel ? ` • ${plan.transportConfidenceLabel}` : ""}
+              Transport estimate based on destination zone ({startAreaName} ↔ {spot.areas?.name || spot.address_slug || "Venue"})
             </span>
-            {hasTransportRange && (
-              <span className="text-[10px] text-[#6B7280] font-mono block">
-                Range ₦{(tMin as number).toLocaleString("en-NG")}–₦{(tMax as number).toLocaleString("en-NG")} • midpoint counted
-              </span>
-            )}
           </div>
           <span className="font-bold text-[#111111] tabular-nums text-sm">
             {transportCost === 0 ? "₦0" : `₦${transportCost.toLocaleString("en-NG")}`}

@@ -62,7 +62,7 @@ export function VenueBudgetScenario({
   const totalTaxAndService = Math.round(estimatedFoodAndDrinks * ((vatPct + serviceChargePct) / 100));
 
   // Canonical temporary transport rule based on destination zone (Mainland: ₦5,000, Island: ₦10,000)
-  const transportInfo = getTemporaryTransportEstimate(venue.address_slug || areaSlug || venue.address);
+  const transportInfo = getTemporaryTransportEstimate(areaSlug || venue.address);
   const estimatedTransport = transportInfo.cost;
 
   const totalEstimatedOuting = estimatedFoodAndDrinks + totalTaxAndService + estimatedTransport;
