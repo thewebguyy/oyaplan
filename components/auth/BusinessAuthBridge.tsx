@@ -109,56 +109,66 @@ export default function BusinessAuthBridge() {
   };
 
   return (
-    <main className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon flex flex-col justify-between selection:bg-[#008751]/20">
+    <main className="min-h-[100dvh] bg-[#0C0D0E] text-[#F7F5EE] flex flex-col justify-between selection:bg-[#008751]/40 relative overflow-hidden">
+      {/* Subtle Architectural Road Grid Background */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px)
+          `,
+          backgroundSize: '48px 48px',
+        }}
+      />
+
       {/* Top Bar */}
-      <header className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-4 flex items-center justify-between">
+      <header className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-4 flex items-center justify-between">
         <Link
           href="/for-business"
-          className="inline-flex items-center gap-2 text-xs font-bold text-text-secondary hover:text-midnight-lagoon transition-colors py-1.5 px-3 rounded-full hover:bg-white border border-[#EAE4DC] tap-feedback"
+          className="inline-flex items-center gap-2 text-xs font-mono font-bold text-white/70 hover:text-white transition-colors py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 tap-feedback"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Business</span>
+          <ArrowLeft className="w-3.5 h-3.5 text-[#F6C642]" />
+          <span>BACK TO FOR-BUSINESS</span>
         </Link>
-        <Link href="/for-business" className="flex items-center gap-2 tap-feedback">
-          <Image
-            src="/logo.png"
-            alt="OyaPlan"
-            width={610}
-            height={143}
-            className="h-7 w-auto object-contain shrink-0"
-            priority
-          />
-          <span className="text-xs font-black text-white bg-midnight-lagoon px-2 py-0.5 rounded-full uppercase tracking-wider">
-            Business
+
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#008751] animate-pulse" />
+          <span className="text-[11px] font-mono font-bold text-[#F6C642] uppercase tracking-widest">
+            OPERATOR CONTROL SYSTEM
           </span>
-        </Link>
+        </div>
       </header>
 
       {/* Main Container */}
-      <div className="w-full max-w-md mx-auto px-4 py-8 sm:py-12 my-auto">
-        <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-6 sm:p-8 shadow-sm">
+      <div className="relative z-10 w-full max-w-md mx-auto px-4 py-8 sm:py-12 my-auto">
+        <div className="bg-[#141517] rounded-3xl border-2 border-white/10 p-6 sm:p-8 shadow-2xl backdrop-blur-md">
           {success ? (
             <div className="text-center space-y-5 animate-in fade-in zoom-in-95 duration-200">
-              <div className="w-16 h-16 bg-midnight-lagoon/10 text-midnight-lagoon border border-[#EAE4DC] rounded-full flex items-center justify-center mx-auto shadow-xs">
+              <div className="w-16 h-16 bg-[#008751]/15 text-[#008751] border border-[#008751]/30 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="w-8 h-8 text-[#008751]" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon tracking-tight">
-                  Check your business inbox
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#F6C642] block">
+                  TRANSMISSION DISPATCHED
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  Check your operator inbox
                 </h2>
-                <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-                  We sent a secure operator login link to:
+                <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
+                  We sent a secure single-use access link to:
                 </p>
-                <div className="inline-block bg-surface-grey font-mono font-bold text-xs sm:text-sm px-3 py-1.5 rounded-lg text-midnight-lagoon border border-[#EAE4DC] max-w-full truncate">
+                <div className="inline-block bg-black/50 font-mono font-bold text-xs sm:text-sm px-3 py-1.5 rounded-lg text-[#F6C642] border border-white/10 max-w-full truncate">
                   {email}
                 </div>
               </div>
 
-              <div className="p-4 bg-[#FAF7F2] rounded-2xl border border-[#EAE4DC] text-left text-xs text-text-secondary space-y-2">
-                <div className="font-bold text-midnight-lagoon flex items-center gap-1.5">
-                  <Mail className="w-4 h-4 text-[#008751]" /> Open on this device
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-left text-xs text-white/70 space-y-2">
+                <div className="font-bold text-white flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-[#008751]" /> 
+                  <span>Open on this device</span>
                 </div>
-                <p>Click the link in your email to enter your venue management workspace.</p>
+                <p>Click the link inside to immediately authenticate into the Operator&apos;s Desk.</p>
               </div>
 
               <button
@@ -167,29 +177,32 @@ export default function BusinessAuthBridge() {
                   setSuccess(false);
                   setError(null);
                 }}
-                className="block w-full text-center text-xs font-bold text-text-muted hover:text-midnight-lagoon transition-colors py-1"
+                className="block w-full text-center text-xs font-mono font-bold text-white/50 hover:text-white transition-colors py-1 cursor-pointer"
               >
-                Use a different email address
+                ← Use a different email address
               </button>
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-midnight-lagoon/10 text-midnight-lagoon text-[10px] font-black uppercase tracking-wider">
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>OyaPlan for Business</span>
+              {/* Desk Plaque Header */}
+              <div className="space-y-2.5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#F6C642]/10 border border-[#F6C642]/30 text-[#F6C642] text-[10px] font-mono font-bold uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#F6C642]" />
+                  <span>LAGOS VENUE INFRASTRUCTURE</span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon tracking-tight">
-                  Operator Sign In
+
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-serif">
+                  Operator&apos;s Desk
                 </h1>
-                <p className="text-xs sm:text-sm text-text-secondary">
-                  Manage your venue pricing, table policies, operating updates, and planning signals.
+
+                <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
+                  Manage how your venue appears, what customers see, and the demand coming through OyaPlan.
                 </p>
               </div>
 
               {error && (
-                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-start gap-2 animate-in fade-in">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-500/40 text-red-200 text-xs font-medium flex items-start gap-2 animate-in fade-in">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
                   <span>{error}</span>
                 </div>
               )}
@@ -200,10 +213,10 @@ export default function BusinessAuthBridge() {
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={googleLoading || loading}
-                  className="w-full h-12 rounded-xl border border-[#EAE4DC] hover:border-midnight-lagoon bg-white hover:bg-surface-grey text-xs sm:text-sm font-bold text-midnight-lagoon flex items-center justify-center gap-3 transition-all shadow-xs tap-feedback disabled:opacity-60 cursor-pointer"
+                  className="w-full h-12 rounded-xl border border-white/15 hover:border-white/30 bg-white/5 hover:bg-white/10 text-xs sm:text-sm font-bold text-white flex items-center justify-center gap-3 transition-all tap-feedback disabled:opacity-60 cursor-pointer"
                 >
                   {googleLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-midnight-lagoon" />
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
                   ) : (
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -212,57 +225,57 @@ export default function BusinessAuthBridge() {
                       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                     </svg>
                   )}
-                  <span>Sign in with Google</span>
+                  <span>Sign in with Operator Google Account</span>
                 </button>
               </div>
 
               <div className="relative flex items-center justify-center">
-                <div className="w-full border-t border-[#EAE4DC]" />
-                <span className="bg-white px-3 text-[11px] font-black uppercase tracking-wider text-text-muted absolute">
-                  or with work email
+                <div className="w-full border-t border-white/10" />
+                <span className="bg-[#141517] px-3 text-[10px] font-mono font-bold uppercase tracking-widest text-white/40 absolute">
+                  OR WORK EMAIL
                 </span>
               </div>
 
               {/* Email Magic Link */}
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div className="space-y-1.5 text-left">
-                  <label htmlFor="business-email" className="block text-xs font-bold text-midnight-lagoon">
-                    Work or venue email
+                  <label htmlFor="business-email" className="block text-xs font-mono font-bold text-white/80 uppercase tracking-wide">
+                    Operator / Management Email
                   </label>
                   <input
                     id="business-email"
                     type="email"
                     required
-                    placeholder="operator@yourvenue.com"
+                    placeholder="operator@venue.ng"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-12 rounded-xl bg-surface-grey border border-[#EAE4DC] focus:border-midnight-lagoon focus:bg-white text-xs sm:text-sm text-midnight-lagoon font-medium px-4 outline-none transition-colors"
+                    className="w-full h-12 rounded-xl bg-black/40 border border-white/15 focus:border-[#008751] focus:bg-black/60 text-xs sm:text-sm text-white font-mono px-4 outline-none transition-colors placeholder:text-white/30"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading || googleLoading}
-                  className="w-full h-12 rounded-xl bg-midnight-lagoon hover:bg-[#0a0f3d] text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 tap-feedback disabled:opacity-60 cursor-pointer"
+                  className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs sm:text-sm tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2 tap-feedback disabled:opacity-60 cursor-pointer"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <span>Sign in to Business Portal →</span>
+                    <span>Enter Operator&apos;s Desk →</span>
                   )}
                 </button>
               </form>
 
-              <div className="pt-2 border-t border-[#EAE4DC]/60 text-center space-y-2">
-                <p className="text-xs text-text-secondary">
+              <div className="pt-3 border-t border-white/10 text-center space-y-2">
+                <p className="text-xs text-white/60">
                   Haven&apos;t claimed your venue yet?
                 </p>
                 <Link
                   href="/business/claim"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#008751] hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#F6C642] hover:underline"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Claim your Lagos venue here</span>
+                  <span>Claim your pre-indexed Lagos venue here</span>
                 </Link>
               </div>
             </div>
@@ -270,11 +283,11 @@ export default function BusinessAuthBridge() {
         </div>
 
         <div className="mt-6 text-center">
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-white/50">
             Looking to plan an outing?{" "}
             <Link
               href={`/login${rawReturnTo ? `?returnTo=${encodeURIComponent(rawReturnTo)}` : ""}`}
-              className="font-bold text-[#008751] hover:underline"
+              className="font-bold text-[#F6C642] hover:underline"
             >
               Sign in as an OyaPlanner →
             </Link>
@@ -282,9 +295,11 @@ export default function BusinessAuthBridge() {
         </div>
       </div>
 
-      <footer className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 border-t border-[#EAE4DC] flex items-center justify-between text-xs text-text-muted">
-        <div>© {new Date().getFullYear()} OyaPlan for Business</div>
-        <Link href="/for-business" className="hover:text-midnight-lagoon font-bold">About OyaPlan Business</Link>
+      <footer className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 border-t border-white/10 flex items-center justify-between text-xs font-mono text-white/40">
+        <div>© {new Date().getFullYear()} OYAPLAN · OPERATOR INFRASTRUCTURE</div>
+        <Link href="/for-business" className="hover:text-white transition-colors">
+          WHAT IS OPERATOR&apos;S DESK?
+        </Link>
       </footer>
     </main>
   );

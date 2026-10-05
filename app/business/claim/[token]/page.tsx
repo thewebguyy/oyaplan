@@ -61,14 +61,14 @@ export default async function BusinessTokenClaimPage({ params }: Props) {
 
           <div className="p-4 bg-[#FAF7F2] border border-[#EAE4DC]/60 rounded-xl text-xs text-text-muted text-left space-y-1.5">
             <span className="font-bold text-midnight-lagoon block">What should I do?</span>
-            <p>1. If you already completed this claim, sign in to your Business Portal.</p>
+            <p>1. If you already completed this claim, sign in to the Operator&apos;s Desk.</p>
             <p>2. If you need a new invitation token, reach out to our Lagos team on WhatsApp.</p>
           </div>
 
           <div className="space-y-2 pt-2">
             <Link href="/login/business?returnTo=/business" className="block">
               <button className="w-full h-11 bg-midnight-lagoon hover:bg-[#00041f] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer tap-feedback">
-                Sign In to Business Portal
+                Sign In to Operator&apos;s Desk
               </button>
             </Link>
 

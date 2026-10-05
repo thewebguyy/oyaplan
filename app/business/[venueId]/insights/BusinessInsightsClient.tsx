@@ -26,23 +26,23 @@ export function BusinessInsightsClient({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl border border-border-default p-5 sm:p-6 shadow-xs">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111111] text-[#F7F5EE] rounded-2xl border border-white/10 p-5 sm:p-6 shadow-sm">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
-              Audience &amp; Behavior
+            <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest px-2 py-0.5 rounded bg-[#F6C642]/10 border border-[#F6C642]/20">
+              06 PLANNING INSIGHTS
             </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-xs text-text-muted">
-              {hasData ? `Grounded in ${insights.totalPlansAnalyzed} plans` : 'Sample Size Protected'}
+            <span className="text-white/30">·</span>
+            <span className="text-xs text-white/60 font-mono">
+              {hasData ? `GROUNDED IN ${insights.totalPlansAnalyzed} PLANS` : 'CONFIDENCE-GATED INTELLIGENCE'}
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Planning &amp; Audience Insights
           </h1>
 
-          <p className="text-xs sm:text-sm text-text-muted max-w-xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/70 max-w-xl leading-relaxed">
             Understand who is building plans around your business: typical occasions, party sizes, and realistic budget envelopes.
           </p>
         </div>

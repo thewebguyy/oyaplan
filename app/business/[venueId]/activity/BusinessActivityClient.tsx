@@ -36,38 +36,38 @@ export function BusinessActivityClient({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl border border-border-default p-5 sm:p-6 shadow-xs">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111111] text-[#F7F5EE] rounded-2xl border border-white/10 p-5 sm:p-6 shadow-sm">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
-              Planning Demand &amp; Intent
+            <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest px-2 py-0.5 rounded bg-[#F6C642]/10 border border-[#F6C642]/20">
+              07 DEMAND ACTIVITY
             </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-xs text-text-muted">Honest Signals</span>
+            <span className="text-white/30">·</span>
+            <span className="text-xs text-white/60 font-mono">HONEST SIGNALS ONLY</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Planning Activity &amp; Intent
           </h1>
 
-          <p className="text-xs sm:text-sm text-text-muted max-w-xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/70 max-w-xl leading-relaxed">
             Real Lagos squads planning outings around your business. We measure upstream intent before guests leave home, without artificial impressions.
           </p>
         </div>
 
         {/* Time Window Selector */}
-        <div className="inline-flex rounded-xl p-1 bg-[#FAF7F2] border border-[#EAE4DC] shrink-0 self-start sm:self-auto">
+        <div className="inline-flex rounded-xl p-1 bg-white/5 border border-white/10 shrink-0 self-start sm:self-auto font-mono">
           {(['7d', '30d', '90d', 'all'] as const).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all tap-feedback ${
                 range === r
-                  ? 'bg-white text-midnight-lagoon shadow-xs'
-                  : 'text-text-muted hover:text-midnight-lagoon'
+                  ? 'bg-[#008751] text-white shadow-xs'
+                  : 'text-white/50 hover:text-white'
               }`}
             >
-              {r === '7d' ? '7 days' : r === '30d' ? '30 days' : r === '90d' ? '90 days' : 'All time'}
+              {r === '7d' ? '7D' : r === '30d' ? '30D' : r === '90d' ? '90D' : 'ALL'}
             </button>
           ))}
         </div>

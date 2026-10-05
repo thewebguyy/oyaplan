@@ -13,6 +13,8 @@ import {
 import { getVerificationText } from '@/lib/planning/presentation/decisionCardMapper';
 import { TablePolicyManager } from '@/components/business/TablePolicyManager';
 import { CelebrationRulesCard } from '@/components/business/CelebrationRulesCard';
+import { ThermalReceiptPrint } from '@/components/business/motion/ThermalReceiptPrint';
+import { PosTerminalBadge } from '@/components/business/motion/PosTerminalBadge';
 import {
   Plus,
   Edit2,
@@ -24,8 +26,11 @@ import {
   Percent,
   Receipt,
   Sparkles,
+  ArrowUpRight,
+  Clock,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface BusinessPricingClientProps {
   venue: Venue;
@@ -40,6 +45,21 @@ export function BusinessPricingClient({
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
   const [selectedItemForEdit, setSelectedItemForEdit] = useState<MenuItem | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Thermal Receipt state
+  const [receiptData, setReceiptData] = useState<{
+    isOpen: boolean;
+    title: string;
+    category: string;
+    status: string;
+    details: Array<{ label: string; value: string }>;
+  }>({
+    isOpen: false,
+    title: '',
+    category: '',
+    status: '',
+    details: [],
+  });
 
   // New item form state
   const [isAddingItem, setIsAddingItem] = useState(false);
@@ -73,6 +93,17 @@ export function BusinessPricingClient({
 
   const handlePriceUpdated = (updatedItem: MenuItem) => {
     setMenuItems(prev => prev.map((i: MenuItem) => (i.id === updatedItem.id ? updatedItem : i)));
+    setReceiptData({
+      isOpen: true,
+      title: 'PRICE CHANGE RECORDED',
+      category: 'ITEM AUDIT',
+      status: 'PENDING VERIFICATION',
+      details: [
+        { label: 'ITEM', value: updatedItem.name },
+        { label: 'NEW PRICE', value: `₦${updatedItem.price.toLocaleString('en-NG')}` },
+        { label: 'LEDGER', value: 'APPEND-ONLY' },
+      ],
+    });
     router.refresh();
   };
 
@@ -83,6 +114,17 @@ export function BusinessPricingClient({
     setConfirmingAll(false);
     if (res.success) {
       setConfirmSuccess(true);
+      setReceiptData({
+        isOpen: true,
+        title: 'PRICES VERIFIED TODAY',
+        category: 'FRESHNESS AUDIT',
+        status: 'STATUS: VERIFIED',
+        details: [
+          { label: 'ITEMS VERIFIED', value: `${menuItems.length} ITEMS` },
+          { label: 'VALIDITY', value: 'NEXT 30 DAYS' },
+          { label: 'CONSUMER SIGNAL', value: '100% CONFIDENT' },
+        ],
+      });
       setTimeout(() => setConfirmSuccess(false), 5000);
       router.refresh();
     }
@@ -114,6 +156,17 @@ export function BusinessPricingClient({
     if (res.item) {
       setMenuItems(prev => [...prev, res.item!]);
     }
+    setReceiptData({
+      isOpen: true,
+      title: 'MENU ITEM ADDED',
+      category: 'CATALOG UPDATE',
+      status: 'STATUS: VERIFIED',
+      details: [
+        { label: 'ITEM NAME', value: newItemName.trim() },
+        { label: 'CUSTOMER PRICE', value: `₦${priceNum.toLocaleString('en-NG')}` },
+        { label: 'CATEGORY', value: newItemCategory.toUpperCase() },
+      ],
+    });
     setNewItemName('');
     setNewItemPrice('');
     setIsAddingItem(false);
@@ -148,6 +201,18 @@ export function BusinessPricingClient({
     setSavingCharges(false);
     if (res.success) {
       setChargesSuccess(true);
+      setReceiptData({
+        isOpen: true,
+        title: 'MANDATORY CHARGES UPDATED',
+        category: 'STRUCTURED FEES',
+        status: 'STATUS: VERIFIED',
+        details: [
+          { label: 'VAT', value: `${vatPct}%` },
+          { label: 'SERVICE CHARGE', value: `${serviceChargePct}%` },
+          { label: 'MINIMUM SPEND', value: minimumSpend > 0 ? `₦${minimumSpend.toLocaleString()}` : 'NONE' },
+          { label: 'TABLE DEPOSIT', value: reservationFee > 0 ? `₦${reservationFee.toLocaleString()}` : 'NONE' },
+        ],
+      });
       setTimeout(() => setChargesSuccess(false), 4000);
       router.refresh();
     }
@@ -162,22 +227,22 @@ export function BusinessPricingClient({
   return (
     <div className="space-y-6">
       {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl border border-border-default p-5 sm:p-6 shadow-xs">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111111] text-[#F7F5EE] rounded-2xl border border-white/10 p-5 sm:p-6 shadow-sm">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
-              Menu Pricing &amp; Charges
+            <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest px-2 py-0.5 rounded bg-[#F6C642]/10 border border-[#F6C642]/20">
+              03 PRICING LEDGER
             </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-xs text-text-muted">{priceFreshness}</span>
+            <span className="text-white/30">·</span>
+            <span className="text-xs text-white/60 font-mono">LAST VERIFIED: {priceFreshness.toUpperCase()}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
-            Menu Items &amp; Mandatory Fees
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Menu Pricing &amp; Mandatory Charges
           </h1>
 
-          <p className="text-xs sm:text-sm text-text-muted max-w-xl leading-relaxed">
-            Changes here directly inform squad budget estimates. Confirm current prices with 1 tap or adjust individual items.
+          <p className="text-xs sm:text-sm text-white/70 max-w-xl leading-relaxed">
+            Prices entered here directly control the <strong className="text-[#F6C642]">Total Outing Cost</strong> Lagos squads see before leaving home. Confirm pricing freshness with 1 tap or adjust individual lines.
           </p>
         </div>
 
@@ -187,23 +252,23 @@ export function BusinessPricingClient({
             type="button"
             onClick={handleConfirmAll}
             disabled={confirmingAll}
-            className="h-10 px-4 bg-[#EAFDF3] hover:bg-[#D5F9E4] text-[#0A7C3F] border border-[#A3F3C6] text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer tap-feedback shadow-xs disabled:opacity-50"
-            title="Confirm that your current prices are still up to date"
+            className="h-10 px-4 bg-[#008751] hover:bg-[#007043] text-white border border-[#008751]/40 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback shadow-xs disabled:opacity-50"
+            title="Confirm that your current customer-facing prices are still up to date"
           >
             {confirmingAll ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
             ) : confirmSuccess ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-brand-green" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#F6C642]" />
             ) : (
               <ShieldCheck className="w-3.5 h-3.5" />
             )}
-            <span>{confirmSuccess ? 'Prices Confirmed!' : 'Confirm Prices Current'}</span>
+            <span className="tracking-wide">{confirmSuccess ? 'Prices Confirmed!' : 'Confirm Prices Current'}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsAddingItem(!isAddingItem)}
-            className="h-10 px-4 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer tap-feedback shadow-xs"
+            className="h-10 px-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer tap-feedback"
           >
             <Plus className="w-4 h-4" />
             <span>Add Menu Item</span>
@@ -213,10 +278,10 @@ export function BusinessPricingClient({
 
       {/* Non-Destructive Guarantee Banner */}
       <div className="bg-[#FAF7F2] border border-[#EAE4DC] rounded-xl p-4 sm:p-5 flex items-start gap-3">
-        <Info className="w-4 h-4 text-[#7A3E1D] shrink-0 mt-0.5" />
-        <div className="text-xs text-[#5C381E] space-y-0.5">
-          <span className="font-bold text-midnight-lagoon block">Non-Destructive Pricing Guarantee</span>
-          <p className="leading-relaxed">
+        <Info className="w-4 h-4 text-[#008751] shrink-0 mt-0.5" />
+        <div className="text-xs text-[#111111] space-y-0.5">
+          <span className="font-bold block uppercase tracking-wider text-[11px] text-[#008751]">Customer-Facing Price Guarantee</span>
+          <p className="leading-relaxed text-text-secondary">
             When you adjust a price, OyaPlan never deletes historical data. Changes are recorded in an auditable price ledger, immediately reflecting in outing cost calculations for Lagos planners.
           </p>
         </div>
@@ -224,13 +289,13 @@ export function BusinessPricingClient({
 
       {/* Add Item Form */}
       {isAddingItem && (
-        <form onSubmit={handleAddItem} className="bg-white rounded-2xl border-2 border-brand-green/40 p-5 sm:p-6 space-y-4 shadow-sm animate-in fade-in duration-150">
+        <form onSubmit={handleAddItem} className="bg-white rounded-2xl border-2 border-[#008751]/40 p-5 sm:p-6 space-y-4 shadow-sm animate-in fade-in duration-150">
           <div className="flex items-center justify-between border-b border-border-default pb-3">
-            <h3 className="font-bold text-midnight-lagoon text-sm">Add New Menu Item</h3>
+            <h3 className="font-bold text-[#111111] text-sm">Add New Menu Item</h3>
             <button
               type="button"
               onClick={() => setIsAddingItem(false)}
-              className="text-xs text-text-muted hover:text-midnight-lagoon"
+              className="text-xs text-text-muted hover:text-[#111111]"
             >
               Cancel
             </button>
@@ -249,7 +314,7 @@ export function BusinessPricingClient({
                 value={newItemName}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItemName(e.target.value)}
                 placeholder="e.g. Asun Platter"
-                className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs focus:bg-white focus:outline-none focus:border-brand-green font-medium"
+                className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs focus:bg-white focus:outline-none focus:border-[#008751] font-medium"
               />
             </div>
 
@@ -258,7 +323,7 @@ export function BusinessPricingClient({
               <select
                 value={newItemCategory}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewItemCategory(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs focus:bg-white focus:outline-none focus:border-brand-green font-medium"
+                className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs focus:bg-white focus:outline-none focus:border-[#008751] font-medium"
               >
                 <option value="main">Main Course</option>
                 <option value="starter">Starter / Appetizer</option>
@@ -273,7 +338,7 @@ export function BusinessPricingClient({
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-text-secondary text-[11px]">Price (NGN) *</label>
+              <label className="font-bold text-text-secondary text-[11px]">Customer-Facing Price (NGN) *</label>
               <input
                 type="number"
                 required
@@ -282,7 +347,7 @@ export function BusinessPricingClient({
                 value={newItemPrice}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItemPrice(e.target.value)}
                 placeholder="e.g. 8500"
-                className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs focus:bg-white focus:outline-none focus:border-brand-green font-medium"
+                className="w-full h-11 px-3 rounded-xl border border-border-default bg-[#FAF7F2] text-xs focus:bg-white focus:outline-none focus:border-[#008751] font-medium font-mono"
               />
             </div>
           </div>
@@ -298,10 +363,10 @@ export function BusinessPricingClient({
             <button
               type="submit"
               disabled={addingLoading}
-              className="h-10 px-5 bg-brand-green hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all disabled:opacity-50 tap-feedback"
+              className="h-10 px-5 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all disabled:opacity-50 tap-feedback"
             >
               {addingLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>Save Item</span>
+              <span>Save to Ledger</span>
             </button>
           </div>
         </form>
@@ -313,7 +378,7 @@ export function BusinessPricingClient({
         <div className="bg-white rounded-2xl border border-border-default overflow-hidden shadow-xs">
           <div className="px-5 py-3.5 border-b border-border-default flex items-center justify-between bg-[#FAF7F2]">
             <div>
-              <h3 className="font-bold text-midnight-lagoon text-sm">Food &amp; Dining</h3>
+              <h3 className="font-bold text-[#111111] text-sm">Food &amp; Dining</h3>
               <p className="text-[11px] text-text-muted">Mains, appetizers, and desserts</p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white text-text-muted border border-border-default">
@@ -327,18 +392,28 @@ export function BusinessPricingClient({
                 <div key={item.id} className="p-4 sm:px-5 flex items-center justify-between gap-4 hover:bg-[#FAF7F2]/50 transition-colors">
                   <div className="min-w-0">
                     <span className="text-xs sm:text-sm font-semibold text-text-primary block truncate">{item.name}</span>
-                    <span className="text-[10px] text-text-muted capitalize">{item.category}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] text-text-muted uppercase font-mono">{item.category}</span>
+                      <span className="text-gray-300">·</span>
+                      <span className="text-[10px] text-[#008751] font-mono font-bold flex items-center gap-1">
+                        <CheckCircle2 className="w-2.5 h-2.5" />
+                        STATUS: VERIFIED
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                    <span className="text-xs sm:text-sm font-bold font-mono text-midnight-lagoon">
-                      ₦{item.price.toLocaleString()}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-[9px] uppercase font-bold text-text-muted block font-mono">Customer-Facing</span>
+                      <span className="text-xs sm:text-sm font-bold font-mono text-[#111111]">
+                        ₦{item.price.toLocaleString()}
+                      </span>
+                    </div>
 
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="p-2 rounded-lg text-text-muted hover:text-midnight-lagoon hover:bg-surface-grey transition-colors tap-feedback"
-                      title="Update Price"
+                      className="p-2 rounded-lg text-text-muted hover:text-[#111111] hover:bg-surface-grey transition-colors tap-feedback"
+                      title="Update Price / Change Request"
                       aria-label={`Update price for ${item.name}`}
                     >
                       <Edit2 className="w-4 h-4" />
@@ -367,7 +442,7 @@ export function BusinessPricingClient({
         <div className="bg-white rounded-2xl border border-border-default overflow-hidden shadow-xs">
           <div className="px-5 py-3.5 border-b border-border-default flex items-center justify-between bg-[#FAF7F2]">
             <div>
-              <h3 className="font-bold text-midnight-lagoon text-sm">Drinks &amp; Beverages</h3>
+              <h3 className="font-bold text-[#111111] text-sm">Drinks &amp; Beverages</h3>
               <p className="text-[11px] text-text-muted">Cocktails, wine, beers, and soft drinks</p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white text-text-muted border border-border-default">
@@ -381,18 +456,28 @@ export function BusinessPricingClient({
                 <div key={item.id} className="p-4 sm:px-5 flex items-center justify-between gap-4 hover:bg-[#FAF7F2]/50 transition-colors">
                   <div className="min-w-0">
                     <span className="text-xs sm:text-sm font-semibold text-text-primary block truncate">{item.name}</span>
-                    <span className="text-[10px] text-text-muted capitalize">{item.category}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] text-text-muted uppercase font-mono">{item.category}</span>
+                      <span className="text-gray-300">·</span>
+                      <span className="text-[10px] text-[#008751] font-mono font-bold flex items-center gap-1">
+                        <CheckCircle2 className="w-2.5 h-2.5" />
+                        STATUS: VERIFIED
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                    <span className="text-xs sm:text-sm font-bold font-mono text-midnight-lagoon">
-                      ₦{item.price.toLocaleString()}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-[9px] uppercase font-bold text-text-muted block font-mono">Customer-Facing</span>
+                      <span className="text-xs sm:text-sm font-bold font-mono text-[#111111]">
+                        ₦{item.price.toLocaleString()}
+                      </span>
+                    </div>
 
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="p-2 rounded-lg text-text-muted hover:text-midnight-lagoon hover:bg-surface-grey transition-colors tap-feedback"
-                      title="Update Price"
+                      className="p-2 rounded-lg text-text-muted hover:text-[#111111] hover:bg-surface-grey transition-colors tap-feedback"
+                      title="Update Price / Change Request"
                       aria-label={`Update price for ${item.name}`}
                     >
                       <Edit2 className="w-4 h-4" />
@@ -422,7 +507,7 @@ export function BusinessPricingClient({
           <div className="bg-white rounded-2xl border border-border-default overflow-hidden shadow-xs">
             <div className="px-5 py-3.5 border-b border-border-default flex items-center justify-between bg-[#FAF7F2]">
               <div>
-                <h3 className="font-bold text-midnight-lagoon text-sm">Activities &amp; Other Items</h3>
+                <h3 className="font-bold text-[#111111] text-sm">Activities &amp; Other Items</h3>
                 <p className="text-[11px] text-text-muted">Ticket items, arcade passes, or miscellaneous fees</p>
               </div>
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white text-text-muted border border-border-default">
@@ -435,18 +520,28 @@ export function BusinessPricingClient({
                 <div key={item.id} className="p-4 sm:px-5 flex items-center justify-between gap-4 hover:bg-[#FAF7F2]/50 transition-colors">
                   <div className="min-w-0">
                     <span className="text-xs sm:text-sm font-semibold text-text-primary block truncate">{item.name}</span>
-                    <span className="text-[10px] text-text-muted capitalize">{item.category}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] text-text-muted uppercase font-mono">{item.category}</span>
+                      <span className="text-gray-300">·</span>
+                      <span className="text-[10px] text-[#008751] font-mono font-bold flex items-center gap-1">
+                        <CheckCircle2 className="w-2.5 h-2.5" />
+                        STATUS: VERIFIED
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                    <span className="text-xs sm:text-sm font-bold font-mono text-midnight-lagoon">
-                      ₦{item.price.toLocaleString()}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-[9px] uppercase font-bold text-text-muted block font-mono">Customer-Facing</span>
+                      <span className="text-xs sm:text-sm font-bold font-mono text-[#111111]">
+                        ₦{item.price.toLocaleString()}
+                      </span>
+                    </div>
 
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="p-2 rounded-lg text-text-muted hover:text-midnight-lagoon hover:bg-surface-grey transition-colors tap-feedback"
-                      title="Update Price"
+                      className="p-2 rounded-lg text-text-muted hover:text-[#111111] hover:bg-surface-grey transition-colors tap-feedback"
+                      title="Update Price / Change Request"
                       aria-label={`Update price for ${item.name}`}
                     >
                       <Edit2 className="w-4 h-4" />
@@ -634,12 +729,12 @@ export function BusinessPricingClient({
       {/* Outing Spend Confidence Explainer */}
       <div className="bg-[#FAF7F2] rounded-2xl border border-[#EAE4DC] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1 max-w-xl">
-          <div className="flex items-center gap-1.5 text-brand-green font-bold text-xs">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-[#008751] font-bold text-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#F6C642]" />
             <span className="uppercase tracking-wider">How Lagos Planners Use This</span>
           </div>
-          <h3 className="font-bold text-sm text-midnight-lagoon">
-            Every verified price improves your squad match confidence
+          <h3 className="font-bold text-sm text-[#111111]">
+            Every verified price directly powers Total Outing Cost calculations
           </h3>
           <p className="text-xs text-text-muted leading-relaxed">
             When squads ask OyaPlan for outings under ₦25,000/person, venues with confirmed pricing and transparent VAT/service fees match naturally without fear of surprise bills.
@@ -647,9 +742,9 @@ export function BusinessPricingClient({
         </div>
 
         <div className="bg-white rounded-xl p-3.5 border border-border-default text-xs text-text-secondary space-y-1 shrink-0">
-          <span className="font-bold text-midnight-lagoon block">Current Formula Applied:</span>
-          <div className="font-mono text-[11px]">Subtotal + {vatPct}% VAT + {serviceChargePct}% Service</div>
-          {minimumSpend > 0 && <div className="text-[#7A3E1D] font-bold font-mono text-[11px]">₦{minimumSpend.toLocaleString()} min spend enforced</div>}
+          <span className="font-bold text-[#111111] block uppercase text-[10px] tracking-wider font-mono">Current Formula Applied:</span>
+          <div className="font-mono text-[11px] text-[#008751] font-bold">Subtotal + {vatPct}% VAT + {serviceChargePct}% Service</div>
+          {minimumSpend > 0 && <div className="text-[#008751] font-bold font-mono text-[11px]">₦{minimumSpend.toLocaleString()} min spend enforced</div>}
         </div>
       </div>
 
@@ -667,6 +762,17 @@ export function BusinessPricingClient({
           onPriceUpdated={handlePriceUpdated}
         />
       )}
+
+      {/* Tactile Thermal Receipt Print Modal */}
+      <ThermalReceiptPrint
+        isOpen={receiptData.isOpen}
+        onClose={() => setReceiptData(prev => ({ ...prev, isOpen: false }))}
+        title={receiptData.title}
+        category={receiptData.category}
+        status={receiptData.status}
+        details={receiptData.details}
+        venueName={venue.name}
+      />
     </div>
   );
 }

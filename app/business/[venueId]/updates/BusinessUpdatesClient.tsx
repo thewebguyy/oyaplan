@@ -91,35 +91,35 @@ export function BusinessUpdatesClient({ venue }: BusinessUpdatesClientProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl border border-border-default p-5 sm:p-6 shadow-xs">
-        <div className="space-y-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111111] text-[#F7F5EE] rounded-2xl border border-white/10 p-5 sm:p-6 shadow-sm">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-brand-green uppercase tracking-wider">
-              Operational Status
+            <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest px-2 py-0.5 rounded bg-[#F6C642]/10 border border-[#F6C642]/20">
+              04 OPERATIONAL STATUS
             </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-xs text-text-muted">Real-Time Reliability</span>
+            <span className="text-white/30">·</span>
+            <span className="text-xs text-white/60 font-mono">REAL-TIME RELIABILITY</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-midnight-lagoon tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Availability &amp; Operational Updates
           </h1>
 
-          <p className="text-xs sm:text-sm text-text-muted max-w-xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/70 max-w-xl leading-relaxed">
             Keep Lagos planners informed so squads never arrive at locked gates or during private buyouts.
           </p>
         </div>
 
         <div className="shrink-0">
           {isClosed ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
-              <AlertTriangle className="w-3.5 h-3.5 text-[#7A3E1D]" />
-              Temporarily Closed
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-[#F6C642]/15 text-[#F6C642] border border-[#F6C642]/30">
+              <AlertTriangle className="w-3.5 h-3.5 text-[#F6C642]" />
+              TEMPORARILY CLOSED
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#EAFDF3] text-[#0A7C3F] border border-[#A3F3C6]">
-              <CheckCircle2 className="w-3.5 h-3.5 text-brand-green" />
-              Open for Planning
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-[#008751]/15 text-[#008751] border border-[#008751]/30">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#008751]" />
+              OPEN FOR PLANNING
             </span>
           )}
         </div>

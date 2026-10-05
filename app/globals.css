@@ -57,8 +57,17 @@
   --color-lagos-earth: #4E2D15;
   --color-lagos-earth-subtle: #F7F3EE;
   --color-lagos-clay: #7A3E1D;
-  --color-lagos-warm-surface: #F6F6F2;
   --color-lagos-warm-border: #E8E8E2;
+
+  /* Operator's Desk Dedicated Design Tokens */
+  --color-op-green: #008751;
+  --color-op-yellow: #F6C642;
+  --color-op-charcoal: #111111;
+  --color-op-black: #080808;
+  --color-op-cream: #F7F5EE;
+  --color-op-surface: #161616;
+  --color-op-border: #262626;
+  --color-op-muted: #888888;
 
   /* Restrained Consumer Tokens */
   --radius-sm: 8px;
