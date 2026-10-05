@@ -9,6 +9,7 @@ import { TrustBadge } from "@/components/ui/trust-badge";
 import { deriveTrustIndicator, getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 import { knownPerPerson, venueFoodTotal, suggestPlanBudget } from "@/lib/venue/venueSpend";
+import { ShortlistStamp } from "@/components/motion/ShortlistStamp";
 
 interface DiscoveryVenueCardProps {
   spot: Spot;
@@ -97,10 +98,29 @@ export function DiscoveryVenueCard({
   const venueHeroImage = spot.cover_url || spot.image_url || (spot.gallery_urls && spot.gallery_urls[0]) || null;
   const secondaryImage = (spot.gallery_urls && spot.gallery_urls.find((u) => u && u !== venueHeroImage)) || null;
 
+  const [showStamp, setShowStamp] = React.useState(false);
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isSaved) {
+      setShowStamp(true);
+      setTimeout(() => setShowStamp(false), 1200);
+    }
+    onToggleSave();
+  };
+
   return (
     <article
       className={`group bg-white sm:rounded-[20px] rounded-none border-y sm:border border-[#E5E5DE] hover:border-[#111111] -mx-4 sm:mx-0 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative font-sans ${className}`}
     >
+      {/* Shortlist Save Stamp Impact Overlay */}
+      {showStamp && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
+          <ShortlistStamp isVisible={showStamp} />
+        </div>
+      )}
+
       {/* Top Image Section (Aspect 16:9 for media-rich editorial presentation) */}
       <div className="relative aspect-[16/9] w-full bg-[#F6F6F2] overflow-hidden shrink-0">
         <Link 
@@ -197,7 +217,7 @@ export function DiscoveryVenueCard({
             {/* Save Button */}
             <button
               type="button"
-              onClick={onToggleSave}
+              onClick={handleSaveClick}
               aria-label={isSaved ? `Remove ${spot.name} from saved` : `Save ${spot.name}`}
               className={`p-2 rounded-xl border transition-all shrink-0 tap-feedback cursor-pointer ${
                 isSaved

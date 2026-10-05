@@ -6,6 +6,7 @@ import { trackEvent } from '@/lib/analytics/trackClient';
 import { Copy, Check, MessageSquare, Info, Smartphone, X } from 'lucide-react';
 import { triggerHaptic } from '@/lib/ui/haptics';
 import { shareOrDownloadHostPassStory } from '@/lib/share/generateHostPassStoryImage';
+import { PosReceiptVisual } from '@/components/cultural/PosReceiptVisual';
 
 interface PlanCodeSquadPassProps {
   planCode: string;
@@ -126,6 +127,16 @@ export function PlanCodeSquadPass({
             <span className="text-[9px] uppercase tracking-wider text-gray-500 block">Total Outing Cost</span>
             <span className="font-bold text-[#F9E828] tabular-nums">~₦{perPerson.toLocaleString('en-NG')} / person</span>
           </div>
+        </div>
+
+        {/* Tactical POS Till Slip Terminal */}
+        <div className="pt-2 pb-1 flex justify-center">
+          <PosReceiptVisual
+            venueName={venueName}
+            totalCost={totalCost}
+            perPerson={perPerson}
+            squadSize={squadSize}
+          />
         </div>
 
         {/* Non-Reservation Disclaimer */}

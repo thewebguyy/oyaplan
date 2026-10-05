@@ -106,7 +106,7 @@ export function DamageSlip({
     const targetUrl = shareUrl || `${origin}/venue/${spot.id}`;
     const area = spot.areas?.name || spot.address_slug || "Lagos";
 
-    const text = `Found the spot.\n\n${spot.name}\n\n• Squad: ${safeSquad} people\n• Total Outing Cost: ~₦${perPersonCost.toLocaleString("en-NG")} each (~₦${totalCost.toLocaleString("en-NG")} total)\n• Verified food, drinks & round-trip rides accounted for.\n\nWe moving?\n\n${targetUrl}`;
+    const text = `Found the spot.\n\n*${spot.name}*\n\nThe Outside Math:\n₦${totalCost.toLocaleString("en-NG")} total\n₦${perPersonCost.toLocaleString("en-NG")} each\n\nVenue + transport + applicable charges included.\n\n${targetUrl}\n\nWe running this?`;
 
     try {
       await navigator.clipboard.writeText(text);

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { ChevronDown, Calculator, Car, Receipt, Shield, Clock, CloudRain } from 'lucide-react';
 import { TransportEstimate } from '@/lib/types';
+import { NairaSplitVisual } from '@/components/cultural/NairaSplitVisual';
+import { RainBufferVisual } from '@/components/cultural/RainBufferVisual';
 
 interface PlanCostBreakdownProps {
   foodCost: number;
@@ -190,8 +192,24 @@ export function PlanCostBreakdown({
                 <p className="text-[10px] text-[#6B7280] leading-relaxed italic px-1">
                   &ldquo;Lagos rain tax. Plan for it.&rdquo; — Worst-case scenario buffer for island/mainland bridge traffic. Not a live Bolt price guarantee.
                 </p>
+
+                {/* Cultural Rain Scenario Visual */}
+                <RainBufferVisual
+                  isRainActive={true}
+                  additionalBuffer={surgeBuffer}
+                />
               </div>
             )}
+          </div>
+        )}
+
+        {/* Currency Split Visual for Squads */}
+        {squadSize > 1 && (
+          <div className="pt-2">
+            <NairaSplitVisual
+              totalCost={totalCost}
+              squadSize={squadSize}
+            />
           </div>
         )}
 
@@ -211,7 +229,7 @@ export function PlanCostBreakdown({
         >
           <span className="flex items-center gap-1.5">
             <Receipt className="w-3.5 h-3.5 text-[#111111]" />
-            <span>How we calculated this damage</span>
+            <span>How we calculated this cost</span>
           </span>
           <ChevronDown
             className={`w-4 h-4 transition-transform duration-200 ${

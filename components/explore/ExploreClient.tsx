@@ -2,13 +2,14 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SlidersHorizontal, ArrowUpDown, Compass, Check, Users, Wallet } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, Compass, Check, Users, Wallet, Sparkles } from "lucide-react";
 import { Spot } from "@/lib/types";
 import { DiscoverySearchInput } from "./DiscoverySearchInput";
 import { DiscoveryVenueCard } from "./DiscoveryVenueCard";
 import { DiscoveryFilterSheet, FilterState, SortMode } from "./DiscoveryFilterSheet";
 import { DiscoveryEmptyState } from "./DiscoveryEmptyState";
 import { DiscoveryReceiptDrawer } from "./DiscoveryReceiptDrawer";
+import { DecideForUsModal } from "@/components/motion/DecideForUsModal";
 import { RecentlyViewedRow } from "@/components/venue/RecentlyViewedRow";
 import { useSavedSpots } from "@/hooks/useSavedSpots";
 import { triggerHaptic } from "@/lib/ui/haptics";
@@ -67,6 +68,7 @@ export function ExploreClient({
 
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [selectedReceiptSpot, setSelectedReceiptSpot] = useState<Spot | null>(null);
+  const [isDecideModalOpen, setIsDecideModalOpen] = useState(false);
 
   // Sync state to URL without full-page reloads
   const updateUrlParams = useCallback((newFilters: FilterState, query: string) => {
@@ -279,6 +281,19 @@ export function ExploreClient({
                 placeholder="Search spot name, area, cuisine, or vibe..."
               />
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic("selection");
+                setIsDecideModalOpen(true);
+              }}
+              className="h-[50px] px-3.5 sm:px-4 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] border border-black font-mono font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shrink-0 tap-feedback cursor-pointer shadow-xs"
+              aria-label="Decide for us: randomize an eligible Lagos spot"
+            >
+              <Sparkles className="w-4 h-4 text-[#F9E828]" />
+              <span className="hidden sm:inline">Decide For Us</span>
+            </button>
 
             <button
               type="button"
@@ -506,6 +521,16 @@ export function ExploreClient({
               })
             : "/"
         }
+      />
+
+      {/* Kinetic Decide For Us Vibe Roulette Modal */}
+      <DecideForUsModal
+        isOpen={isDecideModalOpen}
+        onClose={() => setIsDecideModalOpen(false)}
+        eligibleSpots={filteredSpots.length > 0 ? filteredSpots : initialSpots}
+        squadSize={filters.squadSize}
+        budget={filters.budget}
+        startArea={filters.areaSlug}
       />
     </div>
   );

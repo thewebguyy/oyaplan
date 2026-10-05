@@ -6,6 +6,7 @@ import { trackEvent } from '@/lib/analytics/trackClient';
 import { Copy, Check, MessageSquare, Share2, Sliders, ShieldCheck } from 'lucide-react';
 import { PlanCodeSquadPass } from './PlanCodeSquadPass';
 import SavePlanButton from '@/components/SavePlanButton';
+import { WhatsAppDropModal } from '@/components/motion/WhatsAppDropModal';
 
 interface PlanActionsShareProps {
   planId: string;
@@ -35,6 +36,7 @@ export function PlanActionsShare({
   venuePhone,
 }: PlanActionsShareProps) {
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isDropping, setIsDropping] = useState(false);
 
   // Derive Edit URL for Forge
   const VIBE_TO_URL_MAP: Record<string, string> = {
@@ -70,16 +72,18 @@ export function PlanActionsShare({
 
     return (
       `Found the spot.\n\n` +
-      `*${venueName}*\n` +
-      `• Squad: ${squadSize} people\n` +
-      `• Total Outing Cost: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
-      `• Verified food, drinks & round-trip rides accounted for.\n\n` +
-      `We moving?\n` +
-      `${squadUrl}`
+      `*${venueName}*\n\n` +
+      `The Outside Math:\n` +
+      `₦${totalCost.toLocaleString('en-NG')} total\n` +
+      `₦${perPerson.toLocaleString('en-NG')} each\n\n` +
+      `Venue + transport + applicable charges included.\n\n` +
+      `${squadUrl}\n\n` +
+      `We running this?`
     );
   };
 
   const handleWhatsAppShare = () => {
+    setIsDropping(true);
     trackEvent('plan_shared', {
       category: 'Sharing',
       plan_id: planId,
@@ -196,6 +200,13 @@ export function PlanActionsShare({
         squadSize={squadSize}
         totalCost={totalCost}
         venuePhone={venuePhone}
+      />
+
+      {/* WhatsApp Envelope Drop Kinetic Metaphor */}
+      <WhatsAppDropModal
+        isDropping={isDropping}
+        venueName={venueName}
+        onDropComplete={() => setIsDropping(false)}
       />
     </section>
   );

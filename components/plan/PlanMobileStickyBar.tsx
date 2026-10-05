@@ -54,12 +54,13 @@ export function PlanMobileStickyBar({
 
     const message = encodeURIComponent(
       `Found the spot.\n\n` +
-      `*${venueName}*\n` +
-      `• Squad: ${squadSize} people\n` +
-      `• Total Outing Cost: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
-      `• Verified food, drinks & round-trip rides accounted for.\n\n` +
-      `We moving?\n` +
-      `${shareUrl}`
+      `*${venueName}*\n\n` +
+      `The Outside Math:\n` +
+      `₦${totalCost.toLocaleString('en-NG')} total\n` +
+      `₦${perPerson.toLocaleString('en-NG')} each\n\n` +
+      `Venue + transport + applicable charges included.\n\n` +
+      `${shareUrl}\n\n` +
+      `We running this?`
     );
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };

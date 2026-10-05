@@ -141,7 +141,7 @@ export default function LoginWorldSelector() {
         {/* Reassurance Footer */}
         <div className="text-center flex items-center justify-center gap-2 text-xs font-mono font-medium text-[#555555]">
           <ShieldCheck className="w-4 h-4 text-[#111111]" />
-          <span>Anonymous first. You can always plan and calculate damage without signing in.</span>
+          <span>Anonymous first. You can always plan and calculate total outing cost without signing in.</span>
         </div>
       </div>
 

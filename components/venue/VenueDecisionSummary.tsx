@@ -53,10 +53,10 @@ export function VenueDecisionSummary({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E5E5DE] pb-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-[#111111] uppercase tracking-tight">
-              The damage
+              Total Outing Cost
             </h2>
             <p className="text-xs sm:text-sm text-text-secondary mt-0.5">
-              Food &amp; drinks only. Transport depends on where you&apos;re starting from — plan it to see the full total.
+              Food &amp; drinks only. Transport depends on where you&apos;re starting from — run the plan to see the full total.
             </p>
           </div>
 

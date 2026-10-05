@@ -3,6 +3,9 @@
 import React from "react";
 import { Venue } from "@/lib/types";
 import { Sparkles, Users, Compass, CheckCircle2 } from "lucide-react";
+import { CivicCentreVisual } from "@/components/cultural/CivicCentreVisual";
+import { NationalTheatreVisual } from "@/components/cultural/NationalTheatreVisual";
+import { SuyaWrapVisual } from "@/components/cultural/SuyaWrapVisual";
 
 interface VenueExperienceSectionProps {
   venue: Venue;
@@ -22,6 +25,13 @@ export function VenueExperienceSection({ venue }: VenueExperienceSectionProps) {
   if (venue.group_suitability_max && venue.group_suitability_max >= 6) {
     highlights.push("Spacious seating for squads and celebratory groups");
   }
+
+  const cat = (venue.category || "").toLowerCase();
+  const allVibesStr = [...vibeTags, ...activityTags, venue.category || ""].join(" ").toLowerCase();
+
+  const isMusicVibe = allVibesStr.includes("music") || allVibesStr.includes("afrobeats") || allVibesStr.includes("live") || allVibesStr.includes("concert");
+  const isPremiumRooftop = allVibesStr.includes("rooftop") || allVibesStr.includes("vip") || allVibesStr.includes("lounge") || cat === "bar" || (venue.minimum_spend && venue.minimum_spend >= 30000);
+  const isStreetFoodOrGrill = allVibesStr.includes("street") || allVibesStr.includes("grill") || allVibesStr.includes("suya") || cat === "casual" || (venue.minimum_spend && venue.minimum_spend <= 15000);
 
   return (
     <section id="overview" className="scroll-mt-32">
@@ -123,6 +133,21 @@ export function VenueExperienceSection({ venue }: VenueExperienceSectionProps) {
           </div>
 
         </div>
+
+        {/* Contextual Cultural Architecture Study */}
+        {isMusicVibe ? (
+          <div className="pt-2">
+            <NationalTheatreVisual venueName={venue.name} />
+          </div>
+        ) : isPremiumRooftop ? (
+          <div className="pt-2">
+            <CivicCentreVisual venueName={venue.name} />
+          </div>
+        ) : isStreetFoodOrGrill ? (
+          <div className="pt-2">
+            <SuyaWrapVisual venueName={venue.name} pricePerPerson={venue.minimum_spend || 5000} />
+          </div>
+        ) : null}
 
       </div>
     </section>

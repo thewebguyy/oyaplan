@@ -32,7 +32,7 @@ export function TrustFooter({
               ) : (
                 <span className="text-text-muted">○</span>
               )}
-              <span className={isPricingVerified ? "text-text-primary font-medium" : "text-text-muted"}>Damage Vetted</span>
+              <span className={isPricingVerified ? "text-text-primary font-medium" : "text-text-muted"}>Cost Vetted</span>
             </div>
             
             <div className="flex items-center gap-2">

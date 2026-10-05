@@ -212,10 +212,11 @@ export default function PlannerWidget({
   const perPersonAmount = Math.round(budget / Math.max(1, squadSize));
 
   const getBudgetMicroCopy = (val: number): string => {
-    if (val <= 20000) return "Just a quick chill";
+    if (val <= 15000) return "Tight search — hunting high-value lowkey spots";
+    if (val <= 25000) return "Searching harder within this budget";
     if (val <= 45000) return "Balanced outing";
-    if (val <= 75000) return "Soft life cruise";
-    return "We are balling today";
+    if (val <= 75000) return "Comfortable Lagos outing";
+    return "Wide open options";
   };
 
   return (
@@ -511,8 +512,14 @@ export default function PlannerWidget({
             step="5000"
             value={budget}
             onChange={(e) => {
-              setBudget(Number(e.target.value));
-              triggerHaptic("light");
+              const nextVal = Number(e.target.value);
+              // Tactile resistance when moving into restricted budget territory
+              if (nextVal < budget && nextVal <= 25000) {
+                triggerHaptic("medium");
+              } else {
+                triggerHaptic("light");
+              }
+              setBudget(nextVal);
             }}
             className="premium-range-slider cursor-pointer"
             style={{
@@ -520,6 +527,11 @@ export default function PlannerWidget({
             }}
             aria-label={`Budget: current value ${formatCurrency(budget)}. Choose between ₦10,000 and ₦100,000+`}
           />
+          {budget <= 20000 && (
+            <p className="text-[11px] font-mono text-[#555555] bg-[#F6F6F2] p-2 rounded-lg border border-[#E5E5DE]">
+              Searching harder within this budget — locking onto high-value spots that fit without bill shock.
+            </p>
+          )}
         </div>
 
         {/* INPUT: Vibe Selection Chips */}

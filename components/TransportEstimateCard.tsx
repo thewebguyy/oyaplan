@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Info, Check, ArrowUp, ArrowDown, Car, Bus, X, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/analytics/trackClient";
 import { TransportDisplayFormatter } from "@/lib/planning/transport";
+import { LinkBridgeVisual } from "@/components/cultural/LinkBridgeVisual";
 
 interface TransportEstimateCardProps {
   minCost?: number;
@@ -158,6 +159,13 @@ export default function TransportEstimateCard({
         </span>
         <span className="truncate">{formattedAssumptions}</span>
       </div>
+
+      {/* Cultural Transit Anchor: Lekki-Ikoyi Link Bridge */}
+      <LinkBridgeVisual
+        originName={startAreaName}
+        destinationName="Venue"
+        transportEstimate={rangeCopy}
+      />
 
       {/* 1-Tap Post-Outing Feedback Bar */}
       <div className="pt-2 border-t border-border-default/40 flex items-center justify-between gap-2 text-xs">

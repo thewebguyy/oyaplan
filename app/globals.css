@@ -1314,4 +1314,36 @@ html, body {
   letter-spacing: -0.03em;
 }
 
+/* ── Outside Math Till Slip Primitives ── */
+.outside-math-surface {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E5DE;
+  box-shadow: 0 4px 16px -2px rgba(17, 17, 17, 0.05), 0 1px 3px 0 rgba(17, 17, 17, 0.03);
+}
+
+.outside-math-perforated {
+  border-top: 1.5px dashed #D4D4CA;
+  position: relative;
+}
+
+/* Danfo Stripe Animation */
+@keyframes danfo-stripe {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-danfo-stripe {
+  animation: danfo-stripe 0.75s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-danfo-stripe {
+    animation: none;
+  }
+}
+
 

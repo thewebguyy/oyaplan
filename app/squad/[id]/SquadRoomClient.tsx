@@ -24,6 +24,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { SquadRoomData } from "@/lib/services/squadService";
+import { OwambeSuccessVisual } from "@/components/cultural/OwambeSuccessVisual";
 import { 
   joinSquadAction, 
   updateSquadAttendanceAction, 
@@ -151,12 +152,13 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
 
     return (
       `Found the spot.\n\n` +
-      `*${spotName}*\n` +
-      `• Squad: ${confirmedCount} people\n` +
-      `• Total Outing Cost: ~₦${perPersonSpend.toLocaleString("en-NG")} each (~₦${totalSpend.toLocaleString("en-NG")} total)\n` +
-      `• Verified food, drinks & round-trip rides accounted for.\n\n` +
-      `We moving?\n` +
-      `${shareUrl}`
+      `*${spotName}*\n\n` +
+      `The Outside Math:\n` +
+      `₦${totalSpend.toLocaleString("en-NG")} total\n` +
+      `₦${perPersonSpend.toLocaleString("en-NG")} each\n\n` +
+      `Venue + transport + applicable charges included.\n\n` +
+      `${shareUrl}\n\n` +
+      `We running this?`
     );
   };
 
@@ -310,6 +312,14 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
             <span>{spotAddress}</span>
           </p>
         </div>
+
+        {/* High-Joy Squad Assembly Milestone */}
+        {data.confirmedCount >= data.plan.squad_size && data.confirmedCount > 1 && (
+          <OwambeSuccessVisual
+            squadCount={data.confirmedCount}
+            message="Squad Ready &amp; Accounted For"
+          />
+        )}
 
         {/* 2. LIVE ECONOMIC SCORECARD (Decision Header) */}
         <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-5 relative overflow-hidden">

@@ -263,7 +263,7 @@ export default function SavedClient({
                     <div className="w-12 h-1.5 bg-white/10 rounded" />
                   </div>
                   <div className="pt-1 border-t border-dashed border-white/20 text-[9px] font-mono text-[#F9E828] text-right">
-                    ₦0 DAMAGE
+                    ₦0 TOTAL OUTING COST
                   </div>
                 </div>
               </div>

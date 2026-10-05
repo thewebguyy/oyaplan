@@ -10,7 +10,7 @@ export interface HostPassStoryData {
 
 /**
  * Generates an aesthetic, high-resolution 1080x1920 (9:16) Instagram Story image
- * representing the official OyaPlan Host Pass / Damage Slip.
+ * representing the official OyaPlan Host Pass / Till Slip.
  */
 export async function generateHostPassStoryCanvas(
   data: HostPassStoryData

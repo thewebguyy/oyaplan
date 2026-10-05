@@ -106,14 +106,13 @@ export function VenuePlanContextCard({
 
       <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <p className="text-xs text-text-secondary leading-relaxed">
-          Want the full damage with transport? Re-run the plan with this spot locked in.
+          Want the total outing cost with transport? Run the plan with this spot.
         </p>
         <Link
           href={forgeUrl}
           className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs transition-all tap-feedback cursor-pointer"
         >
-          <span>Plan this spot</span>
-          <ArrowRight className="w-4 h-4" />
+          <span>Run the Plan →</span>
         </Link>
       </div>
     </div>
