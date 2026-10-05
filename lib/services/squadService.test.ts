@@ -152,9 +152,9 @@ describe("SquadService (OyaSquad Collaborative Decision Engine & Tier 1)", () =>
       expect(data.liveEconomics.foodSpend).toBe(45000);
       expect(data.liveEconomics.vehiclesRequired).toBe(1);
       expect(data.liveEconomics.transportNote).toContain("1 ride-hailing vehicle");
-      // Total = 45,000 + 26,000 = 71,000
-      expect(data.liveEconomics.totalSpend).toBe(71000);
-      expect(data.liveEconomics.perPersonSpend).toBe(23667);
+      // Total = 45,000 (food) + 10,000 (canonical temporary Island transport) = 55,000. 55000 / 3 = 18333.33 -> Math.ceil = 18334
+      expect(data.liveEconomics.totalSpend).toBe(55000);
+      expect(data.liveEconomics.perPersonSpend).toBe(18334);
       // Settlement info present
       expect(data.settlement?.account_name).toBe("Bode Olusegun");
     });

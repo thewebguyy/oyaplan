@@ -145,81 +145,25 @@ const BASE_INPUT: ForgeInput = {
 // ─── calculateZoneFare ────────────────────────────────────────────────────────
 
 describe('calculateZoneFare', () => {
-  it('returns ₦9,000 for same area (local trip)', () => {
-    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(9000);
-    expect(calculateZoneFare('yaba', 'yaba')).toBe(9000);
-    expect(calculateZoneFare('lekki-phase-1', 'lekki-phase-1')).toBe(9000);
+  it('returns ₦5,000 for Mainland destinations', () => {
+    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(5000);
+    expect(calculateZoneFare('yaba', 'yaba')).toBe(5000);
+    expect(calculateZoneFare('ikeja', 'gbagada')).toBe(5000);
+    expect(calculateZoneFare('vi', 'yaba')).toBe(5000);
+    expect(calculateZoneFare('lekki-phase-1', 'ikeja')).toBe(5000);
   });
 
-  it('returns ₦10,000 for same zone, different area (mainland–mainland)', () => {
-    // ikeja and gbagada are both mainland -> 5000 one way -> 10000 round trip
-    expect(calculateZoneFare('ikeja', 'gbagada')).toBe(10000);
-  });
-
-  it('returns ₦10,000 for same zone, different area (island–island)', () => {
-    // lekki-phase-1 and vi are both island -> 5000 one way -> 10000 round trip
+  it('returns ₦10,000 for Island destinations', () => {
+    expect(calculateZoneFare('lekki-phase-1', 'lekki-phase-1')).toBe(10000);
     expect(calculateZoneFare('lekki-phase-1', 'vi')).toBe(10000);
+    expect(calculateZoneFare('yaba', 'lekki-phase-1')).toBe(10000);
+    expect(calculateZoneFare('ikeja', 'vi')).toBe(10000);
+    expect(calculateZoneFare('apapa', 'lekki-phase-1')).toBe(10000);
   });
 
-  it('returns ₦10,000 for same zone, different area (central–central)', () => {
-    // yaba and surulere are both central -> 5000 one way -> 10000 round trip
-    expect(calculateZoneFare('yaba', 'surulere')).toBe(10000);
-  });
-
-  it('returns ₦13,000 for mainland ↔ central', () => {
-    expect(calculateZoneFare('ikeja', 'yaba')).toBe(13000);
-    expect(calculateZoneFare('yaba', 'ikeja')).toBe(13000);
-  });
-
-  it('returns ₦16,000 for central ↔ island', () => {
-    expect(calculateZoneFare('yaba', 'lekki-phase-1')).toBe(16000);
-    expect(calculateZoneFare('lekki-phase-1', 'yaba')).toBe(16000);
-  });
-
-  it('returns ₦26,000 for mainland ↔ island', () => {
-    expect(calculateZoneFare('ikeja', 'lekki-phase-1')).toBe(26000);
-    expect(calculateZoneFare('lekki-phase-1', 'ikeja')).toBe(26000);
-  });
-
-  it('is symmetric — origin and destination can be swapped', () => {
-    const pairs: [string, string][] = [
-      ['ikeja', 'yaba'],
-      ['yaba', 'lekki-phase-1'],
-      ['ikeja', 'lekki-phase-1'],
-      ['gbagada', 'surulere'],
-    ];
-    for (const [a, b] of pairs) {
-      expect(calculateZoneFare(a, b)).toBe(calculateZoneFare(b, a));
-    }
-  });
-
-  it('applies Apapa surcharge (+₦5,000 round trip) on top of base fare', () => {
-    // apapa → central: base one-way 6000 + 2500 surcharge = 8500. Round trip = 17000.
-    expect(calculateZoneFare('apapa', 'yaba')).toBe(17000);
-    // apapa → mainland: base one-way 6500 + 2500 = 9000. Round trip = 18000.
-    expect(calculateZoneFare('apapa', 'ikeja')).toBe(18000);
-    // apapa → island: base one-way 9000 + 2500 = 11500. Round trip = 23000.
-    expect(calculateZoneFare('apapa', 'lekki-phase-1')).toBe(23000);
-  });
-
-  it('returns rounded values (nearest ₦500) for all trips', () => {
-    const areas = ['ikeja', 'gbagada', 'yaba', 'surulere', 'lekki-phase-1', 'vi', 'ikoyi', 'apapa'];
-    for (const a of areas) {
-      for (const b of areas) {
-        const fare = calculateZoneFare(a, b);
-        expect(fare % 500).toBe(0);
-      }
-    }
-  });
-
-  it('same-area trip returns ₦9,000 realistic round trip', () => {
-    expect(calculateZoneFare('ikeja', 'ikeja')).toBe(9000);
-  });
-
-  it('uses ikeja as default zone for unknown area slugs', () => {
-    // Unknown areas fall to ZONES["unknown"] = undefined → "other" zone.
-    // "other" to mainland: (6500 + 2500) × 2 = 18000
-    expect(calculateZoneFare('unknown-area', 'ikeja')).toBe(18000);
+  it('determines fare strictly by destination zone under temporary rule', () => {
+    expect(calculateZoneFare('yaba', 'vi')).toBe(10000); // Destination is Island -> 10000
+    expect(calculateZoneFare('vi', 'yaba')).toBe(5000);  // Destination is Mainland -> 5000
   });
 
   it('returns all-positive values for all known area pairs', () => {
@@ -346,10 +290,10 @@ describe('forgePlans — pinned spot', () => {
       id: 'a3b4c5d6-0000-0000-0000-000000000024',
       vibe_tags: ['Party'],
       price_per_person: 1000,
-      transport_matrix: { ikeja: 20000 }, // 20000 > 50000 × 0.35 = 17500
+      address_slug: 'lekki-phase-1', // Island spot: 10000 > 25000 × 0.35 = 8750
     });
     const results = forgePlans(
-      { ...BASE_INPUT, budget: 50000, pinnedSpotId: farPin.id },
+      { ...BASE_INPUT, budget: 25000, pinnedSpotId: farPin.id },
       [farPin]
     );
     expect(results).toHaveLength(0);
@@ -607,30 +551,28 @@ describe('forgePlans — cost calculation', () => {
     expect(results[0].foodCost).toBe(6700);
   });
 
-  it('uses transport_matrix override when available for start area', () => {
-    const matrixSpot = makeSpot({
+  it('uses canonical temporary transport rule for Mainland destination (₦5,000)', () => {
+    const mainlandSpot = makeSpot({
       id: 'f6a7b8c9-0000-0000-0000-000000000084',
       price_per_person: 3000,
-      transport_matrix: { ikeja: 2500 }, // specific override
       address_slug: 'ikeja',
       vibe_tags: ['Chill'],
     });
-    const results = forgePlans({ ...BASE_INPUT, startArea: 'ikeja', budget: 30000 }, [matrixSpot]);
+    const results = forgePlans({ ...BASE_INPUT, startArea: 'ikeja', budget: 30000 }, [mainlandSpot]);
     expect(results).toHaveLength(1);
-    expect(results[0].transportCost).toBe(2500);
+    expect(results[0].transportCost).toBe(5000);
   });
 
-  it('falls back to calculateZoneFare when transport_matrix has no entry for start area', () => {
-    const spot = makeSpot({
+  it('uses canonical temporary transport rule for Island destination (₦10,000)', () => {
+    const islandSpot = makeSpot({
       id: 'a7b8c9d0-0000-0000-0000-000000000085',
       price_per_person: 3000,
-      transport_matrix: {},              // no entry for ikeja
-      address_slug: 'ikeja',
+      address_slug: 'lekki-phase-1',
       vibe_tags: ['Chill'],
     });
-    const results = forgePlans({ ...BASE_INPUT, startArea: 'ikeja', budget: 30000 }, [spot]);
+    const results = forgePlans({ ...BASE_INPUT, startArea: 'lekki-phase-1', budget: 30000 }, [islandSpot]);
     expect(results).toHaveLength(1);
-    expect(results[0].transportCost).toBe(9000);
+    expect(results[0].transportCost).toBe(10000);
   });
 
   it('totalCost equals foodCost + transportCost', () => {
@@ -675,11 +617,12 @@ describe('forgePlans — budget gate', () => {
     // Budget: 20000. transport: 0. food: 2 × 9091 × 1.1 ≈ 20000
     // Use exact calculation: need foodCost = 20000, so price × 2 × 1.1 / 100 rounded × 100 = 20000
     // price = 20000 / 2 / 1.1 ≈ 9090.9 → use 9091: 9091 × 2 × 1.1 = 20000.2 → round(20000.2/100)*100 = 20000
+    // Budget: 20000. Mainland transport: 5000. Food for 2: 2 × 7500 = 15000. Total = 20000.
     const exactSpot = makeSpot({
       id: 'd0e1f2a3-0000-0000-0000-000000000091',
-      price_per_person: 9091,
+      price_per_person: 7500,
       has_food: true,
-      transport_matrix: { ikeja: 0 },
+      address_slug: 'ikeja',
       vibe_tags: ['Chill'],
     });
     const results = forgePlans({ ...BASE_INPUT, budget: 20000 }, [exactSpot]);
@@ -688,41 +631,39 @@ describe('forgePlans — budget gate', () => {
   });
 
   it('excludes spots where transport cost exceeds 35% of budget', () => {
-    // budget = 50000. Transport limit = 17500.
+    // budget = 25000. 35% = 8750. Island destination transport = 10000 > 8750.
     const farSpot = makeSpot({
       id: 'e1f2a3b4-0000-0000-0000-000000000092',
       price_per_person: 1000,
-      transport_matrix: { ikeja: 18000 }, // 18000 > 17500
+      address_slug: 'lekki-phase-1',
       vibe_tags: ['Chill'],
     });
-    const results = forgePlans({ ...BASE_INPUT, budget: 50000 }, [farSpot]);
+    const results = forgePlans({ ...BASE_INPUT, budget: 25000 }, [farSpot]);
     expect(results).toHaveLength(0);
   });
 
-  it('includes spots where transport cost equals 35% of budget exactly', () => {
-    // budget = 50000. 35% = 17500.
+  it('includes spots where transport cost is within 35% of budget', () => {
+    // budget = 50000. 35% = 17500. Island destination transport = 10000 <= 17500.
     const borderSpot = makeSpot({
       id: 'f2a3b4c5-0000-0000-0000-000000000093',
       price_per_person: 1000,
-      transport_matrix: { ikeja: 17500 }, // exactly 35%
+      address_slug: 'lekki-phase-1',
       vibe_tags: ['Chill'],
     });
-    const results = forgePlans({ ...BASE_INPUT, budget: 50000 }, [borderSpot]);
-    // 17500 + (1000 × 2 × 1.1 = 2200) = 19700 < 50000
+    const results = forgePlans({ ...BASE_INPUT, startArea: 'lekki-phase-1', budget: 50000 }, [borderSpot]);
     expect(results).toHaveLength(1);
-    expect(results[0].transportCost).toBe(17500);
+    expect(results[0].transportCost).toBe(10000);
   });
 
   it('transport gate uses strict greater-than (> 0.35), not >=', () => {
-    // transport at exactly 35% passes — confirmed above.
-    // transport at > 35% fails:
+    // budget = 14000. 35% = 4900. Mainland transport = 5000 > 4900 -> excluded.
     const overBorderSpot = makeSpot({
       id: 'a3b4c5d6-0000-0000-0000-000000000094',
       price_per_person: 1000,
-      transport_matrix: { ikeja: 18000 }, // 18000 > 17500
+      address_slug: 'ikeja',
       vibe_tags: ['Chill'],
     });
-    const results = forgePlans({ ...BASE_INPUT, budget: 50000 }, [overBorderSpot]);
+    const results = forgePlans({ ...BASE_INPUT, budget: 14000 }, [overBorderSpot]);
     expect(results).toHaveLength(0);
   });
 
@@ -767,20 +708,18 @@ describe('forgePlans — scoring', () => {
     const nonFeatured = makeSpot({
       id: 'd6e7f8a9-0000-0000-0000-0000000000a2',
       vibe_tags: ['Chill'],
-      price_per_person: 9000,  // 2 × 9000 × 1.1 = 19800. Total = 19800. Score ≈ (1 - |20000-19800|/20000)*80 ≈ 79.2
+      price_per_person: 11000, // 2 × 11000 = 22000. Total = 22000 + 5000 = 27000. Closer to 30000 budget
       is_featured: false,
-      transport_matrix: { ikeja: 200 },
+      address_slug: 'ikeja',
     });
     const featured = makeSpot({
       id: 'e7f8a9b0-0000-0000-0000-0000000000a3',
       vibe_tags: ['Chill'],
-      price_per_person: 5000,  // 2 × 5000 × 1.1 = 11000. Total = 11200. Score ≈ (1 - |20000-11200|/20000)*80 ≈ 44.8. +30 = 74.8
+      price_per_person: 5000,  // 2 × 5000 = 10000. Total = 10000 + 5000 = 15000. Further from 30000 budget
       is_featured: true,
-      transport_matrix: { ikeja: 200 },
+      address_slug: 'ikeja',
     });
-    // nonFeatured total score ≈ 79.2, featured total score ≈ 74.8 (excluding idWeight).
-    // featured does NOT necessarily win here — this tests that when cost difference > 30pts, non-featured can win.
-    const results = forgePlans({ ...BASE_INPUT, budget: 20000, squadSize: 2 }, [nonFeatured, featured]);
+    const results = forgePlans({ ...BASE_INPUT, budget: 30000, squadSize: 2 }, [nonFeatured, featured]);
     expect(results).toHaveLength(2);
     // nonFeatured should win (higher cost score outweighs 30pt boost)
     expect(results[0].spot.id).toBe(nonFeatured.id);
@@ -789,19 +728,19 @@ describe('forgePlans — scoring', () => {
   it('cost score rewards plans that use the budget well (closer to budget = higher score)', () => {
     const efficient = makeSpot({
       id: 'f8a9b0c1-0000-0000-0000-0000000000a4',
-      price_per_person: 9000, // totalCost ≈ 20000 (close to budget)
+      price_per_person: 11000, // 2 × 11000 = 22000 + 5000 = 27000 (close to 30000 budget)
       has_food: true,
-      transport_matrix: { ikeja: 0 },
+      address_slug: 'ikeja',
       vibe_tags: ['Chill'],
     });
     const cheap = makeSpot({
       id: 'a9b0c1d2-0000-0000-0000-0000000000a5',
-      price_per_person: 1000, // totalCost ≈ 2200 (far below budget)
+      price_per_person: 1000, // 2 × 1000 = 2000 + 5000 = 7000 (far below 30000 budget)
       has_food: true,
-      transport_matrix: { ikeja: 0 },
+      address_slug: 'ikeja',
       vibe_tags: ['Chill'],
     });
-    const results = forgePlans({ ...BASE_INPUT, budget: 20000, squadSize: 2 }, [efficient, cheap]);
+    const results = forgePlans({ ...BASE_INPUT, budget: 30000, squadSize: 2 }, [efficient, cheap]);
     expect(results).toHaveLength(2);
     expect(results[0].spot.id).toBe(efficient.id);
   });
