@@ -115,7 +115,7 @@ export default function TransportEstimateCard({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-xs font-black uppercase text-text-muted tracking-wider">
-              Est. Transport Range (Round-trip)
+              Estimated Transport (Round-trip)
             </span>
             <button
               onClick={() => setShowWhyModal(true)}
@@ -132,13 +132,13 @@ export default function TransportEstimateCard({
               {partySize > 1 ? (
                 <>
                   <span className="text-[#008751] font-bold">
-                    ~₦{(minCostPerPerson ?? Math.round(displayMin / partySize / 100) * 100).toLocaleString()} – ₦{(maxCostPerPerson ?? Math.round(displayMax / partySize / 100) * 100).toLocaleString()} / person
+                    ~₦{Math.round(displayMin / partySize).toLocaleString()} / person
                   </span>
                   <span className="text-text-muted">•</span>
-                  <span>Squad of {partySize} ({vehiclesRequired} {vehiclesRequired > 1 ? "cars" : "car"})</span>
+                  <span>Squad of {partySize} • Total transport for outing</span>
                 </>
               ) : (
-                <span className="text-text-muted">Solo Outing • 1 car round-trip</span>
+                <span className="text-text-muted">Solo Outing • Total transport for outing</span>
               )}
             </div>
           )}
@@ -216,7 +216,7 @@ export default function TransportEstimateCard({
               </button>
             </div>
             <p className="text-xs text-text-secondary leading-relaxed font-medium">
-              Transport estimates are based on your starting area, selected transport mode, time of day, typical Lagos traffic profiles, and verified venue locations. Actual fares may vary during heavy rush hour traffic or rain.
+              Transport estimate based on destination zone (Mainland: ₦5,000 total, Island: ₦10,000 total for the outing). This temporary estimate is factored directly into your Total Outing Cost calculation so you know what it will cost before leaving home.
             </p>
             <div className="bg-[#008751]/5 rounded-xl p-3 border border-[#008751]/15 text-[11px] text-[#008751] font-bold flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 shrink-0" />

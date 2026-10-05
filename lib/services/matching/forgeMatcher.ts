@@ -174,7 +174,7 @@ export function getAvailableOptions(
 
       allSpots.forEach(spot => {
         if (!spot.active) return;
-        const transportCost = spot.transport_matrix?.[areaSlug] ?? calculateZoneFare(areaSlug, spot.address_slug || "ikeja");
+        const transportCost = calculateZoneFare(areaSlug, spot.address_slug || "ikeja");
         
         if (transportCost <= budget * maxRatio && spot.price_per_person + transportCost <= budget) {
           bestStatus = "recommended";
@@ -201,7 +201,7 @@ export function getAvailableOptions(
 
       allSpots.forEach(spot => {
         if (!spot.active) return;
-        const transportCost = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+        const transportCost = calculateZoneFare(startArea, spot.address_slug || "ikeja");
 
         if (transportCost <= budget * maxRatio && (spot.price_per_person * size) + transportCost <= budget) {
           bestStatus = "recommended";
@@ -228,7 +228,7 @@ export function getAvailableOptions(
       allSpots.forEach(spot => {
         if (!spot.active) return;
         if (!spot.vibe_tags.includes(v)) return;
-        const transportCost = spot.transport_matrix?.[startArea] ?? calculateZoneFare(startArea, spot.address_slug || "ikeja");
+        const transportCost = calculateZoneFare(startArea, spot.address_slug || "ikeja");
 
         if (transportCost <= budget * maxRatio && (spot.price_per_person * squadSize) + transportCost <= budget) {
           bestStatus = "recommended";

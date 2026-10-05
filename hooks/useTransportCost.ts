@@ -1,14 +1,19 @@
 "use client";
 
 import { useMemo } from "react";
-import { LocationService, UserLocation } from "@/lib/services/LocationService";
+import { UserLocation } from "@/lib/services/LocationService";
+import { LocationService } from "@/lib/location/LocationService";
+import { getTemporaryTransportEstimate, TransportZone } from "@/lib/planning/temporaryTransport";
 
 export interface TransportEstimate {
   distanceKm: number;
   estimatedCost: number; // ₦ amount per person
-  provider: "uber";
+  provider: "zone-estimate" | "uber";
   squadSize: number;
   roundTrip: boolean;
+  zone: TransportZone;
+  totalOutingTransport: number;
+  disclaimer: string;
 }
 
 export interface UseTransportCostOptions {
@@ -28,36 +33,22 @@ export function useTransportCost(options: UseTransportCostOptions) {
       return null;
     }
 
-    const distanceKm = LocationService.calculateDistance(
-      userLocation.coordinates,
-      venueLocation
-    );
-
-    const baseTripCost = estimateTransportFallback(distanceKm);
-    const totalTripCost = roundTrip ? baseTripCost * 2 : baseTripCost;
-    const costPerPerson = Math.ceil(totalTripCost / squadSize);
+    const destinationArea = LocationService.getClosestPlanningArea(venueLocation);
+    const tempEstimate = getTemporaryTransportEstimate(destinationArea.id);
+    const totalOutingTransport = tempEstimate.cost;
+    const costPerPerson = Math.ceil(totalOutingTransport / squadSize);
 
     return {
-      distanceKm,
+      distanceKm: 0,
       estimatedCost: costPerPerson,
-      provider: "uber",
+      provider: "zone-estimate",
       squadSize,
       roundTrip,
+      zone: tempEstimate.zone,
+      totalOutingTransport,
+      disclaimer: tempEstimate.disclaimer,
     };
   }, [userLocation, venueLocation, squadSize, roundTrip]);
 
   return { estimate, loading: false, error: null };
-}
-
-function estimateTransportFallback(distanceKm: number): number {
-  const baseRate = 150;
-  const minimumRate = 500;
-  
-  // Lagos peak traffic multiplier (7-9 AM & 5-8 PM West Africa Time)
-  const currentHour = new Date().getHours();
-  const isPeakHour = (currentHour >= 7 && currentHour <= 9) || (currentHour >= 17 && currentHour <= 20);
-  const multiplier = isPeakHour ? 1.3 : 1.0;
-
-  const costPerKm = Math.max(distanceKm * baseRate * multiplier, minimumRate);
-  return Math.ceil(costPerKm);
 }

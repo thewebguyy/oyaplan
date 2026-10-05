@@ -123,22 +123,20 @@ describe("Product Verification Evidence Requirements", () => {
     expect(yabaSpotIds).not.toEqual(lekkiSpotIds);
   });
 
-  it("Requirement 3: Transport estimates are dynamically calculated from origin to destination", () => {
-    // Short hop: Yaba to Yaba (intra-district realistic round-trip)
-    const intraYabaFare = calculateZoneFare("yaba", "yaba");
-    expect(intraYabaFare).toBe(9000);
+  it("Requirement 3: Transport estimates follow canonical temporary rules based on destination zone", () => {
+    // Mainland destinations (Yaba, Ikeja): ₦5,000 total
+    const mainlandDestinationFare = calculateZoneFare("ikeja", "yaba");
+    expect(mainlandDestinationFare).toBe(5000);
 
-    // Cross zone: Ikeja (Mainland) to Yaba (Central)
-    const mainlandToCentralFare = calculateZoneFare("ikeja", "yaba");
-    expect(mainlandToCentralFare).toBe(13000);
+    const intraMainlandFare = calculateZoneFare("yaba", "yaba");
+    expect(intraMainlandFare).toBe(5000);
 
-    // Long distance cross-town: Ikeja (Mainland) to Lekki (Island)
-    const mainlandToIslandFare = calculateZoneFare("ikeja", "lekki-phase-1");
-    expect(mainlandToIslandFare).toBe(26000);
+    // Island destinations (Lekki): ₦10,000 total
+    const islandDestinationFare = calculateZoneFare("ikeja", "lekki-phase-1");
+    expect(islandDestinationFare).toBe(10000);
 
-    // Verify distance hierarchy: Long distance > Cross zone > Short hop
-    expect(mainlandToIslandFare).toBeGreaterThan(mainlandToCentralFare);
-    expect(mainlandToCentralFare).toBeGreaterThan(intraYabaFare);
+    // Verify Island > Mainland
+    expect(islandDestinationFare).toBeGreaterThan(mainlandDestinationFare);
   });
 
   it("Requirement 4: Save Plan persists across reloads via LocalStorage contract", () => {

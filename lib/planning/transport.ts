@@ -1,5 +1,22 @@
 import { TransportProvider } from './types';
 import { getTransportProfile, TransportMode } from './transportProfiles';
+import {
+  getTemporaryTransportEstimate,
+  classifyDestinationZone,
+  TEMPORARY_TRANSPORT_RULES,
+  MAINLAND_TRANSPORT_ESTIMATE,
+  ISLAND_TRANSPORT_ESTIMATE,
+  TransportZone
+} from './temporaryTransport';
+
+export {
+  getTemporaryTransportEstimate,
+  classifyDestinationZone,
+  TEMPORARY_TRANSPORT_RULES,
+  MAINLAND_TRANSPORT_ESTIMATE,
+  ISLAND_TRANSPORT_ESTIMATE
+};
+export type { TransportZone };
 
 const ZONES: Record<string, string> = {
   // Mainland
@@ -72,60 +89,13 @@ export function getDepartureBucket(departureAt?: Date): DepartureBucket {
 }
 
 /**
- * Deterministic Lagos 2026 Zone Fare Formula
- * Returns round-trip cost in Naira with party size vehicle capacity modeling.
- * Inflation-adjusted for current Lagos ride-hailing / fuel realities.
+ * Canonical Zone Fare
+ * Returns total outing transport cost in Naira according to the temporary deterministic rule:
+ * Mainland outings = ₦5,000
+ * Island outings = ₦10,000
  */
-export function calculateZoneFare(origin: string, destination: string, partySize: number = 1): number {
-  const normOrigin = origin?.toLowerCase().trim() || "ikeja";
-  const normDest = destination?.toLowerCase().trim() || "ikeja";
-
-  const zone1 = ZONES[normOrigin] || (normOrigin === "anywhere" ? "anywhere" : "other");
-  const zone2 = ZONES[normDest] || "other";
-
-  let baseOneWayPerVehicle = 4500;
-
-  if (normOrigin === "anywhere") {
-    baseOneWayPerVehicle = 5000;
-  } else if (normOrigin === normDest) {
-    baseOneWayPerVehicle = 4500;
-  } else if (zone1 === "other" || zone2 === "other") {
-    const nonApapaZone = zone1 === "other" ? zone2 : zone1;
-    if (nonApapaZone === "other") {
-      baseOneWayPerVehicle = 5000;
-    } else if (nonApapaZone === "central") {
-      baseOneWayPerVehicle = 6000;
-    } else if (nonApapaZone === "mainland") {
-      baseOneWayPerVehicle = 6500;
-    } else if (nonApapaZone === "island") {
-      baseOneWayPerVehicle = 9000;
-    }
-    baseOneWayPerVehicle += 2500; // Apapa / outlying zone surcharge
-  } else if (zone1 === zone2) {
-    baseOneWayPerVehicle = 5000;
-  } else if (
-    (zone1 === "mainland" && zone2 === "central") ||
-    (zone1 === "central" && zone2 === "mainland")
-  ) {
-    baseOneWayPerVehicle = 6500;
-  } else if (
-    (zone1 === "central" && zone2 === "island") ||
-    (zone1 === "island" && zone2 === "central")
-  ) {
-    baseOneWayPerVehicle = 8000;
-  } else if (
-    (zone1 === "mainland" && zone2 === "island") ||
-    (zone1 === "island" && zone2 === "mainland")
-  ) {
-    baseOneWayPerVehicle = 13000;
-  }
-
-  const vehicleCapacity = 4;
-  const vehiclesRequired = Math.max(1, Math.ceil(partySize / vehicleCapacity));
-
-  // Round trip fare = one-way * 2 * vehiclesRequired
-  const roundTripTotal = baseOneWayPerVehicle * 2 * vehiclesRequired;
-  return Math.round(roundTripTotal / 500) * 500;
+export function calculateZoneFare(origin: string, destination: string, _partySize: number = 1): number {
+  return getTemporaryTransportEstimate(destination).cost;
 }
 
 export interface TransportRange {
@@ -174,23 +144,14 @@ export class TransportPricingProvider {
     origin: string,
     destination: string,
     mode: TransportMode = "ride-hailing",
-    defaultMatrix?: Record<string, number>,
-    departureAt?: Date,
+    _defaultMatrix?: Record<string, number>,
+    _departureAt?: Date,
     partySize: number = 1
   ): TransportRange {
-    const profile = getTransportProfile(mode);
-    const vehicleCapacity = mode === "public-transit" ? 1 : 4;
-    const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
+    const normOrigin = origin?.toLowerCase().trim();
+    const normDest = destination?.toLowerCase().trim();
 
-    const normOrigin = origin?.toLowerCase().trim() || "ikeja";
-    const normDest = destination?.toLowerCase().trim() || "ikeja";
-    const zone1 = ZONES[normOrigin];
-    const zone2 = ZONES[normDest];
-
-    const hasMatrixEntry = defaultMatrix && defaultMatrix[origin] !== undefined;
-
-    // If no explicit matrix entry exists, and we lack geographical zone mapping for either point, it's missing data.
-    if (!hasMatrixEntry && (normOrigin === "anywhere" || !zone1 || !zone2)) {
+    if ((normOrigin === "anywhere" || !normOrigin) && (normDest === "anywhere" || !normDest || normDest === "unknown")) {
       return {
         status: "unavailable",
         reason: "NO_ROUTE_DATA",
@@ -204,44 +165,20 @@ export class TransportPricingProvider {
       };
     }
 
-    let rawBase = 0;
-    if (hasMatrixEntry) {
-      rawBase = defaultMatrix[origin] * vehiclesRequired;
-    } else {
-      rawBase = calculateZoneFare(origin, destination, partySize);
-    }
-    
-    // Scale base fare by mode multiplier; respect explicit 0 overrides in matrix
-    const scaledBase = hasMatrixEntry && rawBase === 0 
-      ? 0 
-      : rawBase * profile.multiplier;
-
-    // Determine surge scale factor based on departure window
-    const bucket = getDepartureBucket(departureAt);
-    const surgeMultiplier = mode === "ride-hailing"
-      ? (bucket === "peak" ? 1.45 : bucket === "late-night" ? 1.20 : 1.0)
-      : (bucket === "peak" ? 1.20 : 1.0);
-
-    const minDelta = scaledBase * profile.variancePercent;
-    const minCost = scaledBase === 0 ? 0 : Math.max(500, Math.floor((scaledBase - minDelta) / 500) * 500);
-    // Upper bound incorporates the multiplicative surge factor + variance to guarantee full rush-hour surge coverage
-    const maxCost = scaledBase === 0 ? 0 : Math.ceil((scaledBase * surgeMultiplier * (1 + profile.variancePercent)) / 500) * 500;
-    const midpointCost = Math.round(scaledBase / 500) * 500;
-
+    const estimate = getTemporaryTransportEstimate(destination);
+    const totalCost = estimate.cost;
     const validParty = Math.max(1, partySize);
-    const costPerPerson = Math.round((midpointCost / validParty) / 100) * 100;
-    const minCostPerPerson = Math.round((minCost / validParty) / 100) * 100;
-    const maxCostPerPerson = Math.round((maxCost / validParty) / 100) * 100;
+    const costPerPerson = Math.round(totalCost / validParty);
 
     return { 
       status: "available", 
-      minCost, 
-      maxCost, 
-      midpointCost,
+      minCost: totalCost, 
+      maxCost: totalCost, 
+      midpointCost: totalCost,
       costPerPerson,
-      minCostPerPerson,
-      maxCostPerPerson,
-      surgeMultiplier
+      minCostPerPerson: costPerPerson,
+      maxCostPerPerson: costPerPerson,
+      surgeMultiplier: 1.0
     };
   }
 
@@ -254,13 +191,10 @@ export class TransportPricingProvider {
     departureAt?: Date
   ): TransportEstimate {
     const range = this.calculateRange(origin, destination, mode, defaultMatrix, departureAt, partySize);
-    const normOrigin = origin?.toLowerCase().trim() || "ikeja";
-    const normDest = destination?.toLowerCase().trim() || "ikeja";
-    const z1 = ZONES[normOrigin] || "other";
-    const z2 = ZONES[normDest] || "other";
-    const isCrossWater = (z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland");
-    const vehicleCapacity = mode === "public-transit" ? 1 : 4;
-    const vehiclesRequired = mode === "public-transit" ? partySize : Math.max(1, Math.ceil(partySize / vehicleCapacity));
+    const zone = classifyDestinationZone(destination);
+    const originZone = classifyDestinationZone(origin);
+    const isCrossWater = zone !== originZone;
+    const validParty = Math.max(1, partySize);
 
     return {
       status: range.status,
@@ -271,18 +205,18 @@ export class TransportPricingProvider {
       costPerPerson: range.costPerPerson,
       minCostPerPerson: range.minCostPerPerson,
       maxCostPerPerson: range.maxCostPerPerson,
-      surgeMultiplier: range.surgeMultiplier,
+      surgeMultiplier: 1.0,
       mode,
       origin,
       destination,
-      partySize,
-      vehicleCapacity,
-      vehiclesRequired,
-      departureAssumption: getDepartureBucket(departureAt),
-      departure_assumption: getDepartureBucket(departureAt),
+      partySize: validParty,
+      vehicleCapacity: 4,
+      vehiclesRequired: 1,
+      departureAssumption: "off-peak",
+      departure_assumption: "off-peak",
       isCrossWater,
-      calculationVersion: "2026-v3",
-      calculation_version: "2026-v3"
+      calculationVersion: "temporary-zone-v1",
+      calculation_version: "temporary-zone-v1"
     };
   }
 }
@@ -307,74 +241,26 @@ export class TransportConfidenceProvider {
       }
     }
 
-    let score = 75; // Baseline typical score
-    const normOrigin = origin?.toLowerCase().trim() || "ikeja";
-    const normDest = destination?.toLowerCase().trim() || "ikeja";
-    const z1 = ZONES[normOrigin] || "other";
-    const z2 = ZONES[normDest] || "other";
-
-    if (normOrigin === normDest) {
-      score += 20; // Same area: high certainty
-    } else if (z1 === z2) {
-      score += 10; // Same zone
-    } else if ((z1 === "mainland" && z2 === "island") || (z1 === "island" && z2 === "mainland")) {
-      score -= 25; // Cross-city trips have higher traffic variance
-    }
-
-    // Override existence does NOT boost confidence.
-    // Confidence should be based on freshness + verification source + report volume.
-    // See Data Operations Manual: confidence requires 1 manual verification + 3 user-reported outcomes.
-
-    if (mode === "public-transit") {
-      score -= 5; // Transit schedules fluctuate slightly more
-    }
-
-    // Peak departure times reduce confidence — fare variability is higher
-    const bucket = getDepartureBucket(departureAt);
-    if (bucket === "peak") {
-      score -= 10;
-    } else if (bucket === "late-night") {
-      score -= 5;
-    }
-
-    score = Math.min(100, Math.max(10, score));
-
-    if (score >= 80) {
-      return { score, label: "High confidence", badgeColor: "green" };
-    } else if (score >= 50) {
-      return { score, label: "Typical estimate", badgeColor: "yellow" };
-    } else {
-      return { score, label: "Allow extra travel time", badgeColor: "orange" };
-    }
+    return { score: 90, label: "Deterministic zone estimate", badgeColor: "green" };
   }
 }
 
 export class TransportDisplayFormatter {
   static formatRange(minCost: number, maxCost: number): string {
+    if (minCost === maxCost) {
+      return `₦${minCost.toLocaleString()}`;
+    }
     return `₦${minCost.toLocaleString()} – ₦${maxCost.toLocaleString()}`;
   }
 
-  static formatAssumptions(origin: string, mode: TransportMode, departureAt?: Date): string {
-    const profile = getTransportProfile(mode);
-    const formattedArea = origin
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
-
-    const bucket = getDepartureBucket(departureAt);
-    const timeOfDayLabel = bucket === "peak"
-      ? "Peak-time variability included"
-      : bucket === "late-night"
-        ? "Late-night variability included"
-        : "Standard estimate";
-
-    return `${profile.shortLabel} • ${timeOfDayLabel} • Leaving from ${formattedArea}`;
+  static formatAssumptions(destination: string, _mode?: TransportMode, _departureAt?: Date): string {
+    const estimate = getTemporaryTransportEstimate(destination);
+    return `${estimate.label} (${estimate.zoneLabel} zone: ₦${estimate.cost.toLocaleString()}) • ${estimate.disclaimer}`;
   }
 }
 
 export class MatrixTransportProvider implements TransportProvider {
-  estimate(origin: string, destination: string, defaultMatrix?: Record<string, number>): number {
-    const rawTransport = defaultMatrix?.[origin] ?? calculateZoneFare(origin, destination);
-    return Math.max(1500, rawTransport);
+  estimate(origin: string, destination: string, _defaultMatrix?: Record<string, number>): number {
+    return getTemporaryTransportEstimate(destination).cost;
   }
 }

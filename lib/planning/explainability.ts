@@ -78,7 +78,7 @@ export function formatTravelInfo(originArea: string, spotArea: string, transport
   else estMins = 55;
 
   const originName = formatAreaSlugName(originArea);
-  return `${estMins} mins from ${originName} • +₦${transportCost.toLocaleString()} transport`;
+  return `${estMins} mins from ${originName} • +₦${transportCost.toLocaleString()} estimated transport`;
 }
 
 function evaluateDecisionConfidence(spot: Spot, transportCost: number): DecisionConfidence {

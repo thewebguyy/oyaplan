@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+import { getTemporaryTransportEstimate } from "@/lib/planning/temporaryTransport";
 
 interface VenueBudgetScenarioProps {
   venue: Venue;
@@ -60,9 +61,9 @@ export function VenueBudgetScenario({
   const serviceChargePct = venue.service_charge_pct ?? 0;
   const totalTaxAndService = Math.round(estimatedFoodAndDrinks * ((vatPct + serviceChargePct) / 100));
 
-  // Estimated Lagos ride-hailing transport (intra-district round-trip per vehicle)
-  const vehiclesRequired = Math.max(1, Math.ceil(selectedSquad / 4));
-  const estimatedTransport = 9000 * vehiclesRequired;
+  // Canonical temporary transport rule based on destination zone (Mainland: ₦5,000, Island: ₦10,000)
+  const transportInfo = getTemporaryTransportEstimate(venue.address_slug || areaSlug || venue.address);
+  const estimatedTransport = transportInfo.cost;
 
   const totalEstimatedOuting = estimatedFoodAndDrinks + totalTaxAndService + estimatedTransport;
   const difference = selectedBudget - totalEstimatedOuting;
@@ -219,9 +220,12 @@ export function VenueBudgetScenario({
                     <Receipt className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                     <span>VAT ({vatPct}%) &amp; Service Charge ({serviceChargePct}%): ~₦{totalTaxAndService.toLocaleString("en-NG")}</span>
                   </li>
-                  <li className="flex items-center gap-1.5">
-                    <Car className="w-3.5 h-3.5 text-[#008751] shrink-0" />
-                    <span>Estimated Ride ({vehiclesRequired} {vehiclesRequired > 1 ? "cars" : "car"} round-trip): ~₦{estimatedTransport.toLocaleString("en-NG")}</span>
+                  <li className="flex items-start gap-1.5">
+                    <Car className="w-3.5 h-3.5 text-[#008751] shrink-0 mt-0.5" />
+                    <div>
+                      <span>Estimated transport ({transportInfo.zoneLabel} zone): ~₦{estimatedTransport.toLocaleString("en-NG")}</span>
+                      <p className="text-[10px] text-text-muted">{transportInfo.disclaimer}</p>
+                    </div>
                   </li>
                 </ul>
                 <div className="pt-2 border-t border-border-default/60 flex items-center justify-between text-xs font-bold">

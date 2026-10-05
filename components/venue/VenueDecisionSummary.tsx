@@ -7,6 +7,7 @@ import { ArrowRight, Tag, Users, ShieldCheck, Info } from "lucide-react";
 import { getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 import { knownPerPerson, venueFoodTotal, suggestPlanBudget } from "@/lib/venue/venueSpend";
+import { getTemporaryTransportEstimate } from "@/lib/planning/temporaryTransport";
 
 interface VenueDecisionSummaryProps {
   venue: Venue;
@@ -28,10 +29,14 @@ export function VenueDecisionSummary({
   const isVerified = isPartnerVerified || venue.operational_status === "verified" || venue.operational_status === "fresh";
   const freshnessText = getVerificationText(venue.last_price_updated_at);
 
+  const transportInfo = getTemporaryTransportEstimate(venue.address_slug || areaSlug || venue.address);
+
   // Canonical: real per-person spend or null. No invented ranges or fallback prices.
   const perPerson = knownPerPerson(venue);
-  const total2 = perPerson !== null ? venueFoodTotal(perPerson, 2) : null;
-  const total4 = perPerson !== null ? venueFoodTotal(perPerson, 4) : null;
+  const food2 = perPerson !== null ? venueFoodTotal(perPerson, 2) : null;
+  const food4 = perPerson !== null ? venueFoodTotal(perPerson, 4) : null;
+  const total2 = food2 !== null ? food2 + transportInfo.cost : null;
+  const total4 = food4 !== null ? food4 + transportInfo.cost : null;
 
   const activeSquad = planSquad && planSquad > 0 ? planSquad : 2;
   const activeBudget = planBudget && planBudget > 0 ? planBudget : suggestPlanBudget(perPerson, activeSquad);
@@ -56,7 +61,7 @@ export function VenueDecisionSummary({
               Total Outing Cost
             </h2>
             <p className="text-xs sm:text-sm text-text-secondary mt-0.5">
-              Food &amp; drinks only. Transport depends on where you&apos;re starting from — run the plan to see the full total.
+              Venue spend + ₦{transportInfo.cost.toLocaleString("en-NG")} estimated transport ({transportInfo.zoneLabel} zone).
             </p>
           </div>
 
@@ -73,39 +78,43 @@ export function VenueDecisionSummary({
             <div className="p-5 rounded-2xl bg-[#F6F6F2] border border-[#E5E5DE] flex flex-col justify-between space-y-2">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-wider text-text-muted">
-                  Typical / person
+                  Venue / person
                 </p>
                 <p className="text-2xl sm:text-3xl font-black text-[#111111] tracking-tight mt-1 font-mono tabular-nums">
                   ₦{perPerson.toLocaleString("en-NG")}
                 </p>
               </div>
-              <p className="text-[11px] text-text-secondary">VAT included in venue price</p>
+              <p className="text-[11px] text-text-secondary">Food, drinks &amp; VAT included</p>
             </div>
 
             <div className="p-5 rounded-2xl bg-[#F6F6F2] border border-[#E5E5DE] flex flex-col justify-between space-y-2">
               <div>
                 <div className="flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-text-muted">
                   <Users className="w-3.5 h-3.5 text-[#111111]" />
-                  <span>For 2</span>
+                  <span>Squad of 2 (Total)</span>
                 </div>
                 <p className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight mt-1 font-mono tabular-nums">
                   ₦{(total2 as number).toLocaleString("en-NG")}
                 </p>
               </div>
-              <p className="text-[11px] text-text-secondary">Before transport</p>
+              <p className="text-[11px] text-text-secondary">
+                ₦{Math.round((total2 as number) / 2).toLocaleString("en-NG")} / person with transport
+              </p>
             </div>
 
             <div className="p-5 rounded-2xl bg-[#F6F6F2] border border-[#E5E5DE] flex flex-col justify-between space-y-2">
               <div>
                 <div className="flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-text-muted">
                   <Users className="w-3.5 h-3.5 text-[#111111]" />
-                  <span>For 4</span>
+                  <span>Squad of 4 (Total)</span>
                 </div>
                 <p className="text-xl sm:text-2xl font-black text-[#111111] tracking-tight mt-1 font-mono tabular-nums">
                   ₦{(total4 as number).toLocaleString("en-NG")}
                 </p>
               </div>
-              <p className="text-[11px] text-text-secondary">Before transport</p>
+              <p className="text-[11px] text-text-secondary">
+                ₦{Math.round((total4 as number) / 4).toLocaleString("en-NG")} / person with transport
+              </p>
             </div>
           </div>
         ) : (

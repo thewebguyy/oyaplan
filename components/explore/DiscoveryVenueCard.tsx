@@ -10,6 +10,7 @@ import { deriveTrustIndicator, getVerificationText } from "@/lib/planning/presen
 import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 import { knownPerPerson, venueFoodTotal, suggestPlanBudget } from "@/lib/venue/venueSpend";
 import { ShortlistStamp } from "@/components/motion/ShortlistStamp";
+import { getTemporaryTransportEstimate } from "@/lib/planning/temporaryTransport";
 
 interface DiscoveryVenueCardProps {
   spot: Spot;
@@ -65,13 +66,15 @@ export function DiscoveryVenueCard({
   className = "",
 }: DiscoveryVenueCardProps) {
   const pricePerPerson = knownPerPerson({ derived_typical_cost: spot.price_per_person });
-  const estimatedTotal = pricePerPerson !== null ? venueFoodTotal(pricePerPerson, squadSize) : null;
+  const estimatedFoodTotal = pricePerPerson !== null ? venueFoodTotal(pricePerPerson, squadSize) : null;
+  const areaName = spot.areas?.name || spot.address_slug || "Lagos";
+  const areaSlug = spot.areas?.slug || spot.address_slug || "lagos";
+  const transportInfo = getTemporaryTransportEstimate(spot.areas?.slug || spot.address_slug || spot.address || areaSlug);
+
+  const estimatedTotal = estimatedFoodTotal !== null ? estimatedFoodTotal + transportInfo.cost : null;
   const budgetRemaining = budget && estimatedTotal !== null ? budget - estimatedTotal : null;
   const fitsBudget = budget && estimatedTotal !== null ? estimatedTotal <= budget : true;
   const whatThisCovers = getWhatThisCovers(spot.category, spot.has_food, pricePerPerson);
-
-  const areaName = spot.areas?.name || spot.address_slug || "Lagos";
-  const areaSlug = spot.areas?.slug || spot.address_slug || "lagos";
   const categoryKey = (spot.category || "restaurant").toLowerCase();
   const catStyle = CATEGORY_COLORS[categoryKey] || { bg: "bg-gray-100", text: "text-gray-800" };
 
@@ -262,6 +265,9 @@ export function DiscoveryVenueCard({
                 <span className="text-xs font-black text-[#111111] tabular-nums">
                   ~₦{estimatedTotal.toLocaleString("en-NG")}
                 </span>
+                <span className="text-[9px] text-[#6B7280] block">
+                  incl. ₦{transportInfo.cost.toLocaleString("en-NG")} transport
+                </span>
               </div>
             )}
           </button>
@@ -272,7 +278,7 @@ export function DiscoveryVenueCard({
               {fitsBudget ? (
                 <span className="text-[#111111] flex items-center gap-1 flex-wrap">
                   <Check className="w-3.5 h-3.5 stroke-[3] text-[#111111]" />
-                  <span>Fits ₦{budget.toLocaleString("en-NG")} before transport</span>
+                  <span>Fits ₦{budget.toLocaleString("en-NG")} budget with transport</span>
                   {budgetRemaining !== null && budgetRemaining > 0 && (
                     <span className="text-[#6B7280]">(₦{budgetRemaining.toLocaleString("en-NG")} left)</span>
                   )}
@@ -282,7 +288,7 @@ export function DiscoveryVenueCard({
                   {(() => {
                     const diffOver = Math.abs(budgetRemaining || 0);
                     const kOver = diffOver >= 1000 ? `${(diffOver / 1000).toFixed(diffOver % 1000 === 0 ? 0 : 1)}k` : `${diffOver}`;
-                    return `Exceeds target by ₦${kOver} — the stretch option.`;
+                    return `Exceeds ₦${budget.toLocaleString("en-NG")} by ₦${kOver} — the stretch option.`;
                   })()}
                 </span>
               )}

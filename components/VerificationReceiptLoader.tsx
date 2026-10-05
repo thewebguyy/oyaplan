@@ -282,7 +282,7 @@ export default function VerificationReceiptLoader({
                         </span>
                       </div>
                       <p className="text-[11px] text-[#6B7280]">
-                        {elapsedTime >= 800 ? "✓ Transport fare estimation sorted" : "Hunting Uber fares for outing squad..."}
+                        {elapsedTime >= 800 ? "✓ Estimated transport based on destination zone" : "Estimating transport for destination zone..."}
                       </p>
                       {elapsedTime < 800 && (
                         <ProgressBar duration={600} delayMs={0} />
