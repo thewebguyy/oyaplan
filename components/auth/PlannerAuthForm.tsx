@@ -127,11 +127,11 @@ export default function PlannerAuthForm() {
       {/* Header */}
       <header className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-4 flex items-center justify-between">
         <Link
-          href={`/login${returnTo && returnTo !== "/" ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
+          href={returnTo && returnTo !== "/" ? returnTo : "/"}
           className="inline-flex items-center gap-2 text-xs font-bold text-text-secondary hover:text-midnight-lagoon transition-colors py-1.5 px-3 rounded-full hover:bg-white border border-[#EAE4DC] tap-feedback"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Change login type</span>
+          <span>Back to OyaPlan</span>
         </Link>
         <Link href="/" className="flex items-center tap-feedback">
           <Image
@@ -202,13 +202,13 @@ export default function PlannerAuthForm() {
             <div className="space-y-6">
               <div className="text-center space-y-2">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase tracking-wider">
-                  OyaPlan for OyaPlanners
+                  OyaPlanner
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon tracking-tight">
-                  Sign in or create account
+                  Welcome back, OyaPlanner.
                 </h1>
                 <p className="text-xs sm:text-sm text-text-secondary">
-                  Access saved spots, run plans with friends, and view your outing passport.
+                  Sign in to access saved spots, run plans with friends, and view your outing passport.
                 </p>
               </div>
 

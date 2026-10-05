@@ -8,7 +8,6 @@ import {
   User, 
   ExternalLink, 
   LogOut, 
-  Building2, 
   Check, 
   Loader2, 
   Lock, 
@@ -50,7 +49,7 @@ export default function SettingsClient() {
             Sign in to your OyaPlan account to access personal preferences and security settings.
           </p>
           <Link
-            href="/login/planner?returnTo=/settings"
+            href="/login?returnTo=/settings"
             className="block w-full py-3 bg-[#008751] hover:bg-[#007043] text-white rounded-xl font-bold text-xs transition-colors"
           >
             Sign In to Settings
@@ -251,26 +250,7 @@ export default function SettingsClient() {
           </div>
         </section>
 
-        {/* Section 4: Business Transition */}
-        <section className="bg-[#FAF7F2] rounded-[24px] border border-[#EAE4DC] p-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-midnight-lagoon text-white flex items-center justify-center shrink-0">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-midnight-lagoon">Own or manage a venue?</p>
-              <p className="text-[11px] text-text-secondary">Switch to OyaPlan for Business workspace</p>
-            </div>
-          </div>
-          <Link
-            href="/for-business"
-            className="text-xs font-bold text-midnight-lagoon hover:text-[#008751] px-3.5 py-2 rounded-xl border border-[#EAE4DC] bg-white hover:bg-white transition-colors shrink-0 tap-feedback"
-          >
-            For Businesses ↗
-          </Link>
-        </section>
-
-        {/* Section 5: Log Out */}
+        {/* Section 4: Log Out */}
         <div className="pt-2 text-center">
           <button
             type="button"

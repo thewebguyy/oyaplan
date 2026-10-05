@@ -23,7 +23,7 @@ export default async function BusinessInsightsPage({ params }: Props) {
   const identity = await SessionResolver.resolveIdentity();
 
   if (identity.type !== 'authenticated' || !identity.profile) {
-    redirect(`/account?next=/business/${venueId}/insights`);
+    redirect(`/login/business?returnTo=/business/${venueId}/insights`);
     return null;
   }
 

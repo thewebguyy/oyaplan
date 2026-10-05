@@ -6,7 +6,7 @@ import { useAuth } from './providers/AuthProvider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Sparkles, Building2, CheckCircle2 } from 'lucide-react';
+import { Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 import { supabaseBrowser } from '@/lib/supabase';
 import { trackEvent } from '@/lib/analytics/trackClient';
 import { sanitizeReturnTo } from '@/lib/utils/returnTo';
@@ -188,11 +188,11 @@ export default function AuthModal() {
 
             <div className="pt-2 flex items-center justify-start text-[11px] text-text-muted border-t border-[#EAE4DC]">
               <Link
-                href={`/login/planner${safeReturnTo !== '/' ? `?returnTo=${encodeURIComponent(safeReturnTo)}` : ''}`}
+                href={`/login${safeReturnTo !== '/' ? `?returnTo=${encodeURIComponent(safeReturnTo)}` : ''}`}
                 onClick={handleClose}
                 className="hover:text-[#111111] underline-offset-2 hover:underline font-bold transition-colors"
               >
-                All login options →
+                Go to Sign In page →
               </Link>
             </div>
           </div>

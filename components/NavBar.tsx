@@ -10,18 +10,11 @@ import {
   X, 
   User, 
   Bookmark, 
-  Building2, 
   LogOut, 
   Settings, 
-  Activity, 
   Compass, 
   Heart,
-  ArrowRight,
-  Sparkles,
-  HelpCircle,
-  FileText,
-  Shield,
-  Layers
+  Sparkles
 } from "lucide-react";
 import { useAuth } from "./providers/AuthProvider";
 import { Avatar } from "./ui/avatar";

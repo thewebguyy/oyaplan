@@ -61,7 +61,7 @@ export default function FinishSignupForm() {
             You must have an active session to finish setting up your OyaPlan profile.
           </p>
           <Link
-            href={`/login/planner${returnTo !== "/" ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
+            href={`/login${returnTo !== "/" ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
             className="block w-full py-3 bg-[#008751] hover:bg-[#007043] text-white rounded-xl font-bold text-xs transition-colors"
           >
             Go to Sign In

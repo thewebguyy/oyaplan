@@ -22,6 +22,7 @@ import {
   Mail,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 
 interface ClaimVenueFormProps {
@@ -42,7 +43,8 @@ function sanitizePersonName(rawName?: string | null): string {
 }
 
 export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
-  const { session, openModal, isLoading: isAuthLoading } = useAuth();
+  const router = useRouter();
+  const { session, isLoading: isAuthLoading } = useAuth();
 
   const rawMetaName = session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || initialUser?.name;
   const sanitizedInitialName = sanitizePersonName(rawMetaName);
@@ -98,7 +100,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
 
   const handleStep1Continue = () => {
     if (!currentUser?.id) {
-      openModal('Sign in to verify your business identity and claim your venue', window.location.pathname);
+      router.push(`/login/business?returnTo=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     setCurrentStep(2);
@@ -137,7 +139,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
     setError(null);
 
     if (!currentUser?.id) {
-      openModal('Sign in to submit your venue claim', window.location.pathname);
+      router.push(`/login/business?returnTo=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
@@ -369,7 +371,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
               <button
                 type="button"
                 disabled={isAuthLoading}
-                onClick={() => openModal(`Sign in to claim and manage ${venue.name}`, window.location.pathname)}
+                onClick={() => router.push(`/login/business?returnTo=${encodeURIComponent(window.location.pathname)}`)}
                 className="w-full h-14 bg-[#008751] hover:bg-[#007043] text-white font-extrabold text-sm uppercase tracking-wider rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <ShieldCheck className="w-5 h-5" />

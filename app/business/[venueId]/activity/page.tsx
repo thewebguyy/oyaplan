@@ -23,7 +23,7 @@ export default async function BusinessActivityPage({ params }: Props) {
   const identity = await SessionResolver.resolveIdentity();
 
   if (identity.type !== 'authenticated' || !identity.profile) {
-    redirect(`/account?next=/business/${venueId}/activity`);
+    redirect(`/login/business?returnTo=/business/${venueId}/activity`);
     return null;
   }
 

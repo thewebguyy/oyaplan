@@ -32,7 +32,7 @@ export default async function BusinessHomePage({ params }: Props) {
   const identity = await SessionResolver.resolveIdentity();
 
   if (identity.type !== 'authenticated' || !identity.profile) {
-    redirect(`/account?next=/business/${venueId}`);
+    redirect(`/login/business?returnTo=/business/${venueId}`);
     return null;
   }
 

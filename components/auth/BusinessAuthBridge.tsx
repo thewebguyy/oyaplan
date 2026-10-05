@@ -113,11 +113,11 @@ export default function BusinessAuthBridge() {
       {/* Top Bar */}
       <header className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-4 flex items-center justify-between">
         <Link
-          href={`/login${rawReturnTo ? `?returnTo=${encodeURIComponent(rawReturnTo)}` : ""}`}
+          href="/for-business"
           className="inline-flex items-center gap-2 text-xs font-bold text-text-secondary hover:text-midnight-lagoon transition-colors py-1.5 px-3 rounded-full hover:bg-white border border-[#EAE4DC] tap-feedback"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Change login type</span>
+          <span>Back to Business</span>
         </Link>
         <Link href="/for-business" className="flex items-center gap-2 tap-feedback">
           <Image
@@ -273,7 +273,7 @@ export default function BusinessAuthBridge() {
           <p className="text-xs text-text-secondary">
             Looking to plan an outing?{" "}
             <Link
-              href={`/login/planner${rawReturnTo ? `?returnTo=${encodeURIComponent(rawReturnTo)}` : ""}`}
+              href={`/login${rawReturnTo ? `?returnTo=${encodeURIComponent(rawReturnTo)}` : ""}`}
               className="font-bold text-[#008751] hover:underline"
             >
               Sign in as an OyaPlanner →

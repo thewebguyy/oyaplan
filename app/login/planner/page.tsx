@@ -1,15 +1,17 @@
-import { Suspense } from "react";
-import PlannerAuthForm from "@/components/auth/PlannerAuthForm";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Planner Sign In — OyaPlan",
-  description: "Sign in to save spots, plan outings, and track Lagos outing spending.",
-};
-
-export default function PlannerLoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-[100dvh] bg-[#FAF7F2] flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-[#008751] border-t-transparent animate-spin" /></div>}>
-      <PlannerAuthForm />
-    </Suspense>
-  );
+export default async function PlannerLoginRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const queryString = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (typeof value === "string") {
+      queryString.set(key, value);
+    }
+  }
+  const qs = queryString.toString();
+  redirect(`/login${qs ? `?${qs}` : ""}`);
 }

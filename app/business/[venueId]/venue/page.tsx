@@ -26,7 +26,7 @@ export default async function BusinessVenuePage({ params, searchParams }: Props)
   const identity = await SessionResolver.resolveIdentity();
 
   if (identity.type !== 'authenticated' || !identity.profile) {
-    redirect(`/account?next=/business/${venueId}/venue`);
+    redirect(`/login/business?returnTo=/business/${venueId}/venue`);
     return null;
   }
 

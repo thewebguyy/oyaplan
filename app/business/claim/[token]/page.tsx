@@ -66,7 +66,7 @@ export default async function BusinessTokenClaimPage({ params }: Props) {
           </div>
 
           <div className="space-y-2 pt-2">
-            <Link href="/account?next=/business" className="block">
+            <Link href="/login/business?returnTo=/business" className="block">
               <button className="w-full h-11 bg-midnight-lagoon hover:bg-[#00041f] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer tap-feedback">
                 Sign In to Business Portal
               </button>
