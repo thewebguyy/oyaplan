@@ -208,7 +208,7 @@ export default function PlannerAuthForm() {
                   Sign in or create account
                 </h1>
                 <p className="text-xs sm:text-sm text-text-secondary">
-                  Access saved spots, lock in plans with friends, and view your outing passport.
+                  Access saved spots, run plans with friends, and view your outing passport.
                 </p>
               </div>
 

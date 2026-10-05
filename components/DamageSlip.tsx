@@ -106,7 +106,7 @@ export function DamageSlip({
     const targetUrl = shareUrl || `${origin}/venue/${spot.id}`;
     const area = spot.areas?.name || spot.address_slug || "Lagos";
 
-    const text = `Found the spot.\n\n${spot.name}\n\n• Squad: ${safeSquad} people\n• Landed Damage: ~₦${perPersonCost.toLocaleString("en-NG")} each (~₦${totalCost.toLocaleString("en-NG")} total)\n• Verified food, drinks & round-trip rides accounted for.\n\nWe moving?\n\n${targetUrl}`;
+    const text = `Found the spot.\n\n${spot.name}\n\n• Squad: ${safeSquad} people\n• Total Outing Cost: ~₦${perPersonCost.toLocaleString("en-NG")} each (~₦${totalCost.toLocaleString("en-NG")} total)\n• Verified food, drinks & round-trip rides accounted for.\n\nWe moving?\n\n${targetUrl}`;
 
     try {
       await navigator.clipboard.writeText(text);
@@ -131,7 +131,7 @@ export function DamageSlip({
         <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-[#6B7280]">
           <span className="font-bold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
-            OYAPLAN DAMAGE SLIP
+            THE OUTSIDE MATH • TILL SLIP
           </span>
           <span>
             {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase()}
@@ -234,10 +234,10 @@ export function DamageSlip({
           <div>
             <div className="flex items-center gap-1.5 mb-0.5">
               <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#111111]">
-                LANDED DAMAGE
+                TOTAL OUTING COST
               </span>
               <span className="text-[9px] font-mono font-bold text-[#6B7280] bg-[#F6F6F2] px-1.5 py-0.5 rounded border border-[#E5E5DE]">
-                SNAPSHOT
+                THE OUTSIDE MATH
               </span>
             </div>
             <span className="text-xs font-mono font-semibold text-[#111111]">
@@ -279,7 +279,7 @@ export function DamageSlip({
             ) : (
               <>
                 <Share2 className="w-4 h-4 text-[#F9E828]" />
-                <span>Share Damage Slip</span>
+                <span>Send to the Squad →</span>
               </>
             )}
           </button>

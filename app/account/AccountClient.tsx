@@ -271,7 +271,7 @@ export default function AccountClient({
                 Saved Plans
               </h2>
               <p className="text-[11px] text-[#6B7280] mt-1 font-medium">
-                Calculated damage slips and squad outing itineraries
+                Calculated outing plans and squad itineraries
               </p>
             </div>
           </Link>

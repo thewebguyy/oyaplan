@@ -67,7 +67,7 @@ export async function generateHostPassStoryCanvas(
   // 4. Header metadata
   ctx.fillStyle = "#F9E828";
   ctx.font = "bold 28px 'Courier New', monospace";
-  ctx.fillText("OYAPLAN • OFFICIAL HOST PASS", slipX + 60, slipY + 90);
+  ctx.fillText("OYAPLAN • THE OUTSIDE MATH", slipX + 60, slipY + 90);
 
   ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
   ctx.font = "24px 'Courier New', monospace";
@@ -116,10 +116,10 @@ export async function generateHostPassStoryCanvas(
   ctx.lineTo(slipX + slipWidth / 2, statBoxY + statBoxHeight - 30);
   ctx.stroke();
 
-  // Right col: Damage per head
+  // Right col: Cost per head
   ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
   ctx.font = "bold 22px 'Courier New', monospace";
-  ctx.fillText("DAMAGE / HEAD", slipX + slipWidth / 2 + 40, statBoxY + 65);
+  ctx.fillText("COST / PERSON", slipX + slipWidth / 2 + 40, statBoxY + 65);
   ctx.fillStyle = "#F9E828";
   ctx.font = "bold 56px 'Impact', sans-serif";
   ctx.fillText(`~₦${data.perPerson.toLocaleString("en-NG")}`, slipX + slipWidth / 2 + 40, statBoxY + 145);
@@ -149,7 +149,7 @@ export async function generateHostPassStoryCanvas(
 
   ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
   ctx.font = "28px 'Courier New', monospace";
-  ctx.fillText("TOTAL LANDED DAMAGE", slipX + 60, tableY + 70);
+  ctx.fillText("TOTAL OUTING COST", slipX + 60, tableY + 70);
 
   ctx.fillStyle = "#FFFFFF";
   ctx.font = "bold 44px 'Courier New', monospace";
@@ -196,7 +196,7 @@ export async function generateHostPassStoryCanvas(
   ctx.fillStyle = "#F9E828";
   ctx.font = "bold 24px 'Courier New', monospace";
   ctx.textAlign = "right";
-  ctx.fillText("KNOW THE DAMAGE BEFORE YOU LEAVE HOME", slipX + slipWidth - 60, footerY + 60);
+  ctx.fillText("KNOW WHAT IT WILL COST BEFORE YOU LEAVE HOME", slipX + slipWidth - 60, footerY + 60);
   ctx.textAlign = "left";
 
   ctx.fillStyle = "rgba(255, 255, 255, 0.3)";

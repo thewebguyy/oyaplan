@@ -343,7 +343,7 @@ export default function SavedClient({
                   Sign in to view saved plans
                 </h3>
                 <p className="text-xs text-[#555555] leading-relaxed">
-                  Your outings and damage slips sync across devices when signed in.
+                  Your outings and cost breakdowns sync across devices when signed in.
                 </p>
               </div>
               <Button
@@ -429,7 +429,7 @@ export default function SavedClient({
                   No saved plans yet.
                 </h2>
                 <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
-                  When you plan an outing for you and your squad, save it to access the damage slip anytime.
+                  When you plan an outing for you and your squad, save it to access the plan anytime.
                 </p>
               </div>
               <Link href="/" className="inline-block pt-2">

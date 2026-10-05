@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="max-w-4xl mx-auto px-4 py-16 sm:py-20 flex flex-col sm:flex-row items-center justify-between gap-8">
           <div className="text-center sm:text-left">
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2 text-white font-display">
-              Know the damage before you leave home.
+              Know what it will cost before you leave home.
             </h2>
             <p className="text-white/70 text-sm sm:text-base font-medium">
               Start planning your next Lagos outing with total budget confidence.

@@ -72,7 +72,7 @@ export function PlanActionsShare({
       `Found the spot.\n\n` +
       `*${venueName}*\n` +
       `• Squad: ${squadSize} people\n` +
-      `• Landed Damage: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
+      `• Total Outing Cost: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
       `• Verified food, drinks & round-trip rides accounted for.\n\n` +
       `We moving?\n` +
       `${squadUrl}`
@@ -159,7 +159,7 @@ export function PlanActionsShare({
             className="h-12 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer tap-feedback font-mono"
           >
             <MessageSquare className="w-4 h-4 fill-white" />
-            <span>WhatsApp</span>
+            <span>Send to the Squad →</span>
           </button>
 
           {/* Copy Link / Native Share */}

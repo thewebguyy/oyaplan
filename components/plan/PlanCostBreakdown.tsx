@@ -47,13 +47,20 @@ export function PlanCostBreakdown({
   return (
     <section className="bg-white border border-[#E5E5DE] rounded-[16px] p-5 sm:p-6 shadow-xs space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-[#E5E5DE]">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#111111] text-[#F9E828] flex items-center justify-center">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#111111] text-[#F9E828] flex items-center justify-center shrink-0">
             <Calculator className="w-4 h-4" />
           </div>
-          <h2 className="text-base font-black text-[#111111] font-display uppercase tracking-tight">Damage Slip Breakdown</h2>
+          <div>
+            <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#6B7280] block">
+              The Outside Math
+            </span>
+            <h2 className="text-base font-black text-[#111111] font-display uppercase tracking-tight leading-none">
+              Total Outing Cost Breakdown
+            </h2>
+          </div>
         </div>
-        <span className="text-[11px] font-mono font-bold text-[#6B7280] uppercase tracking-wider">Lagos Landed</span>
+        <span className="text-[11px] font-mono font-bold text-[#6B7280] uppercase tracking-wider">Zero Bill Shock</span>
       </div>
 
       {/* Itemized Rows */}
@@ -97,8 +104,8 @@ export function PlanCostBreakdown({
         {/* Total Cost Row */}
         <div className="pt-3 border-t-2 border-dashed border-[#111111]/25 flex items-center justify-between font-bold">
           <div>
-            <span className="text-[#111111] text-sm sm:text-base font-black uppercase tracking-wider block">
-              Total Landed Damage
+            <span className="text-[#111111] text-sm sm:text-base font-black uppercase tracking-wider block font-display">
+              Total Outing Cost
             </span>
             {squadSize > 1 && (
               <span className="text-[11px] font-bold text-[#111111] block">
@@ -174,7 +181,7 @@ export function PlanCostBreakdown({
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-1 px-1">
-                  <span className="text-[#555555]">Simulated Outing Damage:</span>
+                  <span className="text-[#555555]">Simulated Outing Cost:</span>
                   <span className="font-black text-[#111111] text-sm tabular-nums">
                     ~₦{simulatedTotalCost.toLocaleString('en-NG')}
                   </span>

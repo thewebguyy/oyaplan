@@ -153,7 +153,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
       `Found the spot.\n\n` +
       `*${spotName}*\n` +
       `• Squad: ${confirmedCount} people\n` +
-      `• Landed Damage: ~₦${perPersonSpend.toLocaleString("en-NG")} each (~₦${totalSpend.toLocaleString("en-NG")} total)\n` +
+      `• Total Outing Cost: ~₦${perPersonSpend.toLocaleString("en-NG")} each (~₦${totalSpend.toLocaleString("en-NG")} total)\n` +
       `• Verified food, drinks & round-trip rides accounted for.\n\n` +
       `We moving?\n` +
       `${shareUrl}`

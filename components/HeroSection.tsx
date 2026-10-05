@@ -236,7 +236,7 @@ export default function HeroSection({ spots }: HeroSectionProps) {
         <div className="max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111111] text-[#F9E828] text-[11px] font-mono font-bold uppercase tracking-widest shadow-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828] animate-pulse" />
-            <span>KNOW THE DAMAGE BEFORE YOU LEAVE HOME</span>
+            <span>KNOW WHAT IT WILL COST BEFORE YOU LEAVE HOME</span>
           </div>
 
           {/* Kinetic Rolling Phrase Tumbler */}

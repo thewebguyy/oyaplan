@@ -56,7 +56,7 @@ export function PlanMobileStickyBar({
       `Found the spot.\n\n` +
       `*${venueName}*\n` +
       `• Squad: ${squadSize} people\n` +
-      `• Landed Damage: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
+      `• Total Outing Cost: ~₦${perPerson.toLocaleString('en-NG')} each (~₦${totalCost.toLocaleString('en-NG')} total)\n` +
       `• Verified food, drinks & round-trip rides accounted for.\n\n` +
       `We moving?\n` +
       `${shareUrl}`
@@ -73,7 +73,7 @@ export function PlanMobileStickyBar({
         {/* Edit Button */}
         <Link
           href={editUrl}
-          className="flex-1 h-12 bg-surface-grey border border-border-default text-midnight-lagoon font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 tap-feedback transition-colors hover:bg-gray-100"
+          className="flex-1 h-12 bg-[#F6F6F2] border border-[#E5E5DE] text-[#111111] font-mono font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 tap-feedback transition-colors hover:bg-gray-100"
         >
           <Sliders className="w-4 h-4" />
           <span>Edit Plan</span>
@@ -83,10 +83,10 @@ export function PlanMobileStickyBar({
         <button
           type="button"
           onClick={handleWhatsAppShare}
-          className="flex-1 h-12 bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-xs tap-feedback transition-colors cursor-pointer"
+          className="flex-1 h-12 bg-[#111111] hover:bg-black text-[#F9E828] font-mono font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-xs tap-feedback transition-colors cursor-pointer"
         >
-          <MessageSquare className="w-4 h-4 fill-white" />
-          <span>Share Plan</span>
+          <MessageSquare className="w-4 h-4 fill-[#F9E828]" />
+          <span>Send to the Squad →</span>
         </button>
       </div>
     </aside>

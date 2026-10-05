@@ -219,10 +219,10 @@ export default function LivePreviewCard({
           </div>
         )}
 
-        {/* Live Damage Slip Paper Breakdown */}
+        {/* Live Outside Math Slip Paper Breakdown */}
         <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-xl p-3.5 space-y-2 font-mono text-xs">
           <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-[#6B7280] font-bold border-b border-dashed border-[#111111]/20 pb-1.5">
-            <span>LIVE DAMAGE SLIP</span>
+            <span>THE OUTSIDE MATH</span>
             <span className="text-[#111111] flex items-center gap-1">
               <ShieldCheck className="w-3 h-3 text-[#111111]" /> {isVerified ? "Verified Rates" : "Real Menu Data"}
             </span>
@@ -243,7 +243,7 @@ export default function LivePreviewCard({
 
           {/* Perforated Divider */}
           <div className="border-t border-dashed border-[#111111]/25 pt-2 flex justify-between items-baseline text-[#111111]">
-            <span className="font-bold text-xs uppercase tracking-wider">Landed Damage:</span>
+            <span className="font-bold text-xs uppercase tracking-wider">Total Outing Cost:</span>
             <span className="font-black font-mono text-base text-[#111111]">
               ~₦<NumericCounter value={totalCost} />
             </span>
@@ -268,8 +268,7 @@ export default function LivePreviewCard({
           onClick={handleLaunchForge}
           className="w-full bg-[#111111] hover:bg-black text-[#F9E828] font-black uppercase text-xs tracking-wider h-12 rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98] cursor-pointer group"
         >
-          <span>Lock In This Plan</span>
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          <span>Run the Plan →</span>
         </button>
       </div>
     </div>

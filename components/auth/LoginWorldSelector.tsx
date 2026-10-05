@@ -86,7 +86,7 @@ export default function LoginWorldSelector() {
                   For OyaPlanners
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-sans">
-                  Discover curated Lagos spots, know the exact landed damage, and lock in group plans before stepping out.
+                  Discover curated Lagos spots, know the total outing cost, and run group plans before stepping out.
                 </p>
               </div>
             </div>

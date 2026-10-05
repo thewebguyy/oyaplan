@@ -193,7 +193,7 @@ export default function MobileLivePreviewBar({
             className="h-10 px-4 bg-[#F9E828] hover:bg-[#F9E828]/90 text-[#111111] font-black text-xs uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] shrink-0 shadow-sm flex items-center gap-1.5 cursor-pointer"
             aria-label="Start planning and view full options"
           >
-            <span>Lock In</span>
+            <span>Run the Plan →</span>
           </button>
         </motion.div>
       </div>
@@ -226,10 +226,10 @@ export default function MobileLivePreviewBar({
               <div className="px-6 pb-4 border-b border-[#E5E5DE] flex items-center justify-between shrink-0">
                 <div>
                   <h3 className="text-base font-black text-[#111111] uppercase tracking-wider font-mono">
-                    Damage Slip Estimator
+                    The Outside Math
                   </h3>
                   <p className="text-xs text-[#6B7280] font-mono">
-                    Squad of {squadSize} • Lagos Landed Cost
+                    Squad of {squadSize} • Lagos Outing Cost
                   </p>
                 </div>
                 <button
@@ -296,7 +296,7 @@ export default function MobileLivePreviewBar({
                           </span>
                         </div>
                         <div className="flex justify-between items-center pt-2 border-t border-dashed border-[#111111]/25 font-black text-sm text-[#111111]">
-                          <span className="uppercase tracking-wider">Landed Damage</span>
+                          <span className="uppercase tracking-wider">Total Outing Cost</span>
                           <span className="text-[#111111] text-base">
                             {isUnavailable ? `₦${sTotalCost.toLocaleString()} + transport` : `₦${sTotalCost.toLocaleString()}`}
                           </span>
@@ -322,8 +322,7 @@ export default function MobileLivePreviewBar({
                           onClick={() => handleGeneratePlan(spot)}
                           className="w-full h-11 bg-[#111111] hover:bg-black text-[#F9E828] font-black text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
                         >
-                          <span>Lock In This Plan</span>
-                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          <span>Run the Plan →</span>
                         </button>
                       </div>
 

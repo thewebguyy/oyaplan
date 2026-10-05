@@ -123,7 +123,7 @@ export function PlanCodeSquadPass({
             <span className="font-bold text-white">{squadSize} people</span>
           </div>
           <div className="col-span-2 sm:col-span-1">
-            <span className="text-[9px] uppercase tracking-wider text-gray-500 block">Landed Damage</span>
+            <span className="text-[9px] uppercase tracking-wider text-gray-500 block">Total Outing Cost</span>
             <span className="font-bold text-[#F9E828] tabular-nums">~₦{perPerson.toLocaleString('en-NG')} / person</span>
           </div>
         </div>
@@ -180,7 +180,7 @@ export function PlanCodeSquadPass({
             <div className="border border-dashed border-[#444444] rounded-2xl p-5 bg-[#161616] space-y-5 text-left relative overflow-hidden">
               <div className="flex items-center justify-between border-b border-[#333333] pb-3">
                 <span className="text-[10px] font-mono font-black text-[#F9E828] uppercase tracking-widest">
-                  OYAPLAN • HOST PASS
+                  OYAPLAN • THE OUTSIDE MATH
                 </span>
                 <span className="text-[10px] font-mono text-gray-400">{todayStr}</span>
               </div>
@@ -215,7 +215,7 @@ export function PlanCodeSquadPass({
 
               <div className="flex items-center justify-between pt-2 border-t border-[#333333] text-[10px] font-mono text-gray-500">
                 <span>oyaplan.com</span>
-                <span className="text-[#F9E828] font-bold">KNOW THE DAMAGE</span>
+                <span className="text-[#F9E828] font-bold">KNOW WHAT IT WILL COST</span>
               </div>
               <div className="text-[8px] font-mono text-gray-500 uppercase tracking-widest text-center">
                 THIS IS THE PLAN • NOT A TABLE RESERVATION

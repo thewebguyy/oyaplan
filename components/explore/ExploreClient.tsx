@@ -38,7 +38,7 @@ export function ExploreClient({
   availableAreas,
   preselectedAreaSlug,
   preselectedAreaName,
-  title = "Find your spot. Know the damage.",
+  title = "Find your spot. Know what it will cost.",
   subtitle = "Real menus, verified prices, and round-trip transport for Lagos outings.",
 }: ExploreClientProps) {
   const router = useRouter();

@@ -107,7 +107,7 @@ export default function AuthModal() {
             </span>
           </div>
           <DialogTitle className="text-xl sm:text-2xl font-black text-midnight-lagoon text-center tracking-tight">
-            {modalReason || "Lock in your plan & save for later"}
+            {modalReason || "Run your plan & save for later"}
           </DialogTitle>
           <DialogDescription className="text-xs sm:text-sm text-text-secondary text-center font-medium">
             Sign in to keep track of your plans and access saved spots anywhere.

@@ -412,10 +412,10 @@ export default function ForgeResultsClient({
             </span>
           </div>
           <h1 className="font-display text-[#111111] text-2xl sm:text-3xl lg:text-4xl tracking-tight font-black uppercase">
-            Your Damage Slip &amp; Plan
+            Your Outing Cost &amp; Plan
           </h1>
           <p className="type-body text-[#555555] font-medium text-sm sm:text-base">
-            Verified landed cost under <span className="text-[#111111] font-bold font-mono">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-[#111111] font-bold">{forgeInput.squadSize} {forgeInput.squadSize === 1 ? "person" : "people"}</span> starting from <span className="text-[#111111] font-bold">{startAreaLabel}</span>.
+            Verified total cost under <span className="text-[#111111] font-bold font-mono">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-[#111111] font-bold">{forgeInput.squadSize} {forgeInput.squadSize === 1 ? "person" : "people"}</span> starting from <span className="text-[#111111] font-bold">{startAreaLabel}</span>.
           </p>
         </div>
         <div className="flex items-center gap-3">

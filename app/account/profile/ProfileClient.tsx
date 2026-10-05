@@ -239,7 +239,7 @@ export default function ProfileClient({
                   className="w-full h-12 rounded-xl bg-[#F6F6F2] border border-[#E5E5DE] text-xs sm:text-sm font-mono font-bold px-4 text-[#111111] cursor-not-allowed outline-none select-all"
                 />
                 <p className="text-[11px] text-[#777777]">
-                  Linked to your resident account and damage slip receipts.
+                  Linked to your resident account and outing receipts.
                 </p>
               </div>
 

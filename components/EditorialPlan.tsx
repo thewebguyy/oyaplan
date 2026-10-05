@@ -307,7 +307,7 @@ export default function EditorialPlan({
         {/* Squad Actions (WhatsApp Share / Save Plan) */}
         <div className="flex items-center justify-between flex-wrap gap-3 py-4 border-t border-b border-border-default/40">
           <span className="text-xs font-bold text-text-muted">
-            Ready to lock it in with your squad?
+            Ready to run this with your squad?
           </span>
           <PlanActions plan={plan} input={input} initialPlanId={initialPlanId} />
         </div>

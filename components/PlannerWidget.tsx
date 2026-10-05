@@ -620,7 +620,7 @@ export default function PlannerWidget({
         className="w-full h-14 bg-[#111111] hover:bg-black text-[#F9E828] font-black uppercase tracking-wider text-sm rounded-[14px] flex items-center justify-center cursor-pointer shadow-[0_4px_16px_rgba(17,17,17,0.15)] active:scale-[0.98] transition-all duration-150 outline-none focus-visible:ring-3 focus-visible:ring-[#F9E828] sticky bottom-3 z-10 sm:static sm:bottom-auto tap-feedback"
         aria-label="Submit criteria and view plan"
       >
-        Lock In Damage &amp; Plan
+        Run the Plan →
       </button>
     </form>
   );

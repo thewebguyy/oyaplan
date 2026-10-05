@@ -90,7 +90,7 @@ export function DiscoveryReceiptDrawer({
               <div>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#111111] text-[#F9E828] text-[10px] font-mono font-bold uppercase tracking-wider mb-1.5">
                   <Receipt className="w-3 h-3 text-[#F9E828]" />
-                  <span>SAMPLE DAMAGE SLIP</span>
+                  <span>THE OUTSIDE MATH</span>
                 </div>
                 <h3 id="receipt-drawer-title" className="text-xl sm:text-2xl font-black text-[#111111] font-display uppercase tracking-tight">
                   {spot.name}
@@ -146,7 +146,7 @@ export function DiscoveryReceiptDrawer({
               <div className="pt-3 border-t-2 border-dashed border-[#111111]/25 flex items-baseline justify-between font-bold">
                 <div>
                   <span className="text-[#111111] text-base font-black uppercase tracking-wider block font-display">
-                    Total Landed Damage
+                    Total Outing Cost
                   </span>
                   <span className="text-[11px] text-[#555555] block font-mono">
                     ~₦{landedPerPerson.toLocaleString("en-NG")} each ({squadSize} people)
@@ -190,8 +190,7 @@ export function DiscoveryReceiptDrawer({
                   type="button"
                   className="w-full h-13 bg-[#111111] hover:bg-black text-[#F9E828] font-mono font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer tap-feedback"
                 >
-                  <span>Lock in this Outing</span>
-                  <ArrowRight className="w-4 h-4 text-[#F9E828]" />
+                  <span>Run the Plan →</span>
                 </button>
               </Link>
             </div>

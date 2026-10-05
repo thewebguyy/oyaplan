@@ -218,12 +218,12 @@ export function DiscoveryVenueCard({
               onOpenReceipt?.();
             }}
             className="mt-3 p-3.5 rounded-xl bg-[#F6F6F2] hover:bg-[#EAEAE2] border border-[#E5E5DE] hover:border-[#111111] flex items-baseline justify-between font-mono text-left w-full transition-all cursor-pointer group/price tap-feedback"
-            aria-label={`View sample damage slip for ${spot.name}`}
+            aria-label={`View total outing cost receipt for ${spot.name}`}
           >
             <div>
               <div className="flex items-center gap-1.5 mb-0.5">
                 <span className="text-[10px] uppercase font-bold text-[#6B7280] block font-mono">
-                  Landed Damage
+                  Total Outing Cost
                 </span>
                 <span className="text-[9px] font-mono font-bold text-[#111111] bg-white border border-[#E5E5DE] px-1.5 py-0.5 rounded group-hover/price:border-[#111111]">
                   Receipt Slip ▾
@@ -292,11 +292,10 @@ export function DiscoveryVenueCard({
 
           <Link
             href={forgeUrl}
-            aria-label={`Plan outing at ${spot.name}`}
+            aria-label={`Run plan for ${spot.name}`}
             className="flex-1 py-2.5 px-4 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] text-center text-xs font-black uppercase tracking-wider transition-all shadow-xs tap-feedback flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <span>Plan Outing</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>Run the Plan →</span>
           </Link>
         </div>
       </div>
