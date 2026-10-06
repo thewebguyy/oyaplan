@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { SessionResolver } from '@/lib/services/identity/sessionResolver';
 import { getPartnerVenue, getVenueMenuItems } from '@/lib/queries/partner';
-import { BusinessPricingClient } from './BusinessPricingClient';
+import { TheBoardClient } from '@/components/pulse/TheBoardClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,8 +13,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { venueId } = await params;
   return {
-    title: 'Pricing & Charges — OyaPlan for Business',
-    description: 'Maintain accurate pricing and structured mandatory charges to build planner confidence.',
+    title: 'The Board — Live Menu & Availability',
+    description: 'Control what customers can order. 86 sold-out items instantly and manage customer pricing.',
   };
 }
 
@@ -38,7 +38,7 @@ export default async function BusinessPricingPage({ params }: Props) {
   const menuItems = await getVenueMenuItems(venue.id);
 
   return (
-    <BusinessPricingClient
+    <TheBoardClient
       venue={venue}
       initialMenuItems={menuItems}
     />

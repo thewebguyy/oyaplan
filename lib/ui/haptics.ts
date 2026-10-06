@@ -2,7 +2,9 @@
  * Lightweight, safe haptic feedback utility for mobile and touch interactions.
  * Respects navigator.vibrate and user's reduced-motion preference.
  */
-export function triggerHaptic(type: "light" | "medium" | "heavy" | "selection" = "light") {
+export function triggerHaptic(
+  type: "light" | "medium" | "heavy" | "selection" | "success" | "warning" = "light"
+) {
   if (typeof window === "undefined") return;
 
   // Respect user's prefers-reduced-motion setting
@@ -27,6 +29,12 @@ export function triggerHaptic(type: "light" | "medium" | "heavy" | "selection" =
           break;
         case "heavy":
           navigator.vibrate(30);
+          break;
+        case "success":
+          navigator.vibrate([15, 40, 20]);
+          break;
+        case "warning":
+          navigator.vibrate([30, 50, 30]);
           break;
       }
     } catch {

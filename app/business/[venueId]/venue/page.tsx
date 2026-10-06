@@ -1,28 +1,25 @@
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { SessionResolver } from '@/lib/services/identity/sessionResolver';
-import { getPartnerVenue, getVenueMenuItems, getVenuePhotos } from '@/lib/queries/partner';
-import { PartnerOnboardingClient } from '@/app/partner/[venueId]/onboarding/PartnerOnboardingClient';
+import { getPartnerVenue, getVenuePhotos } from '@/lib/queries/partner';
+import { HouseRulesClient } from '@/components/pulse/HouseRulesClient';
 
 export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ venueId: string }>;
-  searchParams?: Promise<{ step?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { venueId } = await params;
   return {
-    title: 'Venue Details & Listing — OyaPlan for Business',
-    description: 'Update business hours, contact info, vibe tags, and photos to keep your OyaPlan presence current.',
+    title: 'House Rules & Live Vibe — The Pulse',
+    description: 'Define venue boundaries, toggle corkage and dress codes, and edit your live venue presentation.',
   };
 }
 
-export default async function BusinessVenuePage({ params, searchParams }: Props) {
+export default async function BusinessVenuePage({ params }: Props) {
   const { venueId } = await params;
-  const sp = searchParams ? await searchParams : undefined;
-  const initialStep = sp?.step ? Math.min(Math.max(parseInt(sp.step, 10) || 1, 1), 4) : 1;
   const identity = await SessionResolver.resolveIdentity();
 
   if (identity.type !== 'authenticated' || !identity.profile) {
@@ -38,19 +35,12 @@ export default async function BusinessVenuePage({ params, searchParams }: Props)
     return null;
   }
 
-  const [menuItems, photos] = await Promise.all([
-    getVenueMenuItems(venue.id),
-    getVenuePhotos(venue.id),
-  ]);
+  const photos = await getVenuePhotos(venue.id);
 
   return (
-    <div className="space-y-6">
-      <PartnerOnboardingClient
-        venue={venue}
-        initialMenuItems={menuItems}
-        initialPhotos={photos}
-        initialStep={initialStep}
-      />
-    </div>
+    <HouseRulesClient
+      venue={venue}
+      photos={photos}
+    />
   );
 }

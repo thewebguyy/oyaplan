@@ -143,7 +143,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
           <Sparkles className="w-4 h-4 text-[#F9E828] shrink-0 mt-0.5" />
           <div>
             <span className="font-bold text-white block text-sm">
-              Operator Authenticated. Select Your Venue Plaque.
+              Authenticated. Select Your Venue to Claim.
             </span>
             <p className="mt-0.5 text-gray-400">
               Search below for your pre-indexed venue profile to link it to your account and manage what Lagos outing squads see.
@@ -152,31 +152,31 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         </div>
       )}
 
-      {/* Operator's Desk Search Header */}
+      {/* The Pulse Venue Search Header */}
       <div className="space-y-4 text-center sm:text-left">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C1C1C] border border-[#2D2D2D] text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828] animate-pulse" />
-          <span>Operator&apos;s Desk • Digital Plaque Claim</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121418] border border-[#232732] text-[#00E575] text-xs font-mono font-bold uppercase tracking-wider shadow-xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
+          <span>The Pulse • Venue Claim</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-serif font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
           Find your venue on OyaPlan
         </h1>
         <p className="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-xl">
-          Search for your pre-indexed digital plaque, review your live menu items, and take control of the pricing data customers use to plan visits.
+          Search for your pre-indexed venue, review your live menu items, and take control of the pricing data customers use to plan visits.
         </p>
 
         {/* 01 Find -> 02 Inspect -> 03 Claim -> 04 Control Slim Editorial Timeline */}
         <div className="flex items-center gap-2 sm:gap-3 text-[11px] font-mono font-bold text-gray-400 overflow-x-auto py-2.5 border-y border-[#262626] scrollbar-none">
-          <span className="text-[#F9E828] flex items-center gap-1.5 shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828]" />
-            <span>01 Find Plaque</span>
+          <span className="text-[#00E575] flex items-center gap-1.5 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00E575]" />
+            <span>01 Find Venue</span>
           </span>
           <span className="text-[#444444]">→</span>
           <span className="shrink-0 text-gray-300">02 Inspect View</span>
           <span className="text-[#444444]">→</span>
-          <span className="shrink-0 text-gray-300">03 Submit Claim</span>
+          <span className="shrink-0 text-gray-300">03 Claim Presence</span>
           <span className="text-[#444444]">→</span>
-          <span className="shrink-0 text-gray-300">04 Control Pricing</span>
+          <span className="shrink-0 text-gray-300">04 Control The Pulse</span>
         </div>
       </div>
 
@@ -357,16 +357,16 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         </div>
       </div>
 
-      {/* VIP Concierge Fast-Track Banner */}
-      <div className="p-6 bg-[#161616] rounded-2xl border border-[#2D2D2D] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+      {/* Host Concierge Fast-Track Banner */}
+      <div className="p-6 bg-[#121418] rounded-2xl border border-[#232732] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#F9E828] uppercase tracking-wider">
-            <Sparkles className="w-3 h-3 text-[#F9E828]" />
-            <span>VIP Concierge Fast-Track</span>
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-wider">
+            <Sparkles className="w-3 h-3 text-[#00E575]" />
+            <span>Host Concierge Fast-Track</span>
           </div>
-          <h4 className="font-serif font-black text-base text-white">Can&apos;t find your venue plaque?</h4>
+          <h4 className="font-bold text-base text-white">Can&apos;t find your venue?</h4>
           <p className="text-xs text-gray-400 max-w-md">
-            Our Lagos operations desk will index, verify, and mint your digital plaque within 24 hours.
+            Our Lagos operations team will index and verify your venue profile within 24 hours.
           </p>
         </div>
         {generalClaimWaUrl && (
@@ -374,10 +374,10 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
             href={generalClaimWaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 h-11 px-5 bg-[#F9E828] hover:bg-[#F9E828]/90 text-[#111111] font-mono font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-2 transition-colors cursor-pointer tap-feedback"
+            className="shrink-0 h-11 px-5 bg-[#008751] hover:bg-[#007043] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-2 transition-colors cursor-pointer tap-feedback"
           >
-            <MessageSquare className="w-4 h-4 text-[#111111]" />
-            <span>Direct WhatsApp Desk</span>
+            <MessageSquare className="w-4 h-4 text-white" />
+            <span>Direct WhatsApp Host Stand</span>
           </a>
         )}
       </div>

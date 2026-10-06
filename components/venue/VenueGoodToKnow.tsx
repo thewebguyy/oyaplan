@@ -61,7 +61,7 @@ export function VenueGoodToKnow({ venue }: VenueGoodToKnowProps) {
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#111111] text-[#F9E828] text-[10px] font-mono font-bold uppercase tracking-wider mb-1">
               <Info className="w-3 h-3" />
-              <span>Policies &amp; Logistics</span>
+              <span>House Rules &amp; Policies</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#111111] font-display uppercase tracking-tight">
               Good To Know Before Going

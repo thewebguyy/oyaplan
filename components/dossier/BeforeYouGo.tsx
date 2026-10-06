@@ -18,7 +18,7 @@ export function BeforeYouGo({ venue, isCrossWater }: BeforeYouGoProps) {
     <div className="w-full mt-6 border border-[#EAE4DC] bg-[#FAF7F2] rounded-2xl p-5 sm:p-6 text-text-primary">
       <div className="flex items-center justify-between mb-4 border-b border-[#EAE4DC] pb-3">
         <h3 className="font-extrabold text-sm sm:text-base text-midnight-lagoon uppercase tracking-wide flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-brand-green" /> Practical Outing Logistics
+          <MapPin className="w-4 h-4 text-brand-green" /> Practical Outing Guidance
         </h3>
         <span className="text-[10px] font-bold text-brand-green uppercase tracking-widest bg-brand-green/10 px-2 py-0.5 rounded-full">
           Verified Smarts

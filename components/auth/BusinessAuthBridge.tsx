@@ -128,37 +128,37 @@ export default function BusinessAuthBridge() {
           href="/for-business"
           className="inline-flex items-center gap-2 text-xs font-mono font-bold text-white/70 hover:text-white transition-colors py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 tap-feedback"
         >
-          <ArrowLeft className="w-3.5 h-3.5 text-[#F6C642]" />
+          <ArrowLeft className="w-3.5 h-3.5 text-[#00E575]" />
           <span>BACK TO FOR-BUSINESS</span>
         </Link>
 
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#008751] animate-pulse" />
-          <span className="text-[11px] font-mono font-bold text-[#F6C642] uppercase tracking-widest">
-            OPERATOR CONTROL SYSTEM
+          <span className="w-2 h-2 rounded-full bg-[#00E575] animate-pulse" />
+          <span className="text-[11px] font-mono font-bold text-[#00E575] uppercase tracking-widest">
+            HOSPITALITY COMMAND CENTER
           </span>
         </div>
       </header>
 
       {/* Main Container */}
       <div className="relative z-10 w-full max-w-md mx-auto px-4 py-8 sm:py-12 my-auto">
-        <div className="bg-[#141517] rounded-3xl border-2 border-white/10 p-6 sm:p-8 shadow-2xl backdrop-blur-md">
+        <div className="bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-8 shadow-2xl backdrop-blur-md">
           {success ? (
             <div className="text-center space-y-5 animate-in fade-in zoom-in-95 duration-200">
-              <div className="w-16 h-16 bg-[#008751]/15 text-[#008751] border border-[#008751]/30 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
-                <CheckCircle2 className="w-8 h-8 text-[#008751]" />
+              <div className="w-16 h-16 bg-[#008751]/15 text-[#00E575] border border-[#008751]/30 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                <CheckCircle2 className="w-8 h-8 text-[#00E575]" />
               </div>
               <div className="space-y-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#F6C642] block">
-                  TRANSMISSION DISPATCHED
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00E575] block">
+                  ACCESS LINK SENT
                 </span>
                 <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                  Check your operator inbox
+                  Check your inbox
                 </h2>
                 <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
                   We sent a secure single-use access link to:
                 </p>
-                <div className="inline-block bg-black/50 font-mono font-bold text-xs sm:text-sm px-3 py-1.5 rounded-lg text-[#F6C642] border border-white/10 max-w-full truncate">
+                <div className="inline-block bg-black/50 font-mono font-bold text-xs sm:text-sm px-3 py-1.5 rounded-lg text-[#00E575] border border-white/10 max-w-full truncate">
                   {email}
                 </div>
               </div>
@@ -168,7 +168,7 @@ export default function BusinessAuthBridge() {
                   <Mail className="w-4 h-4 text-[#008751]" /> 
                   <span>Open on this device</span>
                 </div>
-                <p>Click the link inside to immediately authenticate into the Operator&apos;s Desk.</p>
+                <p>Click the link inside to immediately access The Floor.</p>
               </div>
 
               <button
@@ -184,19 +184,19 @@ export default function BusinessAuthBridge() {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Desk Plaque Header */}
+              {/* Floor Header */}
               <div className="space-y-2.5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#F6C642]/10 border border-[#F6C642]/30 text-[#F6C642] text-[10px] font-mono font-bold uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#F6C642]" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#008751]/15 border border-[#008751]/30 text-[#00E575] text-[10px] font-mono font-bold uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
                   <span>LAGOS VENUE INFRASTRUCTURE</span>
                 </div>
 
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-serif">
-                  Operator&apos;s Desk
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                  Access The Floor.
                 </h1>
 
                 <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
-                  Manage how your venue appears, what customers see, and the demand coming through OyaPlan.
+                  Manage your presence, review squads, and control the vibe.
                 </p>
               </div>
 
@@ -213,7 +213,7 @@ export default function BusinessAuthBridge() {
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={googleLoading || loading}
-                  className="w-full h-12 rounded-xl border border-white/15 hover:border-white/30 bg-white/5 hover:bg-white/10 text-xs sm:text-sm font-bold text-white flex items-center justify-center gap-3 transition-all tap-feedback disabled:opacity-60 cursor-pointer"
+                  className="w-full h-12 rounded-xl border border-[#232732] hover:border-white/30 bg-white/5 hover:bg-white/10 text-xs sm:text-sm font-bold text-white flex items-center justify-center gap-3 transition-all tap-feedback disabled:opacity-60 cursor-pointer"
                 >
                   {googleLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin text-white" />
@@ -225,13 +225,13 @@ export default function BusinessAuthBridge() {
                       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                     </svg>
                   )}
-                  <span>Sign in with Operator Google Account</span>
+                  <span>Sign in with Google</span>
                 </button>
               </div>
 
               <div className="relative flex items-center justify-center">
-                <div className="w-full border-t border-white/10" />
-                <span className="bg-[#141517] px-3 text-[10px] font-mono font-bold uppercase tracking-widest text-white/40 absolute">
+                <div className="w-full border-t border-[#232732]" />
+                <span className="bg-[#121418] px-3 text-[10px] font-mono font-bold uppercase tracking-widest text-white/40 absolute">
                   OR WORK EMAIL
                 </span>
               </div>
@@ -240,39 +240,39 @@ export default function BusinessAuthBridge() {
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div className="space-y-1.5 text-left">
                   <label htmlFor="business-email" className="block text-xs font-mono font-bold text-white/80 uppercase tracking-wide">
-                    Operator / Management Email
+                    Venue Management Email
                   </label>
                   <input
                     id="business-email"
                     type="email"
                     required
-                    placeholder="operator@venue.ng"
+                    placeholder="manager@venue.ng"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-12 rounded-xl bg-black/40 border border-white/15 focus:border-[#008751] focus:bg-black/60 text-xs sm:text-sm text-white font-mono px-4 outline-none transition-colors placeholder:text-white/30"
+                    className="w-full h-12 rounded-xl bg-black/40 border border-[#232732] focus:border-[#00E575] focus:bg-black/60 text-xs sm:text-sm text-white font-mono px-4 outline-none transition-colors placeholder:text-white/30"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading || googleLoading}
-                  className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs sm:text-sm tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2 tap-feedback disabled:opacity-60 cursor-pointer"
+                  className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#007043] active:bg-[#005a35] text-white font-bold text-xs sm:text-sm tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2 tap-feedback disabled:opacity-60 cursor-pointer"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <span>Enter Operator&apos;s Desk →</span>
+                    <span>Enter The Floor →</span>
                   )}
                 </button>
               </form>
 
-              <div className="pt-3 border-t border-white/10 text-center space-y-2">
+              <div className="pt-3 border-t border-[#232732] text-center space-y-2">
                 <p className="text-xs text-white/60">
                   Haven&apos;t claimed your venue yet?
                 </p>
                 <Link
                   href="/business/claim"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#F6C642] hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#00E575] hover:underline"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Claim your pre-indexed Lagos venue here</span>
@@ -287,7 +287,7 @@ export default function BusinessAuthBridge() {
             Looking to plan an outing?{" "}
             <Link
               href={`/login${rawReturnTo ? `?returnTo=${encodeURIComponent(rawReturnTo)}` : ""}`}
-              className="font-bold text-[#F6C642] hover:underline"
+              className="font-bold text-[#00E575] hover:underline"
             >
               Sign in as an OyaPlanner →
             </Link>
@@ -296,9 +296,9 @@ export default function BusinessAuthBridge() {
       </div>
 
       <footer className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 border-t border-white/10 flex items-center justify-between text-xs font-mono text-white/40">
-        <div>© {new Date().getFullYear()} OYAPLAN · OPERATOR INFRASTRUCTURE</div>
+        <div>© {new Date().getFullYear()} OYAPLAN · HOSPITALITY INFRASTRUCTURE</div>
         <Link href="/for-business" className="hover:text-white transition-colors">
-          WHAT IS OPERATOR&apos;S DESK?
+          HOW THE FLOOR WORKS
         </Link>
       </footer>
     </main>

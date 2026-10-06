@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { SessionResolver } from '@/lib/services/identity/sessionResolver';
-import { getPartnerVenue, getVenuePlanningInsights } from '@/lib/queries/partner';
-import { BusinessInsightsClient } from './BusinessInsightsClient';
+import { getPartnerVenue, getVenuePlanningInsights, getVenueMenuItems } from '@/lib/queries/partner';
+import { getVenuePulseData } from '@/lib/queries/pulse';
+import { RadarClient } from '@/components/pulse/RadarClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,8 +14,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { venueId } = await params;
   return {
-    title: 'Planning Insights — OyaPlan for Business',
-    description: 'Understand how Lagos squads plan around your venue, group sizes, and budget envelopes.',
+    title: 'Radar — Narrative Squad Intelligence',
+    description: 'Understand how Lagos squads plan around your venue: party sizes, primary occasions, and budget envelopes.',
   };
 }
 
@@ -35,12 +36,18 @@ export default async function BusinessInsightsPage({ params }: Props) {
     return null;
   }
 
-  const insights = await getVenuePlanningInsights(venue.id);
+  const [insights, demand, menuItems] = await Promise.all([
+    getVenuePlanningInsights(venue.id),
+    getVenuePulseData(venue.id, venue.reservation_fee),
+    getVenueMenuItems(venue.id),
+  ]);
 
   return (
-    <BusinessInsightsClient
+    <RadarClient
       venue={venue}
       insights={insights}
+      demand={demand}
+      menuItems={menuItems}
     />
   );
 }

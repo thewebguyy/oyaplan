@@ -39,8 +39,8 @@ export function BusinessActivityClient({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111111] text-[#F7F5EE] rounded-2xl border border-white/10 p-5 sm:p-6 shadow-sm">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest px-2 py-0.5 rounded bg-[#F6C642]/10 border border-[#F6C642]/20">
-              07 DEMAND ACTIVITY
+            <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-widest px-2 py-0.5 rounded bg-[#008751]/15 border border-[#008751]/30">
+              DEMAND ACTIVITY
             </span>
             <span className="text-white/30">·</span>
             <span className="text-xs text-white/60 font-mono">HONEST SIGNALS ONLY</span>

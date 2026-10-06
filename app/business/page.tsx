@@ -26,7 +26,7 @@ export default async function BusinessIndexPage() {
 
     if (venues.length > 1) {
       return (
-        <main className="min-h-[100dvh] bg-[#FAF7F2] antialiased py-12 px-4 sm:px-6">
+        <main className="min-h-[100dvh] bg-[#090A0D] text-white antialiased py-12 px-4 sm:px-6">
           <div className="max-w-xl mx-auto space-y-6">
             <div className="flex items-center gap-2.5 mb-2">
               <Image
@@ -34,20 +34,21 @@ export default async function BusinessIndexPage() {
                 alt="OyaPlan"
                 width={610}
                 height={143}
-                className="h-6 w-auto object-contain shrink-0"
+                className="h-6 w-auto object-contain shrink-0 invert"
                 priority
               />
-              <span className="text-[10px] font-mono font-bold text-[#111111] uppercase tracking-wider px-2 py-0.5 rounded bg-white border border-[#E5E5DE]">
-                Operator&apos;s Desk
+              <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#008751]/20 border border-[#008751]/40 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
+                THE PULSE
               </span>
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight">
-                Your Managed Venues
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Your Venues
               </h1>
-              <p className="text-xs sm:text-sm text-text-muted">
-                Select a business to review and update.
+              <p className="text-xs sm:text-sm text-white/60">
+                Select a venue to enter The Pulse command center.
               </p>
             </div>
 
@@ -56,19 +57,19 @@ export default async function BusinessIndexPage() {
                 <Link
                   key={venue.id}
                   href={`/business/${venue.id}`}
-                  className="block bg-white rounded-2xl border border-border-default p-5 shadow-xs hover:border-slate-900 transition-all tap-feedback"
+                  className="block bg-[#121418] rounded-2xl border border-[#232732] p-5 shadow-lg hover:border-[#008751] transition-all tap-feedback"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div className="space-y-1 min-w-0">
-                      <h2 className="text-base font-serif font-black text-slate-900 truncate">
+                      <h2 className="text-base font-bold text-white truncate">
                         {venue.name}
                       </h2>
-                      <p className="text-xs text-text-muted truncate">{venue.address}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#F6F6F2] text-[#111111] border border-[#E5E5DE]">
+                      <p className="text-xs text-white/60 truncate">{venue.address}</p>
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-white/5 text-[#00E575] border border-white/10">
                         {role}
                       </span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-text-muted shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-[#00E575] shrink-0" />
                   </div>
                 </Link>
               ))}
@@ -85,7 +86,7 @@ export default async function BusinessIndexPage() {
     }
   }
 
-  // Unauthenticated — send to the dedicated Operator's Desk sign in
+  // Unauthenticated — send to Access The Floor
   redirect('/login/business?returnTo=/business');
   return null;
 }

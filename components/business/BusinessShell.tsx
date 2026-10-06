@@ -12,15 +12,12 @@ import {
   ExternalLink,
   MessageCircle,
   ChevronDown,
-  LayoutDashboard,
-  Building,
-  Tag,
-  CalendarCheck,
-  LineChart,
   Activity,
-  Bell,
+  Users,
+  UtensilsCrossed,
+  SlidersHorizontal,
+  Radar,
   Check,
-  ArrowRight,
 } from 'lucide-react';
 
 interface VenueOption {
@@ -42,42 +39,40 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
   const isPending = venue.partner_state === 'verification_pending' || venue.partner_state === 'claim_pending';
 
   const navLinks = [
-    { num: '01', label: 'DESK',         href: `/business/${venue.id}`,              icon: LayoutDashboard },
-    { num: '02', label: 'VENUE',        href: `/business/${venue.id}/venue`,        icon: Building },
-    { num: '03', label: 'PRICING',      href: `/business/${venue.id}/pricing`,      icon: Tag },
-    { num: '04', label: 'UPDATES',      href: `/business/${venue.id}/updates`,      icon: Bell },
-    { num: '05', label: 'RESERVATIONS', href: `/business/${venue.id}/reservations`, icon: CalendarCheck },
-    { num: '06', label: 'INSIGHTS',     href: `/business/${venue.id}/insights`,     icon: LineChart },
-    { num: '07', label: 'ACTIVITY',     href: `/business/${venue.id}/activity`,     icon: Activity },
+    { id: 'pulse', label: 'THE PULSE', href: `/business/${venue.id}`, icon: Activity },
+    { id: 'floor', label: 'THE FLOOR', href: `/business/${venue.id}/reservations`, icon: Users },
+    { id: 'board', label: 'THE BOARD', href: `/business/${venue.id}/pricing`, icon: UtensilsCrossed },
+    { id: 'rules', label: 'HOUSE RULES', href: `/business/${venue.id}/venue`, icon: SlidersHorizontal },
+    { id: 'radar', label: 'RADAR', href: `/business/${venue.id}/insights`, icon: Radar },
   ];
 
   const otherVenues = allVenues.filter(({ venue: v }) => v.id !== venue.id);
 
   const statusBadge = isVerified ? (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#EAFDF3] text-[#008751] border border-[#A3F3C6]">
-      <ShieldCheck className="w-3.5 h-3.5" />
-      <span>● VERIFIED SPOT</span>
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#008751]/15 text-[#00E575] border border-[#008751]/30">
+      <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
+      <span>LIVE ON THE PULSE</span>
     </span>
   ) : isPending ? (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#FAF7F2] text-[#7A3E1D] border border-[#EAE4DC]">
-      <span>● UNDER REVIEW</span>
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/5 text-[#94A3B8] border border-white/10">
+      <span>● VERIFICATION IN REVIEW</span>
     </span>
   ) : (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white text-[#111111] border border-[#EAE4DC]">
-      <span>● CLAIMED PRESENCE</span>
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/5 text-white/80 border border-white/10">
+      <span>● CLAIMED SPOT</span>
     </span>
   );
 
   return (
-    <div className="min-h-[100dvh] bg-[#F7F5EE] text-[#111111] antialiased flex flex-col font-sans selection:bg-[#F6C642]/30">
-      {/* ── Business Top Navigation Header ── */}
-      <header className="w-full bg-[#111111] text-[#F7F5EE] border-b border-[#222222] sticky top-0 z-40">
+    <div className="min-h-[100dvh] bg-[#090A0D] text-[#F8F9FA] antialiased flex flex-col font-sans selection:bg-[#008751]/30">
+      {/* ── Business Command Header ── */}
+      <header className="w-full bg-[#121418] text-[#F8F9FA] border-b border-[#232732] sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Main Brand & Venue Bar */}
           <div className="h-16 flex items-center justify-between gap-3">
-            {/* Left: Brand + Operator's Desk Badge + Venue Switcher */}
+            {/* Left: Brand + Pulse Badge + Venue Switcher */}
             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-              <Link href="/for-business" className="flex items-center gap-2.5 shrink-0 tap-feedback">
+              <Link href={`/business/${venue.id}`} className="flex items-center gap-2.5 shrink-0 tap-feedback">
                 <Image
                   src="/logo.png"
                   alt="OyaPlan"
@@ -86,8 +81,9 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                   className="h-6 w-auto object-contain shrink-0 invert"
                   priority
                 />
-                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold tracking-widest text-[#111111] bg-[#F6C642] px-2 py-0.5 rounded uppercase">
-                  OPERATOR&apos;S DESK
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-[#00E575] bg-[#008751]/20 border border-[#008751]/40 px-2 py-0.5 rounded-full uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
+                  THE PULSE
                 </span>
               </Link>
 
@@ -97,10 +93,10 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
               <div className="relative min-w-0">
                 <button
                   onClick={() => setSwitcherOpen(!switcherOpen)}
-                  className="flex items-center gap-2 min-w-0 px-2.5 py-1.5 rounded-xl hover:bg-white/10 transition-colors tap-feedback text-left"
+                  className="flex items-center gap-2 min-w-0 px-2.5 py-1.5 rounded-xl hover:bg-white/10 transition-colors tap-feedback text-left cursor-pointer"
                   aria-label="Switch venue"
                 >
-                  <span className="text-xs sm:text-sm font-serif font-black text-white tracking-tight truncate max-w-[140px] sm:max-w-[220px]">
+                  <span className="text-xs sm:text-sm font-bold text-white tracking-tight truncate max-w-[140px] sm:max-w-[220px]">
                     {venue.name}
                   </span>
                   {otherVenues.length > 0 && (
@@ -110,9 +106,9 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
 
                 {/* Multi-Venue Dropdown Menu */}
                 {switcherOpen && otherVenues.length > 0 && (
-                  <div className="absolute top-full left-0 mt-2 w-72 bg-[#1A1A1A] text-white rounded-2xl border border-[#2D2D2D] shadow-2xl z-50 overflow-hidden divide-y divide-white/10 font-sans">
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-[#121418] text-white rounded-2xl border border-[#232732] shadow-2xl z-50 overflow-hidden divide-y divide-white/10 font-sans">
                     <div className="px-4 py-2.5 bg-black/40">
-                      <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-wider">
+                      <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-wider">
                         Your Managed Venues
                       </span>
                     </div>
@@ -122,9 +118,9 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                       <div className="px-4 py-2.5 bg-white/5 flex items-center justify-between">
                         <div className="min-w-0">
                           <span className="text-xs font-bold text-white block truncate">{venue.name}</span>
-                          <span className="text-[10px] font-mono text-[#008751]">Active Venue</span>
+                          <span className="text-[10px] font-mono text-[#00E575]">Active Venue</span>
                         </div>
-                        <Check className="w-3.5 h-3.5 text-[#008751] shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-[#00E575] shrink-0" />
                       </div>
 
                       {/* Other managed venues */}
@@ -157,10 +153,10 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                     href={waUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#008751] bg-[#EAFDF3] hover:bg-[#D8F6E4] border border-[#A3F3C6] transition-colors tap-feedback"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#00E575] bg-[#008751]/15 hover:bg-[#008751]/25 border border-[#008751]/30 transition-colors tap-feedback"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
-                    <span>WhatsApp Concierge</span>
+                    <span>Host Concierge</span>
                   </a>
                 );
               })()}
@@ -168,16 +164,16 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
               <Link
                 href={`/venue/${venue.id}`}
                 target="_blank"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#111111] bg-[#F7F5EE] hover:bg-[#F6C642] transition-colors tap-feedback"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/20 border border-white/10 transition-colors tap-feedback"
               >
                 <span>What Customers See</span>
-                <ExternalLink className="w-3 h-3 text-[#111111]" />
+                <ExternalLink className="w-3 h-3 text-[#00E575]" />
               </Link>
             </div>
           </div>
 
-          {/* Desktop Lagos Wayfinding Navigation Tabs */}
-          <nav className="hidden sm:flex space-x-1 overflow-x-auto no-scrollbar -mb-px pt-1 font-mono text-xs" role="navigation" aria-label="Operator's Desk Sections">
+          {/* Desktop Lagos Hospitality Wayfinding Navigation Tabs */}
+          <nav className="hidden sm:flex space-x-1 overflow-x-auto no-scrollbar -mb-px pt-1 font-mono text-xs" role="navigation" aria-label="The Pulse Sections">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               const Icon = link.icon;
@@ -186,15 +182,13 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                   key={link.href}
                   href={link.href}
                   onClick={() => triggerHaptic('selection')}
-                  className={`py-2.5 px-3 rounded-t-xl whitespace-nowrap flex items-center gap-1.5 font-bold transition-all tap-feedback border-b-2 ${
+                  className={`py-2.5 px-3.5 rounded-t-xl whitespace-nowrap flex items-center gap-2 font-bold transition-all tap-feedback border-b-2 ${
                     isActive
-                      ? 'border-[#F6C642] bg-white/10 text-[#F6C642]'
+                      ? 'border-[#00E575] bg-white/5 text-[#00E575]'
                       : 'border-transparent text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <span className={`text-[9px] ${isActive ? 'text-[#F6C642]' : 'text-white/40'}`}>
-                    {link.num}
-                  </span>
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#00E575]' : 'text-white/40'}`} />
                   <span>{link.label}</span>
                 </Link>
               );
@@ -208,16 +202,10 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
         {children}
       </main>
 
-      {/* ── Mobile Dedicated Operational Navigation ── */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-[#111111]/95 backdrop-blur-xl border-t border-[#222222] z-40 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
+      {/* ── Mobile Dedicated Operational Navigation (Thumb-first) ── */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-[#090A0D]/95 backdrop-blur-xl border-t border-[#232732] z-40 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
         <div className="flex items-stretch justify-around h-14">
-          {[
-            navLinks[0], // Desk
-            navLinks[1], // Venue
-            navLinks[2], // Pricing
-            navLinks[4], // Reservations
-            navLinks[5], // Insights
-          ].map((link) => {
+          {navLinks.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
             return (
@@ -226,10 +214,10 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                 href={link.href}
                 onClick={() => triggerHaptic('selection')}
                 className={`flex-1 flex flex-col items-center justify-center py-1 gap-1 text-[9px] font-mono font-bold transition-colors tap-feedback ${
-                  isActive ? 'text-[#F6C642]' : 'text-white/50 hover:text-white'
+                  isActive ? 'text-[#00E575]' : 'text-white/40 hover:text-white'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#F6C642]' : 'text-white/40'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#00E575]' : 'text-white/40'}`} />
                 <span className="truncate">{link.label}</span>
               </Link>
             );

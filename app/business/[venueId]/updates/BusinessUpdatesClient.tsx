@@ -94,8 +94,8 @@ export function BusinessUpdatesClient({ venue }: BusinessUpdatesClientProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111111] text-[#F7F5EE] rounded-2xl border border-white/10 p-5 sm:p-6 shadow-sm">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest px-2 py-0.5 rounded bg-[#F6C642]/10 border border-[#F6C642]/20">
-              04 OPERATIONAL STATUS
+            <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-widest px-2 py-0.5 rounded bg-[#008751]/15 border border-[#008751]/30">
+              OPERATIONAL STATUS
             </span>
             <span className="text-white/30">·</span>
             <span className="text-xs text-white/60 font-mono">REAL-TIME RELIABILITY</span>
@@ -112,13 +112,13 @@ export function BusinessUpdatesClient({ venue }: BusinessUpdatesClientProps) {
 
         <div className="shrink-0">
           {isClosed ? (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-[#F6C642]/15 text-[#F6C642] border border-[#F6C642]/30">
-              <AlertTriangle className="w-3.5 h-3.5 text-[#F6C642]" />
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-red-950/40 text-red-400 border border-red-500/30">
+              <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
               TEMPORARILY CLOSED
             </span>
           ) : (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-[#008751]/15 text-[#008751] border border-[#008751]/30">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#008751]" />
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-[#008751]/15 text-[#00E575] border border-[#008751]/30">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#00E575]" />
               OPEN FOR PLANNING
             </span>
           )}

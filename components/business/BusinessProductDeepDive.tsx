@@ -56,7 +56,7 @@ export function BusinessProductDeepDive() {
             </div>
           </div>
 
-          {/* Feature 2: House Policies & Logistics */}
+          {/* Feature 2: House Rules & Boundaries */}
           <div className="bg-[#FAF7F2] rounded-2xl border border-[#EAE4DC] p-6 space-y-5 flex flex-col justify-between">
             <div className="space-y-3">
               <div className="w-10 h-10 rounded-xl bg-white border border-[#EAE4DC] flex items-center justify-center text-amber-700 shadow-xs">
@@ -72,7 +72,7 @@ export function BusinessProductDeepDive() {
 
             <div className="bg-white rounded-xl p-3 border border-[#EAE4DC] space-y-2">
               <div className="flex items-center justify-between text-xs pb-1.5 border-b border-slate-100">
-                <span className="font-bold text-slate-900">Logistics Settings</span>
+                <span className="font-bold text-slate-900">House Rules</span>
                 <span className="text-[10px] text-slate-500 font-mono">Public Verified</span>
               </div>
               <div className="text-xs space-y-1 text-slate-700">

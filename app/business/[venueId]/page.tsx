@@ -1,17 +1,9 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import {
-  getPartnerVenue,
-  getVenueMenuItems,
-  getVenuePhotos,
-  calculateProfileHealth,
-  getVenueDemandActivity,
-  getVenuePlanningInsights,
-} from '@/lib/queries/partner';
+import { notFound, redirect } from 'next/navigation';
+import { getPartnerVenue, getVenueMenuItems, getVenuePhotos } from '@/lib/queries/partner';
+import { getVenuePulseData } from '@/lib/queries/pulse';
 import { SessionResolver } from '@/lib/services/identity/sessionResolver';
-import { redirect } from 'next/navigation';
-import { BusinessHomeClient } from './BusinessHomeClient';
-import type { VenuePhoto } from '@/lib/types';
+import { ThePulseClient } from '@/components/pulse/ThePulseClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,8 +14,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { venueId } = await params;
   return {
-    title: 'Business Home — OyaPlan for Business',
-    description: 'Understand what needs attention, how customers see your venue, and what OyaPlan is doing for your business.',
+    title: 'The Pulse — Live Hospitality Command Center',
+    description: 'Monitor tonight’s demand, broadcast capacity, review incoming squads, and control venue state in real time.',
   };
 }
 
@@ -42,22 +34,16 @@ export default async function BusinessHomePage({ params }: Props) {
     return null;
   }
 
-  const [menuItems, photos, activity, insights] = await Promise.all([
+  const [demand, menuItems, photos] = await Promise.all([
+    getVenuePulseData(venue.id, venue.reservation_fee),
     getVenueMenuItems(venue.id),
     getVenuePhotos(venue.id),
-    getVenueDemandActivity(venue.id),
-    getVenuePlanningInsights(venue.id),
   ]);
 
-  const approvedPhotos = photos.filter((p: VenuePhoto) => p.status === 'approved').length;
-  const health = calculateProfileHealth(venue, menuItems, approvedPhotos, 'business');
-
   return (
-    <BusinessHomeClient
+    <ThePulseClient
       venue={venue}
-      health={health}
-      activity={activity}
-      insights={insights}
+      demand={demand}
       menuItems={menuItems}
       photos={photos}
     />

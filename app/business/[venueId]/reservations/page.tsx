@@ -2,7 +2,8 @@ import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { SessionResolver } from '@/lib/services/identity/sessionResolver';
 import { getPartnerVenue } from '@/lib/queries/partner';
-import { BusinessReservationsClient } from './BusinessReservationsClient';
+import { getVenuePulseData } from '@/lib/queries/pulse';
+import { TheFloorClient } from '@/components/pulse/TheFloorClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,8 +14,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { venueId } = await params;
   return {
-    title: 'Reservations & Table Bookings — OyaPlan for Business',
-    description: 'Manage customer reservation requests, table deposits, and confirmed bookings.',
+    title: 'The Floor — Squad Approvals & Guestlist',
+    description: 'Review incoming squads, approve table deposits with swipe gestures, and manage tonight’s guestlist.',
   };
 }
 
@@ -35,9 +36,12 @@ export default async function BusinessReservationsPage({ params }: Props) {
     return null;
   }
 
+  const demand = await getVenuePulseData(venue.id, venue.reservation_fee);
+
   return (
-    <BusinessReservationsClient
+    <TheFloorClient
       venue={venue}
+      demand={demand}
     />
   );
 }
