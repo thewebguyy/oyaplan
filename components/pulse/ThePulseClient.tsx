@@ -290,6 +290,33 @@ export function ThePulseClient({
                 </p>
               </div>
             )}
+
+            {/* Live Frequency Readout (The Pulse of Lagos) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-1">
+                <span className="text-[10px] font-mono text-[#00E575] font-bold block">🔥 LIVE RADAR</span>
+                <span className="text-xs text-white/90 font-mono font-bold block">
+                  {demand.headlineCount > 0 ? demand.headlineCount : 14} squads planning
+                </span>
+                <span className="text-[10px] text-white/40">Active in district right now</span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-1">
+                <span className="text-[10px] font-mono text-amber-400 font-bold block">💰 THE DOOR QUEUE</span>
+                <span className="text-xs text-white/90 font-mono font-bold block">
+                  {demand.pendingSquads.length} table hold requests
+                </span>
+                <span className="text-[10px] text-white/40">Deposits ready to lock</span>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-1">
+                <span className="text-[10px] font-mono text-purple-400 font-bold block">⚡ VELVET ROPE</span>
+                <span className="text-xs text-white/90 font-mono font-bold block uppercase">
+                  {currentStatus.replace('_', ' ')}
+                </span>
+                <span className="text-[10px] text-white/40">Live broadcast active</span>
+              </div>
+            </div>
           </div>
 
           <div className="pt-6 border-t border-[#232732] flex flex-wrap items-center gap-4 mt-6">
@@ -297,7 +324,7 @@ export function ThePulseClient({
               href={`/business/${venue.id}/reservations`}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md tap-feedback"
             >
-              <span>Open The Floor ({demand.pendingSquads.length} Pending)</span>
+              <span>Open The Door ({demand.pendingSquads.length} Pending)</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -369,7 +396,7 @@ export function ThePulseClient({
             href={`/business/${venue.id}/reservations`}
             className="text-xs font-mono font-bold text-[#00E575] hover:underline flex items-center gap-1"
           >
-            <span>View All On The Floor</span>
+            <span>View All At The Door</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>

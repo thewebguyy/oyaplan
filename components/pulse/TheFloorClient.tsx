@@ -128,28 +128,36 @@ export function TheFloorClient({ venue, demand }: TheFloorClientProps) {
         </div>
       )}
 
-      {/* ── Floor Command Header ── */}
+      {/* ── Floor / Door Command Header ── */}
       <div className="bg-[#121418] text-[#F8F9FA] rounded-3xl border border-[#232732] p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] uppercase px-2.5 py-0.5 rounded-full bg-[#008751]/15 border border-[#008751]/30">
-                THE FLOOR · GUESTLIST COMMAND
+                THE DOOR · VELVET ROPE &amp; GUESTLIST
               </span>
               <span className="text-white/20 font-mono">/</span>
               <span className="text-xs font-mono text-white/50">{venue.name}</span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              Incoming Squads &amp; Guestlist
+              The Door: Incoming Squads &amp; Guestlist
             </h1>
 
             <p className="text-xs sm:text-sm text-white/60 max-w-xl leading-relaxed">
-              Swipe right to approve deposits and seat squads. Swipe left to decline. All deposits pay 100% directly to your business.
+              You control who gets past the velvet rope. Swipe right to approve table holds and collect deposits. Swipe left to decline. All deposits pay 100% directly to your business.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            <Link
+              href={`/business/${venue.id}/bouncer`}
+              className="px-4 py-2.5 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-mono font-bold transition-all shadow-md flex items-center gap-1.5 tap-feedback"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Open Bouncer Stand</span>
+            </Link>
+
             <Link
               href={`/business/${venue.id}/venue`}
               className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-[#232732] text-xs font-mono font-bold transition-colors tap-feedback"

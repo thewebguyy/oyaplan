@@ -137,10 +137,10 @@ export function BusinessMarketingHeader() {
   return (
     <header
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-50 bg-[#111111]/95 backdrop-blur-md border-b border-white/10 text-[#F7F5EE] transition-all"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#EAE4DC] text-[#111111] shadow-xs transition-all"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
-        {/* ── Left: Dedicated Business Wordmark ── */}
+        {/* ── Left: Dedicated Business Wordmark with Original Logo ── */}
         <div className="flex items-center gap-6 sm:gap-8">
           <Link href="/for-business" className="flex items-center gap-2.5 tap-feedback group">
             <Image
@@ -148,11 +148,12 @@ export function BusinessMarketingHeader() {
               alt="OyaPlan"
               width={610}
               height={143}
-              className="h-6 sm:h-7 w-auto object-contain shrink-0 invert"
+              className="h-7 w-auto object-contain shrink-0"
+              style={{ width: "auto", height: "26px" }}
               priority
             />
-            <div className="flex items-center gap-1.5 pl-2.5 border-l border-white/20">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] bg-[#008751]/20 border border-[#008751]/40 px-2 py-0.5 rounded uppercase">
+            <div className="flex items-center gap-1.5 pl-2.5 border-l border-black/15">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-[#008751] bg-[#008751]/10 border border-[#008751]/25 px-2 py-0.5 rounded uppercase">
                 THE PULSE
               </span>
             </div>
@@ -165,15 +166,15 @@ export function BusinessMarketingHeader() {
               onClick={() => setActiveMenu(activeMenu === "types" ? null : "types")}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all tap-feedback ${
                 activeMenu === "types"
-                  ? "bg-white/15 text-white"
-                  : "text-white/70 hover:text-white hover:bg-white/10"
+                  ? "bg-black/10 text-black"
+                  : "text-slate-700 hover:text-black hover:bg-black/5"
               }`}
               aria-expanded={activeMenu === "types"}
             >
               <span>01 VENUES</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeMenu === "types" ? "rotate-180 text-[#00E575]" : "text-white/40"
+                  activeMenu === "types" ? "rotate-180 text-[#008751]" : "text-slate-400"
                 }`}
               />
             </button>
@@ -183,15 +184,15 @@ export function BusinessMarketingHeader() {
               onClick={() => setActiveMenu(activeMenu === "features" ? null : "features")}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all tap-feedback ${
                 activeMenu === "features"
-                  ? "bg-white/15 text-white"
-                  : "text-white/70 hover:text-white hover:bg-white/10"
+                  ? "bg-black/10 text-black"
+                  : "text-slate-700 hover:text-black hover:bg-black/5"
               }`}
               aria-expanded={activeMenu === "features"}
             >
               <span>02 CAPABILITIES</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeMenu === "features" ? "rotate-180 text-[#00E575]" : "text-white/40"
+                  activeMenu === "features" ? "rotate-180 text-[#008751]" : "text-slate-400"
                 }`}
               />
             </button>
@@ -203,7 +204,7 @@ export function BusinessMarketingHeader() {
           {/* Access The Floor */}
           <Link
             href="/login/business"
-            className="flex items-center gap-1 text-xs font-mono font-bold text-white/80 hover:text-[#00E575] transition-colors px-3 py-2 rounded-xl hover:bg-white/10 tap-feedback"
+            className="flex items-center gap-1 text-xs font-mono font-bold text-slate-700 hover:text-[#008751] transition-colors px-3 py-2 rounded-xl hover:bg-black/5 tap-feedback"
             title="Access The Floor"
           >
             <span>ACCESS THE FLOOR</span>
@@ -223,8 +224,8 @@ export function BusinessMarketingHeader() {
               onClick={() => setUtilityMenuOpen(!utilityMenuOpen)}
               className={`p-2 rounded-xl transition-all tap-feedback ${
                 utilityMenuOpen
-                  ? "bg-white/15 text-white"
-                  : "text-white/70 hover:text-white hover:bg-white/10"
+                  ? "bg-black/10 text-black"
+                  : "text-slate-700 hover:text-black hover:bg-black/5"
               }`}
               aria-label="Toggle utility menu"
             >

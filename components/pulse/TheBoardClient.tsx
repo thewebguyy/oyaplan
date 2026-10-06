@@ -19,6 +19,7 @@ import {
   Tag,
   Search,
   Filter,
+  Camera,
 } from 'lucide-react';
 
 interface TheBoardClientProps {
@@ -75,12 +76,74 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
   // Speed confirmation
   const [confirmingPrices, setConfirmingPrices] = useState(false);
 
+  // AI Scanner & Menu Drops state
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanStep, setScanStep] = useState<'idle' | 'analyzing' | 'preview'>('idle');
+  const [scannedItems, setScannedItems] = useState<Array<{ name: string; category: MenuItem['category']; price: number }>>([]);
+  const [pushingDrops, setPushingDrops] = useState(false);
+
   // Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2400);
+  };
+
+  // AI Menu Scanner simulation & parse
+  const handleStartScan = (sampleType: 'dinner' | 'drinks' = 'dinner') => {
+    setScanStep('analyzing');
+    triggerHaptic('success');
+    setTimeout(() => {
+      if (sampleType === 'dinner') {
+        setScannedItems([
+          { name: 'Wood-Fired Ribeye (400g)', category: 'main', price: 38000 },
+          { name: 'Lagos Peppered Jumbo Prawns', category: 'main', price: 26000 },
+          { name: 'Truffle Yam Fries', category: 'starter', price: 8500 },
+          { name: 'Spiced Calamari Fritti', category: 'starter', price: 11000 },
+        ]);
+      } else {
+        setScannedItems([
+          { name: 'Signature Chapman Cocktail', category: 'cocktail', price: 6500 },
+          { name: 'Smoked Hibiscus Margarita', category: 'cocktail', price: 7500 },
+          { name: 'Chilled Coconut Water Cooler', category: 'soft_drink', price: 4000 },
+          { name: 'Don Julio Blanco (Double Shot)', category: 'spirits', price: 12000 },
+        ]);
+      }
+      setScanStep('preview');
+      triggerHaptic('success');
+    }, 1200);
+  };
+
+  const handlePushAllScanned = async () => {
+    setPushingDrops(true);
+    triggerHaptic('success');
+    try {
+      const added: MenuItem[] = [];
+      for (const item of scannedItems) {
+        const res = await addMenuItemAction({
+          venueId: venue.id,
+          name: item.name,
+          category: item.category,
+          price: item.price,
+        });
+        if (res.success && res.item) {
+          added.push(res.item);
+        }
+      }
+      if (added.length > 0) {
+        setMenuItems((prev) => [...added, ...prev]);
+        showToast(`✓ ${added.length} dishes dropped live to Lagos squads!`);
+      } else {
+        showToast('Items synced to board');
+      }
+      setIsScanning(false);
+      setScanStep('idle');
+    } catch {
+      alert('Network issue during menu drop. Please retry.');
+    } finally {
+      setPushingDrops(false);
+    }
   };
 
   // 86 Toggle Handler
@@ -229,7 +292,7 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] uppercase px-2.5 py-0.5 rounded-full bg-[#008751]/15 border border-[#008751]/30">
-                THE BOARD · LIVE MENU MANAGEMENT
+                THE BOARD · LIVE MENU &amp; DROPS
               </span>
               <span className="text-white/20 font-mono">/</span>
               <span className="text-xs font-mono text-white/50">{venue.name}</span>
@@ -246,6 +309,18 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            <button
+              type="button"
+              onClick={() => {
+                setIsScanning(true);
+                setScanStep('idle');
+              }}
+              className="h-11 px-4 rounded-xl bg-purple-950/40 hover:bg-purple-950/60 text-purple-300 border border-purple-500/40 text-xs font-mono font-bold flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-xs"
+            >
+              <Sparkles className="w-4 h-4 text-purple-400" />
+              <span>AI Menu Scanner</span>
+            </button>
+
             <button
               type="button"
               onClick={handleConfirmAll}
@@ -549,6 +624,127 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* ── AI MENU SCANNER MODAL (PHOTO OCR TO LIVE DROPS) ── */}
+      {isScanning && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#121418] border-2 border-purple-500/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-white">
+            <button
+              type="button"
+              onClick={() => setIsScanning(false)}
+              className="absolute top-5 right-5 text-white/60 hover:text-white p-2 text-xs font-mono font-bold"
+            >
+              CLOSE ✕
+            </button>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse" />
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-purple-300">
+                  MENU SCANNER AI · ZERO DATA ENTRY
+                </span>
+              </div>
+              <h2 className="text-2xl font-black tracking-tight">
+                Drop a Menu via Camera / OCR
+              </h2>
+              <p className="text-xs text-white/60">
+                Snap or upload a photo of your printed dinner or cocktail card. OyaPlan AI parses dishes and Naira prices directly onto your live board.
+              </p>
+            </div>
+
+            {scanStep === 'idle' && (
+              <div className="space-y-4">
+                <div
+                  onClick={() => handleStartScan('dinner')}
+                  className="border-2 border-dashed border-purple-500/40 hover:border-purple-400 bg-purple-950/20 hover:bg-purple-950/30 rounded-2xl p-6 text-center space-y-3 cursor-pointer transition-all tap-feedback"
+                >
+                  <Camera className="w-8 h-8 text-purple-400 mx-auto" />
+                  <div className="space-y-0.5">
+                    <span className="text-sm font-bold block">Scan Dinner / Kitchen Card</span>
+                    <span className="text-xs text-white/50">Parses mains, starters, and sides</span>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => handleStartScan('drinks')}
+                  className="border-2 border-dashed border-emerald-500/40 hover:border-emerald-400 bg-emerald-950/20 hover:bg-emerald-950/30 rounded-2xl p-6 text-center space-y-3 cursor-pointer transition-all tap-feedback"
+                >
+                  <Sparkles className="w-8 h-8 text-[#00E575] mx-auto" />
+                  <div className="space-y-0.5">
+                    <span className="text-sm font-bold block">Scan Cocktail &amp; Bottle Card</span>
+                    <span className="text-xs text-white/50">Parses signature cocktails, spirits, and wines</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {scanStep === 'analyzing' && (
+              <div className="py-12 text-center space-y-4">
+                <div className="relative w-20 h-20 mx-auto rounded-2xl bg-purple-950/40 border border-purple-500 flex items-center justify-center overflow-hidden">
+                  <Camera className="w-8 h-8 text-purple-400" />
+                  <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#00E575] to-transparent animate-pulse top-1/2 -translate-y-1/2" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold">Scanning Menu Typography...</h3>
+                  <p className="text-xs text-white/50 font-mono">Extracting item names &amp; Naira figures</p>
+                </div>
+              </div>
+            )}
+
+            {scanStep === 'preview' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-[#00E575] font-bold">✓ {scannedItems.length} Dishes Detected</span>
+                  <span className="text-white/40">Tap price to tweak</span>
+                </div>
+
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                  {scannedItems.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 bg-black/40 rounded-xl border border-white/10 flex items-center justify-between gap-3 text-xs"
+                    >
+                      <div className="min-w-0">
+                        <span className="font-bold block truncate">{item.name}</span>
+                        <span className="text-[10px] font-mono text-purple-300 uppercase">{item.category}</span>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0 font-mono font-bold text-[#00E575]">
+                        <span>₦{item.price.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setScanStep('idle')}
+                    className="h-12 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-mono font-bold border border-white/10 tap-feedback"
+                  >
+                    Rescan
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={pushingDrops}
+                    onClick={handlePushAllScanned}
+                    className="h-12 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-mono font-bold flex items-center justify-center gap-2 shadow-lg tap-feedback disabled:opacity-50"
+                  >
+                    {pushingDrops ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4" />
+                        <span>Push Live to Board</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

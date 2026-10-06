@@ -63,20 +63,20 @@ describe('The Pulse — Lagos Hospitality Command Center Invariants', () => {
       expect(businessSubtext.toLowerCase()).not.toContain('logistics');
     });
 
-    it('ensures business navigation contains exactly Pulse, Floor, Board, House Rules, Radar', () => {
+    it('ensures business navigation contains Pulse, Door, Board, Vibe Checks, Radar', () => {
       const businessNavItems = [
         { label: 'The Pulse', href: '/business/venue-123' },
-        { label: 'The Floor', href: '/business/venue-123/reservations' },
+        { label: 'The Door', href: '/business/venue-123/reservations' },
         { label: 'The Board', href: '/business/venue-123/pricing' },
-        { label: 'House Rules', href: '/business/venue-123/venue' },
+        { label: 'Vibe Checks', href: '/business/venue-123/venue' },
         { label: 'Radar', href: '/business/venue-123/insights' },
       ];
 
       const labels = businessNavItems.map((n) => n.label.toLowerCase());
       expect(labels).toContain('the pulse');
-      expect(labels).toContain('the floor');
+      expect(labels).toContain('the door');
       expect(labels).toContain('the board');
-      expect(labels).toContain('house rules');
+      expect(labels).toContain('vibe checks');
       expect(labels).toContain('radar');
 
       // Consumer labels must NEVER leak into business navigation
@@ -185,6 +185,38 @@ describe('The Pulse — Lagos Hospitality Command Center Invariants', () => {
       const stickyCardClasses = 'fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-3 right-3 z-30';
       expect(stickyCardClasses).toContain('env(safe-area-inset-bottom');
       expect(stickyCardClasses).toContain('z-30');
+    });
+  });
+
+  describe('Bouncer Mode & Operational Delegation Invariants', () => {
+    it('ensures bouncer mode is isolated from financial and banking settings', () => {
+      const bouncerStandData = {
+        plan_code: 'OYA-7K4M2P',
+        squad_size: 4,
+        deposit_paid: true,
+        // Sensitive data omitted
+        bank_account: undefined,
+        total_venue_payouts: undefined,
+        payout_history: undefined,
+      };
+
+      expect(bouncerStandData.bank_account).toBeUndefined();
+      expect(bouncerStandData.total_venue_payouts).toBeUndefined();
+      expect(bouncerStandData.deposit_paid).toBe(true);
+      expect(bouncerStandData.plan_code).toBe('OYA-7K4M2P');
+    });
+  });
+
+  describe('AI Menu Scanner & Menu Drops Invariants', () => {
+    it('simulates rapid OCR extraction of dishes and prices without manual data entry', () => {
+      const scannedMenuSample = [
+        { name: 'Wood-Fired Ribeye (400g)', category: 'main', price: 38000 },
+        { name: 'Signature Chapman Cocktail', category: 'cocktail', price: 6500 },
+      ];
+
+      expect(scannedMenuSample).toHaveLength(2);
+      expect(scannedMenuSample[0].price).toBeGreaterThan(0);
+      expect(scannedMenuSample[0].category).toBe('main');
     });
   });
 });

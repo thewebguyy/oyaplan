@@ -64,6 +64,31 @@ export function HouseRulesClient({ venue, photos }: HouseRulesClientProps) {
     setTimeout(() => setToastMessage(null), 2200);
   };
 
+  const VIBE_CHECKS_LIST = [
+    { id: 'No Slippers', label: 'No Slippers / Slides', icon: '🚫', desc: 'Strict footwear at the door' },
+    { id: 'RSVP Only', label: 'RSVP / Guestlist Only', icon: '🍾', desc: 'Velvet rope enforced, table holds only' },
+    { id: 'Shisha Available', label: 'Shisha Available', icon: '💨', desc: 'Lounge hookah service active' },
+    { id: '21+ Only', label: '21+ Strict Door Policy', icon: '🔞', desc: 'Age verification at the door' },
+    { id: 'Valet Parking', label: 'Valet Parking Available', icon: '🚗', desc: 'Attended car drop on arrival' },
+    { id: 'Live DJ Tonight', label: 'Live DJ Tonight', icon: '🎧', desc: 'Resident / guest DJ set on floor' },
+    { id: 'Cashless Only', label: 'Cashless Only (POS / Transfer)', icon: '💳', desc: 'Cards and bank transfers accepted' },
+    { id: 'Outdoor Terrace', label: 'Outdoor Terrace / Rooftop', icon: '🏖️', desc: 'Open-air seating available' },
+  ];
+
+  const handleToggleVibeCheck = (tag: string) => {
+    triggerHaptic('success');
+    const isPresent = vibeTags.includes(tag);
+    const updated = isPresent ? vibeTags.filter((t) => t !== tag) : [...vibeTags, tag];
+    setVibeTags(updated);
+    updateVenueVibeAction(venue.id, { vibeTags: updated })
+      .then((res) => {
+        if (res.success) {
+          showSaved(`Vibe Check: ${tag} ${isPresent ? 'turned off' : 'live'}`);
+        }
+      })
+      .catch(() => alert('Failed to sync vibe check.'));
+  };
+
   // --- HOUSE RULES AUTO-SAVE MUTATIONS ---
   const persistHouseRules = async (partialRules: Parameters<typeof updateVenueHouseRulesAction>[1], successMsg: string) => {
     triggerHaptic('success');
@@ -213,28 +238,78 @@ export function HouseRulesClient({ venue, photos }: HouseRulesClientProps) {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] uppercase px-2.5 py-0.5 rounded-full bg-[#008751]/15 border border-[#008751]/30">
-              HOUSE RULES &amp; LIVE VIBE
+              VIBE CHECKS &amp; HOUSE RULES
             </span>
             <span className="text-white/20 font-mono">/</span>
             <span className="text-xs font-mono text-white/50">{venue.name}</span>
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-            House Rules &amp; Live Presentation
+            Vibe Checks &amp; House Rules
           </h1>
 
           <p className="text-xs sm:text-sm text-white/60 max-w-xl leading-relaxed">
-            Oversized physical switches for your venue boundaries. No forms or save buttons — every toggle and tap auto-saves immediately.
+            Instant door policies and venue boundaries. Flip switches to broadcast what squads can expect tonight — auto-saved live without forms.
           </p>
         </div>
       </div>
+
+      {/* ── 0. VIBE CHECKS (DOOR RULES & AMENITIES VISUAL SWITCHES) ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#00E575]" />
+            <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
+              Tonight&apos;s Vibe Checks
+            </h2>
+          </div>
+          <span className="text-xs font-mono text-white/40">1-Tap Door Enforcement</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {VIBE_CHECKS_LIST.map((vc) => {
+            const isToggled = vibeTags.includes(vc.id);
+            return (
+              <div
+                key={vc.id}
+                onClick={() => handleToggleVibeCheck(vc.id)}
+                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer tap-feedback space-y-2 select-none ${
+                  isToggled
+                    ? 'bg-[#008751]/15 border-[#00E575] text-white shadow-md'
+                    : 'bg-[#121418] border-[#232732] text-white/70 hover:text-white hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">{vc.icon}</span>
+                  <div
+                    className={`w-11 h-6 rounded-full transition-colors p-0.5 ${
+                      isToggled ? 'bg-[#008751]' : 'bg-white/10'
+                    }`}
+                  >
+                    <div
+                      className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                        isToggled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-bold text-white">{vc.label}</h3>
+                  <p className="text-[11px] text-white/50 leading-tight mt-0.5">{vc.desc}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       {/* ── 1. HOUSE RULES (PHYSICAL SWITCH TOGGLE CARDS) ── */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4 text-[#00E575]" />
           <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
-            Venue House Rules
+            Fee &amp; Deposit Boundaries
           </h2>
         </div>
 

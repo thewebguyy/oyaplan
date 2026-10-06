@@ -40,37 +40,37 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
 
   const navLinks = [
     { id: 'pulse', label: 'THE PULSE', href: `/business/${venue.id}`, icon: Activity },
-    { id: 'floor', label: 'THE FLOOR', href: `/business/${venue.id}/reservations`, icon: Users },
+    { id: 'floor', label: 'THE DOOR', href: `/business/${venue.id}/reservations`, icon: Users },
     { id: 'board', label: 'THE BOARD', href: `/business/${venue.id}/pricing`, icon: UtensilsCrossed },
-    { id: 'rules', label: 'HOUSE RULES', href: `/business/${venue.id}/venue`, icon: SlidersHorizontal },
+    { id: 'rules', label: 'VIBE CHECKS', href: `/business/${venue.id}/venue`, icon: SlidersHorizontal },
     { id: 'radar', label: 'RADAR', href: `/business/${venue.id}/insights`, icon: Radar },
   ];
 
   const otherVenues = allVenues.filter(({ venue: v }) => v.id !== venue.id);
 
   const statusBadge = isVerified ? (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#008751]/15 text-[#00E575] border border-[#008751]/30">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#008751]/10 text-[#008751] border border-[#008751]/25">
+      <span className="w-1.5 h-1.5 rounded-full bg-[#008751] animate-pulse" />
       <span>LIVE ON THE PULSE</span>
     </span>
   ) : isPending ? (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/5 text-[#94A3B8] border border-white/10">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-black/5 text-[#64748B] border border-black/10">
       <span>● VERIFICATION IN REVIEW</span>
     </span>
   ) : (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/5 text-white/80 border border-white/10">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-black/5 text-[#111111] border border-black/10">
       <span>● CLAIMED SPOT</span>
     </span>
   );
 
   return (
     <div className="min-h-[100dvh] bg-[#090A0D] text-[#F8F9FA] antialiased flex flex-col font-sans selection:bg-[#008751]/30">
-      {/* ── Business Command Header ── */}
-      <header className="w-full bg-[#121418] text-[#F8F9FA] border-b border-[#232732] sticky top-0 z-40">
+      {/* ── Business Command Header (Original Logo & Crisp Contrast) ── */}
+      <header className="w-full bg-[#FFFFFF] text-[#111111] border-b border-[#EAE4DC] shadow-xs sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Main Brand & Venue Bar */}
           <div className="h-16 flex items-center justify-between gap-3">
-            {/* Left: Brand + Pulse Badge + Venue Switcher */}
+            {/* Left: Original Brand Logo + Pulse Badge + Venue Switcher */}
             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               <Link href={`/business/${venue.id}`} className="flex items-center gap-2.5 shrink-0 tap-feedback">
                 <Image
@@ -78,29 +78,30 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                   alt="OyaPlan"
                   width={610}
                   height={143}
-                  className="h-6 w-auto object-contain shrink-0 invert"
+                  className="h-7 w-auto object-contain shrink-0"
+                  style={{ width: "auto", height: "26px" }}
                   priority
                 />
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-[#00E575] bg-[#008751]/20 border border-[#008751]/40 px-2 py-0.5 rounded-full uppercase">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-[#008751] bg-[#008751]/10 border border-[#008751]/25 px-2.5 py-0.5 rounded-full uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#008751] animate-pulse" />
                   THE PULSE
                 </span>
               </Link>
 
-              <span className="text-white/20 shrink-0 font-mono">/</span>
+              <span className="text-black/15 shrink-0 font-mono">/</span>
 
               {/* Venue Selector */}
               <div className="relative min-w-0">
                 <button
                   onClick={() => setSwitcherOpen(!switcherOpen)}
-                  className="flex items-center gap-2 min-w-0 px-2.5 py-1.5 rounded-xl hover:bg-white/10 transition-colors tap-feedback text-left cursor-pointer"
+                  className="flex items-center gap-1.5 min-w-0 px-2.5 py-1.5 rounded-xl hover:bg-black/5 transition-colors tap-feedback text-left cursor-pointer"
                   aria-label="Switch venue"
                 >
-                  <span className="text-xs sm:text-sm font-bold text-white tracking-tight truncate max-w-[140px] sm:max-w-[220px]">
+                  <span className="text-xs sm:text-sm font-bold text-[#111111] tracking-tight truncate max-w-[140px] sm:max-w-[200px]">
                     {venue.name}
                   </span>
                   {otherVenues.length > 0 && (
-                    <ChevronDown className={`w-3.5 h-3.5 text-white/60 shrink-0 transition-transform ${switcherOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3.5 h-3.5 text-black/50 shrink-0 transition-transform ${switcherOpen ? 'rotate-180' : ''}`} />
                   )}
                 </button>
 
@@ -109,7 +110,7 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                   <div className="absolute top-full left-0 mt-2 w-72 bg-[#121418] text-white rounded-2xl border border-[#232732] shadow-2xl z-50 overflow-hidden divide-y divide-white/10 font-sans">
                     <div className="px-4 py-2.5 bg-black/40">
                       <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-wider">
-                        Your Managed Venues
+                        Your Venues
                       </span>
                     </div>
 
@@ -123,7 +124,7 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                         <Check className="w-3.5 h-3.5 text-[#00E575] shrink-0" />
                       </div>
 
-                      {/* Other managed venues */}
+                      {/* Other venues */}
                       {otherVenues.map(({ venue: v, role }) => (
                         <Link
                           key={v.id}
@@ -143,8 +144,18 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
               <div className="shrink-0 hidden lg:block">{statusBadge}</div>
             </div>
 
-            {/* Right: What Customers See & WhatsApp Concierge */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0 font-mono">
+            {/* Right: Bouncer Stand Link & What Customers See */}
+            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 font-mono">
+              {/* Bouncer Stand Mode Trigger */}
+              <Link
+                href={`/business/${venue.id}/bouncer`}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors tap-feedback"
+                title="Bouncer door stand (zero financials)"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-[#008751]" />
+                <span>Bouncer Mode</span>
+              </Link>
+
               {(() => {
                 const waUrl = getBusinessWhatsAppUrl('general_support', { venueName: venue.name });
                 if (!waUrl) return null;
@@ -153,10 +164,10 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                     href={waUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#00E575] bg-[#008751]/15 hover:bg-[#008751]/25 border border-[#008751]/30 transition-colors tap-feedback"
+                    className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#008751] bg-[#008751]/10 hover:bg-[#008751]/20 border border-[#008751]/25 transition-colors tap-feedback"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
-                    <span>Host Concierge</span>
+                    <span>Host WhatsApp</span>
                   </a>
                 );
               })()}
@@ -164,16 +175,16 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
               <Link
                 href={`/venue/${venue.id}`}
                 target="_blank"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/20 border border-white/10 transition-colors tap-feedback"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#111111] bg-black/5 hover:bg-black/10 border border-black/10 transition-colors tap-feedback"
               >
-                <span>What Customers See</span>
-                <ExternalLink className="w-3 h-3 text-[#00E575]" />
+                <span>Preview</span>
+                <ExternalLink className="w-3 h-3 text-[#008751]" />
               </Link>
             </div>
           </div>
 
           {/* Desktop Lagos Hospitality Wayfinding Navigation Tabs */}
-          <nav className="hidden sm:flex space-x-1 overflow-x-auto no-scrollbar -mb-px pt-1 font-mono text-xs" role="navigation" aria-label="The Pulse Sections">
+          <nav className="hidden sm:flex space-x-1 overflow-x-auto no-scrollbar -mb-px pt-1 font-mono text-xs border-t border-[#EAE4DC]/60" role="navigation" aria-label="The Pulse Sections">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               const Icon = link.icon;
@@ -182,13 +193,13 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
                   key={link.href}
                   href={link.href}
                   onClick={() => triggerHaptic('selection')}
-                  className={`py-2.5 px-3.5 rounded-t-xl whitespace-nowrap flex items-center gap-2 font-bold transition-all tap-feedback border-b-2 ${
+                  className={`py-2 px-3.5 rounded-t-xl whitespace-nowrap flex items-center gap-2 font-bold transition-all tap-feedback border-b-2 ${
                     isActive
-                      ? 'border-[#00E575] bg-white/5 text-[#00E575]'
-                      : 'border-transparent text-white/60 hover:text-white hover:bg-white/5'
+                      ? 'border-[#008751] bg-[#008751]/10 text-[#008751]'
+                      : 'border-transparent text-slate-600 hover:text-[#111111] hover:bg-black/5'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#00E575]' : 'text-white/40'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#008751]' : 'text-slate-400'}`} />
                   <span>{link.label}</span>
                 </Link>
               );
