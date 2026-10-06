@@ -189,7 +189,7 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
     try {
       const res = await confirmAllPricesAction(venue.id);
       if (res.success) {
-        showToast('All prices verified as current!');
+        showToast('All prices Operator-Confirmed as current.');
       } else {
         alert(res.error || 'Price confirmation failed.');
       }

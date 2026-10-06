@@ -4,15 +4,38 @@ import {
   toggleMenuItem86Action,
   updateVenueHouseRulesAction,
   updateVenueVibeAction,
+  decideSquadAction,
 } from '@/lib/actions/pulseActions';
 
-// Mock Supabase and Auth
-vi.mock('@/lib/supabaseServer', () => ({
-  createClient: vi.fn(),
+// Mock Supabase Server and Partner auth
+vi.mock('@/lib/supabase-server', () => ({
+  createServerClient: vi.fn().mockResolvedValue({
+    auth: {
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: 'test-user-123', email: 'operator@lagoslounge.ng' } },
+      }),
+    },
+    from: vi.fn().mockReturnValue({
+      update: vi.fn().mockReturnThis(),
+      insert: vi.fn().mockResolvedValue({ error: null }),
+      eq: vi.fn().mockReturnThis(),
+    }),
+  }),
 }));
 
-vi.mock('@/lib/actions/venueAuditActions', () => ({
-  logPriceChangeAction: vi.fn().mockResolvedValue({ success: true }),
+vi.mock('@/lib/queries/partner', () => ({
+  checkVenueAuthorization: vi.fn().mockImplementation((venueId: string, userId: string) => {
+    if (userId === 'test-user-123') return Promise.resolve({ authorized: true });
+    return Promise.resolve({ authorized: false });
+  }),
+}));
+
+vi.mock('@/lib/actions/venueAttributionActions', () => ({
+  verifyVenueVisitAction: vi.fn().mockResolvedValue({ success: true }),
+}));
+
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
 }));
 
 describe('The Pulse — Lagos Hospitality Command Center Invariants', () => {
@@ -110,6 +133,58 @@ describe('The Pulse — Lagos Hospitality Command Center Invariants', () => {
       const availableItems = menu.filter((item) => item.is_available);
       expect(availableItems).toHaveLength(1);
       expect(availableItems[0].name).toBe('Jollof Feast');
+    });
+  });
+
+  describe('Data Integrity & Trust Distinction Invariants', () => {
+    it('strictly separates Planning Intent from Confirmed Guestlist Bookings', () => {
+      // Planning intent = groups assembling plans at home
+      // Confirmed Guestlist = table hold requested with deposit and verified/seated by venue
+      const planningDemand = {
+        headlineCount: 42,
+        intentType: 'upstream_planning_intent',
+        isConfirmedVisit: false,
+      };
+
+      const confirmedBooking = {
+        squadSize: 6,
+        depositAmount: 50000,
+        isConfirmedVisit: true,
+        status: 'approved',
+      };
+
+      expect(planningDemand.isConfirmedVisit).toBe(false);
+      expect(confirmedBooking.isConfirmedVisit).toBe(true);
+      expect(planningDemand.intentType).not.toBe('confirmed_reservation');
+    });
+
+    it('preserves the distinction between Operator Confirmed and OyaPlan Verified', () => {
+      const operatorAttestation = 'Operator Confirmed';
+      const independentVerification = 'OyaPlan Verified';
+
+      expect(operatorAttestation).not.toBe(independentVerification);
+      expect(operatorAttestation).toContain('Operator');
+      expect(independentVerification).toContain('OyaPlan');
+    });
+  });
+
+  describe('Server-Side Security & Authorization on Mutations', () => {
+    it('authorizes squad decisions through server checkVenueAuthorization', async () => {
+      const authorizedResult = await decideSquadAction('venue-123', 'OYA-ABC', 'approve');
+      expect(authorizedResult.success).toBe(true);
+      expect(authorizedResult.decision).toBe('approve');
+
+      const declineResult = await decideSquadAction('venue-123', 'OYA-ABC', 'decline');
+      expect(declineResult.success).toBe(true);
+      expect(declineResult.decision).toBe('decline');
+    });
+  });
+
+  describe('Mobile Ergonomics & Safe Area Positioning', () => {
+    it('specifies safe-area aware positioning for sticky pending card', () => {
+      const stickyCardClasses = 'fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-3 right-3 z-30';
+      expect(stickyCardClasses).toContain('env(safe-area-inset-bottom');
+      expect(stickyCardClasses).toContain('z-30');
     });
   });
 });

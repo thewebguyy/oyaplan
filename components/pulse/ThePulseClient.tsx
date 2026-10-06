@@ -258,7 +258,7 @@ export function ThePulseClient({
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#00E575] animate-ping" />
               <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] uppercase">
-                REAL UPSTREAM DEMAND · LIVE SIGNALS
+                PLANNING INTENT (UPSTREAM) · REAL SQUAD PLANS
               </span>
             </div>
 
@@ -273,7 +273,7 @@ export function ThePulseClient({
                       <strong className="text-[#00E575] font-bold">
                         ₦{demand.totalPendingRevenue.toLocaleString()}
                       </strong>{' '}
-                      in pending squad revenue waiting for your review. Tap to confirm incoming tables.
+                      in pending table hold deposits ready for your review. (Planning intent indicates groups assembling plans at home; tap to confirm incoming tables).
                     </>
                   ) : (
                     <>All incoming squad requests have been reviewed and seated. The floor is in control.</>
@@ -315,13 +315,13 @@ export function ThePulseClient({
         <div className="bg-[#121418] rounded-3xl border border-[#232732] p-6 flex flex-col justify-between shadow-xl space-y-4">
           <div className="space-y-1">
             <span className="text-[10px] font-mono font-bold text-white/50 uppercase tracking-widest">
-              GUESTLIST &amp; REVENUE
+              CONFIRMED GUESTLIST · SEATED TABLES
             </span>
             <div className="text-3xl sm:text-4xl font-black text-white tabular-nums">
               ₦{demand.totalConfirmedRevenue.toLocaleString()}
             </div>
             <p className="text-xs text-white/60 font-mono">
-              Confirmed spend from {demand.approvedSquads.length} seated squads
+              Estimated spend from {demand.approvedSquads.length} confirmed tables (actual spend realized upon arrival)
             </p>
           </div>
 
@@ -457,7 +457,7 @@ export function ThePulseClient({
 
       {/* ── 4. STICKY PENDING BOOKING CARD (MOBILE ONLY) ── */}
       {nextPendingSquad && (
-        <div className="sm:hidden fixed bottom-18 left-3 right-3 z-30 animate-in slide-in-from-bottom-5 duration-200">
+        <div className="sm:hidden fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-3 right-3 z-30 animate-in slide-in-from-bottom-5 duration-200">
           <div className="bg-[#121418] border-2 border-[#00E575]/50 rounded-2xl p-4 shadow-2xl backdrop-blur-xl flex items-center justify-between gap-3">
             <div className="min-w-0 space-y-0.5">
               <span className="text-[9px] font-mono font-bold text-[#00E575] uppercase tracking-wider block">

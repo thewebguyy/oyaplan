@@ -37,10 +37,10 @@ export function BusinessHero() {
           
           {/* ── Left Column: Operator Value Proposition ── */}
           <div className="lg:col-span-6 space-y-6 sm:space-y-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#F6C642]/10 border border-[#F6C642]/30 text-[#F6C642]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#F6C642] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#008751]/20 border border-[#008751]/40 text-[#00E575]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
               <span className="text-[10px] font-mono font-bold tracking-widest uppercase">
-                OPERATOR&apos;S DESK · LAGOS INFRASTRUCTURE
+                THE PULSE · LAGOS HOSPITALITY COMMAND CENTER
               </span>
             </div>
 
@@ -68,17 +68,17 @@ export function BusinessHero() {
                   href="/login/business"
                   className="h-12 px-5 bg-white/5 hover:bg-white/10 text-white border border-white/20 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all tap-feedback cursor-pointer uppercase tracking-wider"
                 >
-                  <ShieldCheck className="w-4 h-4 text-[#F6C642]" />
-                  <span>Enter Operator&apos;s Desk</span>
+                  <ShieldCheck className="w-4 h-4 text-[#00E575]" />
+                  <span>Access The Floor</span>
                 </Link>
               </div>
 
               <div>
                 <Link
                   href="/login/business"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-white/50 hover:text-[#F6C642] transition-colors pt-1"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-white/50 hover:text-[#00E575] transition-colors pt-1"
                 >
-                  <span>Already claimed? Sign in to your venue desk →</span>
+                  <span>Already claimed? Access The Floor →</span>
                 </Link>
               </div>
             </div>
@@ -94,7 +94,7 @@ export function BusinessHero() {
                 <p className="text-[11px] text-white/50 uppercase mt-0.5">Direct Table Deposits</p>
               </div>
               <div>
-                <p className="text-xl sm:text-2xl font-black text-[#F6C642] tracking-tight">1-Tap</p>
+                <p className="text-xl sm:text-2xl font-black text-[#00E575] tracking-tight">1-Tap</p>
                 <p className="text-[11px] text-white/50 uppercase mt-0.5">Price Freshness</p>
               </div>
             </div>
@@ -104,17 +104,17 @@ export function BusinessHero() {
           <div className="lg:col-span-6 relative">
             <div className="space-y-4">
               
-              {/* Specimen 1: Operator's Desk Control Room Hero */}
+              {/* Specimen 1: The Pulse Control Room Specimen */}
               <div className="bg-[#141517] rounded-2xl border-2 border-white/10 p-5 shadow-2xl space-y-3 font-sans">
                 <div className="flex items-center justify-between pb-3 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#008751]" />
-                    <span className="text-[10px] font-mono font-bold text-[#F6C642] uppercase tracking-widest">
+                    <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-widest">
                       01 VENUE CONTROL PANEL
                     </span>
                   </div>
                   <span className="text-[10px] font-mono font-bold text-white/60 px-2 py-0.5 rounded bg-white/5 border border-white/10">
-                    PLAQUE-8492 · VI
+                    LIVE SPECIMEN · VI
                   </span>
                 </div>
 
@@ -134,7 +134,7 @@ export function BusinessHero() {
                       <span className="text-[9px] font-mono font-bold text-white/40 uppercase block">PRICE FRESHNESS</span>
                       <span className="text-xs font-bold text-white">Confirmed Current Today</span>
                     </div>
-                    <span className="text-[10px] font-mono font-bold text-[#F6C642] bg-[#F6C642]/10 px-2.5 py-1 rounded-lg border border-[#F6C642]/20">
+                    <span className="text-[10px] font-mono font-bold text-[#00E575] bg-[#008751]/20 px-2.5 py-1 rounded-lg border border-[#008751]/40">
                       VALID: 30 DAYS
                     </span>
                   </div>

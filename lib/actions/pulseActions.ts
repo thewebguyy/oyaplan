@@ -256,6 +256,27 @@ export async function decideSquadAction(
   decision: 'approve' | 'decline'
 ): Promise<{ success: boolean; decision: 'approve' | 'decline'; message: string; error?: string }> {
   try {
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return {
+        success: false,
+        decision,
+        message: 'Authentication required',
+        error: 'Authentication required',
+      };
+    }
+
+    const auth = await checkVenueAuthorization(venueId, user.id);
+    if (!auth.authorized) {
+      return {
+        success: false,
+        decision,
+        message: 'Unauthorized to manage this venue',
+        error: 'Unauthorized',
+      };
+    }
+
     if (decision === 'approve') {
       const res = await verifyVenueVisitAction(venueId, planCode);
       if (!res.success) {
@@ -263,13 +284,13 @@ export async function decideSquadAction(
           success: false,
           decision,
           message: res.error || 'Failed to approve squad',
-          error: res.error
+          error: res.error,
         };
       }
       return {
         success: true,
         decision,
-        message: 'Squad approved! Added to tonight’s guestlist.'
+        message: 'Squad approved! Added to tonight’s guestlist.',
       };
     } else {
       // Decline action: operator declines the request
@@ -278,7 +299,7 @@ export async function decideSquadAction(
       return {
         success: true,
         decision,
-        message: 'Squad request declined.'
+        message: 'Squad request declined.',
       };
     }
   } catch (err: unknown) {

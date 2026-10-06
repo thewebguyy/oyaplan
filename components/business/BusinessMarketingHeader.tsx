@@ -152,8 +152,8 @@ export function BusinessMarketingHeader() {
               priority
             />
             <div className="flex items-center gap-1.5 pl-2.5 border-l border-white/20">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-[#111111] bg-[#F6C642] px-2 py-0.5 rounded uppercase">
-                OPERATOR&apos;S DESK
+              <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] bg-[#008751]/20 border border-[#008751]/40 px-2 py-0.5 rounded uppercase">
+                THE PULSE
               </span>
             </div>
           </Link>
@@ -173,7 +173,7 @@ export function BusinessMarketingHeader() {
               <span>01 VENUES</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeMenu === "types" ? "rotate-180 text-[#F6C642]" : "text-white/40"
+                  activeMenu === "types" ? "rotate-180 text-[#00E575]" : "text-white/40"
                 }`}
               />
             </button>
@@ -191,22 +191,22 @@ export function BusinessMarketingHeader() {
               <span>02 CAPABILITIES</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeMenu === "features" ? "rotate-180 text-[#F6C642]" : "text-white/40"
+                  activeMenu === "features" ? "rotate-180 text-[#00E575]" : "text-white/40"
                 }`}
               />
             </button>
           </nav>
         </div>
 
-        {/* ── Right Actions: Desk Login, Claim CTA, Menu ── */}
+        {/* ── Right Actions: Floor Login, Claim CTA, Menu ── */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Sign In to Operator's Desk */}
+          {/* Access The Floor */}
           <Link
             href="/login/business"
-            className="flex items-center gap-1 text-xs font-mono font-bold text-white/80 hover:text-[#F6C642] transition-colors px-3 py-2 rounded-xl hover:bg-white/10 tap-feedback"
-            title="Sign in to your venue control room"
+            className="flex items-center gap-1 text-xs font-mono font-bold text-white/80 hover:text-[#00E575] transition-colors px-3 py-2 rounded-xl hover:bg-white/10 tap-feedback"
+            title="Access The Floor"
           >
-            <span>SIGN IN</span>
+            <span>ACCESS THE FLOOR</span>
           </Link>
 
           {/* Business Get Started CTA */}
@@ -235,8 +235,8 @@ export function BusinessMarketingHeader() {
             {utilityMenuOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-[#18191B] border border-white/15 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#F7F5EE]">
                 <div className="px-3 py-2 border-b border-white/10 mb-1">
-                  <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#F6C642]">
-                    OPERATOR INFRASTRUCTURE
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#00E575]">
+                    HOSPITALITY COMMAND CENTER
                   </p>
                 </div>
                 <Link
@@ -244,13 +244,13 @@ export function BusinessMarketingHeader() {
                   className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-white hover:bg-white/10 rounded-xl transition-colors font-mono"
                 >
                   <Lock className="w-3.5 h-3.5 text-[#008751]" />
-                  <span>Sign In to Desk</span>
+                  <span>Access The Floor</span>
                 </Link>
                 <Link
                   href="/business/claim"
                   className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-white hover:bg-white/10 rounded-xl transition-colors font-mono"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#F6C642]" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#00E575]" />
                   <span>Claim Lagos Venue</span>
                 </Link>
                 <a
@@ -523,12 +523,12 @@ export function BusinessMarketingHeader() {
             </Link>
 
             <Link
-              href="/account?next=/business&context=business"
+              href="/login/business"
               onClick={() => setMobileDrawerOpen(false)}
               className="w-full h-12 bg-slate-100 text-slate-900 font-bold rounded-xl flex items-center justify-center gap-2"
             >
               <Lock className="w-4 h-4 text-slate-600" />
-              <span>Business Sign In</span>
+              <span>Access The Floor</span>
             </Link>
 
             <Link
