@@ -38,6 +38,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   soft_drink: 'Soft Drinks',
   dessert: 'Desserts',
   activity_fee: 'Activities / Cover',
+  other: 'Other / Specials',
 };
 
 const CATEGORY_IMAGES: Record<string, string> = {
@@ -418,6 +419,7 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
                 <option value="soft_drink">Soft Drink / Water</option>
                 <option value="dessert">Dessert</option>
                 <option value="activity_fee">Cover / Activity</option>
+                <option value="other">Other / Special</option>
               </select>
             </div>
 

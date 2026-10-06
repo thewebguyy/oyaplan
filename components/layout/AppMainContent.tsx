@@ -6,18 +6,18 @@ import { usePathname } from "next/navigation";
 export function AppMainContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Venue management workspace has its own internal BusinessShell layout with full-height header & bottom tabs
-  const isBusinessWorkspace = pathname?.startsWith("/business/") && !pathname?.startsWith("/business/claim");
+  // Business portal (/business, /business/[venueId], /business/claim) has its own header and top clearance
+  const isBusinessPortal = pathname === "/business" || pathname?.startsWith("/business/");
   const isStandalone = pathname === "/feedback" || pathname === "/list-your-spot" || pathname === "/suggest-a-spot";
-  const isPublicBusiness = pathname === "/for-business" || pathname === "/business" || pathname?.startsWith("/business/claim") || pathname?.startsWith("/partner");
+  const isPublicBusiness = pathname === "/for-business" || pathname?.startsWith("/partner");
 
-  if (isBusinessWorkspace || isStandalone) {
+  if (isBusinessPortal || isStandalone) {
     return <div className="pt-0 pb-0">{children}</div>;
   }
 
   if (isPublicBusiness) {
-    // Floating pill business navbar, no consumer mobile bottom nav
-    return <div className="pt-16 sm:pt-20 pb-0">{children}</div>;
+    // Fixed business navbar clearance for marketing page
+    return <div className="pt-16 sm:pt-18 pb-0">{children}</div>;
   }
 
   // Consumer pages: 56px top nav + dynamic safe-area clearance for mobile bottom bar

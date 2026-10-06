@@ -93,11 +93,21 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
               {/* Venue Selector */}
               <div className="relative min-w-0">
                 <button
-                  onClick={() => setSwitcherOpen(!switcherOpen)}
-                  className="flex items-center gap-1.5 min-w-0 px-2.5 py-1.5 rounded-xl hover:bg-black/5 transition-colors tap-feedback text-left cursor-pointer"
+                  type="button"
+                  onClick={() => {
+                    if (otherVenues.length > 0) {
+                      setSwitcherOpen(!switcherOpen);
+                    }
+                  }}
+                  disabled={otherVenues.length === 0}
+                  className={`flex items-center gap-1.5 min-w-0 px-2.5 py-1.5 rounded-xl transition-colors tap-feedback text-left ${
+                    otherVenues.length > 0 ? 'hover:bg-black/5 cursor-pointer' : 'cursor-default'
+                  }`}
                   aria-label="Switch venue"
+                  aria-haspopup={otherVenues.length > 0 ? "true" : undefined}
+                  aria-expanded={otherVenues.length > 0 ? switcherOpen : undefined}
                 >
-                  <span className="text-xs sm:text-sm font-bold text-[#111111] tracking-tight truncate max-w-[140px] sm:max-w-[200px]">
+                  <span className="text-xs sm:text-sm font-bold text-[#111111] tracking-tight truncate max-w-[130px] sm:max-w-[200px]">
                     {venue.name}
                   </span>
                   {otherVenues.length > 0 && (
@@ -145,15 +155,15 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
             </div>
 
             {/* Right: Bouncer Stand Link & What Customers See */}
-            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 font-mono">
-              {/* Bouncer Stand Mode Trigger */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 font-mono">
+              {/* Bouncer Stand Mode Trigger (Accessible on all screens) */}
               <Link
                 href={`/business/${venue.id}/bouncer`}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors tap-feedback"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors tap-feedback"
                 title="Bouncer door stand (zero financials)"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-[#008751]" />
-                <span>Bouncer Mode</span>
+                <span className="hidden xs:inline sm:inline">Bouncer Mode</span>
               </Link>
 
               {(() => {
@@ -175,7 +185,7 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
               <Link
                 href={`/venue/${venue.id}`}
                 target="_blank"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#111111] bg-black/5 hover:bg-black/10 border border-black/10 transition-colors tap-feedback"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#111111] bg-black/5 hover:bg-black/10 border border-black/10 transition-colors tap-feedback"
               >
                 <span>Preview</span>
                 <ExternalLink className="w-3 h-3 text-[#008751]" />
@@ -186,7 +196,11 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
           {/* Desktop Lagos Hospitality Wayfinding Navigation Tabs */}
           <nav className="hidden sm:flex space-x-1 overflow-x-auto no-scrollbar -mb-px pt-1 font-mono text-xs border-t border-[#EAE4DC]/60" role="navigation" aria-label="The Pulse Sections">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const cleanPath = pathname?.replace(/\/$/, '') || '';
+              const cleanHref = link.href.replace(/\/$/, '');
+              const isActive = link.id === 'radar' 
+                ? cleanPath === cleanHref 
+                : cleanPath === cleanHref || cleanPath.startsWith(cleanHref + '/');
               const Icon = link.icon;
               return (
                 <Link
@@ -217,7 +231,11 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-[#090A0D]/95 backdrop-blur-xl border-t border-[#232732] z-40 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
         <div className="flex items-stretch justify-around h-14">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const cleanPath = pathname?.replace(/\/$/, '') || '';
+            const cleanHref = link.href.replace(/\/$/, '');
+            const isActive = link.id === 'radar' 
+              ? cleanPath === cleanHref 
+              : cleanPath === cleanHref || cleanPath.startsWith(cleanHref + '/');
             const Icon = link.icon;
             return (
               <Link
@@ -236,8 +254,8 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
         </div>
       </nav>
 
-      {/* Backdrop for dropdown */}
-      {switcherOpen && (
+      {/* Backdrop for dropdown (only when multiple venues exist) */}
+      {switcherOpen && otherVenues.length > 0 && (
         <div
           className="fixed inset-0 z-30"
           onClick={() => setSwitcherOpen(false)}

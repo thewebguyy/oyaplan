@@ -85,12 +85,13 @@ export default function NavBar() {
     return null;
   }
 
-  // Venue management workspace has its own internal BusinessShell layout and header
-  const isBusinessWorkspace = pathname?.startsWith("/business/") && !pathname?.startsWith("/business/claim");
-  if (isBusinessWorkspace) return null;
+  // Business portal (/business, /business/[venueId], /business/claim) manages its own standalone headers
+  if (pathname === "/business" || pathname?.startsWith("/business/")) {
+    return null;
+  }
 
-  // Business public & claim routes get the dedicated BusinessMarketingHeader
-  const isPublicBusiness = pathname === "/for-business" || pathname === "/business" || pathname?.startsWith("/business/claim") || pathname?.startsWith("/partner");
+  // Public marketing page (/for-business) & partner onboarding get BusinessMarketingHeader
+  const isPublicBusiness = pathname === "/for-business" || pathname?.startsWith("/partner");
   if (isPublicBusiness) {
     return <BusinessMarketingHeader />;
   }

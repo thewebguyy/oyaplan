@@ -24,6 +24,7 @@ import {
   CheckCircle2,
   ExternalLink,
 } from "lucide-react";
+import { getBusinessWhatsAppUrl } from "@/lib/config/businessWhatsApp";
 
 export function BusinessMarketingHeader() {
   const pathname = usePathname();
@@ -242,38 +243,49 @@ export function BusinessMarketingHeader() {
                 </div>
                 <Link
                   href="/login/business"
+                  onClick={() => setUtilityMenuOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-white hover:bg-white/10 rounded-xl transition-colors font-mono"
                 >
-                  <Lock className="w-3.5 h-3.5 text-[#008751]" />
+                  <Lock className="w-3.5 h-3.5 text-[#00E575]" />
                   <span>Access The Floor</span>
                 </Link>
                 <Link
                   href="/business/claim"
+                  onClick={() => setUtilityMenuOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-white hover:bg-white/10 rounded-xl transition-colors font-mono"
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-[#00E575]" />
-                  <span>Claim Lagos Venue</span>
+                  <span>Find &amp; Claim Venue</span>
                 </Link>
-                <a
-                  href="https://wa.me/2348000000000?text=Hi%20OyaPlan%20Business%20Team"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
-                >
-                  <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>WhatsApp Concierge</span>
-                </a>
+                {(() => {
+                  const waUrl = getBusinessWhatsAppUrl('general_support');
+                  if (!waUrl) return null;
+                  return (
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setUtilityMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-[#00E575]" />
+                      <span>WhatsApp Concierge</span>
+                    </a>
+                  );
+                })()}
                 <Link
                   href="/for-business#faq"
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
+                  onClick={() => setUtilityMenuOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
                 >
-                  <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-                  <span>FAQ & Support</span>
+                  <HelpCircle className="w-3.5 h-3.5 text-white/50" />
+                  <span>FAQ &amp; Support</span>
                 </Link>
-                <div className="border-t border-slate-100 my-1 pt-1">
+                <div className="border-t border-white/10 my-1 pt-1">
                   <Link
                     href="/"
-                    className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-brand-green hover:bg-[#EAFDF3] rounded-xl transition-colors"
+                    onClick={() => setUtilityMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-[#00E575] hover:bg-white/10 rounded-xl transition-colors"
                   >
                     <span>View Marketplace</span>
                     <ExternalLink className="w-3 h-3" />
@@ -313,6 +325,7 @@ export function BusinessMarketingHeader() {
                 <div className="pt-3">
                   <Link
                     href="/business/claim"
+                    onClick={() => setActiveMenu(null)}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-green hover:underline"
                   >
                     <span>Claim your spot now</span>
@@ -340,6 +353,7 @@ export function BusinessMarketingHeader() {
                           <Link
                             key={item.name}
                             href={item.href}
+                            onClick={() => setActiveMenu(null)}
                             className="block p-2.5 rounded-xl hover:bg-slate-50 transition-colors group/item"
                           >
                             <p className="text-xs font-bold text-slate-900 group-hover/item:text-brand-green transition-colors">
@@ -424,9 +438,18 @@ export function BusinessMarketingHeader() {
         </div>
       )}
 
+      {/* Backdrop for desktop mega menu */}
+      {activeMenu !== null && (
+        <div
+          className="hidden lg:block fixed inset-0 top-16 sm:top-18 bg-black/40 backdrop-blur-xs z-40"
+          onClick={() => setActiveMenu(null)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ── Mobile Full-Height Navigation Drawer ── */}
       {mobileDrawerOpen && (
-        <div className="lg:hidden fixed inset-0 top-16 bg-white z-50 overflow-y-auto p-6 space-y-6 animate-in slide-in-from-right duration-200">
+        <div className="lg:hidden fixed inset-0 top-16 sm:top-18 bg-white z-50 overflow-y-auto p-6 space-y-6 animate-in slide-in-from-right duration-200">
           <div className="space-y-2">
             <Link
               href="/for-business"

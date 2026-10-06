@@ -19,7 +19,7 @@ import {
 
 export function BusinessHero() {
   return (
-    <section className="relative pt-24 sm:pt-32 pb-16 sm:pb-24 overflow-hidden bg-[#0C0D0E] text-[#F7F5EE]">
+    <section className="relative pt-8 sm:pt-12 pb-16 sm:pb-24 overflow-hidden bg-[#0C0D0E] text-[#F7F5EE]">
       {/* Subtle Architectural Road Grid Background */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-20"
