@@ -26,26 +26,32 @@ export default async function BusinessIndexPage() {
 
     if (venues.length > 1) {
       return (
-        <main className="min-h-[100dvh] bg-[#090A0D] text-white antialiased py-12 px-4 sm:px-6">
-          <div className="max-w-xl mx-auto space-y-6">
-            <div className="flex items-center gap-2.5 mb-2">
-              <Image
-                src="/logo.png"
-                alt="OyaPlan"
-                width={610}
-                height={143}
-                className="h-6 w-auto object-contain shrink-0 invert"
-                priority
-              />
-              <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#008751]/20 border border-[#008751]/40 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
-                THE PULSE
-              </span>
+        <div className="min-h-[100dvh] bg-[#090A0D] text-white antialiased flex flex-col font-sans selection:bg-[#008751]/30">
+          {/* ── Crisp White Business Header with Original Logo ── */}
+          <header className="w-full bg-[#FFFFFF] text-[#111111] border-b border-[#EAE4DC] shadow-xs sticky top-0 z-40">
+            <div className="max-w-xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <Image
+                  src="/logo.png"
+                  alt="OyaPlan"
+                  width={610}
+                  height={143}
+                  className="h-7 w-auto object-contain shrink-0"
+                  style={{ width: "auto", height: "26px" }}
+                  priority
+                />
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-[#008751] bg-[#008751]/10 border border-[#008751]/25 px-2.5 py-0.5 rounded-full uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#008751] animate-pulse" />
+                  THE PULSE
+                </span>
+              </div>
             </div>
+          </header>
 
+          <main className="flex-1 max-w-xl w-full mx-auto py-10 px-4 sm:px-6 space-y-6">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                Your Venues
+                Your Venues on the Floor
               </h1>
               <p className="text-xs sm:text-sm text-white/60">
                 Select a venue to enter The Pulse command center.
@@ -74,8 +80,8 @@ export default async function BusinessIndexPage() {
                 </Link>
               ))}
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       );
     }
 

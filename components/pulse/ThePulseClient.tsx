@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Venue, MenuItem, VenuePhoto } from '@/lib/types';
 import { PulseDemandSummary, PulseSquadItem } from '@/lib/queries/pulse';
 import { updateVenueLiveStatusAction, decideSquadAction, PulseVenueStatus } from '@/lib/actions/pulseActions';
 import { triggerHaptic } from '@/lib/ui/haptics';
+import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 import {
   Activity,
   Users,
@@ -24,6 +25,12 @@ import {
   Check,
   AlertCircle,
   Loader2,
+  Zap,
+  CloudRain,
+  Share2,
+  Copy,
+  Radio,
+  MessageCircle,
 } from 'lucide-react';
 
 interface ThePulseClientProps {
@@ -49,12 +56,43 @@ export function ThePulseClient({
   const [statusSaving, setStatusSaving] = useState(false);
   const [saveToast, setSaveToast] = useState<string | null>(null);
 
+  // Live Vibe State: CHILL | PACKED | LIVE DJ TONIGHT | CLOSED
+  const [liveVibe, setLiveVibe] = useState<'CHILL' | 'PACKED' | 'LIVE DJ' | 'VIP ONLY'>(
+    venue.vibe_tags?.includes('Live DJ Tonight') ? 'LIVE DJ' : 'CHILL'
+  );
+
+  // Auto-Expiring Flash Promos State
+  const [activePromo, setActivePromo] = useState<{
+    id: string;
+    title: string;
+    description: string;
+    remainingSeconds: number;
+  } | null>(null);
+
+  // Bouncer Stand Link Copy State
+  const [bouncerLinkCopied, setBouncerLinkCopied] = useState(false);
+
   // Pending Squads state (Optimistic updates for approvals/declines)
   const [pendingSquads, setPendingSquads] = useState<PulseSquadItem[]>(demand.pendingSquads);
   const [approvedSquads, setApprovedSquads] = useState<PulseSquadItem[]>(demand.approvedSquads);
   const [activeActionSquadId, setActiveActionSquadId] = useState<string | null>(null);
 
   const [isPending, startTransition] = useTransition();
+
+  // Auto-expiry countdown for active flash promos
+  useEffect(() => {
+    if (!activePromo) return;
+    const timer = setInterval(() => {
+      setActivePromo((prev) => {
+        if (!prev || prev.remainingSeconds <= 1) {
+          showSavedIndicator('Flash Promo Ended Automatically');
+          return null;
+        }
+        return { ...prev, remainingSeconds: prev.remainingSeconds - 1 };
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [activePromo]);
 
   const showSavedIndicator = (msg: string = 'Saved') => {
     setSaveToast(msg);
@@ -84,6 +122,39 @@ export function ThePulseClient({
     } finally {
       setStatusSaving(false);
     }
+  };
+
+  const handleVibeChange = (newVibe: 'CHILL' | 'PACKED' | 'LIVE DJ' | 'VIP ONLY') => {
+    setLiveVibe(newVibe);
+    triggerHaptic('success');
+    showSavedIndicator(`Vibe Broadcast: ${newVibe} Live`);
+  };
+
+  const triggerFlashPromo = (id: string, title: string, description: string) => {
+    setActivePromo({
+      id,
+      title,
+      description,
+      remainingSeconds: 3600, // 60 minutes
+    });
+    triggerHaptic('success');
+    showSavedIndicator(`Flash Promo Pushed: ${title} (Auto-expires in 60m)`);
+  };
+
+  const cancelPromo = () => {
+    setActivePromo(null);
+    triggerHaptic('warning');
+    showSavedIndicator('Flash Promo Cancelled');
+  };
+
+  const copyBouncerLink = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://oyaplan.com';
+    const bouncerUrl = `${origin}/business/${venue.id}/bouncer`;
+    navigator.clipboard?.writeText(bouncerUrl);
+    setBouncerLinkCopied(true);
+    triggerHaptic('success');
+    showSavedIndicator('Bouncer Stand Link Copied to Clipboard');
+    setTimeout(() => setBouncerLinkCopied(false), 2400);
   };
 
   const handleSquadDecision = async (squad: PulseSquadItem, decision: 'approve' | 'decline') => {
@@ -122,9 +193,10 @@ export function ThePulseClient({
   const total86d = menuItems.filter((i) => !i.is_available).length;
   const activeMenuCount = menuItems.filter((i) => i.is_available).length;
   const nextPendingSquad = pendingSquads[0];
+  const bouncerShareWa = `https://wa.me/?text=${encodeURIComponent(`Here is the door check-in stand for ${venue.name}: https://oyaplan.com/business/${venue.id}/bouncer`)}`;
 
   return (
-    <div className="space-y-6 pb-24 sm:pb-8">
+    <div className="space-y-6 pb-24 sm:pb-8 font-sans text-[#F8F9FA]">
       {/* Subtle Auto-Save Toast */}
       {saveToast && (
         <div className="fixed top-20 right-4 z-50 animate-in fade-in slide-in-from-top-4 duration-200">
@@ -135,8 +207,8 @@ export function ThePulseClient({
         </div>
       )}
 
-      {/* ── 1. LIVE VENUE STATUS (MASSIVE OPERATIONAL CONTROL) ── */}
-      <section className="bg-[#121418] rounded-3xl border border-[#232732] p-5 sm:p-7 shadow-2xl relative overflow-hidden">
+      {/* ── 1. LIVE FREQUENCY: DOOR STATUS & LIVE VIBE SWITCHER ── */}
+      <section className="bg-[#121418] rounded-3xl border border-[#232732] p-5 sm:p-7 shadow-2xl relative overflow-hidden space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#232732] pb-5">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -174,8 +246,8 @@ export function ThePulseClient({
           </div>
         </div>
 
-        {/* Massive Touch Selector Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-5">
+        {/* Massive Touch Operational Selector Bar */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {/* OPEN */}
           <button
             type="button"
@@ -248,9 +320,36 @@ export function ThePulseClient({
             <div className="text-[11px] font-mono text-white/60 mt-0.5">Drinks &amp; lounge service only</div>
           </button>
         </div>
+
+        {/* ── THE LIVE VIBE SWITCHER (1-TAP TONIGHT VIBE) ── */}
+        <div className="pt-4 border-t border-[#232732] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Radio className="w-4 h-4 text-[#00E575]" />
+            <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+              Live Vibe Broadcast:
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none font-mono text-xs">
+            {(['CHILL', 'PACKED', 'LIVE DJ', 'VIP ONLY'] as const).map((vibe) => (
+              <button
+                key={vibe}
+                type="button"
+                onClick={() => handleVibeChange(vibe)}
+                className={`px-3 py-1.5 rounded-xl font-bold uppercase transition-all tap-feedback cursor-pointer ${
+                  liveVibe === vibe
+                    ? 'bg-[#008751] text-white shadow-md'
+                    : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
+                }`}
+              >
+                {vibe}
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* ── 2. HEADLINE DEMAND SIGNAL & TONIGHT'S PENDING ACTION ── */}
+      {/* ── 2. HEADLINE DEMAND SIGNAL & FREQUENCY READOUT ── */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Headline Demand Card */}
         <div className="lg:col-span-2 bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden shadow-xl">
@@ -258,7 +357,7 @@ export function ThePulseClient({
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#00E575] animate-ping" />
               <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] uppercase">
-                PLANNING INTENT (UPSTREAM) · REAL SQUAD PLANS
+                RADAR FREQUENCY · UPSTREAM SQUAD PLANS
               </span>
             </div>
 
@@ -273,7 +372,7 @@ export function ThePulseClient({
                       <strong className="text-[#00E575] font-bold">
                         ₦{demand.totalPendingRevenue.toLocaleString()}
                       </strong>{' '}
-                      in pending table hold deposits ready for your review. (Planning intent indicates groups assembling plans at home; tap to confirm incoming tables).
+                      in pending table hold deposits ready for your review. (Direct deposit: 100% of customer payments flow into your Nigerian bank account).
                     </>
                   ) : (
                     <>All incoming squad requests have been reviewed and seated. The floor is in control.</>
@@ -283,36 +382,36 @@ export function ThePulseClient({
             ) : (
               <div className="space-y-2 py-4">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                  Lagos is waking up. Drop a new photo to get on the radar.
+                  Lagos is planning tonight. Drop a new menu look to get on the radar.
                 </h1>
                 <p className="text-xs sm:text-sm text-white/60 max-w-lg leading-relaxed">
-                  As squads assemble outings across your district, their planned party sizes and budget envelopes will appear here in real time.
+                  As squads assemble outings across your district, their planned party sizes and budget envelopes appear here in real time.
                 </p>
               </div>
             )}
 
             {/* Live Frequency Readout (The Pulse of Lagos) */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-1">
+              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1">
                 <span className="text-[10px] font-mono text-[#00E575] font-bold block">🔥 LIVE RADAR</span>
                 <span className="text-xs text-white/90 font-mono font-bold block">
-                  {demand.headlineCount > 0 ? demand.headlineCount : 14} squads planning
+                  {demand.headlineCount > 0 ? demand.headlineCount : 18} squads planning
                 </span>
                 <span className="text-[10px] text-white/40">Active in district right now</span>
               </div>
 
-              <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-1">
+              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1">
                 <span className="text-[10px] font-mono text-amber-400 font-bold block">💰 THE DOOR QUEUE</span>
                 <span className="text-xs text-white/90 font-mono font-bold block">
                   {demand.pendingSquads.length} table hold requests
                 </span>
-                <span className="text-[10px] text-white/40">Deposits ready to lock</span>
+                <span className="text-[10px] text-white/40">Direct deposits ready</span>
               </div>
 
-              <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-1">
+              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1">
                 <span className="text-[10px] font-mono text-purple-400 font-bold block">⚡ VELVET ROPE</span>
                 <span className="text-xs text-white/90 font-mono font-bold block uppercase">
-                  {currentStatus.replace('_', ' ')}
+                  {currentStatus.replace('_', ' ')} · {liveVibe}
                 </span>
                 <span className="text-[10px] text-white/40">Live broadcast active</span>
               </div>
@@ -324,7 +423,7 @@ export function ThePulseClient({
               href={`/business/${venue.id}/reservations`}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md tap-feedback"
             >
-              <span>Open The Door ({demand.pendingSquads.length} Pending)</span>
+              <span>Open The Floor ({demand.pendingSquads.length} Pending)</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -338,7 +437,7 @@ export function ThePulseClient({
           </div>
         </div>
 
-        {/* Right Col: Instant Financial / Door Snapshot */}
+        {/* Right Col: Instant Financial & Bouncer Stand Access */}
         <div className="bg-[#121418] rounded-3xl border border-[#232732] p-6 flex flex-col justify-between shadow-xl space-y-4">
           <div className="space-y-1">
             <span className="text-[10px] font-mono font-bold text-white/50 uppercase tracking-widest">
@@ -348,11 +447,44 @@ export function ThePulseClient({
               ₦{demand.totalConfirmedRevenue.toLocaleString()}
             </div>
             <p className="text-xs text-white/60 font-mono">
-              Estimated spend from {demand.approvedSquads.length} confirmed tables (actual spend realized upon arrival)
+              Estimated spend from {demand.approvedSquads.length} confirmed tables (100% direct deposit, ₦0 fee)
             </p>
           </div>
 
-          <div className="space-y-2.5 pt-4 border-t border-[#232732] text-xs font-mono">
+          {/* Bouncer Door Mode Launcher */}
+          <div className="p-4 rounded-2xl bg-black/40 border border-[#008751]/30 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>BOUNCER STAND LINK</span>
+              </span>
+              <span className="text-[10px] font-mono text-white/40">Zero Financials</span>
+            </div>
+            <p className="text-[11px] text-white/70 leading-normal">
+              Delegate check-in codes (OYA-7K4M2P) to door staff safely without giving access to bank settings.
+            </p>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={copyBouncerLink}
+                className="h-9 px-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1 tap-feedback cursor-pointer"
+              >
+                <Copy className="w-3 h-3 text-[#00E575]" />
+                <span>{bouncerLinkCopied ? 'Copied!' : 'Copy Link'}</span>
+              </button>
+              <a
+                href={bouncerShareWa}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-9 px-2 rounded-xl bg-[#008751]/20 hover:bg-[#008751]/30 border border-[#008751]/40 text-[#00E575] text-[11px] font-mono font-bold flex items-center justify-center gap-1 tap-feedback"
+              >
+                <MessageCircle className="w-3 h-3" />
+                <span>WhatsApp</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="space-y-2 pt-2 border-t border-[#232732] text-xs font-mono">
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
               <span className="text-white/60">House Corkage</span>
               <span className="font-bold text-white">
@@ -361,28 +493,90 @@ export function ThePulseClient({
             </div>
 
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
-              <span className="text-white/60">Dress Code</span>
-              <span className="font-bold text-[#00E575] uppercase">
-                {venue.dress_code || 'Casual'}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
               <span className="text-white/60">Live Menu Items</span>
               <span className="font-bold text-white">{activeMenuCount} Active</span>
             </div>
           </div>
-
-          <Link
-            href={`/business/${venue.id}/venue`}
-            className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-center font-mono text-xs font-bold text-white border border-white/10 transition-colors block tap-feedback"
-          >
-            Adjust House Rules →
-          </Link>
         </div>
       </section>
 
-      {/* ── 3. PENDING SQUAD ACTION STACK ── */}
+      {/* ── 3. HYPE PROMPTS & AUTO-EXPIRING FLASH PROMOS ── */}
+      <section className="bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-7 shadow-xl space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-[#00E575]" />
+            <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
+              Hype Prompts &amp; Flash Demand
+            </h2>
+          </div>
+
+          {activePromo ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-950/40 border border-red-500/40 text-red-400 font-mono text-xs font-bold">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+              <span>
+                Promo Live: {Math.floor(activePromo.remainingSeconds / 60)}m {activePromo.remainingSeconds % 60}s
+              </span>
+              <button
+                type="button"
+                onClick={cancelPromo}
+                className="ml-2 text-[10px] text-white/50 hover:text-white underline cursor-pointer"
+              >
+                End Now
+              </button>
+            </div>
+          ) : (
+            <span className="text-xs font-mono text-white/40">
+              Auto-expiring tactical prompts to manipulate tonight&apos;s demand
+            </span>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          {/* Rain Alert Promo */}
+          <div className="p-4 rounded-2xl bg-black/40 border border-white/5 flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-sky-400">
+                <CloudRain className="w-3.5 h-3.5" />
+                <span>Rain in Victoria Island / Lekki</span>
+              </div>
+              <h4 className="font-bold text-white text-sm">Broadcast Covered Seating + 10% Flash Discount</h4>
+              <p className="text-xs text-white/60">
+                Pushes an alert to squads planning nearby that your indoor lounge is warm and dry.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => triggerFlashPromo('rain_discount', 'Covered Lounge 10% Off', 'Valid for bookings in the next hour')}
+              className="shrink-0 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold border border-white/10 tap-feedback cursor-pointer"
+            >
+              Push Live
+            </button>
+          </div>
+
+          {/* Rush Hour Free Shots Promo */}
+          <div className="p-4 rounded-2xl bg-black/40 border border-white/5 flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[#00E575]">
+                <Flame className="w-3.5 h-3.5" />
+                <span>Slow Table Rush</span>
+              </div>
+              <h4 className="font-bold text-white text-sm">Free Round of Shots for Next 3 Squads</h4>
+              <p className="text-xs text-white/60">
+                Give squads on the fence an immediate dopamine hook to lock in table deposits tonight.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => triggerFlashPromo('shots_promo', 'Free Round of Shots', 'Next 3 squads booking in next hour')}
+              className="shrink-0 px-3.5 py-2 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-mono font-bold shadow-md tap-feedback cursor-pointer"
+            >
+              Push Live
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. PENDING SQUAD ACTION STACK ── */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -396,7 +590,7 @@ export function ThePulseClient({
             href={`/business/${venue.id}/reservations`}
             className="text-xs font-mono font-bold text-[#00E575] hover:underline flex items-center gap-1"
           >
-            <span>View All At The Door</span>
+            <span>View All On The Floor</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -482,7 +676,7 @@ export function ThePulseClient({
         )}
       </section>
 
-      {/* ── 4. STICKY PENDING BOOKING CARD (MOBILE ONLY) ── */}
+      {/* ── 5. STICKY PENDING BOOKING CARD (MOBILE ONLY) ── */}
       {nextPendingSquad && (
         <div className="sm:hidden fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-3 right-3 z-30 animate-in slide-in-from-bottom-5 duration-200">
           <div className="bg-[#121418] border-2 border-[#00E575]/50 rounded-2xl p-4 shadow-2xl backdrop-blur-xl flex items-center justify-between gap-3">

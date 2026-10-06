@@ -39,11 +39,11 @@ export function BusinessShell({ venue, allVenues, children }: BusinessShellProps
   const isPending = venue.partner_state === 'verification_pending' || venue.partner_state === 'claim_pending';
 
   const navLinks = [
-    { id: 'pulse', label: 'THE PULSE', href: `/business/${venue.id}`, icon: Activity },
-    { id: 'floor', label: 'THE DOOR', href: `/business/${venue.id}/reservations`, icon: Users },
-    { id: 'board', label: 'THE BOARD', href: `/business/${venue.id}/pricing`, icon: UtensilsCrossed },
-    { id: 'rules', label: 'VIBE CHECKS', href: `/business/${venue.id}/venue`, icon: SlidersHorizontal },
-    { id: 'radar', label: 'RADAR', href: `/business/${venue.id}/insights`, icon: Radar },
+    { id: 'radar', label: 'RADAR', href: `/business/${venue.id}`, icon: Radar },
+    { id: 'floor', label: 'THE FLOOR', href: `/business/${venue.id}/reservations`, icon: Users },
+    { id: 'look', label: 'THE LOOK', href: `/business/${venue.id}/pricing`, icon: UtensilsCrossed },
+    { id: 'vibes', label: 'VIBE CHECKS', href: `/business/${venue.id}/venue`, icon: SlidersHorizontal },
+    { id: 'intel', label: 'STREET INTEL', href: `/business/${venue.id}/insights`, icon: Activity },
   ];
 
   const otherVenues = allVenues.filter(({ venue: v }) => v.id !== venue.id);

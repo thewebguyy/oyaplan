@@ -247,6 +247,19 @@ export interface ClaimSearchVenueResult {
  * searchVenuesForClaimAction
  * Queries the venues table directly in real-time with fallback to spots
  */
+export interface ClaimSearchVenueResult {
+  id: string;
+  slug?: string;
+  name: string;
+  category?: string;
+  address?: string;
+  partner_state?: string;
+  district_name?: string;
+  cover_url?: string;
+  logo_url?: string;
+  gallery_urls?: string[];
+}
+
 export async function searchVenuesForClaimAction(
   query: string
 ): Promise<ClaimSearchVenueResult[]> {
@@ -258,7 +271,7 @@ export async function searchVenuesForClaimAction(
     // 1. Direct query to venues table
     const { data: venuesData } = await supabase
       .from('venues')
-      .select('id, slug, name, category, address, partner_state, districts(name, slug)')
+      .select('id, slug, name, category, address, partner_state, cover_url, logo_url, gallery_urls, districts(name, slug)')
       .or(`name.ilike.%${q}%,address.ilike.%${q}%,category.ilike.%${q}%`)
       .order('name', { ascending: true })
       .limit(25);
@@ -266,7 +279,7 @@ export async function searchVenuesForClaimAction(
     // 2. Fallback query to spots table
     const { data: spotsData } = await supabase
       .from('spots')
-      .select('id, name, category, address, active, areas(name, slug)')
+      .select('id, name, category, address, active, image_url, cover_url, areas(name, slug)')
       .or(`name.ilike.%${q}%,address.ilike.%${q}%,category.ilike.%${q}%`)
       .eq('active', true)
       .limit(25);
@@ -285,6 +298,9 @@ export async function searchVenuesForClaimAction(
           address: v.address,
           partner_state: v.partner_state || 'unclaimed',
           district_name: (v as any).districts?.name || undefined,
+          cover_url: v.cover_url || undefined,
+          logo_url: v.logo_url || undefined,
+          gallery_urls: v.gallery_urls || undefined,
         });
       }
     }
@@ -302,6 +318,7 @@ export async function searchVenuesForClaimAction(
             address: s.address,
             partner_state: 'unclaimed',
             district_name: (s as any).areas?.name || 'Lagos',
+            cover_url: s.cover_url || s.image_url || undefined,
           });
         }
       }

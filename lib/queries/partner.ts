@@ -701,17 +701,17 @@ export async function getVenuesForClaimSearch(): Promise<Array<{
   try {
     const supabase = await createServerClient();
     
-    // Fetch venues
+    // Fetch venues with photos and visual assets
     const { data: venuesData } = await supabase
       .from('venues')
-      .select('id, slug, name, category, address, partner_state, districts(name, slug)')
+      .select('id, slug, name, category, address, partner_state, cover_url, logo_url, gallery_urls, districts(name, slug)')
       .order('name', { ascending: true })
       .limit(300);
 
-    // Fetch spots
+    // Fetch spots with visual assets
     const { data: spotsData } = await supabase
       .from('spots')
-      .select('id, name, category, address, active, areas(name, slug)')
+      .select('id, name, category, address, active, image_url, cover_url, areas(name, slug)')
       .eq('active', true)
       .order('name', { ascending: true })
       .limit(300);
@@ -725,6 +725,9 @@ export async function getVenuesForClaimSearch(): Promise<Array<{
       address?: string;
       partner_state?: string;
       district_name?: string;
+      cover_url?: string;
+      logo_url?: string;
+      gallery_urls?: string[];
     }> = [];
 
     // Prioritize venues table entries
@@ -739,6 +742,9 @@ export async function getVenuesForClaimSearch(): Promise<Array<{
           address: v.address,
           partner_state: v.partner_state || 'unclaimed',
           district_name: (v as any).districts?.name || undefined,
+          cover_url: v.cover_url || undefined,
+          logo_url: v.logo_url || undefined,
+          gallery_urls: v.gallery_urls || undefined,
         });
       }
     }
@@ -757,6 +763,7 @@ export async function getVenuesForClaimSearch(): Promise<Array<{
             address: s.address,
             partner_state: 'unclaimed',
             district_name: (s as any).areas?.name || 'Lagos',
+            cover_url: s.cover_url || s.image_url || undefined,
           });
         }
       }
