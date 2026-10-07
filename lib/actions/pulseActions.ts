@@ -5,7 +5,14 @@ import { checkVenueAuthorization } from '@/lib/queries/partner';
 import { revalidatePath } from 'next/cache';
 import { verifyVenueVisitAction } from '@/lib/actions/venueAttributionActions';
 
-export type PulseVenueStatus = 'open' | 'at_capacity' | 'walk_ins_only' | 'kitchen_closed' | 'closed';
+export type PulseVenueStatus =
+  | 'open'
+  | 'tables_tight'
+  | 'at_capacity'
+  | 'walk_ins_only'
+  | 'private_buyout'
+  | 'kitchen_closed'
+  | 'closed';
 
 /**
  * updateVenueLiveStatusAction
@@ -36,6 +43,10 @@ export async function updateVenueLiveStatusAction(
         reason = null;
         startDate = null;
         break;
+      case 'tables_tight':
+        isClosed = false;
+        reason = 'Tables Tight';
+        break;
       case 'at_capacity':
         isClosed = true;
         reason = customReason || 'At Capacity';
@@ -44,6 +55,11 @@ export async function updateVenueLiveStatusAction(
       case 'walk_ins_only':
         isClosed = false;
         reason = 'Walk-ins Only';
+        break;
+      case 'private_buyout':
+        isClosed = true;
+        reason = customReason || 'Private Buyout';
+        startDate = todayStr;
         break;
       case 'kitchen_closed':
         isClosed = false;

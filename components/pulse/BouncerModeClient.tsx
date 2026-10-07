@@ -18,7 +18,9 @@ import {
   Sparkles,
   ArrowLeft,
   Share2,
+  Hash,
 } from 'lucide-react';
+import { QuickCodePunchModal } from '@/components/pulse/QuickCodePunchModal';
 
 interface BouncerModeClientProps {
   venue: Venue;
@@ -33,6 +35,7 @@ export function BouncerModeClient({ venue, demand }: BouncerModeClientProps) {
   const [checkedInIds, setCheckedInIds] = useState<Set<string>>(new Set());
   const [copiedLink, setCopiedLink] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showPunchModal, setShowPunchModal] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -136,26 +139,57 @@ export function BouncerModeClient({ venue, demand }: BouncerModeClientProps) {
         </p>
       </div>
 
-      {/* Instant Search Bar (Massive Thumb Input) */}
-      <div className="relative">
-        <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Type Code (e.g. OYA-7K) or Party Size..."
-          className="w-full h-14 pl-12 pr-4 rounded-2xl bg-[#14171E] border-2 border-white/15 text-white text-base font-mono placeholder:text-white/30 focus:border-[#00E575] focus:outline-none"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery('')}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white text-xs font-mono font-bold"
-          >
-            CLEAR
-          </button>
-        )}
+      {/* Search & Tactile Code Punch Launch Bar */}
+      <div className="flex items-center gap-2.5">
+        <div className="relative flex-1">
+          <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search code or size..."
+            className="w-full h-14 pl-12 pr-4 rounded-2xl bg-[#14171E] border-2 border-white/15 text-white text-base font-mono placeholder:text-white/30 focus:border-[#00E575] focus:outline-none"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white text-xs font-mono font-bold"
+            >
+              CLEAR
+            </button>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            triggerHaptic('success');
+            setShowPunchModal(true);
+          }}
+          className="h-14 px-4 sm:px-5 rounded-2xl bg-[#008751] hover:bg-[#007043] active:bg-[#005a35] text-white font-mono font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-950/40 shrink-0 tap-feedback cursor-pointer"
+        >
+          <Hash className="w-4 h-4" />
+          <span className="hidden sm:inline">PUNCH CODE</span>
+          <span className="sm:hidden">KEYPAD</span>
+        </button>
       </div>
+
+      {/* Quick Code Punch Modal */}
+      <QuickCodePunchModal
+        venueId={venue.id}
+        venueName={venue.name}
+        isOpen={showPunchModal}
+        onClose={() => setShowPunchModal(false)}
+        squads={squads}
+        onSquadVerified={(planCode) => {
+          const matched = squads.find((s) => s.plan_code === planCode);
+          if (matched) {
+            setCheckedInIds((prev) => new Set(prev).add(matched.id));
+            showToast(`✓ ${planCode} Seated & Verified!`);
+          }
+        }}
+      />
 
       {/* Live Guestlist Count */}
       <div className="flex items-center justify-between text-xs font-mono px-1">

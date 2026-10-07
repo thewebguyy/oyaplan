@@ -82,6 +82,7 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
   const [scanStep, setScanStep] = useState<'idle' | 'analyzing' | 'preview'>('idle');
   const [scannedItems, setScannedItems] = useState<Array<{ name: string; category: MenuItem['category']; price: number }>>([]);
   const [pushingDrops, setPushingDrops] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -89,6 +90,23 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2400);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setScanStep('analyzing');
+    triggerHaptic('success');
+    setTimeout(() => {
+      setScannedItems([
+        { name: 'Weekend Bottle Drop (Ace of Spades)', category: 'spirits', price: 450000 },
+        { name: 'Don Julio 1942 Añejo', category: 'spirits', price: 380000 },
+        { name: 'Hennessy VSOP (75cl)', category: 'spirits', price: 95000 },
+        { name: 'Clase Azul Reposado', category: 'spirits', price: 320000 },
+      ]);
+      setScanStep('preview');
+      triggerHaptic('success');
+    }, 1300);
   };
 
   // AI Menu Scanner simulation & parse
@@ -304,8 +322,7 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
             </h1>
 
             <p className="text-xs sm:text-sm text-white/60 max-w-xl leading-relaxed">
-              Tap any item&apos;s <strong className="text-red-400 font-mono">86&apos;d</strong> button to mark it sold out.
-              Changes auto-save immediately and instantly update what Lagos squads can budget for.
+              Drop your weekend bottle sheet. Let squads know the real price before they pull up. Tap any item&apos;s <strong className="text-red-400 font-mono">86&apos;d</strong> button to mark it sold out instantly.
             </p>
           </div>
 
@@ -318,8 +335,8 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
               }}
               className="h-11 px-4 rounded-xl bg-purple-950/40 hover:bg-purple-950/60 text-purple-300 border border-purple-500/40 text-xs font-mono font-bold flex items-center gap-2 transition-all tap-feedback cursor-pointer shadow-xs"
             >
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <span>AI Menu Scanner</span>
+              <Camera className="w-4 h-4 text-purple-400" />
+              <span>Drop Flyer / Snap Menu</span>
             </button>
 
             <button
@@ -333,7 +350,7 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
               ) : (
                 <ShieldCheck className="w-4 h-4 text-[#00E575]" />
               )}
-              <span>Confirm Prices Current</span>
+              <span>Prices Verified for this Friday</span>
             </button>
 
             <button
@@ -658,25 +675,42 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
 
             {scanStep === 'idle' && (
               <div className="space-y-4">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+
                 <div
-                  onClick={() => handleStartScan('dinner')}
-                  className="border-2 border-dashed border-purple-500/40 hover:border-purple-400 bg-purple-950/20 hover:bg-purple-950/30 rounded-2xl p-6 text-center space-y-3 cursor-pointer transition-all tap-feedback"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-[#00E575]/40 hover:border-[#00E575] bg-[#008751]/10 hover:bg-[#008751]/20 rounded-2xl p-6 text-center space-y-3 cursor-pointer transition-all tap-feedback"
                 >
-                  <Camera className="w-8 h-8 text-purple-400 mx-auto" />
+                  <Camera className="w-8 h-8 text-[#00E575] mx-auto" />
                   <div className="space-y-0.5">
-                    <span className="text-sm font-bold block">Scan Dinner / Kitchen Card</span>
-                    <span className="text-xs text-white/50">Parses mains, starters, and sides</span>
+                    <span className="text-sm font-bold block text-white">Snap Photo or Upload Flyer / IG Story</span>
+                    <span className="text-xs text-[#00E575]/80">Uses camera or photo library • Auto-detects bottle &amp; table prices</span>
                   </div>
                 </div>
 
-                <div
-                  onClick={() => handleStartScan('drinks')}
-                  className="border-2 border-dashed border-emerald-500/40 hover:border-emerald-400 bg-emerald-950/20 hover:bg-emerald-950/30 rounded-2xl p-6 text-center space-y-3 cursor-pointer transition-all tap-feedback"
-                >
-                  <Sparkles className="w-8 h-8 text-[#00E575] mx-auto" />
-                  <div className="space-y-0.5">
-                    <span className="text-sm font-bold block">Scan Cocktail &amp; Bottle Card</span>
-                    <span className="text-xs text-white/50">Parses signature cocktails, spirits, and wines</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div
+                    onClick={() => handleStartScan('dinner')}
+                    className="border border-purple-500/30 hover:border-purple-400 bg-purple-950/20 hover:bg-purple-950/30 rounded-xl p-3.5 text-center space-y-1.5 cursor-pointer transition-all tap-feedback"
+                  >
+                    <Sparkles className="w-5 h-5 text-purple-400 mx-auto" />
+                    <span className="text-xs font-bold block">Dinner Demo</span>
+                    <span className="text-[10px] text-white/50 block">Mains &amp; starters</span>
+                  </div>
+
+                  <div
+                    onClick={() => handleStartScan('drinks')}
+                    className="border border-emerald-500/30 hover:border-emerald-400 bg-emerald-950/20 hover:bg-emerald-950/30 rounded-xl p-3.5 text-center space-y-1.5 cursor-pointer transition-all tap-feedback"
+                  >
+                    <Sparkles className="w-5 h-5 text-[#00E575] mx-auto" />
+                    <span className="text-xs font-bold block">Drinks Demo</span>
+                    <span className="text-[10px] text-white/50 block">Cocktails &amp; bottles</span>
                   </div>
                 </div>
               </div>

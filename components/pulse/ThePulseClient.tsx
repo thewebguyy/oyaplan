@@ -5,9 +5,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Venue, MenuItem, VenuePhoto } from '@/lib/types';
 import { PulseDemandSummary, PulseSquadItem } from '@/lib/queries/pulse';
-import { updateVenueLiveStatusAction, decideSquadAction, PulseVenueStatus } from '@/lib/actions/pulseActions';
+import {
+  updateVenueLiveStatusAction,
+  decideSquadAction,
+  updateVenueHouseRulesAction,
+  PulseVenueStatus,
+} from '@/lib/actions/pulseActions';
 import { triggerHaptic } from '@/lib/ui/haptics';
 import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
+import { QuickCodePunchModal } from '@/components/pulse/QuickCodePunchModal';
 import {
   Activity,
   Users,
@@ -31,6 +37,12 @@ import {
   Copy,
   Radio,
   MessageCircle,
+  Wine,
+  Wallet,
+  Hash,
+  Edit3,
+  X,
+  CreditCard,
 } from 'lucide-react';
 
 interface ThePulseClientProps {
@@ -48,13 +60,34 @@ export function ThePulseClient({
 }: ThePulseClientProps) {
   // Operational Status state
   const initialStatus: PulseVenueStatus = venue.is_temporarily_closed
-    ? (venue.temporary_closure_reason === 'At Capacity' ? 'at_capacity' : 'closed')
-    : (venue.temporary_closure_reason === 'Walk-ins Only' ? 'walk_ins_only'
-       : venue.temporary_closure_reason === 'Kitchen Closed' ? 'kitchen_closed' : 'open');
+    ? (venue.temporary_closure_reason === 'At Capacity'
+       ? 'at_capacity'
+       : venue.temporary_closure_reason === 'Private Buyout'
+       ? 'private_buyout'
+       : 'closed')
+    : (venue.temporary_closure_reason === 'Tables Tight'
+       ? 'tables_tight'
+       : venue.temporary_closure_reason === 'Walk-ins Only'
+       ? 'walk_ins_only'
+       : venue.temporary_closure_reason === 'Kitchen Closed'
+       ? 'kitchen_closed'
+       : 'open');
 
   const [currentStatus, setCurrentStatus] = useState<PulseVenueStatus>(initialStatus);
   const [statusSaving, setStatusSaving] = useState(false);
   const [saveToast, setSaveToast] = useState<string | null>(null);
+
+  // Live Outing Mirror Tappable Rules State
+  const [corkageFee, setCorkageFee] = useState<number>(venue.corkage_fee || 0);
+  const [minSpend, setMinSpend] = useState<number>(venue.minimum_spend || 0);
+  const [depositFee, setDepositFee] = useState<number>(venue.reservation_fee || 0);
+  const [showPunchModal, setShowPunchModal] = useState(false);
+  const [adjustModal, setAdjustModal] = useState<{
+    field: 'corkage' | 'min_spend' | 'deposit';
+    title: string;
+    value: string;
+  } | null>(null);
+  const [savingRule, setSavingRule] = useState(false);
 
   // Live Vibe State: CHILL | PACKED | LIVE DJ TONIGHT | CLOSED
   const [liveVibe, setLiveVibe] = useState<'CHILL' | 'PACKED' | 'LIVE DJ' | 'VIP ONLY'>(
@@ -111,7 +144,15 @@ export function ThePulseClient({
     try {
       const res = await updateVenueLiveStatusAction(venue.id, newStatus);
       if (res.success) {
-        showSavedIndicator(newStatus === 'at_capacity' ? 'At Capacity Broadcasted' : 'Venue Live Status Updated');
+        showSavedIndicator(
+          newStatus === 'at_capacity'
+            ? 'At Capacity Broadcasted'
+            : newStatus === 'tables_tight'
+            ? 'Tables Tight Broadcasted'
+            : newStatus === 'private_buyout'
+            ? 'Private Buyout Broadcasted'
+            : 'Venue Live Status Updated'
+        );
       } else {
         setCurrentStatus(prevStatus);
         alert(res.error || 'Failed to update live status. Check network connection.');
@@ -121,6 +162,34 @@ export function ThePulseClient({
       alert('Unable to persist status change. Please retry.');
     } finally {
       setStatusSaving(false);
+    }
+  };
+
+  const handleSaveRuleAdjustment = async (customVal?: number) => {
+    if (!adjustModal) return;
+    const num = customVal !== undefined ? customVal : (parseInt(adjustModal.value, 10) || 0);
+    setSavingRule(true);
+    triggerHaptic('success');
+
+    try {
+      if (adjustModal.field === 'corkage') {
+        setCorkageFee(num);
+        await updateVenueHouseRulesAction(venue.id, { corkageFee: num });
+        showSavedIndicator(num > 0 ? `Corkage set to ₦${num.toLocaleString()}` : 'Corkage is Free');
+      } else if (adjustModal.field === 'min_spend') {
+        setMinSpend(num);
+        await updateVenueHouseRulesAction(venue.id, { minimumSpend: num });
+        showSavedIndicator(num > 0 ? `Minimum spend set to ₦${num.toLocaleString()}` : 'No Minimum Spend');
+      } else if (adjustModal.field === 'deposit') {
+        setDepositFee(num);
+        await updateVenueHouseRulesAction(venue.id, { reservationFee: num });
+        showSavedIndicator(num > 0 ? `Table deposit set to ₦${num.toLocaleString()}` : 'No Deposit Required');
+      }
+      setAdjustModal(null);
+    } catch {
+      alert('Failed to save rule change.');
+    } finally {
+      setSavingRule(false);
     }
   };
 
@@ -207,126 +276,161 @@ export function ThePulseClient({
         </div>
       )}
 
-      {/* ── 1. LIVE FREQUENCY: DOOR STATUS & LIVE VIBE SWITCHER ── */}
-      <section className="bg-[#121418] rounded-3xl border border-[#232732] p-5 sm:p-7 shadow-2xl relative overflow-hidden space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#232732] pb-5">
-          <div className="space-y-1">
+      {/* ── 1. THE COMMAND SCREEN: WEEKEND RADAR (TOP CARD) ── */}
+      <section className="bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#232732] pb-6">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00E575] px-2.5 py-0.5 rounded-full bg-[#008751]/15 border border-[#008751]/30">
-                LIVE BROADCAST STATE
+              <span className="w-2.5 h-2.5 rounded-full bg-[#00E575] animate-ping" />
+              <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#00E575] px-2.5 py-0.5 rounded-full bg-[#008751]/15 border border-[#008751]/30">
+                THE WEEKEND RADAR · LIVE FLOOR DISPATCH
               </span>
               {statusSaving && (
                 <span className="text-[10px] font-mono text-white/50 flex items-center gap-1">
                   <Loader2 className="w-3 h-3 animate-spin text-[#00E575]" />
-                  broadcasting...
+                  broadcasting live...
                 </span>
               )}
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Tonight&apos;s Door &amp; Floor Status
-            </h2>
-            <p className="text-xs text-white/60">
-              One-tap broadcast. Immediately controls customer reservation routing and venue availability across Lagos.
-            </p>
+
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+              {demand.headlineCount > 0 ? demand.headlineCount : 42} squads have added you to their Friday/Saturday run.
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-mono text-white/70">
+              <span className="text-[#00E575] font-black">
+                ₦38,500/head average cart.
+              </span>
+              <span className="text-white/30 hidden sm:inline">|</span>
+              <span>
+                {demand.pendingSquads.length > 0 ? (
+                  <>
+                    <strong className="text-white font-bold">
+                      ₦{demand.totalPendingRevenue.toLocaleString()}
+                    </strong>{' '}
+                    in pending table hold deposits ready for review (100% direct deposit).
+                  </>
+                ) : (
+                  <>All table requests reviewed. Floor capacity in control.</>
+                )}
+              </span>
+            </div>
           </div>
 
-          <div className="shrink-0 flex items-center gap-2">
-            <span className="text-xs font-mono text-white/50">Current State:</span>
-            <span
-              className={`text-xs font-mono font-black uppercase px-3 py-1 rounded-lg ${
-                currentStatus === 'open'
-                  ? 'bg-[#008751]/20 text-[#00E575] border border-[#008751]/50'
-                  : currentStatus === 'at_capacity'
-                  ? 'bg-red-500/20 text-red-400 border border-red-500/40'
-                  : 'bg-white/10 text-white border border-white/20'
-              }`}
+          {/* Quick Code Punch & Stand Controls */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic('success');
+                setShowPunchModal(true);
+              }}
+              className="h-12 px-4 sm:px-5 rounded-2xl bg-[#008751] hover:bg-[#007043] active:bg-[#005a35] text-white font-mono font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-950/40 tap-feedback cursor-pointer"
             >
-              ● {currentStatus.replace('_', ' ')}
+              <Hash className="w-4 h-4" />
+              <span>PUNCH OYA- CODE</span>
+            </button>
+
+            <Link
+              href={`/business/${venue.id}/bouncer`}
+              className="h-12 px-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white border border-white/10 font-mono text-xs font-bold flex items-center gap-2 tap-feedback"
+            >
+              <ShieldCheck className="w-4 h-4 text-[#00E575]" />
+              <span className="hidden sm:inline">Door Mode</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* ── PHYSICAL-FEELING DOOR STATUS TOGGLE (4 STATES) ── */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs font-mono">
+            <span className="text-white/50 uppercase tracking-wider">Tactile Floor Status Toggle (Alerts Lagos in Real-Time):</span>
+            <span className="text-[#00E575] font-bold">
+              Current: {currentStatus === 'open' ? 'NORMAL SERVICE' : currentStatus === 'tables_tight' ? 'TABLES TIGHT' : currentStatus === 'at_capacity' ? 'AT CAPACITY' : currentStatus === 'private_buyout' ? 'PRIVATE BUYOUT' : currentStatus.toUpperCase()}
             </span>
           </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* 1. NORMAL SERVICE */}
+            <button
+              type="button"
+              onClick={() => handleStatusChange('open')}
+              className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
+                currentStatus === 'open'
+                  ? 'bg-[#008751]/20 border-[#00E575] text-white shadow-lg ring-1 ring-[#00E575]'
+                  : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className={`w-3 h-3 rounded-full ${currentStatus === 'open' ? 'bg-[#00E575] animate-pulse' : 'bg-white/20'}`} />
+                {currentStatus === 'open' && <Check className="w-4 h-4 text-[#00E575]" />}
+              </div>
+              <div className="text-base sm:text-lg font-black tracking-tight text-white">NORMAL SERVICE</div>
+              <div className="text-[11px] font-mono text-white/60 mt-0.5">Doors open, welcoming squads</div>
+            </button>
+
+            {/* 2. TABLES TIGHT */}
+            <button
+              type="button"
+              onClick={() => handleStatusChange('tables_tight')}
+              className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
+                currentStatus === 'tables_tight'
+                  ? 'bg-amber-950/40 border-amber-500 text-white shadow-lg ring-1 ring-amber-500'
+                  : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className={`w-3 h-3 rounded-full ${currentStatus === 'tables_tight' ? 'bg-amber-400 animate-pulse' : 'bg-white/20'}`} />
+                {currentStatus === 'tables_tight' && <Check className="w-4 h-4 text-amber-400" />}
+              </div>
+              <div className="text-base sm:text-lg font-black tracking-tight text-white">TABLES TIGHT</div>
+              <div className="text-[11px] font-mono text-white/60 mt-0.5">Floor filling fast, priority holds</div>
+            </button>
+
+            {/* 3. AT CAPACITY / WALK-INS ONLY */}
+            <button
+              type="button"
+              onClick={() => handleStatusChange('at_capacity')}
+              className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
+                currentStatus === 'at_capacity'
+                  ? 'bg-red-950/40 border-red-500 text-white shadow-lg ring-1 ring-red-500'
+                  : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className={`w-3 h-3 rounded-full ${currentStatus === 'at_capacity' ? 'bg-red-500 animate-pulse' : 'bg-white/20'}`} />
+                {currentStatus === 'at_capacity' && <Check className="w-4 h-4 text-red-400" />}
+              </div>
+              <div className="text-base sm:text-lg font-black tracking-tight text-white leading-tight">AT CAPACITY</div>
+              <div className="text-[11px] font-mono text-white/60 mt-0.5">Velvet rope up, walk-ins only</div>
+            </button>
+
+            {/* 4. PRIVATE BUYOUT */}
+            <button
+              type="button"
+              onClick={() => handleStatusChange('private_buyout')}
+              className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
+                currentStatus === 'private_buyout'
+                  ? 'bg-purple-950/40 border-purple-500 text-white shadow-lg ring-1 ring-purple-500'
+                  : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className={`w-3 h-3 rounded-full ${currentStatus === 'private_buyout' ? 'bg-purple-400 animate-pulse' : 'bg-white/20'}`} />
+                {currentStatus === 'private_buyout' && <Check className="w-4 h-4 text-purple-400" />}
+              </div>
+              <div className="text-base sm:text-lg font-black tracking-tight text-white">PRIVATE BUYOUT</div>
+              <div className="text-[11px] font-mono text-white/60 mt-0.5">Closed for exclusive buyout</div>
+            </button>
+          </div>
         </div>
 
-        {/* Massive Touch Operational Selector Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* OPEN */}
-          <button
-            type="button"
-            onClick={() => handleStatusChange('open')}
-            className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
-              currentStatus === 'open'
-                ? 'bg-[#008751]/20 border-[#00E575] text-white shadow-lg ring-1 ring-[#00E575]'
-                : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className={`w-3 h-3 rounded-full ${currentStatus === 'open' ? 'bg-[#00E575] animate-pulse' : 'bg-white/20'}`} />
-              {currentStatus === 'open' && <Check className="w-4 h-4 text-[#00E575]" />}
-            </div>
-            <div className="text-lg font-black tracking-tight text-white">OPEN</div>
-            <div className="text-[11px] font-mono text-white/60 mt-0.5">Doors open, welcoming squads</div>
-          </button>
-
-          {/* AT CAPACITY */}
-          <button
-            type="button"
-            onClick={() => handleStatusChange('at_capacity')}
-            className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
-              currentStatus === 'at_capacity'
-                ? 'bg-red-950/40 border-red-500 text-white shadow-lg ring-1 ring-red-500'
-                : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className={`w-3 h-3 rounded-full ${currentStatus === 'at_capacity' ? 'bg-red-500 animate-pulse' : 'bg-white/20'}`} />
-              {currentStatus === 'at_capacity' && <Check className="w-4 h-4 text-red-400" />}
-            </div>
-            <div className="text-lg font-black tracking-tight text-white">AT CAPACITY</div>
-            <div className="text-[11px] font-mono text-white/60 mt-0.5">Velvet rope up, floor is full</div>
-          </button>
-
-          {/* WALK-INS ONLY */}
-          <button
-            type="button"
-            onClick={() => handleStatusChange('walk_ins_only')}
-            className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
-              currentStatus === 'walk_ins_only'
-                ? 'bg-white/15 border-white text-white shadow-lg ring-1 ring-white'
-                : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className={`w-3 h-3 rounded-full ${currentStatus === 'walk_ins_only' ? 'bg-white' : 'bg-white/20'}`} />
-              {currentStatus === 'walk_ins_only' && <Check className="w-4 h-4 text-white" />}
-            </div>
-            <div className="text-lg font-black tracking-tight text-white">WALK-INS ONLY</div>
-            <div className="text-[11px] font-mono text-white/60 mt-0.5">No table holds, first come</div>
-          </button>
-
-          {/* KITCHEN CLOSED */}
-          <button
-            type="button"
-            onClick={() => handleStatusChange('kitchen_closed')}
-            className={`p-4 rounded-2xl border text-left transition-all tap-feedback cursor-pointer relative ${
-              currentStatus === 'kitchen_closed'
-                ? 'bg-amber-950/40 border-amber-500 text-white shadow-lg ring-1 ring-amber-500'
-                : 'bg-white/5 border-[#232732] text-white/60 hover:text-white hover:bg-white/10'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className={`w-3 h-3 rounded-full ${currentStatus === 'kitchen_closed' ? 'bg-amber-500' : 'bg-white/20'}`} />
-              {currentStatus === 'kitchen_closed' && <Check className="w-4 h-4 text-amber-400" />}
-            </div>
-            <div className="text-lg font-black tracking-tight text-white">KITCHEN CLOSED</div>
-            <div className="text-[11px] font-mono text-white/60 mt-0.5">Drinks &amp; lounge service only</div>
-          </button>
-        </div>
-
-        {/* ── THE LIVE VIBE SWITCHER (1-TAP TONIGHT VIBE) ── */}
-        <div className="pt-4 border-t border-[#232732] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Live Vibe Switcher Bar */}
+        <div className="pt-3 border-t border-[#232732] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-[#00E575]" />
             <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-              Live Vibe Broadcast:
+              Tonight&apos;s Room Vibe:
             </span>
           </div>
 
@@ -349,152 +453,157 @@ export function ThePulseClient({
         </div>
       </section>
 
-      {/* ── 2. HEADLINE DEMAND SIGNAL & FREQUENCY READOUT ── */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Headline Demand Card */}
-        <div className="lg:col-span-2 bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden shadow-xl">
-          <div className="space-y-4">
+      {/* ── 2. THE LIVE OUTING CARD (INTERACTIVE CONSUMER MIRROR) ── */}
+      <section className="bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-7 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#232732] pb-4">
+          <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#00E575] animate-ping" />
-              <span className="text-[10px] font-mono font-bold tracking-widest text-[#00E575] uppercase">
-                RADAR FREQUENCY · UPSTREAM SQUAD PLANS
+              <span className="w-2 h-2 rounded-full bg-[#00E575]" />
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00E575]">
+                THE LIVE OUTING CARD · WHAT LAGOS SQUADS SEE RIGHT NOW
               </span>
             </div>
-
-            {demand.headlineCount > 0 ? (
-              <div className="space-y-2">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                  {demand.headlineCount} Squads have you in their plans this weekend.
-                </h1>
-                <p className="text-sm sm:text-base text-white/70 max-w-xl leading-relaxed">
-                  {demand.pendingSquads.length > 0 ? (
-                    <>
-                      <strong className="text-[#00E575] font-bold">
-                        ₦{demand.totalPendingRevenue.toLocaleString()}
-                      </strong>{' '}
-                      in pending table hold deposits ready for your review. (Direct deposit: 100% of customer payments flow into your Nigerian bank account).
-                    </>
-                  ) : (
-                    <>All incoming squad requests have been reviewed and seated. The floor is in control.</>
-                  )}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2 py-4">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                  Lagos is planning tonight. Drop a new menu look to get on the radar.
-                </h1>
-                <p className="text-xs sm:text-sm text-white/60 max-w-lg leading-relaxed">
-                  As squads assemble outings across your district, their planned party sizes and budget envelopes appear here in real time.
-                </p>
-              </div>
-            )}
-
-            {/* Live Frequency Readout (The Pulse of Lagos) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1">
-                <span className="text-[10px] font-mono text-[#00E575] font-bold block">🔥 LIVE RADAR</span>
-                <span className="text-xs text-white/90 font-mono font-bold block">
-                  {demand.headlineCount > 0 ? demand.headlineCount : 18} squads planning
-                </span>
-                <span className="text-[10px] text-white/40">Active in district right now</span>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1">
-                <span className="text-[10px] font-mono text-amber-400 font-bold block">💰 THE DOOR QUEUE</span>
-                <span className="text-xs text-white/90 font-mono font-bold block">
-                  {demand.pendingSquads.length} table hold requests
-                </span>
-                <span className="text-[10px] text-white/40">Direct deposits ready</span>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1">
-                <span className="text-[10px] font-mono text-purple-400 font-bold block">⚡ VELVET ROPE</span>
-                <span className="text-xs text-white/90 font-mono font-bold block uppercase">
-                  {currentStatus.replace('_', ' ')} · {liveVibe}
-                </span>
-                <span className="text-[10px] text-white/40">Live broadcast active</span>
-              </div>
-            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              {venue.name} · {venue.category}
+            </h2>
           </div>
 
-          <div className="pt-6 border-t border-[#232732] flex flex-wrap items-center gap-4 mt-6">
-            <Link
-              href={`/business/${venue.id}/reservations`}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md tap-feedback"
-            >
-              <span>Open The Floor ({demand.pendingSquads.length} Pending)</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <Link
-              href={`/business/${venue.id}/pricing`}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-mono font-bold text-xs transition-colors border border-white/10 tap-feedback"
-            >
-              <UtensilsCrossed className="w-3.5 h-3.5 text-[#00E575]" />
-              <span>The Board ({total86d > 0 ? `${total86d} 86'd` : 'All Available'})</span>
-            </Link>
-          </div>
+          <span className="text-xs font-mono text-white/50 bg-black/40 px-3 py-1.5 rounded-xl border border-white/10 self-start sm:self-auto">
+            💡 Tap any rule to adjust instantly
+          </span>
         </div>
 
-        {/* Right Col: Instant Financial & Bouncer Stand Access */}
-        <div className="bg-[#121418] rounded-3xl border border-[#232732] p-6 flex flex-col justify-between shadow-xl space-y-4">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono font-bold text-white/50 uppercase tracking-widest">
-              CONFIRMED GUESTLIST · SEATED TABLES
-            </span>
-            <div className="text-3xl sm:text-4xl font-black text-white tabular-nums">
-              ₦{demand.totalConfirmedRevenue.toLocaleString()}
+        {/* High-Stakes Risk Warning (Replaces generic completeness bar) */}
+        {corkageFee === 0 && (
+          <div className="bg-amber-950/30 border border-amber-500/40 rounded-2xl p-4 flex items-start gap-3 text-amber-300">
+            <AlertCircle className="w-5 h-5 shrink-0 text-amber-400 mt-0.5" />
+            <div className="space-y-0.5 text-xs font-mono">
+              <span className="font-bold uppercase tracking-wider block text-amber-200">
+                ⚠️ High-Stakes Notice: Missing Corkage Rule
+              </span>
+              <p className="text-amber-300/80 leading-relaxed">
+                Squads browsing your spot will assume outside bottles are permitted at ₦0 corkage fee. Tap the corkage pill below to set your weekend fee.
+              </p>
             </div>
-            <p className="text-xs text-white/60 font-mono">
-              Estimated spend from {demand.approvedSquads.length} confirmed tables (100% direct deposit, ₦0 fee)
-            </p>
+          </div>
+        )}
+
+        {/* Consumer Card Mirror Preview Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Outing Cart Summary */}
+          <div className="bg-black/50 p-5 rounded-2xl border border-white/10 space-y-2">
+            <span className="text-[10px] font-mono text-white/50 uppercase block">Outing Budget / Head</span>
+            <div className="text-2xl font-mono font-black text-white">₦38,500</div>
+            <div className="text-[11px] font-mono text-white/60 space-y-0.5 pt-1 border-t border-white/5">
+              <div className="flex justify-between"><span>Dishes:</span><span>₦24,000</span></div>
+              <div className="flex justify-between"><span>Cocktails:</span><span>₦9,500</span></div>
+              <div className="flex justify-between text-[#00E575]"><span>VAT &amp; Service:</span><span>₦5,000</span></div>
+            </div>
           </div>
 
-          {/* Bouncer Door Mode Launcher */}
-          <div className="p-4 rounded-2xl bg-black/40 border border-[#008751]/30 space-y-3">
+          {/* Interactive Squad Contract Pills */}
+          <div className="md:col-span-2 bg-black/50 p-5 rounded-2xl border border-white/10 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold text-[#00E575] uppercase flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>BOUNCER STAND LINK</span>
+              <span className="text-[10px] font-mono text-white/50 uppercase block">
+                Squad Contract (Tappable Quick-Updaters)
               </span>
-              <span className="text-[10px] font-mono text-white/40">Zero Financials</span>
+              <Link
+                href={`/business/${venue.id}/rules`}
+                className="text-[11px] font-mono text-[#00E575] hover:underline"
+              >
+                All Rules →
+              </Link>
             </div>
-            <p className="text-[11px] text-white/70 leading-normal">
-              Delegate check-in codes (OYA-7K4M2P) to door staff safely without giving access to bank settings.
-            </p>
-            <div className="grid grid-cols-2 gap-2 pt-1">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Corkage Pill */}
               <button
                 type="button"
-                onClick={copyBouncerLink}
-                className="h-9 px-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1 tap-feedback cursor-pointer"
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setAdjustModal({
+                    field: 'corkage',
+                    title: 'Adjust Weekend Corkage Fee',
+                    value: corkageFee ? corkageFee.toString() : '15000',
+                  });
+                }}
+                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all tap-feedback cursor-pointer group"
               >
-                <Copy className="w-3 h-3 text-[#00E575]" />
-                <span>{bouncerLinkCopied ? 'Copied!' : 'Copy Link'}</span>
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-white/60 flex items-center gap-1.5">
+                    <Wine className="w-3.5 h-3.5 text-[#00E575]" />
+                    <span>House Corkage:</span>
+                  </span>
+                  <span className="text-[10px] text-[#00E575] group-hover:underline">TAP TO EDIT</span>
+                </div>
+                <div className="text-base font-mono font-black text-white mt-1">
+                  {corkageFee > 0 ? `₦${corkageFee.toLocaleString()} / bottle` : 'Free / Not set'}
+                </div>
               </button>
-              <a
-                href={bouncerShareWa}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-9 px-2 rounded-xl bg-[#008751]/20 hover:bg-[#008751]/30 border border-[#008751]/40 text-[#00E575] text-[11px] font-mono font-bold flex items-center justify-center gap-1 tap-feedback"
+
+              {/* Table Min Spend Pill */}
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setAdjustModal({
+                    field: 'min_spend',
+                    title: 'Adjust Table Minimum Spend',
+                    value: minSpend ? minSpend.toString() : '50000',
+                  });
+                }}
+                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all tap-feedback cursor-pointer group"
               >
-                <MessageCircle className="w-3 h-3" />
-                <span>WhatsApp</span>
-              </a>
-            </div>
-          </div>
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-white/60 flex items-center gap-1.5">
+                    <Wallet className="w-3.5 h-3.5 text-[#00E575]" />
+                    <span>Table Min Spend:</span>
+                  </span>
+                  <span className="text-[10px] text-[#00E575] group-hover:underline">TAP TO EDIT</span>
+                </div>
+                <div className="text-base font-mono font-black text-white mt-1">
+                  {minSpend > 0 ? `₦${minSpend.toLocaleString()} baseline` : 'None / Open seating'}
+                </div>
+              </button>
 
-          <div className="space-y-2 pt-2 border-t border-[#232732] text-xs font-mono">
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
-              <span className="text-white/60">House Corkage</span>
-              <span className="font-bold text-white">
-                {venue.corkage_fee ? `₦${venue.corkage_fee.toLocaleString()}` : 'Free / Not set'}
-              </span>
-            </div>
+              {/* Booking Deposit Pill */}
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setAdjustModal({
+                    field: 'deposit',
+                    title: 'Adjust Table Hold Deposit',
+                    value: depositFee ? depositFee.toString() : '20000',
+                  });
+                }}
+                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all tap-feedback cursor-pointer group"
+              >
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-white/60 flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-[#00E575]" />
+                    <span>Table Hold Deposit:</span>
+                  </span>
+                  <span className="text-[10px] text-[#00E575] group-hover:underline">TAP TO EDIT</span>
+                </div>
+                <div className="text-base font-mono font-black text-white mt-1">
+                  {depositFee > 0 ? `₦${depositFee.toLocaleString()} (100% direct)` : 'Free Hold'}
+                </div>
+              </button>
 
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
-              <span className="text-white/60">Live Menu Items</span>
-              <span className="font-bold text-white">{activeMenuCount} Active</span>
+              {/* Dress Code Pill */}
+              <Link
+                href={`/business/${venue.id}/rules`}
+                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all tap-feedback group"
+              >
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-white/60">Dress Code Enforced:</span>
+                  <span className="text-[10px] text-white/40 group-hover:underline">RULES →</span>
+                </div>
+                <div className="text-base font-mono font-black text-white mt-1">
+                  {(venue.dress_code || 'Smart Casual').replace('_', ' ').toUpperCase()}
+                </div>
+              </Link>
             </div>
           </div>
         </div>
@@ -649,23 +758,23 @@ export function ThePulseClient({
                     type="button"
                     disabled={activeActionSquadId === squad.id}
                     onClick={() => handleSquadDecision(squad, 'decline')}
-                    className="h-12 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-950/40 text-red-400 font-mono font-bold text-xs uppercase tracking-wider transition-all tap-feedback cursor-pointer disabled:opacity-50"
+                    className="h-12 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-950/40 text-red-400 font-mono font-bold text-xs uppercase tracking-wider transition-all tap-feedback cursor-pointer disabled:opacity-50 text-center"
                   >
-                    Decline
+                    DECLINE (ALTERNATE TIME)
                   </button>
 
                   <button
                     type="button"
                     disabled={activeActionSquadId === squad.id}
                     onClick={() => handleSquadDecision(squad, 'approve')}
-                    className="h-12 rounded-xl bg-[#008751] hover:bg-[#007043] active:bg-[#005a35] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-1.5 tap-feedback cursor-pointer disabled:opacity-50"
+                    className="h-12 rounded-xl bg-[#008751] hover:bg-[#007043] active:bg-[#005a35] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-1.5 tap-feedback cursor-pointer disabled:opacity-50 text-center"
                   >
                     {activeActionSquadId === squad.id ? (
                       <Loader2 className="w-4 h-4 animate-spin text-white" />
                     ) : (
                       <>
                         <Check className="w-4 h-4" />
-                        <span>Approve</span>
+                        <span>ACCEPT &amp; LOCK TABLE</span>
                       </>
                     )}
                   </button>
@@ -703,7 +812,97 @@ export function ThePulseClient({
                 className="h-9 px-3.5 rounded-lg bg-[#008751] text-white text-xs font-mono font-bold shadow-md flex items-center gap-1 tap-feedback cursor-pointer"
               >
                 <Check className="w-3.5 h-3.5" />
-                <span>Approve</span>
+                <span>Lock</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 6. QUICK CODE PUNCH MODAL ── */}
+      <QuickCodePunchModal
+        venueId={venue.id}
+        venueName={venue.name}
+        isOpen={showPunchModal}
+        onClose={() => setShowPunchModal(false)}
+        squads={demand.approvedSquads.length > 0 ? demand.approvedSquads : demand.pendingSquads}
+        onSquadVerified={(planCode) => {
+          showSavedIndicator(`✓ ${planCode} Seated & Verified at Door!`);
+        }}
+      />
+
+      {/* ── 7. QUICK RULE ADJUSTMENT MODAL ── */}
+      {adjustModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+          <div className="w-full max-w-sm bg-[#121418] border-2 border-[#00E575]/50 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <h3 className="text-base font-bold">{adjustModal.title}</h3>
+              <button
+                type="button"
+                onClick={() => setAdjustModal(null)}
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Preset Chips */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Presets:</span>
+              <div className="flex flex-wrap gap-2">
+                {(adjustModal.field === 'corkage'
+                  ? [0, 10000, 15000, 20000, 30000]
+                  : adjustModal.field === 'min_spend'
+                  ? [0, 30000, 50000, 100000, 250000]
+                  : [0, 10000, 20000, 50000]
+                ).map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => handleSaveRuleAdjustment(preset)}
+                    className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-[#008751] hover:text-white border border-white/10 text-xs font-mono font-bold transition-all tap-feedback cursor-pointer"
+                  >
+                    {preset === 0 ? 'Free / None' : `₦${preset.toLocaleString()}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom input */}
+            <div className="space-y-1.5 pt-2 border-t border-white/10">
+              <label className="text-[11px] font-mono text-white/60 uppercase">
+                Or Enter Custom Amount (₦)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={adjustModal.value}
+                  onChange={(e) => setAdjustModal({ ...adjustModal, value: e.target.value.replace(/\D/g, '') })}
+                  placeholder="25000"
+                  className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/60 border border-white/15 text-white font-mono text-sm focus:border-[#00E575] focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setAdjustModal(null)}
+                className="h-11 rounded-xl bg-white/5 hover:bg-white/10 text-white font-mono text-xs font-bold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={savingRule}
+                onClick={() => handleSaveRuleAdjustment()}
+                className="h-11 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-md cursor-pointer"
+              >
+                {savingRule ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                <span>Save Rule</span>
               </button>
             </div>
           </div>

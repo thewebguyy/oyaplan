@@ -10,7 +10,7 @@ export function BusinessFAQ() {
   const faqs = [
     {
       q: "Is it free to list my business on OyaPlan?",
-      a: "Yes. Listing your venue on OyaPlan is 100% free. There are no registration fees, monthly SaaS subscriptions, or paywalls just to be discoverable by Lagos outing planners.",
+      a: "Yes. Listing your venue on OyaPlan is 100% free. There are no registration fees, monthly software subscriptions, or paywalls just to be discoverable by Lagos outing planners.",
     },
     {
       q: "How does OyaPlan make money?",

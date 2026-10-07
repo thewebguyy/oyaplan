@@ -281,7 +281,7 @@ export function BusinessMarquee() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 text-center sm:text-left">
         <p className="text-xs text-slate-500 font-medium">
-          💡 <span className="text-slate-700 font-bold">Desktop:</span> Hover over any card to pause and inspect live interface specimens.
+          💡 <span className="text-slate-700 font-bold">Lagos Nightlife Command:</span> Live touch-enabled instruments for floor generals on duty.
         </p>
       </div>
     </section>

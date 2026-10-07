@@ -19,41 +19,41 @@ export function BusinessReservationSection() {
     {
       step: "01",
       icon: Users,
-      title: "Guests plan ahead",
-      subtitle: "Checking the budget",
+      title: "Upstream Squad Radar",
+      subtitle: "Budgeting before Friday night",
       description:
-        "Lagos squads use OyaPlan to choose where to go and see what they will likely spend before leaving home — checking menu prices, drinks, and house rules so there are no surprises.",
-      badge: "Planning Ahead",
+        "Lagos squads assemble outing budgets on WhatsApp and OyaPlan before leaving home—locking in dish choices, bottle counts, and corkage so there are zero surprises or split-bill arguments at your door.",
+      badge: "Upstream Demand",
       badgeColor: "text-amber-800 bg-amber-50 border-amber-200",
     },
     {
       step: "02",
       icon: Calendar,
-      title: "They request a table",
-      subtitle: "Booking request sent",
+      title: "Direct Table Hold Request",
+      subtitle: "Party size & estimated cart locked",
       description:
-        "When the squad agrees on the spot, the lead sends a reservation request with the date, time, party size, and seating choice.",
-      badge: "Reservation Request",
+        "When the squad commits, the lead sends a table hold request with party size, seating zone, and arrival window. You see the expected spend upfront.",
+      badge: "High-Intent Request",
       badgeColor: "text-indigo-800 bg-indigo-50 border-indigo-200",
     },
     {
       step: "03",
       icon: Building2,
-      title: "Your venue confirms",
-      subtitle: "Direct deposit to you",
+      title: "1-Tap Floor Accept",
+      subtitle: "100% direct deposit to your bank",
       description:
-        "Your team checks availability and accepts the booking. Any required table deposit is paid straight to your venue account. OyaPlan never touches your money.",
-      badge: "Direct Deposit",
+        "Floor managers accept the table in one tap. Any required table hold deposit is paid straight to your Nigerian bank account (Providus, Moniepoint, Zenith). OyaPlan never holds your money.",
+      badge: "Direct Payout",
       badgeColor: "text-emerald-800 bg-[#EAFDF3] border-[#A3F3C6]",
     },
     {
       step: "04",
       icon: Receipt,
-      title: "OyaPlan earns a commission",
-      subtitle: "Pay only when booked",
+      title: "Velvet Rope Clearance",
+      subtitle: "1-second code check-in",
       description:
-        "When the squad visits your venue, OyaPlan earns a commission for bringing you confirmed customers. No monthly software fees, ever.",
-      badge: "Fair Commission",
+        "Squads arrive with their OyaPlan pass (OYA-7K4M2P). Door staff punch the code into the bouncer console to seat verified tables instantly without POS or register headaches.",
+      badge: "Zero Door Drama",
       badgeColor: "text-slate-800 bg-slate-100 border-slate-200",
     },
   ];
@@ -117,9 +117,9 @@ export function BusinessReservationSection() {
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
-                  <Clock className="w-3 h-3 text-slate-400" />
-                  <span>Step {idx + 1} of 4</span>
+                <div className="pt-4 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-mono font-bold text-slate-400">
+                  <Clock className="w-3 h-3 text-brand-green" />
+                  <span>Radar Stage 0{idx + 1}</span>
                 </div>
               </div>
             );

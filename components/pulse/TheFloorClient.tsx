@@ -300,7 +300,9 @@ export function TheFloorClient({ venue, demand }: TheFloorClientProps) {
                       </div>
 
                       <div className="text-right space-y-0.5">
-                        <span className="text-[10px] font-mono uppercase text-white/50 block">Deposit Ready</span>
+                        <span className="text-[10px] font-mono uppercase text-[#00E575] font-bold block">
+                          Direct Deposit [100% Direct]
+                        </span>
                         <div className="text-2xl font-black text-[#00E575] font-mono">
                           ₦{currentTopSquad.deposit_amount.toLocaleString()}
                         </div>
@@ -328,7 +330,7 @@ export function TheFloorClient({ venue, demand }: TheFloorClientProps) {
 
                     {/* Hint text */}
                     <div className="text-center text-[11px] font-mono text-white/40">
-                      ← Swipe left to decline · Swipe right to approve →
+                      ← Swipe left to decline · Swipe right to lock table →
                     </div>
 
                     {/* Physical Thumb Buttons */}
@@ -337,24 +339,24 @@ export function TheFloorClient({ venue, demand }: TheFloorClientProps) {
                         type="button"
                         disabled={activeSquadId === currentTopSquad.id}
                         onClick={() => handleDecision(currentTopSquad, 'decline')}
-                        className="h-14 rounded-2xl border-2 border-red-500/40 bg-red-950/20 hover:bg-red-950/40 text-red-400 font-mono font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 tap-feedback cursor-pointer disabled:opacity-50"
+                        className="h-14 rounded-2xl border-2 border-red-500/40 bg-red-950/20 hover:bg-red-950/40 text-red-400 font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 tap-feedback cursor-pointer disabled:opacity-50 text-center"
                       >
-                        <X className="w-5 h-5" />
-                        <span>Decline</span>
+                        <X className="w-4 h-4" />
+                        <span>DECLINE</span>
                       </button>
 
                       <button
                         type="button"
                         disabled={activeSquadId === currentTopSquad.id}
                         onClick={() => handleDecision(currentTopSquad, 'approve')}
-                        className="h-14 rounded-2xl bg-[#008751] hover:bg-[#007043] active:bg-[#005a35] text-white font-mono font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg tap-feedback cursor-pointer disabled:opacity-50"
+                        className="h-14 rounded-2xl bg-[#008751] hover:bg-[#007043] active:bg-[#005a35] text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg tap-feedback cursor-pointer disabled:opacity-50 text-center"
                       >
                         {activeSquadId === currentTopSquad.id ? (
                           <Loader2 className="w-5 h-5 animate-spin text-white" />
                         ) : (
                           <>
-                            <Check className="w-5 h-5" />
-                            <span>Approve Squad</span>
+                            <Check className="w-4 h-4" />
+                            <span>ACCEPT &amp; LOCK</span>
                           </>
                         )}
                       </button>

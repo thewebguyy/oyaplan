@@ -275,7 +275,7 @@ export default function BusinessAuthBridge() {
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-[#00E575] hover:underline"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Claim your pre-indexed Lagos venue here</span>
+                  <span>Claim your Lagos venue on the floor</span>
                 </Link>
               </div>
             </div>
