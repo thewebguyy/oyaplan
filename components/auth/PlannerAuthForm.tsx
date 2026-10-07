@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Mail, Loader2, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowLeft, Mail, Loader2, CheckCircle2, AlertCircle, RefreshCw, Sparkles, ShieldCheck, ArrowRight } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase";
 import { sanitizeReturnTo } from "@/lib/utils/returnTo";
 import { trackEvent } from "@/lib/analytics/trackClient";
@@ -123,55 +123,50 @@ export default function PlannerAuthForm() {
   };
 
   return (
-    <main className="min-h-[100dvh] bg-[#FAF7F2] text-midnight-lagoon flex flex-col justify-between selection:bg-[#008751]/20">
+    <main className="min-h-[100dvh] bg-[#F6F6F2] text-[#111111] flex flex-col justify-between selection:bg-[#F9E828] selection:text-[#111111] font-sans">
       {/* Header */}
       <header className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-4 flex items-center justify-between">
         <Link
           href={returnTo && returnTo !== "/" ? returnTo : "/"}
-          className="inline-flex items-center gap-2 text-xs font-bold text-text-secondary hover:text-midnight-lagoon transition-colors py-1.5 px-3 rounded-full hover:bg-white border border-[#EAE4DC] tap-feedback"
+          className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#555555] hover:text-[#111111] transition-colors py-1.5 px-3.5 rounded-full bg-white border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] tap-feedback"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to OyaPlan</span>
         </Link>
-        <Link href="/" className="flex items-center tap-feedback">
-          <Image
-            src="/logo.png"
-            alt="OyaPlan"
-            width={610}
-            height={143}
-            className="h-7 w-auto object-contain shrink-0"
-            priority
-          />
+        <Link href="/" className="flex items-center gap-1.5 tap-feedback">
+          <span className="text-2xl font-[900] tracking-tighter text-[#111111]">
+            Oya<span className="bg-[#F9E828] px-1 rounded-sm border border-[#111111]">Plan</span>
+          </span>
         </Link>
       </header>
 
       {/* Main Card */}
       <div className="w-full max-w-md mx-auto px-4 py-8 sm:py-12 my-auto">
-        <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-6 sm:p-8 shadow-sm">
+        <div className="bg-white rounded-3xl border-3 border-[#111111] p-6 sm:p-8 shadow-[8px_8px_0px_0px_#111111]">
           {success ? (
             /* Email Sent State */
             <div className="text-center space-y-5 animate-in fade-in zoom-in-95 duration-200">
-              <div className="w-16 h-16 bg-[#EAFDF3] text-[#008751] border border-[#A3F3C6] rounded-full flex items-center justify-center mx-auto shadow-xs">
-                <CheckCircle2 className="w-8 h-8" />
+              <div className="w-16 h-16 bg-[#008751] text-white border-2 border-[#111111] rounded-2xl flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#111111]">
+                <CheckCircle2 className="w-8 h-8 stroke-[2.5]" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon tracking-tight">
-                  Check your inbox
+                <h2 className="text-xl sm:text-2xl font-black font-display text-[#111111] uppercase tracking-tight">
+                  Check your inbox!
                 </h2>
-                <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#555555] font-medium leading-relaxed">
                   We sent an instant sign-in link to:
                 </p>
-                <div className="inline-block bg-surface-grey font-mono font-bold text-xs sm:text-sm px-3 py-1.5 rounded-lg text-midnight-lagoon border border-[#EAE4DC] max-w-full truncate">
+                <div className="inline-block bg-[#F6F6F2] font-mono font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl text-[#111111] border-2 border-[#111111] max-w-full truncate shadow-[2px_2px_0px_0px_#111111]">
                   {email}
                 </div>
               </div>
 
-              <div className="p-4 bg-[#FAF7F2] rounded-2xl border border-[#EAE4DC] text-left text-xs text-text-secondary space-y-2">
-                <div className="font-bold text-midnight-lagoon flex items-center gap-1.5">
+              <div className="p-4 bg-[#FFFEE5] rounded-2xl border-2 border-[#111111] text-left text-xs text-[#111111] space-y-1.5 font-medium shadow-[2px_2px_0px_0px_#111111]">
+                <div className="font-black font-display uppercase tracking-wider text-[#111111] flex items-center gap-1.5">
                   <Mail className="w-4 h-4 text-[#008751]" /> Next steps:
                 </div>
-                <p>1. Open your email on this device.</p>
-                <p>2. Tap the sign-in button to log in securely.</p>
+                <p>1. Open your inbox on this device.</p>
+                <p>2. Tap the link to log in instantly. Zero password needed.</p>
               </div>
 
               <div className="space-y-3 pt-2">
@@ -179,10 +174,10 @@ export default function PlannerAuthForm() {
                   type="button"
                   disabled={resendCooldown > 0 || loading}
                   onClick={handleEmailSubmit}
-                  className="w-full h-11 rounded-xl text-xs sm:text-sm font-bold text-[#008751] bg-[#EAFDF3] hover:bg-[#d8f9e7] disabled:opacity-50 transition-colors flex items-center justify-center gap-2 tap-feedback"
+                  className="w-full h-11 rounded-2xl text-xs font-mono font-black uppercase tracking-wider text-[#111111] bg-[#F9E828] hover:bg-[#ffe710] border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:opacity-50 transition-all flex items-center justify-center gap-2 tap-feedback cursor-pointer"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-                  {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : "Resend magic link"}
+                  {resendCooldown > 0 ? `Resend link in ${resendCooldown}s` : "Resend magic link"}
                 </button>
 
                 <button
@@ -191,7 +186,7 @@ export default function PlannerAuthForm() {
                     setSuccess(false);
                     setError(null);
                   }}
-                  className="block w-full text-center text-xs font-bold text-text-muted hover:text-midnight-lagoon transition-colors py-1"
+                  className="block w-full text-center text-xs font-bold text-[#777777] hover:text-[#111111] transition-colors py-1 cursor-pointer"
                 >
                   Use a different email address
                 </button>
@@ -201,19 +196,20 @@ export default function PlannerAuthForm() {
             /* Main Form */
             <div className="space-y-6">
               <div className="text-center space-y-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase tracking-wider">
-                  OyaPlanner
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#F9E828] text-[#111111] border border-[#111111] text-[10px] font-mono font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#111111]">
+                  <Sparkles className="w-3 h-3 fill-[#111111]" />
+                  <span>ENTER THE SOFT LIFE 🌴</span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-midnight-lagoon tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-black font-display text-[#111111] uppercase tracking-tight">
                   Welcome back, OyaPlanner.
                 </h1>
-                <p className="text-xs sm:text-sm text-text-secondary">
-                  Sign in to access saved spots, run plans with friends, and view your outing passport.
+                <p className="text-xs sm:text-sm text-[#555555] font-medium leading-relaxed">
+                  Sign in to access saved spots, squad linkups, and verified damage slips.
                 </p>
               </div>
 
               {error && (
-                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-start gap-2 animate-in fade-in">
+                <div className="p-3.5 rounded-2xl bg-red-50 border-2 border-red-300 text-red-700 text-xs font-bold flex items-start gap-2 animate-in fade-in">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
@@ -225,7 +221,7 @@ export default function PlannerAuthForm() {
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={googleLoading || loading}
-                  className="w-full h-12 rounded-xl border border-[#EAE4DC] hover:border-text-secondary bg-white hover:bg-surface-grey text-xs sm:text-sm font-bold text-midnight-lagoon flex items-center justify-center gap-3 transition-all shadow-xs tap-feedback disabled:opacity-60 cursor-pointer"
+                  className="w-full h-12 rounded-2xl border-2 border-[#111111] hover:bg-[#F6F6F2] bg-white text-xs font-black uppercase tracking-wider text-[#111111] flex items-center justify-center gap-3 transition-all shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none tap-feedback disabled:opacity-60 cursor-pointer"
                 >
                   {googleLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin text-[#008751]" />
@@ -243,8 +239,8 @@ export default function PlannerAuthForm() {
 
               {/* Divider */}
               <div className="relative flex items-center justify-center">
-                <div className="w-full border-t border-[#EAE4DC]" />
-                <span className="bg-white px-3 text-[11px] font-black uppercase tracking-wider text-text-muted absolute">
+                <div className="w-full border-t-2 border-[#111111]/20" />
+                <span className="bg-white px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-[#777777] absolute">
                   or with email
                 </span>
               </div>
@@ -252,7 +248,7 @@ export default function PlannerAuthForm() {
               {/* Email Magic Link Form */}
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div className="space-y-1.5 text-left">
-                  <label htmlFor="email" className="block text-xs font-bold text-midnight-lagoon">
+                  <label htmlFor="email" className="block text-xs font-mono font-black uppercase tracking-wider text-[#111111]">
                     Email address
                   </label>
                   <input
@@ -262,28 +258,31 @@ export default function PlannerAuthForm() {
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-12 rounded-xl bg-surface-grey border border-[#EAE4DC] focus:border-[#008751] focus:bg-white text-xs sm:text-sm text-midnight-lagoon font-medium px-4 outline-none transition-colors"
+                    className="w-full h-12 rounded-2xl bg-[#F6F6F2] border-2 border-[#111111] focus:border-[#008751] focus:bg-white text-xs sm:text-sm text-[#111111] font-medium px-4 outline-none transition-colors"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading || googleLoading}
-                  className="w-full h-12 rounded-xl bg-[#008751] hover:bg-[#007043] text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 tap-feedback disabled:opacity-60 cursor-pointer"
+                  className="w-full h-12 rounded-2xl bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] font-display font-black text-xs uppercase tracking-wider border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 tap-feedback disabled:opacity-60 cursor-pointer"
                 >
                   {loading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin text-[#111111]" />
                   ) : (
-                    <span>Continue with Email 🚀</span>
+                    <>
+                      <span>Continue with Email 🚀</span>
+                      <ArrowRight className="w-4 h-4 stroke-[3]" />
+                    </>
                   )}
                 </button>
               </form>
 
               <div className="text-center pt-2">
-                <p className="text-[11px] text-text-muted leading-normal">
+                <p className="text-[11px] text-[#777777] leading-normal font-medium">
                   By continuing, you agree to OyaPlan&apos;s{" "}
-                  <Link href="/terms" className="underline hover:text-midnight-lagoon">Terms</Link> and{" "}
-                  <Link href="/privacy" className="underline hover:text-midnight-lagoon">Privacy Policy</Link>.
+                  <Link href="/terms" className="underline font-bold text-[#111111] hover:text-[#008751]">Terms</Link> and{" "}
+                  <Link href="/privacy" className="underline font-bold text-[#111111] hover:text-[#008751]">Privacy Policy</Link>.
                 </p>
               </div>
             </div>
@@ -292,9 +291,9 @@ export default function PlannerAuthForm() {
 
       </div>
 
-      <footer className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 border-t border-[#EAE4DC] flex items-center justify-between text-xs text-text-muted">
-        <div>© {new Date().getFullYear()} OyaPlan</div>
-        <Link href="/" className="hover:text-midnight-lagoon font-bold">Back to Home</Link>
+      <footer className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 border-t border-[#111111]/15 flex items-center justify-between text-xs font-mono font-bold text-[#777777]">
+        <div>© {new Date().getFullYear()} OyaPlan Technologies Limited</div>
+        <Link href="/" className="hover:text-[#111111] transition-colors">Back to Home</Link>
       </footer>
     </main>
   );

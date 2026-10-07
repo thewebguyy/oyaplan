@@ -100,24 +100,24 @@ export default function SavedClient({
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E5DE] pb-5">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#F9E828] bg-[#111111] px-3 py-1 rounded-full shadow-xs mb-2">
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-black uppercase tracking-widest text-[#111111] bg-[#F9E828] border border-[#111111] px-3 py-1 rounded-full shadow-[2px_2px_0px_0px_#111111] mb-2">
               <span>RESIDENT SHORTLIST • YOUR BLACK BOOK</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#111111] font-display uppercase tracking-tight">
               The Shortlist
             </h1>
             <p className="text-xs sm:text-sm text-[#555555] mt-1 font-medium">
-              Your vetted Lagos spots and saved outing plans. Ready when you move.
+              Your vetted Lagos spots and saved outing plans. Ready whenever your squad is moving.
             </p>
           </div>
 
-          {/* Segmented Tab Switcher — Suppress (0) when empty */}
-          <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-[#E5E5DE] w-fit self-start sm:self-auto shadow-2xs">
+          {/* Segmented Tab Switcher with Neo-Brutalist styling */}
+          <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] w-fit self-start sm:self-auto">
             <button
               type="button"
               onClick={() => setActiveTab("spots")}
               aria-label={`Show saved spots (${savedSpots.length})`}
-              className={`px-4 py-1.5 font-bold text-xs rounded-full transition-all tap-feedback cursor-pointer font-mono ${
+              className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all tap-feedback cursor-pointer font-display ${
                 activeTab === "spots"
                   ? "bg-[#111111] text-[#F9E828] shadow-xs"
                   : "text-[#555555] hover:text-[#111111]"
@@ -130,7 +130,7 @@ export default function SavedClient({
               type="button"
               onClick={() => setActiveTab("plans")}
               aria-label={`Show saved plans (${serverSavedPlans.length})`}
-              className={`px-4 py-1.5 font-bold text-xs rounded-full transition-all tap-feedback cursor-pointer font-mono ${
+              className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all tap-feedback cursor-pointer font-display ${
                 activeTab === "plans"
                   ? "bg-[#111111] text-[#F9E828] shadow-xs"
                   : "text-[#555555] hover:text-[#111111]"
