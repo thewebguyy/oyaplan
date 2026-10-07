@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Calendar, MapPin, Share2, ArrowRight, Sparkles, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OyaSquadSummary } from '@/lib/types';
@@ -30,7 +31,17 @@ interface DashboardTabsProps {
 }
 
 export default function DashboardTabs({ savedPlans, squads }: DashboardTabsProps) {
-  const [activeTab, setActiveTab] = useState<'plans' | 'squads'>('plans');
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<'plans' | 'squads'>(
+    tabParam === 'squads' ? 'squads' : 'plans'
+  );
+
+  useEffect(() => {
+    if (tabParam === 'squads' || tabParam === 'plans') {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   return (
     <div className="space-y-8">

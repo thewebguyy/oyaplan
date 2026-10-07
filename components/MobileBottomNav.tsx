@@ -14,11 +14,32 @@ export default function MobileBottomNav() {
   const { session } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(id);
+  }, []);
+
+  // Creative Mobile Interaction: Yield and hide gracefully whenever mobile menu opens
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkMenuState = () => {
+      const open = document.body.getAttribute("data-mobile-menu-open") === "true";
+      setIsMenuOpen(open);
+    };
+
+    const handleMenuEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ open: boolean }>;
+      setIsMenuOpen(Boolean(customEvent.detail?.open));
+    };
+
+    checkMenuState();
+
+    window.addEventListener("oya:mobile-menu", handleMenuEvent);
+    return () => window.removeEventListener("oya:mobile-menu", handleMenuEvent);
   }, []);
 
   // Hide-on-down-scroll and restore-on-up-scroll behavior
@@ -129,10 +150,15 @@ export default function MobileBottomNav() {
     },
   ];
 
+  const shouldShowBottomNav = isVisible && !isMenuOpen;
+
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 md:hidden transition-transform duration-300 ease-in-out pointer-events-none ${
-        isVisible ? "translate-y-0" : "translate-y-full"
+      id="mobile-bottom-nav"
+      className={`fixed bottom-0 left-0 right-0 z-40 md:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${
+        shouldShowBottomNav
+          ? "translate-y-0 opacity-100 scale-100"
+          : "translate-y-[120%] opacity-0 scale-95"
       }`}
     >
       <div className="bg-white/95 backdrop-blur-xl border-t border-[#E5E5DE] px-3 py-1 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-8px_30px_rgba(0,0,0,0.08)] pointer-events-auto">

@@ -16,7 +16,8 @@ import {
   MapPin,
   Sparkles,
   Lock,
-  ArrowRight
+  ArrowRight,
+  Users
 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { supabaseBrowser } from "@/lib/supabase";
@@ -31,6 +32,7 @@ interface AccountClientProps {
   isAuthenticated: boolean;
   profile: UserProfile | null;
   savedPlansCount: number;
+  squadCount?: number;
   referralCode: string | null;
 }
 
@@ -38,6 +40,7 @@ export default function AccountClient({
   isAuthenticated,
   profile,
   savedPlansCount,
+  squadCount = 0,
 }: AccountClientProps) {
   const { signOut, openModal, avatarUrl } = useAuth();
   const { savedSpots } = useSavedSpots();
@@ -220,8 +223,8 @@ export default function AccountClient({
           </div>
         </div>
 
-        {/* PROMINENT TOP DASHBOARD CARDS: THE SHORTLIST & SAVED PLANS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        {/* PROMINENT TOP DASHBOARD CARDS: THE SHORTLIST, SAVED PLANS & OYASQUAD */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           {/* The Shortlist Dashboard Tile */}
           <Link
             href="/saved"
@@ -272,6 +275,33 @@ export default function AccountClient({
               </h2>
               <p className="text-[11px] text-[#6B7280] mt-1 font-medium">
                 Calculated outing plans and squad itineraries
+              </p>
+            </div>
+          </Link>
+
+          {/* OyaSquad Dashboard Tile */}
+          <Link
+            href="/dashboard?tab=squads"
+            prefetch={true}
+            className="bg-white hover:bg-[#F6F6F2] p-5 rounded-2xl border-2 border-[#111111] shadow-[0_4px_12px_rgba(17,17,17,0.04)] transition-all tap-feedback flex flex-col justify-between group cursor-pointer"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-[#111111] text-[#F9E828] flex items-center justify-center">
+                <Users className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#6B7280] bg-[#F6F6F2] border border-[#E5E5DE] px-2.5 py-0.5 rounded-full">
+                Crew Roster
+              </span>
+            </div>
+            <div>
+              <span className="text-3xl font-black text-[#111111] font-mono tabular-nums block">
+                {squadCount}
+              </span>
+              <h2 className="text-sm font-black uppercase tracking-wider text-[#111111] font-display mt-0.5">
+                OyaSquad
+              </h2>
+              <p className="text-[11px] text-[#6B7280] mt-1 font-medium">
+                Active Lagos outing circles and group planners
               </p>
             </div>
           </Link>

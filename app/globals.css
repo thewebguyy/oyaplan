@@ -1369,4 +1369,11 @@ html, body {
   }
 }
 
+/* ── Mobile Menu & Bottom Bar Coexistence ── */
+body[data-mobile-menu-open="true"] #mobile-bottom-nav {
+  transform: translateY(120%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 

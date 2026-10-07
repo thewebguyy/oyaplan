@@ -14,7 +14,8 @@ import {
   Settings, 
   Compass, 
   Heart,
-  Sparkles
+  Sparkles,
+  Users
 } from "lucide-react";
 import { useAuth } from "./providers/AuthProvider";
 import { Avatar } from "./ui/avatar";
@@ -63,15 +64,21 @@ export default function NavBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [profileDropdownOpen]);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll and notify other navigation surfaces when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      document.body.setAttribute("data-mobile-menu-open", "true");
+      window.dispatchEvent(new CustomEvent("oya:mobile-menu", { detail: { open: true } }));
     } else {
       document.body.style.overflow = "";
+      document.body.removeAttribute("data-mobile-menu-open");
+      window.dispatchEvent(new CustomEvent("oya:mobile-menu", { detail: { open: false } }));
     }
     return () => {
       document.body.style.overflow = "";
+      document.body.removeAttribute("data-mobile-menu-open");
+      window.dispatchEvent(new CustomEvent("oya:mobile-menu", { detail: { open: false } }));
     };
   }, [mobileMenuOpen]);
 
@@ -251,6 +258,18 @@ export default function NavBar() {
                           </Link>
 
                           <Link
+                            href="/dashboard?tab=squads"
+                            role="menuitem"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="w-full text-left px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#F6F6F2] hover:text-obsidian flex items-center justify-between transition-colors"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Users className="w-4 h-4 text-text-muted" />
+                              <span>OyaSquad</span>
+                            </div>
+                          </Link>
+
+                          <Link
                             href="/settings"
                             role="menuitem"
                             onClick={() => setProfileDropdownOpen(false)}
@@ -390,6 +409,22 @@ export default function NavBar() {
               >
                 <Heart className="w-5 h-5 text-obsidian shrink-0" />
                 <span>The Shortlist</span>
+              </Link>
+
+              <Link
+                href="/dashboard?tab=squads"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all min-h-[48px] tap-feedback ${
+                  pathname.startsWith("/dashboard")
+                    ? "text-[#111111] bg-[#111111]/10"
+                    : "text-midnight-lagoon hover:bg-surface-grey active:bg-[#EAE4DC]/50"
+                }`}
+              >
+                <Users className="w-5 h-5 text-[#111111] shrink-0" />
+                <span className="flex-1">OyaSquad</span>
+                <span className="text-[10px] font-mono font-bold bg-[#F9E828] text-[#111111] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Squads
+                </span>
               </Link>
 
               <Link
