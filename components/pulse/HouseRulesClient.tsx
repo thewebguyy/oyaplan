@@ -436,56 +436,62 @@ export function HouseRulesClient({ venue, photos }: HouseRulesClientProps) {
               </button>
             </div>
 
-            {/* Quick Preset Chips */}
-            <div className="space-y-2 pt-2 border-t border-[#232732]">
-              <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: 'Free', val: 0 },
-                  { label: '₦10,000', val: 10000 },
-                  { label: '₦15,000', val: 15000 },
-                  { label: '₦20,000', val: 20000 },
-                  { label: '₦30,000', val: 30000 },
-                ].map((chip) => {
-                  const isActive = corkageEnabled && parseInt(corkageFee, 10) === chip.val;
-                  return (
-                    <button
-                      key={chip.label}
-                      type="button"
-                      onClick={() => handleSelectPresetCorkage(chip.val)}
-                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
-                        isActive
-                          ? 'bg-[#008751] text-white shadow-sm'
-                          : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
-                      }`}
-                    >
-                      {chip.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Price Expands Immediately */}
-            {corkageEnabled && (
-              <div className="pt-2 space-y-1.5 animate-in fade-in duration-150">
-                <label className="text-[11px] font-mono text-white/70 uppercase">
-                  Custom Corkage Fee in Naira (₦)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={corkageFee}
-                    onChange={(e) => setCorkageFee(e.target.value.replace(/\D/g, ''))}
-                    onBlur={handleCorkageBlur}
-                    placeholder="10000"
-                    className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
-                  />
+            {/* Conditional Expansion */}
+            {corkageEnabled ? (
+              <div className="space-y-3 pt-2 border-t border-[#232732] animate-in fade-in duration-150">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: 'Free', val: 0 },
+                      { label: '₦10,000', val: 10000 },
+                      { label: '₦15,000', val: 15000 },
+                      { label: '₦20,000', val: 20000 },
+                      { label: '₦30,000', val: 30000 },
+                    ].map((chip) => {
+                      const isActive = corkageEnabled && parseInt(corkageFee, 10) === chip.val;
+                      return (
+                        <button
+                          key={chip.label}
+                          type="button"
+                          onClick={() => handleSelectPresetCorkage(chip.val)}
+                          className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
+                            isActive
+                              ? 'bg-[#008751] text-white shadow-sm'
+                              : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-white/40">Auto-saves on blur</span>
+
+                <div className="pt-1 space-y-1.5">
+                  <label className="text-[11px] font-mono text-white/70 uppercase">
+                    Custom Corkage Fee in Naira (₦)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={corkageFee}
+                      onChange={(e) => setCorkageFee(e.target.value.replace(/\D/g, ''))}
+                      onBlur={handleCorkageBlur}
+                      placeholder="10000"
+                      className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-white/40">Auto-saves on blur</span>
+                </div>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-[#232732] flex items-center justify-between text-xs font-mono text-white/40">
+                <span>Outside bottles not permitted (or Free).</span>
+                <span className="text-white/30 uppercase text-[10px]">Switch Off</span>
               </div>
             )}
           </div>
@@ -520,56 +526,62 @@ export function HouseRulesClient({ venue, photos }: HouseRulesClientProps) {
               </button>
             </div>
 
-            {/* Quick Preset Chips */}
-            <div className="space-y-2 pt-2 border-t border-[#232732]">
-              <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: 'Free', val: 0 },
-                  { label: '₦5,000', val: 5000 },
-                  { label: '₦10,000', val: 10000 },
-                  { label: '₦15,000', val: 15000 },
-                  { label: '₦25,000', val: 25000 },
-                ].map((chip) => {
-                  const isActive = cakeFeeEnabled && parseInt(cakeFee, 10) === chip.val;
-                  return (
-                    <button
-                      key={chip.label}
-                      type="button"
-                      onClick={() => handleSelectPresetCake(chip.val)}
-                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
-                        isActive
-                          ? 'bg-[#008751] text-white shadow-sm'
-                          : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
-                      }`}
-                    >
-                      {chip.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Price Expands Immediately */}
-            {cakeFeeEnabled && (
-              <div className="pt-2 space-y-1.5 animate-in fade-in duration-150">
-                <label className="text-[11px] font-mono text-white/70 uppercase">
-                  Custom Cake Cutting Fee in Naira (₦)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={cakeFee}
-                    onChange={(e) => setCakeFee(e.target.value.replace(/\D/g, ''))}
-                    onBlur={handleCakeBlur}
-                    placeholder="15000"
-                    className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
-                  />
+            {/* Conditional Expansion */}
+            {cakeFeeEnabled ? (
+              <div className="space-y-3 pt-2 border-t border-[#232732] animate-in fade-in duration-150">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: 'Free', val: 0 },
+                      { label: '₦5,000', val: 5000 },
+                      { label: '₦10,000', val: 10000 },
+                      { label: '₦15,000', val: 15000 },
+                      { label: '₦25,000', val: 25000 },
+                    ].map((chip) => {
+                      const isActive = cakeFeeEnabled && parseInt(cakeFee, 10) === chip.val;
+                      return (
+                        <button
+                          key={chip.label}
+                          type="button"
+                          onClick={() => handleSelectPresetCake(chip.val)}
+                          className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
+                            isActive
+                              ? 'bg-[#008751] text-white shadow-sm'
+                              : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-white/40">Auto-saves on blur</span>
+
+                <div className="pt-1 space-y-1.5">
+                  <label className="text-[11px] font-mono text-white/70 uppercase">
+                    Custom Cake Cutting Fee in Naira (₦)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={cakeFee}
+                      onChange={(e) => setCakeFee(e.target.value.replace(/\D/g, ''))}
+                      onBlur={handleCakeBlur}
+                      placeholder="15000"
+                      className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-white/40">Auto-saves on blur</span>
+                </div>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-[#232732] flex items-center justify-between text-xs font-mono text-white/40">
+                <span>Outside cakes allowed free (₦0).</span>
+                <span className="text-white/30 uppercase text-[10px]">Switch Off</span>
               </div>
             )}
           </div>
@@ -603,55 +615,62 @@ export function HouseRulesClient({ venue, photos }: HouseRulesClientProps) {
               </button>
             </div>
 
-            {/* Quick Preset Chips */}
-            <div className="space-y-2 pt-2 border-t border-[#232732]">
-              <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: 'None', val: 0 },
-                  { label: '₦30,000', val: 30000 },
-                  { label: '₦50,000', val: 50000 },
-                  { label: '₦100,000', val: 100000 },
-                  { label: '₦250,000 VIP', val: 250000 },
-                ].map((chip) => {
-                  const isActive = minSpendEnabled && parseInt(minSpend, 10) === chip.val;
-                  return (
-                    <button
-                      key={chip.label}
-                      type="button"
-                      onClick={() => handleSelectPresetMinSpend(chip.val)}
-                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
-                        isActive
-                          ? 'bg-[#008751] text-white shadow-sm'
-                          : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
-                      }`}
-                    >
-                      {chip.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {minSpendEnabled && (
-              <div className="pt-2 space-y-1.5 animate-in fade-in duration-150">
-                <label className="text-[11px] font-mono text-white/70 uppercase">
-                  Custom Minimum Spend in Naira (₦)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={minSpend}
-                    onChange={(e) => setMinSpend(e.target.value.replace(/\D/g, ''))}
-                    onBlur={handleMinSpendBlur}
-                    placeholder="50000"
-                    className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
-                  />
+            {/* Conditional Expansion */}
+            {minSpendEnabled ? (
+              <div className="space-y-3 pt-2 border-t border-[#232732] animate-in fade-in duration-150">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: 'None', val: 0 },
+                      { label: '₦30,000', val: 30000 },
+                      { label: '₦50,000', val: 50000 },
+                      { label: '₦100,000', val: 100000 },
+                      { label: '₦250,000 VIP', val: 250000 },
+                    ].map((chip) => {
+                      const isActive = minSpendEnabled && parseInt(minSpend, 10) === chip.val;
+                      return (
+                        <button
+                          key={chip.label}
+                          type="button"
+                          onClick={() => handleSelectPresetMinSpend(chip.val)}
+                          className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
+                            isActive
+                              ? 'bg-[#008751] text-white shadow-sm'
+                              : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-white/40">Auto-saves on blur</span>
+
+                <div className="pt-1 space-y-1.5">
+                  <label className="text-[11px] font-mono text-white/70 uppercase">
+                    Custom Minimum Spend in Naira (₦)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={minSpend}
+                      onChange={(e) => setMinSpend(e.target.value.replace(/\D/g, ''))}
+                      onBlur={handleMinSpendBlur}
+                      placeholder="50000"
+                      className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-white/40">Auto-saves on blur</span>
+                </div>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-[#232732] flex items-center justify-between text-xs font-mono text-white/40">
+                <span>Open seating without minimum table spend.</span>
+                <span className="text-white/30 uppercase text-[10px]">Switch Off</span>
               </div>
             )}
           </div>
@@ -685,54 +704,61 @@ export function HouseRulesClient({ venue, photos }: HouseRulesClientProps) {
               </button>
             </div>
 
-            {/* Quick Preset Chips */}
-            <div className="space-y-2 pt-2 border-t border-[#232732]">
-              <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: 'Free', val: 0 },
-                  { label: '₦10,000', val: 10000 },
-                  { label: '₦20,000', val: 20000 },
-                  { label: '₦50,000', val: 50000 },
-                ].map((chip) => {
-                  const isActive = depositEnabled && parseInt(reservationFee, 10) === chip.val;
-                  return (
-                    <button
-                      key={chip.label}
-                      type="button"
-                      onClick={() => handleSelectPresetDeposit(chip.val)}
-                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
-                        isActive
-                          ? 'bg-[#008751] text-white shadow-sm'
-                          : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
-                      }`}
-                    >
-                      {chip.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {depositEnabled && (
-              <div className="pt-2 space-y-1.5 animate-in fade-in duration-150">
-                <label className="text-[11px] font-mono text-white/70 uppercase">
-                  Custom Deposit Amount in Naira (₦)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={reservationFee}
-                    onChange={(e) => setReservationFee(e.target.value.replace(/\D/g, ''))}
-                    onBlur={handleDepositBlur}
-                    placeholder="20000"
-                    className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
-                  />
+            {/* Conditional Expansion */}
+            {depositEnabled ? (
+              <div className="space-y-3 pt-2 border-t border-[#232732] animate-in fade-in duration-150">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono text-white/50 uppercase block">Quick Preset Chips:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: 'Free', val: 0 },
+                      { label: '₦10,000', val: 10000 },
+                      { label: '₦20,000', val: 20000 },
+                      { label: '₦50,000', val: 50000 },
+                    ].map((chip) => {
+                      const isActive = depositEnabled && parseInt(reservationFee, 10) === chip.val;
+                      return (
+                        <button
+                          key={chip.label}
+                          type="button"
+                          onClick={() => handleSelectPresetDeposit(chip.val)}
+                          className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all tap-feedback cursor-pointer ${
+                            isActive
+                              ? 'bg-[#008751] text-white shadow-sm'
+                              : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/5'
+                          }`}
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-white/40">100% paid directly to venue account</span>
+
+                <div className="pt-1 space-y-1.5">
+                  <label className="text-[11px] font-mono text-white/70 uppercase">
+                    Custom Deposit Amount in Naira (₦)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-mono text-sm">₦</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={reservationFee}
+                      onChange={(e) => setReservationFee(e.target.value.replace(/\D/g, ''))}
+                      onBlur={handleDepositBlur}
+                      placeholder="20000"
+                      className="w-full h-12 pl-8 pr-4 rounded-xl bg-black/40 border border-[#232732] text-sm text-white font-mono focus:border-[#00E575] focus:outline-none"
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-white/40">100% paid directly to venue account</span>
+                </div>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-[#232732] flex items-center justify-between text-xs font-mono text-white/40">
+                <span>Free reservations without hold deposit.</span>
+                <span className="text-white/30 uppercase text-[10px]">Switch Off</span>
               </div>
             )}
           </div>

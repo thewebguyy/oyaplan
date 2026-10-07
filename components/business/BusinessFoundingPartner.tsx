@@ -11,7 +11,7 @@ export function BusinessFoundingPartner() {
       desc: "Accept table booking requests with deposits paid directly into your business account.",
     },
     {
-      title: "Verified Menus & Prices",
+      title: "Confirmed Menus & Prices",
       desc: "Direct WhatsApp contact with our team to keep your full menu, bottles, and house policies accurate.",
     },
     {

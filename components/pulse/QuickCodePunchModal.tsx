@@ -74,7 +74,7 @@ export function QuickCodePunchModal({
       setVerificationResult({
         status: 'success',
         squad: matchedSquad,
-        message: `Verified: Table of ${matchedSquad.squad_size} (${matchedSquad.vibe})`,
+        message: `Pass Matched: Table of ${matchedSquad.squad_size} (${matchedSquad.vibe})`,
       });
       triggerHaptic('success');
       if (onSquadVerified) {
@@ -142,7 +142,7 @@ export function QuickCodePunchModal({
               <span className="block truncate">{verificationResult.message}</span>
               {verificationResult.squad && (
                 <span className="text-[10px] text-white/70 block mt-0.5">
-                  Deposit Verified · Pass code {verificationResult.squad.plan_code} cleared
+                  Pass code validated · Table of {verificationResult.squad.squad_size} checked in at door
                 </span>
               )}
             </div>

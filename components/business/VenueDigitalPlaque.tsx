@@ -75,14 +75,14 @@ export function VenueDigitalPlaque({ venue }: VenueDigitalPlaqueProps) {
         </div>
         <div className="p-3 rounded-xl bg-[#1A1E24] border border-[#272D37]">
           <span className="text-[9px] uppercase tracking-wider text-gray-400 block">Trust Standard</span>
-          <span className="font-bold text-white">Verified Pricing</span>
+          <span className="font-bold text-white">Owner Confirmed Pricing</span>
         </div>
       </div>
 
       {/* Plaque Footer Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
         <p className="text-xs text-gray-400">
-          This digital credential confirms that your menu and pricing are actively verified for Lagos squads.
+          This digital credential confirms that your menu and pricing are actively confirmed by the venue operator for Lagos squads.
         </p>
 
         <button

@@ -121,7 +121,7 @@ export function WhatCustomersSeePreview({ venue, menuItems }: WhatCustomersSeePr
         {sampleMenu.length > 0 && (
           <div className="space-y-2 pt-1">
             <span className="text-[10px] font-mono font-bold uppercase text-text-secondary block">
-              Sample Verified Menu Prices
+              Sample Owner-Confirmed Menu Prices
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {sampleMenu.map((item) => (

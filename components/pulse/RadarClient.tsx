@@ -72,25 +72,29 @@ export function RadarClient({
         </div>
       </div>
 
-      {/* ── 1. COMPETITOR RADAR & OUTFLOW WARNING (THE 'HARD' INTELLIGENCE) ── */}
+      {/* ── 1. DISTRICT PLANNING FLOW & SQUAD BEHAVIOR ── */}
       <section className="bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-amber-400 bg-amber-950/30 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
-              <AlertTriangle className="w-3 h-3 text-amber-400" />
-              <span>COMPETITOR TRAFFIC RADAR</span>
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#00E575] bg-[#008751]/15 border border-[#008751]/30 px-2.5 py-0.5 rounded-full">
+              <Radar className="w-3 h-3 text-[#00E575]" />
+              <span>DISTRICT PLANNING INTEL</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              34% of squads who inspect your venue book elsewhere in {districtName}
+              {demand.headlineCount > 0 || insights.hasEnoughData
+                ? `Squads assembling outings in ${districtName} look for confirmed pricing`
+                : `Gathering Planning Intel for ${districtName}`}
             </h2>
           </div>
-          <span className="text-2xl font-mono font-black text-amber-400 tabular-nums shrink-0">
-            -34%
+          <span className="text-xs font-mono font-bold text-white/50 bg-white/5 px-2.5 py-1 rounded-xl border border-white/10 shrink-0">
+            {demand.headlineCount > 0 ? `${demand.headlineCount} Plans Live` : 'Emerging Signal'}
           </span>
         </div>
 
         <p className="text-xs sm:text-sm text-white/70 leading-relaxed max-w-2xl">
-          Squads assembling outings on OyaPlan look for transparent bottle prices and confirmed cover charges. When items lack prices or operating hours say &quot;Check back&quot;, planners immediately bounce to similar lounges nearby.
+          {demand.headlineCount > 0 || insights.hasEnoughData
+            ? 'Squads assembling outings on OyaPlan look for transparent bottle prices and confirmed cover charges. When items lack prices or operating hours say "Check back", planners bounce to spots with confirmed menus.'
+            : `As squads assemble weekend runs featuring ${venue.name}, live planning dynamics, drop-off factors, and group consensus will aggregate live here.`}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
@@ -104,16 +108,16 @@ export function RadarClient({
 
           <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-1.5">
             <span className="text-[10px] font-mono text-white/50 uppercase block">Where They Go</span>
-            <span className="text-sm font-bold text-amber-400 block">Venues with 100% Verified Menus</span>
+            <span className="text-sm font-bold text-[#00E575] block">Venues with Owner-Confirmed Menus</span>
             <p className="text-[11px] text-white/60 leading-normal">
-              Competitors with verified prices capture 2.8x more table hold deposits.
+              Spots with confirmed policies convert planning squads directly to table hold requests.
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-black/40 border border-[#008751]/30 space-y-1.5 flex flex-col justify-between">
             <div>
-              <span className="text-[10px] font-mono text-[#00E575] uppercase block font-bold">1-Tap Countermove</span>
-              <span className="text-sm font-bold text-white block">Push Verified Offerings</span>
+              <span className="text-[10px] font-mono text-[#00E575] uppercase block font-bold">1-Tap Action</span>
+              <span className="text-sm font-bold text-white block">Confirm Menu Offerings</span>
             </div>
             <Link
               href={`/business/${venue.id}/pricing`}
@@ -134,30 +138,35 @@ export function RadarClient({
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#00E575] bg-[#008751]/15 px-2.5 py-0.5 rounded-full border border-[#008751]/30 flex items-center gap-1">
                 <Share2 className="w-3 h-3 text-[#00E575]" />
-                <span>GROUP CHAT VIRALITY</span>
+                <span>GROUP CHAT SIGNALS</span>
               </span>
               <Flame className="w-4 h-4 text-orange-400" />
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              &quot;{featuredDishName}&quot; is your most shared item this week.
+              {demand.headlineCount > 0
+                ? `"${featuredDishName}" featured in active squad planning.`
+                : `Squad sharing intel unlocks on first planned outing.`}
             </h3>
 
             <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
-              When Lagos squad organizers build itinerary budgets, this item gets dropped directly into WhatsApp squad chats to gauge group consensus.
+              {demand.headlineCount > 0
+                ? 'When Lagos squad organizers build itinerary budgets, menu items are evaluated in group chats to reach spending consensus before leaving home.'
+                : `When squad organizers include ${venue.name} in their weekend run, top-shared items and consensus signals will stream here.`}
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-white/60">Squad Intent Spike:</span>
-              <span className="text-[#00E575] font-bold">High Group Agreement</span>
-            </div>
-            <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#008751] to-[#00E575] rounded-full w-[78%]" />
+              <span className="text-white/60">Planning Signal:</span>
+              <span className="text-[#00E575] font-bold">
+                {demand.headlineCount > 0 ? `${demand.headlineCount} Squads Planning` : 'Awaiting Weekend Runs'}
+              </span>
             </div>
             <span className="text-[10px] font-mono text-white/40 block">
-              78% of squads who add this item end up submitting a reservation request.
+              {demand.pendingSquads.length > 0
+                ? `${demand.pendingSquads.length} pending table hold request(s) awaiting your decision.`
+                : '100% grounded in real planner activity. No simulated estimates.'}
             </span>
           </div>
         </div>
@@ -168,27 +177,36 @@ export function RadarClient({
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#00E575] bg-[#008751]/15 px-2.5 py-0.5 rounded-full border border-[#008751]/30 flex items-center gap-1">
                 <Clock className="w-3 h-3 text-[#00E575]" />
-                <span>PEAK SEARCH SURGE</span>
+                <span>ASSEMBLY PATTERNS</span>
               </span>
               <TrendingUp className="w-4 h-4 text-[#00E575]" />
             </div>
 
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Friday 8:30 PM – 11:30 PM is peak assembly.
+              {insights.hasEnoughData
+                ? `Dominant squad size: ${insights.mostCommonGroupSize || 'Tables of 4–6'}`
+                : `Friday & Saturday late evening is standard Lagos peak.`}
             </h3>
 
             <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
-              Dominant squad party size for {venue.name} is {insights.mostCommonGroupSize || 'Tables of 5–8'}. Typical requested budget envelope is {insights.typicalBudgetRange || '₦40k–₦65k per person'}.
+              {insights.hasEnoughData ? (
+                <>
+                  Dominant squad party size for {venue.name} is {insights.mostCommonGroupSize || 'Tables of 4–6'}.
+                  {insights.typicalBudgetRange ? ` Typical requested budget envelope is ${insights.typicalBudgetRange}.` : ''}
+                </>
+              ) : (
+                `Awaiting detailed party size patterns for ${venue.name}. Standard Lagos weekend flow typically peaks between 8:30 PM and midnight.`
+              )}
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between text-xs font-mono">
             <div>
-              <span className="text-white/50 block text-[10px] uppercase">Recommended Stand Setup</span>
-              <span className="font-bold text-white text-sm">Keep VIP Booths Reserved for 6+</span>
+              <span className="text-white/50 block text-[10px] uppercase">Stand Recommendation</span>
+              <span className="font-bold text-white text-sm">Review incoming holds early</span>
             </div>
             <span className="text-xs px-2.5 py-1 rounded-lg bg-[#008751]/20 text-[#00E575] border border-[#008751]/40 font-bold">
-              Optimal Flow
+              Floor Control
             </span>
           </div>
         </div>

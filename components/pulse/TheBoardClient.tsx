@@ -350,7 +350,7 @@ export function TheBoardClient({ venue, initialMenuItems }: TheBoardClientProps)
               ) : (
                 <ShieldCheck className="w-4 h-4 text-[#00E575]" />
               )}
-              <span>Prices Verified for this Friday</span>
+              <span>Owner-Confirm Prices for this Friday</span>
             </button>
 
             <button

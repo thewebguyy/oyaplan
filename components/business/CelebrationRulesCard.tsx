@@ -178,7 +178,7 @@ export function CelebrationRulesCard({
             </span>
             <span className="text-gray-300">·</span>
             <span className="text-[10px] text-text-muted">
-              {status === 'verified' ? 'Verified by OyaPlan' : status === 'owner_submitted' ? 'Submitted by venue' : 'Unconfirmed'}
+              {status === 'verified' ? 'Verified by OyaPlan' : status === 'owner_submitted' ? 'Owner Confirmed' : 'Unconfirmed'}
             </span>
           </div>
           <h2 className="text-base sm:text-lg font-bold text-midnight-lagoon mt-0.5">

@@ -116,13 +116,13 @@ export function BusinessPricingClient({
       setConfirmSuccess(true);
       setReceiptData({
         isOpen: true,
-        title: 'PRICES VERIFIED TODAY',
+        title: 'PRICES CONFIRMED TODAY',
         category: 'FRESHNESS AUDIT',
-        status: 'STATUS: VERIFIED',
+        status: 'STATUS: OWNER CONFIRMED',
         details: [
-          { label: 'ITEMS VERIFIED', value: `${menuItems.length} ITEMS` },
+          { label: 'ITEMS CONFIRMED', value: `${menuItems.length} ITEMS` },
           { label: 'VALIDITY', value: 'NEXT 30 DAYS' },
-          { label: 'CONSUMER SIGNAL', value: '100% CONFIDENT' },
+          { label: 'CONSUMER SIGNAL', value: 'OWNER CONFIRMED' },
         ],
       });
       setTimeout(() => setConfirmSuccess(false), 5000);
@@ -160,7 +160,7 @@ export function BusinessPricingClient({
       isOpen: true,
       title: 'MENU ITEM ADDED',
       category: 'CATALOG UPDATE',
-      status: 'STATUS: VERIFIED',
+      status: 'STATUS: OWNER CONFIRMED',
       details: [
         { label: 'ITEM NAME', value: newItemName.trim() },
         { label: 'CUSTOMER PRICE', value: `₦${priceNum.toLocaleString('en-NG')}` },
@@ -205,7 +205,7 @@ export function BusinessPricingClient({
         isOpen: true,
         title: 'MANDATORY CHARGES UPDATED',
         category: 'STRUCTURED FEES',
-        status: 'STATUS: VERIFIED',
+        status: 'STATUS: OWNER CONFIRMED',
         details: [
           { label: 'VAT', value: `${vatPct}%` },
           { label: 'SERVICE CHARGE', value: `${serviceChargePct}%` },
@@ -397,7 +397,7 @@ export function BusinessPricingClient({
                       <span className="text-gray-300">·</span>
                       <span className="text-[10px] text-[#008751] font-mono font-bold flex items-center gap-1">
                         <CheckCircle2 className="w-2.5 h-2.5" />
-                        STATUS: VERIFIED
+                        STATUS: OWNER CONFIRMED
                       </span>
                     </div>
                   </div>
@@ -461,7 +461,7 @@ export function BusinessPricingClient({
                       <span className="text-gray-300">·</span>
                       <span className="text-[10px] text-[#008751] font-mono font-bold flex items-center gap-1">
                         <CheckCircle2 className="w-2.5 h-2.5" />
-                        STATUS: VERIFIED
+                        STATUS: OWNER CONFIRMED
                       </span>
                     </div>
                   </div>
@@ -525,7 +525,7 @@ export function BusinessPricingClient({
                       <span className="text-gray-300">·</span>
                       <span className="text-[10px] text-[#008751] font-mono font-bold flex items-center gap-1">
                         <CheckCircle2 className="w-2.5 h-2.5" />
-                        STATUS: VERIFIED
+                        STATUS: OWNER CONFIRMED
                       </span>
                     </div>
                   </div>

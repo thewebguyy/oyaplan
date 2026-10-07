@@ -185,7 +185,7 @@ export function TheFloorClient({ venue, demand }: TheFloorClientProps) {
               <span className="text-2xl sm:text-3xl font-black text-white tabular-nums">
                 {confirmedSquads.length}
               </span>
-              <span className="text-[11px] text-white/40">seated</span>
+              <span className="text-[11px] text-white/40">holds</span>
             </div>
           </div>
 

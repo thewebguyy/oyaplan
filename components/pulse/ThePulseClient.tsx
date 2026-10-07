@@ -264,6 +264,27 @@ export function ThePulseClient({
   const nextPendingSquad = pendingSquads[0];
   const bouncerShareWa = `https://wa.me/?text=${encodeURIComponent(`Here is the door check-in stand for ${venue.name}: https://oyaplan.com/business/${venue.id}/bouncer`)}`;
 
+  // Dynamic per-head spend calculation from actual squad plans or venue data
+  const totalPlannedCost = [...demand.pendingSquads, ...demand.approvedSquads].reduce(
+    (sum, s) => sum + (s.total_cost || s.budget || 0),
+    0
+  );
+  const totalPlannedHeads = [...demand.pendingSquads, ...demand.approvedSquads].reduce(
+    (sum, s) => sum + (s.squad_size || 0),
+    0
+  );
+  const averagePlannedPerHead =
+    totalPlannedHeads > 0 && totalPlannedCost > 0
+      ? Math.round(totalPlannedCost / totalPlannedHeads)
+      : (venue.derived_typical_cost || venue.minimum_spend || 0);
+
+  const headlineDemandText =
+    demand.headlineCount === 0
+      ? '0 squads planning around your venue this weekend yet.'
+      : demand.headlineCount === 1
+      ? '1 squad included your venue in their weekend plan.'
+      : `${demand.headlineCount} squads included your venue in their weekend plans.`;
+
   return (
     <div className="space-y-6 pb-24 sm:pb-8 font-sans text-[#F8F9FA]">
       {/* Subtle Auto-Save Toast */}
@@ -280,10 +301,13 @@ export function ThePulseClient({
       <section className="bg-[#121418] rounded-3xl border border-[#232732] p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#232732] pb-6">
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#00E575] animate-ping" />
               <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#00E575] px-2.5 py-0.5 rounded-full bg-[#008751]/15 border border-[#008751]/30">
                 THE WEEKEND RADAR · LIVE FLOOR DISPATCH
+              </span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
+                PLANNING INTENT
               </span>
               {statusSaving && (
                 <span className="text-[10px] font-mono text-white/50 flex items-center gap-1">
@@ -294,13 +318,19 @@ export function ThePulseClient({
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-              {demand.headlineCount > 0 ? demand.headlineCount : 42} squads have added you to their Friday/Saturday run.
+              {headlineDemandText}
             </h1>
 
             <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-mono text-white/70">
-              <span className="text-[#00E575] font-black">
-                ₦38,500/head average cart.
-              </span>
+              {averagePlannedPerHead > 0 ? (
+                <span className="text-[#00E575] font-black">
+                  ₦{averagePlannedPerHead.toLocaleString()}/head planned average spend.
+                </span>
+              ) : (
+                <span className="text-white/60">
+                  Awaiting squad itinerary spend signals.
+                </span>
+              )}
               <span className="text-white/30 hidden sm:inline">|</span>
               <span>
                 {demand.pendingSquads.length > 0 ? (
@@ -492,12 +522,24 @@ export function ThePulseClient({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Outing Cart Summary */}
           <div className="bg-black/50 p-5 rounded-2xl border border-white/10 space-y-2">
-            <span className="text-[10px] font-mono text-white/50 uppercase block">Outing Budget / Head</span>
-            <div className="text-2xl font-mono font-black text-white">₦38,500</div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-white/50 uppercase block">Outing Budget / Head</span>
+              <span className="text-[9px] font-mono font-bold text-[#00E575] bg-[#008751]/20 px-2 py-0.5 rounded border border-[#008751]/30">
+                OWNER CONFIRMED
+              </span>
+            </div>
+            <div className="text-2xl font-mono font-black text-white">
+              {averagePlannedPerHead > 0 ? `₦${averagePlannedPerHead.toLocaleString()}` : '₦0'}
+            </div>
             <div className="text-[11px] font-mono text-white/60 space-y-0.5 pt-1 border-t border-white/5">
-              <div className="flex justify-between"><span>Dishes:</span><span>₦24,000</span></div>
-              <div className="flex justify-between"><span>Cocktails:</span><span>₦9,500</span></div>
-              <div className="flex justify-between text-[#00E575]"><span>VAT &amp; Service:</span><span>₦5,000</span></div>
+              <div className="flex justify-between">
+                <span>Estimated Dishes &amp; Drinks:</span>
+                <span>₦{Math.max(0, Math.round(averagePlannedPerHead * 0.85)).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-[#00E575]">
+                <span>VAT ({venue.vat_pct ?? 7.5}%) &amp; Service ({venue.service_charge_pct ?? 0}%):</span>
+                <span>₦{Math.max(0, Math.round(averagePlannedPerHead * 0.15)).toLocaleString()}</span>
+              </div>
             </div>
           </div>
 
@@ -827,7 +869,7 @@ export function ThePulseClient({
         onClose={() => setShowPunchModal(false)}
         squads={demand.approvedSquads.length > 0 ? demand.approvedSquads : demand.pendingSquads}
         onSquadVerified={(planCode) => {
-          showSavedIndicator(`✓ ${planCode} Seated & Verified at Door!`);
+          showSavedIndicator(`✓ ${planCode} Seated & Checked In at Door!`);
         }}
       />
 

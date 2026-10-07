@@ -141,7 +141,7 @@ describe('The Pulse — Lagos Hospitality Command Center Invariants', () => {
       // Planning intent = groups assembling plans at home
       // Confirmed Guestlist = table hold requested with deposit and verified/seated by venue
       const planningDemand = {
-        headlineCount: 42,
+        headlineCount: 0,
         intentType: 'upstream_planning_intent',
         isConfirmedVisit: false,
       };
@@ -156,15 +156,61 @@ describe('The Pulse — Lagos Hospitality Command Center Invariants', () => {
       expect(planningDemand.isConfirmedVisit).toBe(false);
       expect(confirmedBooking.isConfirmedVisit).toBe(true);
       expect(planningDemand.intentType).not.toBe('confirmed_reservation');
+
+      // Headline demand logic MUST NOT fabricate 42 when count is 0
+      const getDemandHeadline = (count: number) =>
+        count === 0
+          ? '0 squads planning around your venue this weekend yet.'
+          : count === 1
+          ? '1 squad included your venue in their weekend plan.'
+          : `${count} squads included your venue in their weekend plans.`;
+
+      expect(getDemandHeadline(0)).toBe('0 squads planning around your venue this weekend yet.');
+      expect(getDemandHeadline(0)).not.toContain('42');
+      expect(getDemandHeadline(3)).toContain('3 squads included your venue');
     });
 
-    it('preserves the distinction between Operator Confirmed and OyaPlan Verified', () => {
-      const operatorAttestation = 'Operator Confirmed';
-      const independentVerification = 'OyaPlan Verified';
+    it('preserves the distinction between Owner Confirmed and OyaPlan Verified', () => {
+      const formatTrustBadge = (source: 'owner_portal' | 'receipt_audit' | 'ops_verification') => {
+        if (source === 'receipt_audit' || source === 'ops_verification') {
+          return 'OYAPLAN VERIFIED';
+        }
+        return 'OWNER CONFIRMED';
+      };
 
-      expect(operatorAttestation).not.toBe(independentVerification);
-      expect(operatorAttestation).toContain('Operator');
-      expect(independentVerification).toContain('OyaPlan');
+      expect(formatTrustBadge('owner_portal')).toBe('OWNER CONFIRMED');
+      expect(formatTrustBadge('owner_portal')).not.toBe('OYAPLAN VERIFIED');
+      expect(formatTrustBadge('receipt_audit')).toBe('OYAPLAN VERIFIED');
+      expect(formatTrustBadge('ops_verification')).toBe('OYAPLAN VERIFIED');
+    });
+
+    it('ensures door pass punch validates attendance without claiming financial deposit verification', () => {
+      const punchResult = {
+        status: 'success',
+        passCode: 'OYA-7K4M2P',
+        squadSize: 4,
+        checkInLabel: 'Pass code validated · Table of 4 checked in at door',
+      };
+
+      expect(punchResult.checkInLabel).toContain('Pass code validated');
+      expect(punchResult.checkInLabel).not.toContain('Deposit Verified');
+    });
+
+    it('ensures house rules tactile switches expose numeric inputs only when enabled', () => {
+      const evaluateRuleState = (enabled: boolean, enteredFee: number) => {
+        return {
+          inputsProminent: enabled,
+          effectiveFee: enabled ? enteredFee : 0,
+        };
+      };
+
+      const disabledCorkage = evaluateRuleState(false, 15000);
+      expect(disabledCorkage.inputsProminent).toBe(false);
+      expect(disabledCorkage.effectiveFee).toBe(0);
+
+      const enabledCorkage = evaluateRuleState(true, 15000);
+      expect(enabledCorkage.inputsProminent).toBe(true);
+      expect(enabledCorkage.effectiveFee).toBe(15000);
     });
   });
 

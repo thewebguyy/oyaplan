@@ -51,7 +51,7 @@ export function BouncerModeClient({ venue, demand }: BouncerModeClientProps) {
         showToast(`Check-in reversed for ${squad.plan_code}`);
       } else {
         next.add(squad.id);
-        showToast(`✓ ${squad.plan_code} Seated & Verified!`);
+        showToast(`✓ ${squad.plan_code} Seated & Checked In!`);
       }
       return next;
     });
@@ -186,7 +186,7 @@ export function BouncerModeClient({ venue, demand }: BouncerModeClientProps) {
           const matched = squads.find((s) => s.plan_code === planCode);
           if (matched) {
             setCheckedInIds((prev) => new Set(prev).add(matched.id));
-            showToast(`✓ ${planCode} Seated & Verified!`);
+            showToast(`✓ ${planCode} Seated & Checked In!`);
           }
         }}
       />
@@ -279,7 +279,7 @@ export function BouncerModeClient({ venue, demand }: BouncerModeClientProps) {
 
       {/* Safety Notice */}
       <div className="text-center pt-4 pb-8 text-[11px] font-mono text-white/40">
-        Door staff console · Zero banking details displayed · Verified by OyaPlan
+        Door staff console · Zero banking details displayed · Host Pass Door Mode
       </div>
     </div>
   );

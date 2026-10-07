@@ -287,7 +287,7 @@ export function BusinessHero() {
                         Nok by Alara · Victoria Island
                       </h3>
                       <p className="text-xs text-[#00E575] font-mono">
-                        ● Prices Verified for this Friday
+                        ● Owner Confirmed for this Friday
                       </p>
                     </div>
 
