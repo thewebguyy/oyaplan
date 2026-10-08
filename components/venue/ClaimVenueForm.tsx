@@ -195,43 +195,43 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
     const waUrl = getBusinessWhatsAppUrl('claim_support', { venueName: venue.name });
 
     return (
-      <div className="bg-white rounded-3xl border border-[#EAE4DC] p-8 sm:p-10 space-y-6 shadow-md text-center max-w-xl mx-auto animate-in fade-in duration-300">
-        <div className="w-16 h-16 bg-[#EAFDF3] text-[#008751] rounded-full flex items-center justify-center mx-auto shadow-sm">
+      <div className="bg-white rounded-[24px] border-3 border-[#111111] p-8 sm:p-10 space-y-6 shadow-[6px_6px_0px_0px_#111111] text-center max-w-xl mx-auto animate-in fade-in duration-300">
+        <div className="w-16 h-16 bg-[#EAFDF3] text-[#008751] rounded-2xl border-2 border-[#111111] flex items-center justify-center mx-auto shadow-xs">
           <CheckCircle2 className="w-8 h-8" />
         </div>
 
         <div className="space-y-2">
-          <span className="text-[11px] font-black uppercase tracking-wider text-[#008751] block">
+          <span className="text-[11px] font-black uppercase tracking-wider text-[#008751] bg-[#EAFDF3] px-2.5 py-0.5 rounded border border-[#008751]/30 inline-block">
             Step 3 of 3 Complete
           </span>
-          <h2 className="text-2xl font-black text-midnight-lagoon uppercase tracking-tight">
+          <h2 className="text-2xl font-black text-[#111111] uppercase tracking-tight">
             Claim Under Verification
           </h2>
           <p className="type-body text-sm text-text-secondary leading-relaxed max-w-md mx-auto">
-            Thanks, <span className="font-bold">{claimantName}</span>. Your claim for <span className="font-bold">{venue.name}</span> has been received and is routed to our Lagos operations desk.
+            Thanks, <span className="font-black text-[#111111]">{claimantName}</span>. Your claim for <span className="font-black text-[#111111]">{venue.name}</span> has been received and is routed to our Lagos operations desk.
           </p>
         </div>
 
-        <div className="p-5 bg-surface-grey rounded-2xl text-left space-y-3 border border-[#EAE4DC]/60">
-          <h3 className="text-xs font-black text-midnight-lagoon uppercase tracking-wider">
+        <div className="p-5 bg-[#FAF7F2] rounded-2xl text-left space-y-3 border-2 border-[#111111]">
+          <h3 className="text-xs font-black text-[#111111] uppercase tracking-wider">
             Verification Protocol
           </h3>
           <ol className="text-xs text-text-secondary space-y-2.5 list-decimal list-inside leading-relaxed">
             <li>
-              <strong>Direct WhatsApp/Email Confirmation:</strong> We verify operator authority (typical turnaround under 4 hours).
+              <strong className="text-[#111111]">Direct WhatsApp/Email Confirmation:</strong> We verify operator authority (typical turnaround under 4 hours).
             </li>
             <li>
-              <strong>Partner Portal Activation:</strong> You gain instant dashboard access to sync live menu prices, celebration fees (corkage, cake), and house rules.
+              <strong className="text-[#111111]">Partner Portal Activation:</strong> You gain instant dashboard access to sync live menu prices, celebration fees (corkage, cake), and house rules.
             </li>
             <li>
-              <strong>Verified Partner Shield:</strong> Your listing receives the emerald trust badge on OyaPlan.
+              <strong className="text-[#111111]">Verified Partner Shield:</strong> Your listing receives the emerald trust badge on OyaPlan.
             </li>
           </ol>
         </div>
 
         <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
           <Link href={`/venue/${venue.id}`}>
-            <button className="w-full sm:w-auto h-12 px-6 bg-midnight-lagoon hover:bg-[#00041f] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer">
+            <button className="w-full sm:w-auto h-12 px-6 bg-[#111111] hover:bg-[#222222] text-[#F9E828] font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111]">
               Return to Public Page
             </button>
           </Link>
@@ -240,7 +240,7 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto h-12 px-6 bg-[#EAFDF3] hover:bg-[#d6f9e4] text-[#008751] font-bold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              className="w-full sm:w-auto h-12 px-6 bg-[#25D366] hover:bg-[#20bd5a] text-white font-black text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111]"
             >
               <span>Fast-Track via WhatsApp</span>
             </a>
@@ -253,27 +253,27 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
   const venueThumbnail = venue.cover_url || (venue.gallery_urls && venue.gallery_urls[0]);
 
   return (
-    <div className="bg-white rounded-3xl border border-[#EAE4DC] p-6 sm:p-10 space-y-8 shadow-sm max-w-xl mx-auto">
+    <div className="bg-white rounded-[24px] border-3 border-[#111111] p-6 sm:p-10 space-y-8 shadow-[6px_6px_0px_0px_#111111] max-w-xl mx-auto">
       {/* Venue Header with Thumbnail */}
-      <div className="flex items-start gap-4 border-b border-[#EAE4DC] pb-5">
+      <div className="flex items-start gap-4 border-b-2 border-[#111111] pb-5">
         {venueThumbnail ? (
-          <div className="w-14 h-14 rounded-2xl overflow-hidden bg-surface-grey shrink-0 border border-[#EAE4DC] relative">
+          <div className="w-14 h-14 rounded-2xl overflow-hidden bg-surface-grey shrink-0 border-2 border-[#111111] relative shadow-xs">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={venueThumbnail} alt={venue.name} className="w-full h-full object-cover" />
           </div>
         ) : (
-          <div className="w-14 h-14 rounded-2xl bg-[#008751]/10 text-[#008751] flex items-center justify-center shrink-0 border border-[#008751]/20">
+          <div className="w-14 h-14 rounded-2xl bg-[#F9E828] text-[#111111] flex items-center justify-center shrink-0 border-2 border-[#111111] shadow-xs">
             <Store className="w-6 h-6" />
           </div>
         )}
 
         <div className="space-y-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#008751] bg-[#008751]/10 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#111111] bg-[#F9E828] px-2.5 py-0.5 rounded border border-[#111111]">
               Venue Partner Program
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-midnight-lagoon uppercase tracking-tight leading-tight truncate">
+          <h1 className="text-xl sm:text-2xl font-black text-[#111111] uppercase tracking-tight leading-tight truncate">
             Claim {venue.name}
           </h1>
           <p className="text-xs text-text-muted truncate">
@@ -285,40 +285,40 @@ export function ClaimVenueForm({ venue, initialUser }: ClaimVenueFormProps) {
       {/* 3-Step Progress Header with Accessible Contrast */}
       <div className="grid grid-cols-3 gap-2">
         <div
-          className={`p-2.5 rounded-xl border text-center transition-all ${
+          className={`p-2.5 rounded-xl border-2 text-center transition-all ${
             currentStep === 1
-              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751] ring-1 ring-[#008751]/20'
+              ? 'bg-[#F9E828] border-[#111111] text-[#111111] shadow-[2px_2px_0px_0px_#111111]'
               : currentStep > 1
-              ? 'bg-white border-[#EAE4DC] text-midnight-lagoon'
-              : 'bg-surface-grey border-[#EAE4DC]/60 text-text-secondary'
+              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751]'
+              : 'bg-[#FAF7F2] border-[#EAE4DC] text-text-secondary'
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider block">Step 1</span>
-          <span className="text-xs font-bold truncate block">Account</span>
+          <span className="text-xs font-black truncate block">Account</span>
         </div>
 
         <div
-          className={`p-2.5 rounded-xl border text-center transition-all ${
+          className={`p-2.5 rounded-xl border-2 text-center transition-all ${
             currentStep === 2
-              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751] ring-1 ring-[#008751]/20'
+              ? 'bg-[#F9E828] border-[#111111] text-[#111111] shadow-[2px_2px_0px_0px_#111111]'
               : currentStep > 2
-              ? 'bg-white border-[#EAE4DC] text-midnight-lagoon'
-              : 'bg-surface-grey border-[#EAE4DC]/60 text-text-secondary'
+              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751]'
+              : 'bg-[#FAF7F2] border-[#EAE4DC] text-text-secondary'
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider block">Step 2</span>
-          <span className="text-xs font-bold truncate block">Role &amp; Contact</span>
+          <span className="text-xs font-black truncate block">Role &amp; Contact</span>
         </div>
 
         <div
-          className={`p-2.5 rounded-xl border text-center transition-all ${
+          className={`p-2.5 rounded-xl border-2 text-center transition-all ${
             currentStep === 3
-              ? 'bg-[#EAFDF3] border-[#008751] text-[#008751] ring-1 ring-[#008751]/20'
-              : 'bg-surface-grey border-[#EAE4DC]/60 text-text-secondary'
+              ? 'bg-[#F9E828] border-[#111111] text-[#111111] shadow-[2px_2px_0px_0px_#111111]'
+              : 'bg-[#FAF7F2] border-[#EAE4DC] text-text-secondary'
           }`}
         >
           <span className="text-[10px] font-black uppercase tracking-wider block">Step 3</span>
-          <span className="text-xs font-bold truncate block">Verification</span>
+          <span className="text-xs font-black truncate block">Verification</span>
         </div>
       </div>
 

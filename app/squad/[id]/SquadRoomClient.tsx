@@ -21,7 +21,11 @@ import {
   Building,
   Vote,
   Radio,
-  CheckCircle2
+  CheckCircle2,
+  Headphones,
+  Flame,
+  Ghost,
+  Clock
 } from "lucide-react";
 import { SquadRoomData } from "@/lib/services/squadService";
 import { OwambeSuccessVisual } from "@/components/cultural/OwambeSuccessVisual";
@@ -77,6 +81,36 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
   const [accountNumberInput, setAccountNumberInput] = useState(data.settlement?.account_number || "");
   const [accountNameInput, setAccountNameInput] = useState(data.settlement?.account_name || "");
   const [settlementNoteInput, setSettlementNoteInput] = useState(data.settlement?.note || "");
+
+  // Pass The Aux State
+  const [auxSpotInput, setAuxSpotInput] = useState("");
+  const [auxNoteInput, setAuxNoteInput] = useState("");
+  const [auxPitchCopied, setAuxPitchCopied] = useState(false);
+
+  const handleBroadcastAuxPitch = () => {
+    if (!auxSpotInput.trim()) {
+      toast.error("Enter the spot you want to propose!");
+      return;
+    }
+    const squadUrl = typeof window !== "undefined" ? window.location.href : "";
+    const msg = `🎧 *PASS THE AUX — BACKUP SPOT PROPOSAL:*\nHey squad, what if we pull up to *${auxSpotInput.trim()}* instead?\n${auxNoteInput.trim() ? `Note: "${auxNoteInput.trim()}"\n` : ""}Check our outing room & vote here:\n${squadUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(whatsappUrl, "_blank");
+    toast.success("Opened WhatsApp with your Aux pitch!");
+  };
+
+  const handleCopyAuxPitch = () => {
+    if (!auxSpotInput.trim()) {
+      toast.error("Enter the spot you want to propose!");
+      return;
+    }
+    const squadUrl = typeof window !== "undefined" ? window.location.href : "";
+    const msg = `🎧 *PASS THE AUX — BACKUP SPOT PROPOSAL:*\nHey squad, what if we pull up to *${auxSpotInput.trim()}* instead?\n${auxNoteInput.trim() ? `Note: "${auxNoteInput.trim()}"\n` : ""}Check our outing room & vote here:\n${squadUrl}`;
+    navigator.clipboard.writeText(msg);
+    setAuxPitchCopied(true);
+    toast.success("Aux pitch copied to clipboard!");
+    setTimeout(() => setAuxPitchCopied(false), 2000);
+  };
 
   // Realtime Presence Channel
   useEffect(() => {
@@ -321,63 +355,83 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
           />
         )}
 
-        {/* 2. LIVE ECONOMIC SCORECARD (Decision Header) */}
-        <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-5 relative overflow-hidden">
+        {/* 2. LIVE ECONOMIC SCORECARD & DAMAGE SPLITTER MATRIX */}
+        <div className="bg-white rounded-3xl border-3 border-[#111111] p-5 sm:p-7 shadow-[8px_8px_0px_0px_#111111] space-y-5 relative overflow-hidden font-sans">
           
           {/* Top Subheader: Confirmed Count */}
-          <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#EAFDF3] text-[#008751] flex items-center justify-center shrink-0">
+          <div className="flex items-center justify-between border-b-2 border-[#111111] pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-2xl bg-[#111111] text-[#F9E828] border border-[#111111] flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_#111111]">
                 <Users className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
-                  Headcount Status
+                <p className="text-xs font-black uppercase tracking-wider text-[#111111] font-display">
+                  Squad Headcount
                 </p>
-                <p className="text-[11px] text-text-muted">
+                <p className="text-[11px] font-mono text-[#555555]">
                   {data.confirmedCount > 0 
-                    ? `${data.confirmedCount} confirmed (${data.plan.squad_size} target)`
+                    ? `${data.confirmedCount} locked in (${data.plan.squad_size} target)`
                     : `Planning for ${data.plan.squad_size} people`
                   }
                 </p>
               </div>
             </div>
 
-            <span className="text-xs font-black text-[#008751] bg-[#EAFDF3] px-3 py-1 rounded-full">
-              {data.confirmedCount} In
+            <span className="text-xs font-mono font-black uppercase tracking-wider text-[#111111] bg-[#F9E828] border-2 border-[#111111] px-3 py-1 rounded-xl shadow-[2px_2px_0px_0px_#111111]">
+              {data.confirmedCount} Locked In
             </span>
           </div>
 
-          {/* Large Financial Typography */}
-          <div className="space-y-1">
-            <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
-              Your Share (Estimated)
+          {/* Large Financial Typography & Damage Splitter Matrix */}
+          <div className="space-y-3">
+            <div className="text-[11px] font-mono font-black text-[#555555] uppercase tracking-wider">
+              Damage Per Head (Estimated Contribution)
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-black text-[#008751] tracking-tight">
+              <span className="text-3xl sm:text-4xl font-black text-[#111111] font-mono tracking-tight">
                 ~₦{perPersonSpend.toLocaleString("en-NG")}
               </span>
-              <span className="text-xs font-bold text-text-muted">
+              <span className="text-xs font-bold text-[#555555]">
                 per person
               </span>
             </div>
-            <p className="text-xs text-text-secondary pt-0.5">
-              Based on ~₦{totalSpend.toLocaleString("en-NG")} total estimated spend for {currentHeadcount} {currentHeadcount === 1 ? "person" : "people"}.
+
+            {/* Damage Splitter Matrix */}
+            <div className="grid grid-cols-2 gap-2.5 pt-1 font-mono">
+              <div className="bg-[#F6F6F2] p-3 rounded-2xl border-2 border-[#111111] text-xs">
+                <span className="text-[10px] uppercase font-bold text-[#666666] block">🍽️ Table &amp; Chops</span>
+                <span className="font-black text-[#111111] text-sm">
+                  ~₦{Math.round((data.plan.food_cost || totalSpend * 0.75) / Math.max(1, currentHeadcount)).toLocaleString('en-NG')}
+                </span>
+                <span className="text-[9px] text-[#777777] block mt-0.5">menu + VAT baseline</span>
+              </div>
+
+              <div className="bg-[#F6F6F2] p-3 rounded-2xl border-2 border-[#111111] text-xs">
+                <span className="text-[10px] uppercase font-bold text-[#666666] block">🚗 Transit Share</span>
+                <span className="font-black text-[#111111] text-sm">
+                  ~₦{Math.round((data.plan.transport_cost || totalSpend * 0.25) / Math.max(1, currentHeadcount)).toLocaleString('en-NG')}
+                </span>
+                <span className="text-[9px] text-[#777777] block mt-0.5">round-trip ride-hail</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-[#555555] pt-0.5 font-medium leading-relaxed">
+              Based on ~₦{totalSpend.toLocaleString("en-NG")} total landed spend for {currentHeadcount} {currentHeadcount === 1 ? "person" : "people"}.
             </p>
           </div>
 
           {/* Transport & Vehicle Batching Disclaimer */}
-          <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EAE4DC] flex items-center gap-2.5 text-xs text-text-secondary">
-            <Car className="w-4 h-4 text-[#008751] shrink-0" />
+          <div className="p-3 bg-[#FFFEE5] rounded-2xl border-2 border-[#111111] flex items-center gap-2.5 text-xs text-[#111111] font-mono">
+            <Car className="w-4 h-4 text-[#111111] shrink-0" />
             <span className="leading-snug">{data.liveEconomics.transportNote}</span>
           </div>
 
           {/* 3. PRIMARY ACTION: Join Flow */}
           {!hasJoined || isEditingName ? (
-            <form onSubmit={handleJoin} className="space-y-3 pt-2 border-t border-[#EAE4DC]">
+            <form onSubmit={handleJoin} className="space-y-3 pt-2 border-t-2 border-[#111111]/15">
               <label 
                 htmlFor="guestName"
-                className="block text-xs font-bold text-midnight-lagoon"
+                className="block text-xs font-mono font-black uppercase tracking-wider text-[#111111]"
               >
                 Enter your name to join the squad:
               </label>
@@ -389,33 +443,33 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                   value={guestNameInput}
                   onChange={(e) => setGuestNameInput(e.target.value)}
                   placeholder="e.g. Bode"
-                  className="flex-1 h-12 rounded-xl bg-surface-grey border border-[#EAE4DC] focus:border-[#008751] focus:bg-white text-xs sm:text-sm font-medium px-4 outline-none transition-colors"
+                  className="flex-1 h-12 rounded-2xl bg-[#F6F6F2] border-2 border-[#111111] focus:border-[#008751] focus:bg-white text-xs sm:text-sm font-medium px-4 outline-none transition-colors"
                   autoFocus
                 />
                 <button
                   type="submit"
                   disabled={isPending || !guestNameInput.trim()}
-                  className="h-12 px-5 bg-[#008751] hover:bg-[#007043] text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all tap-feedback disabled:opacity-50 shadow-xs cursor-pointer"
+                  className="h-12 px-6 bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] font-display font-black uppercase text-xs rounded-2xl border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1.5 transition-all tap-feedback disabled:opacity-50 cursor-pointer"
                 >
                   {isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 stroke-[3]" />
                   )}
                   <span>I&apos;m in</span>
                 </button>
               </div>
             </form>
           ) : (
-            <div className="space-y-3 pt-2 border-t border-[#EAE4DC]">
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#EAFDF3] border border-[#A3F3C6]">
+            <div className="space-y-3 pt-2 border-t-2 border-[#111111]/15">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#008751] text-white border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-6 h-6 rounded-full bg-[#008751] text-white flex items-center justify-center text-xs font-bold">
+                  <div className="w-7 h-7 rounded-xl bg-white text-[#008751] flex items-center justify-center text-xs font-black border border-[#111111]">
                     ✓
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-[#00603A]">
-                      {isUserIn ? `You're in as ${data.currentUserParticipant?.display_name}` : `Marked as Can't make it`}
+                    <p className="text-xs font-black font-display uppercase tracking-wider">
+                      {isUserIn ? `You're locked in as ${data.currentUserParticipant?.display_name}` : `Marked as Can't make it`}
                     </p>
                   </div>
                 </div>
@@ -423,9 +477,9 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                   type="button"
                   onClick={handleToggleDecline}
                   disabled={isPending}
-                  className="text-[11px] font-bold text-[#00603A] hover:underline tap-feedback"
+                  className="text-xs font-mono font-black uppercase bg-[#111111] text-[#F9E828] px-3 py-1 rounded-xl border border-white hover:bg-black tap-feedback cursor-pointer"
                 >
-                  {isUserIn ? "Change to Can't make it" : "Change to I'm in"}
+                  {isUserIn ? "Change: Can't make it" : "Change: I'm in"}
                 </button>
               </div>
             </div>
@@ -501,14 +555,17 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
         )}
 
         {/* 4. WHO'S COMING (Member List) */}
-        <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-3.5">
+        <div className="bg-white rounded-[24px] border-3 border-[#111111] p-5 sm:p-6 shadow-[6px_6px_0px_0px_#111111] space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-[#111111] pb-3.5">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#008751]" />
-              <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
-                Who&apos;s Coming ({data.confirmedCount} In)
+              <Users className="w-5 h-5 text-[#008751]" />
+              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#111111]">
+                Who&apos;s Coming ({data.confirmedCount} Locked In)
               </h2>
             </div>
+            <span className="text-[10px] font-black uppercase tracking-wider bg-[#F9E828] text-[#111111] px-2.5 py-0.5 rounded border border-[#111111]">
+              Live Squad
+            </span>
           </div>
 
           {data.participants.length === 0 ? (
@@ -525,31 +582,42 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
               {data.participants.map((p) => {
                 const isCurrentUser = p.participant_token === data.currentUserToken;
                 const isConfirmed = p.status === "in";
+                const isDeclined = p.status === "declined";
 
                 return (
                   <div 
                     key={p.id}
-                    className="flex items-center justify-between py-3 first:pt-1 last:pb-1"
+                    className="flex items-center justify-between py-3.5 first:pt-1 last:pb-1"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar name={p.display_name} size="sm" />
                       <div>
-                        <p className="text-xs sm:text-sm font-bold text-midnight-lagoon">
-                          {p.display_name} {isCurrentUser && <span className="text-[11px] text-text-muted">(You)</span>}
+                        <p className="text-xs sm:text-sm font-black text-[#111111] flex items-center gap-1.5">
+                          <span>{p.display_name}</span>
+                          {isCurrentUser && (
+                            <span className="text-[10px] bg-surface-grey text-text-muted px-1.5 py-0.5 rounded font-bold border border-[#EAE4DC]">
+                              You
+                            </span>
+                          )}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5">
                       {isConfirmed ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#008751] bg-[#EAFDF3] px-2.5 py-1 rounded-full">
-                          <Check className="w-3 h-3" />
-                          <span>In</span>
+                        <span className="inline-flex items-center gap-1.5 text-xs font-black text-[#008751] bg-[#EAFDF3] border-2 border-[#008751]/30 px-3 py-1 rounded-full shadow-xs">
+                          <Flame className="w-3.5 h-3.5 text-[#008751]" />
+                          <span>In &amp; Ready</span>
+                        </span>
+                      ) : isDeclined ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E11D48] bg-[#FFF1F2] border-2 border-[#FECDD3] px-3 py-1 rounded-full">
+                          <Ghost className="w-3.5 h-3.5 text-[#E11D48]" />
+                          <span>Ghosting group chat</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-text-muted bg-surface-grey px-2.5 py-1 rounded-full">
-                          <X className="w-3 h-3" />
-                          <span>Can&apos;t make it</span>
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#854D0E] bg-[#FEF9C3] border-2 border-[#FEF08A] px-3 py-1 rounded-full">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>Active in chat</span>
                         </span>
                       )}
                     </div>
@@ -560,44 +628,110 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
           )}
         </div>
 
-        {/* 5. SPLIT & SETTLE (Non-Custodial Bank Account Details) */}
-        <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-3.5">
+        {/* 5. PASS THE AUX 🎧 (Alternative Spot Proposal) */}
+        <div className="bg-[#FAF7F2] rounded-[24px] border-3 border-[#111111] p-5 sm:p-6 shadow-[6px_6px_0px_0px_#111111] space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-[#111111] pb-3">
             <div className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-[#008751]" />
-              <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
+              <Headphones className="w-5 h-5 text-midnight-lagoon" />
+              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#111111]">
+                Pass The Aux 🎧
+              </h2>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-wider bg-[#F9E828] text-[#111111] px-2.5 py-0.5 rounded border border-[#111111]">
+              Propose Backup
+            </span>
+          </div>
+
+          <p className="text-xs text-text-secondary leading-relaxed">
+            Not feeling this exact spot or want to suggest a backup before anyone sends card payments? Drop your alternative into the squad group.
+          </p>
+
+          <div className="space-y-3 bg-white p-4 rounded-2xl border-2 border-[#111111]">
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-wider text-midnight-lagoon mb-1">
+                Alternative Spot Name
+              </label>
+              <input
+                type="text"
+                value={auxSpotInput}
+                onChange={(e) => setAuxSpotInput(e.target.value)}
+                placeholder="e.g. Danfo Bistro, RSVP, or Hard Rock Cafe"
+                className="w-full h-11 rounded-xl bg-[#F6F6F2] border-2 border-[#111111] text-xs font-bold px-3 text-[#111111] outline-none focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-wider text-midnight-lagoon mb-1">
+                Why switch? (Optional vibe pitch)
+              </label>
+              <input
+                type="text"
+                value={auxNoteInput}
+                onChange={(e) => setAuxNoteInput(e.target.value)}
+                placeholder="e.g. Better happy hour discounts or closer to Mainland"
+                className="w-full h-11 rounded-xl bg-[#F6F6F2] border-2 border-[#111111] text-xs font-medium px-3 text-[#111111] outline-none focus:bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
+              <button
+                type="button"
+                onClick={handleBroadcastAuxPitch}
+                className="flex-1 h-11 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-black flex items-center justify-center gap-1.5 transition-all tap-feedback cursor-pointer shadow-xs"
+              >
+                <MessageSquare className="w-3.5 h-3.5 fill-white" />
+                <span>Broadcast Pitch on WhatsApp</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCopyAuxPitch}
+                className="h-11 px-4 rounded-xl border-2 border-[#111111] bg-[#F9E828] hover:bg-[#ebd915] text-[#111111] text-xs font-black flex items-center justify-center gap-1.5 transition-colors tap-feedback cursor-pointer"
+              >
+                {auxPitchCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{auxPitchCopied ? "Copied!" : "Copy Pitch"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 6. SPLIT & SETTLE (Host Bank Account Details) */}
+        <div className="bg-white rounded-[24px] border-3 border-[#111111] p-5 sm:p-6 shadow-[6px_6px_0px_0px_#111111] space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-[#111111] pb-3.5">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-[#008751]" />
+              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#111111]">
                 Split &amp; Settle (Host Bank Account)
               </h2>
             </div>
-            <span className="text-[10px] font-bold text-text-muted uppercase">
+            <span className="text-[10px] font-black uppercase tracking-wider bg-[#F9E828] text-[#111111] px-2 py-0.5 rounded border border-[#111111]">
               1-Tap Copy
             </span>
           </div>
 
           {data.settlement ? (
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-3.5">
+            <div className="p-4 rounded-2xl bg-[#FAF7F2] border-2 border-[#111111] space-y-3.5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] font-bold text-text-muted uppercase">Bank Name</p>
-                  <p className="text-sm font-bold text-midnight-lagoon">{data.settlement.bank_name}</p>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-text-muted">Bank Name</p>
+                  <p className="text-sm font-black text-[#111111]">{data.settlement.bank_name}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[11px] font-bold text-text-muted uppercase">Account Name</p>
-                  <p className="text-sm font-bold text-midnight-lagoon">{data.settlement.account_name}</p>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-text-muted">Account Name</p>
+                  <p className="text-sm font-black text-[#111111]">{data.settlement.account_name}</p>
                 </div>
               </div>
 
-              <div className="p-3 bg-white rounded-xl border border-[#EAE4DC] flex items-center justify-between gap-3">
+              <div className="p-3 bg-white rounded-xl border-2 border-[#111111] flex items-center justify-between gap-3 shadow-xs">
                 <div>
-                  <p className="text-[10px] font-bold text-text-muted uppercase">Account Number</p>
-                  <p className="text-base font-black text-[#008751] font-mono tracking-wider">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-text-muted">Account Number</p>
+                  <p className="text-lg font-black text-[#008751] font-mono tracking-wider">
                     {data.settlement.account_number}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={handleCopyBankDetails}
-                  className="h-10 px-4 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all tap-feedback shadow-xs cursor-pointer"
+                  className="h-10 px-4 bg-[#008751] hover:bg-[#007043] text-white text-xs font-black rounded-xl flex items-center gap-1.5 transition-all tap-feedback border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111] cursor-pointer"
                 >
                   {copiedAccount ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedAccount ? "Copied!" : "Copy Account"}</span>
@@ -605,7 +739,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
               </div>
 
               {data.settlement.note && (
-                <p className="text-xs text-text-secondary italic">
+                <p className="text-xs text-[#111111] font-medium italic bg-[#F6F6F2] p-2.5 rounded-lg border border-[#EAE4DC]">
                   &ldquo;{data.settlement.note}&rdquo;
                 </p>
               )}
@@ -614,7 +748,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                 <button
                   type="button"
                   onClick={() => setIsAddingSettlement(true)}
-                  className="text-xs font-bold text-[#008751] hover:underline"
+                  className="text-xs font-black text-[#008751] hover:underline"
                 >
                   Edit Bank Details
                 </button>
@@ -623,8 +757,8 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
           ) : (
             <div className="space-y-3">
               {!isAddingSettlement ? (
-                <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] text-center space-y-2">
-                  <p className="text-xs font-bold text-midnight-lagoon">
+                <div className="p-5 rounded-2xl bg-[#FAF7F2] border-2 border-[#111111] text-center space-y-2">
+                  <p className="text-xs font-black text-[#111111]">
                     No bank account added yet
                   </p>
                   <p className="text-xs text-text-muted">
@@ -637,7 +771,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                     <button
                       type="button"
                       onClick={() => setIsAddingSettlement(true)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold transition-all tap-feedback mt-1"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-black transition-all tap-feedback mt-1 border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111]"
                     >
                       <Building className="w-3.5 h-3.5" />
                       <span>Add Host Bank Account</span>
@@ -645,15 +779,15 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                   )}
                 </div>
               ) : (
-                <form onSubmit={handleSaveSettlement} className="p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] space-y-3.5">
+                <form onSubmit={handleSaveSettlement} className="p-4 rounded-2xl bg-[#FAF7F2] border-2 border-[#111111] space-y-3.5">
                   <div className="space-y-1">
-                    <label className="block text-xs font-bold text-midnight-lagoon">
+                    <label className="block text-xs font-black uppercase tracking-wider text-[#111111]">
                       Select Bank
                     </label>
                     <select
                       value={bankNameInput}
                       onChange={(e) => setBankNameInput(e.target.value)}
-                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-medium px-3 outline-none focus:border-[#008751]"
+                      className="w-full h-11 rounded-xl bg-white border-2 border-[#111111] text-xs font-bold px-3 outline-none focus:border-[#008751]"
                     >
                       {NIGERIAN_BANKS.map((b) => (
                         <option key={b} value={b}>{b}</option>
@@ -662,7 +796,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-xs font-bold text-midnight-lagoon">
+                    <label className="block text-xs font-black uppercase tracking-wider text-[#111111]">
                       Account Number (10 digits)
                     </label>
                     <input
@@ -672,12 +806,12 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                       value={accountNumberInput}
                       onChange={(e) => setAccountNumberInput(e.target.value.replace(/\D/g, ""))}
                       placeholder="e.g. 0123456789"
-                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-mono font-bold px-3 outline-none focus:border-[#008751]"
+                      className="w-full h-11 rounded-xl bg-white border-2 border-[#111111] text-xs font-mono font-bold px-3 outline-none focus:border-[#008751]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-xs font-bold text-midnight-lagoon">
+                    <label className="block text-xs font-black uppercase tracking-wider text-[#111111]">
                       Account Name
                     </label>
                     <input
@@ -686,12 +820,12 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                       value={accountNameInput}
                       onChange={(e) => setAccountNameInput(e.target.value)}
                       placeholder="e.g. Bode Olusegun"
-                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-medium px-3 outline-none focus:border-[#008751]"
+                      className="w-full h-11 rounded-xl bg-white border-2 border-[#111111] text-xs font-bold px-3 outline-none focus:border-[#008751]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-xs font-bold text-midnight-lagoon">
+                    <label className="block text-xs font-black uppercase tracking-wider text-[#111111]">
                       Note / Description (Optional)
                     </label>
                     <input
@@ -699,7 +833,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                       value={settlementNoteInput}
                       onChange={(e) => setSettlementNoteInput(e.target.value)}
                       placeholder="e.g. Transfer your ~₦17k share before 11pm"
-                      className="w-full h-11 rounded-xl bg-white border border-[#EAE4DC] text-xs font-medium px-3 outline-none focus:border-[#008751]"
+                      className="w-full h-11 rounded-xl bg-white border-2 border-[#111111] text-xs font-medium px-3 outline-none focus:border-[#008751]"
                     />
                   </div>
 
@@ -707,14 +841,14 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                     <button
                       type="button"
                       onClick={() => setIsAddingSettlement(false)}
-                      className="flex-1 h-11 rounded-xl border border-[#EAE4DC] bg-white text-xs font-bold text-text-muted hover:text-midnight-lagoon"
+                      className="flex-1 h-11 rounded-xl border-2 border-[#111111] bg-white text-xs font-black text-text-muted hover:text-[#111111]"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="flex-1 h-11 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold flex items-center justify-center gap-1.5 tap-feedback disabled:opacity-50"
+                      className="flex-1 h-11 rounded-xl bg-[#008751] hover:bg-[#007043] text-white text-xs font-black flex items-center justify-center gap-1.5 tap-feedback disabled:opacity-50 border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111]"
                     >
                       {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                       <span>Save Details</span>
@@ -726,63 +860,66 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
           )}
         </div>
 
-        {/* 6. PROGRESSIVE DISCLOSURE: WHAT WE'RE GETTING & FULL PLAN LINK */}
-        <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-5 sm:p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-[#EAE4DC] pb-3.5">
+        {/* 7. PROGRESSIVE DISCLOSURE: WHAT WE'RE GETTING & FULL PLAN LINK */}
+        <div className="bg-white rounded-[24px] border-3 border-[#111111] p-5 sm:p-6 shadow-[6px_6px_0px_0px_#111111] space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-[#111111] pb-3.5">
             <div className="flex items-center gap-2">
-              <Utensils className="w-4 h-4 text-[#008751]" />
-              <h2 className="text-xs font-black uppercase tracking-wider text-midnight-lagoon">
-                Outing Details
+              <Utensils className="w-5 h-5 text-[#008751]" />
+              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#111111]">
+                Outing Details &amp; Budget Lock
               </h2>
             </div>
+            <span className="text-[10px] font-black uppercase tracking-wider bg-[#F9E828] text-[#111111] px-2 py-0.5 rounded border border-[#111111]">
+              Verified
+            </span>
           </div>
 
           <div className="space-y-3 text-xs text-text-secondary leading-relaxed">
-            <p>
+            <p className="font-medium text-[#111111]">
               {data.plan.why_it_fits || `Curated outing fitting your ${data.plan.vibe.toLowerCase()} squad vibe in ${spotAddress}.`}
             </p>
 
             <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
-              <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#EAE4DC]">
-                <p className="font-bold text-midnight-lagoon">Food &amp; Drinks</p>
-                <p className="text-text-muted mt-0.5 font-mono">~₦{data.liveEconomics.foodSpend.toLocaleString("en-NG")}</p>
+              <div className="p-3 rounded-xl bg-[#FAF7F2] border-2 border-[#111111]">
+                <p className="font-black text-[#111111]">Food &amp; Drinks</p>
+                <p className="text-text-muted mt-0.5 font-mono font-bold">~₦{data.liveEconomics.foodSpend.toLocaleString("en-NG")}</p>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#EAE4DC]">
-                <p className="font-bold text-midnight-lagoon">Round-Trip Rides</p>
-                <p className="text-text-muted mt-0.5 font-mono">~₦{data.liveEconomics.transportSpend.toLocaleString("en-NG")}</p>
+              <div className="p-3 rounded-xl bg-[#FAF7F2] border-2 border-[#111111]">
+                <p className="font-black text-[#111111]">Round-Trip Rides</p>
+                <p className="text-text-muted mt-0.5 font-mono font-bold">~₦{data.liveEconomics.transportSpend.toLocaleString("en-NG")}</p>
               </div>
             </div>
 
             <div className="pt-2">
               <Link
                 href={`/plan/${data.planId}`}
-                className="w-full h-11 rounded-xl border border-[#EAE4DC] bg-[#FAF7F2] hover:bg-white text-midnight-lagoon text-xs font-bold flex items-center justify-center gap-1.5 transition-colors tap-feedback"
+                className="w-full h-11 rounded-xl border-2 border-[#111111] bg-[#FAF7F2] hover:bg-white text-[#111111] text-xs font-black flex items-center justify-center gap-1.5 transition-colors tap-feedback shadow-xs"
               >
-                <span>View Full Itinerary &amp; Menu</span>
+                <span>View Full Itinerary &amp; Menu Till Slip</span>
                 <ExternalLink className="w-3.5 h-3.5 text-text-muted" />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* 7. WHATSAPP & SHARE BUTTONS */}
+        {/* 8. WHATSAPP & SHARE BUTTONS */}
         <div className="space-y-3">
           <button
             type="button"
             onClick={handleWhatsAppShare}
-            className="w-full h-13 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all tap-feedback shadow-xs cursor-pointer"
+            className="w-full h-14 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all tap-feedback border-3 border-[#111111] shadow-[4px_4px_0px_0px_#111111] cursor-pointer"
           >
-            <MessageSquare className="w-4.5 h-4.5 fill-white" />
-            <span>Share Squad on WhatsApp</span>
+            <MessageSquare className="w-5 h-5 fill-white" />
+            <span>Share Squad Room on WhatsApp</span>
           </button>
 
           <button
             type="button"
             onClick={handleCopyLink}
-            className="w-full h-12 rounded-2xl border border-[#EAE4DC] bg-white hover:bg-surface-grey text-midnight-lagoon text-xs font-bold flex items-center justify-center gap-2 transition-colors tap-feedback"
+            className="w-full h-12 rounded-2xl border-2 border-[#111111] bg-[#F9E828] hover:bg-[#ebd915] text-[#111111] text-xs font-black flex items-center justify-center gap-2 transition-colors tap-feedback shadow-[3px_3px_0px_0px_#111111] cursor-pointer"
           >
             {copiedLink ? <Check className="w-4 h-4 text-[#008751]" /> : <Copy className="w-4 h-4" />}
-            <span>{copiedLink ? "Link Copied!" : "Copy Squad Link"}</span>
+            <span>{copiedLink ? "Link Copied!" : "Copy Squad Room Link"}</span>
           </button>
         </div>
 

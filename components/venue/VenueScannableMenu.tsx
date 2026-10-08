@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { MenuItem, Venue } from "@/lib/types";
-import { Utensils, ShieldCheck, Tag, Info } from "lucide-react";
+import { Utensils, ShieldCheck, Tag, Info, CheckCircle2 } from "lucide-react";
+import { getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
 
 interface VenueScannableMenuProps {
   venue: Venue;
@@ -15,6 +16,7 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
   const [activeCategory, setActiveCategory] = useState<MenuCategoryFilter>("all");
 
   const isPartnerVerified = venue.partner_state === "verified_partner";
+  const freshnessText = getVerificationText(venue.last_price_updated_at);
 
   // Classify items
   const foodItems = menuItems.filter((i) => ["main", "starter"].includes(i.category));
@@ -40,35 +42,50 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
 
   return (
     <section id="menu" className="scroll-mt-32">
-      <div className="bg-white rounded-[28px] border border-[#EAE4DC] p-6 sm:p-8 shadow-xs space-y-6">
+      <div className="bg-white rounded-[24px] border-3 border-[#111111] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#111111] space-y-6">
         
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EAE4DC] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-[#111111] pb-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#008751]/10 text-[#008751] text-[10px] font-black uppercase tracking-wider mb-1">
-              <Utensils className="w-3 h-3" />
-              <span>{menuItems.length > 0 ? "Verified Menu & Pricing" : "Menu & Spend Estimates"}</span>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#F9E828] border border-[#111111] text-[10px] font-black uppercase tracking-wider text-[#111111]">
+                <Utensils className="w-3 h-3" />
+                <span>Verified Menu Peek</span>
+              </span>
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-[#008751] bg-[#EAFDF3] border border-[#008751]/30 px-2 py-0.5 rounded">
+                {freshnessText}
+              </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-midnight-lagoon uppercase tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-black text-[#111111] uppercase tracking-tight">
               What You Can Order
             </h2>
             <p className="text-xs sm:text-sm text-text-secondary mt-0.5">
               {menuItems.length > 0
-                ? "Verified item prices for realistic outing cost calculation."
-                : "Standard spend benchmarks available while itemized menu indexing is completed."}
+                ? "Direct dining room prices with zero third-party markups."
+                : "Standard spend benchmarks available while itemized menu indexing is verified."}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             {isPartnerVerified && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EAFDF3] border border-[#A3F3C6] rounded-full text-xs font-bold text-[#0A7C3F]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EAFDF3] border-2 border-[#008751] rounded-full text-xs font-black text-[#008751]">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Partner Verified</span>
               </span>
             )}
-            <span className="text-xs font-bold text-text-muted">
-              {menuItems.length > 0 ? `${menuItems.length} items listed` : "Estimates available"}
+            <span className="text-xs font-black text-[#111111] bg-[#F6F6F2] border border-[#111111] px-2.5 py-1 rounded-lg">
+              {menuItems.length > 0 ? `${menuItems.length} items listed` : "Benchmarked"}
             </span>
+          </div>
+        </div>
+
+        {/* Zero-Markup Guarantee Banner */}
+        <div className="p-3.5 rounded-xl bg-[#FAF7F2] border-2 border-[#111111] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#008751] shrink-0" />
+            <p className="text-xs font-bold text-[#111111]">
+              <strong>Zero-Markup Guarantee:</strong> These prices reflect physical in-venue menu audits. No inflated app delivery rates.
+            </p>
           </div>
         </div>
 
@@ -81,14 +98,14 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
                   key={cat.id}
                   type="button"
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 tap-feedback cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 tap-feedback cursor-pointer border-2 border-[#111111] ${
                     activeCategory === cat.id
-                      ? "bg-midnight-lagoon text-white shadow-xs"
-                      : "bg-surface-grey border border-[#EAE4DC] text-text-secondary hover:text-midnight-lagoon"
+                      ? "bg-[#111111] text-[#F9E828] shadow-[2px_2px_0px_0px_#111111]"
+                      : "bg-white text-[#111111] hover:bg-[#F9E828]"
                   }`}
                 >
                   <span>{cat.label}</span>
-                  <span className="ml-1.5 opacity-70 text-[10px]">({cat.count})</span>
+                  <span className="ml-1.5 opacity-80 text-[10px]">({cat.count})</span>
                 </button>
               ))}
             </div>
@@ -98,19 +115,19 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
               {filteredItems.map((item) => (
                 <div
                   key={item.id}
-                  className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] flex items-center justify-between gap-3 hover:border-[#008751]/40 transition-colors"
+                  className="p-3.5 rounded-2xl bg-[#FAF7F2] border-2 border-[#111111] flex items-center justify-between gap-3 hover:bg-white transition-colors shadow-xs"
                 >
                   <div className="space-y-0.5 min-w-0">
-                    <p className="text-xs sm:text-sm font-bold text-midnight-lagoon truncate">
+                    <p className="text-xs sm:text-sm font-black text-[#111111] truncate">
                       {item.name}
                     </p>
-                    <span className="inline-block text-[9px] font-bold uppercase tracking-wider text-text-muted bg-white px-2 py-0.5 rounded border border-[#EAE4DC]">
+                    <span className="inline-block text-[9px] font-black uppercase tracking-wider text-text-muted bg-white px-2 py-0.5 rounded border border-[#111111]">
                       {item.category.replace(/_/g, " ")}
                     </span>
                   </div>
 
                   <div className="text-right shrink-0">
-                    <span className="text-xs sm:text-sm font-black text-[#008751] tabular-nums">
+                    <span className="text-xs sm:text-sm font-black text-[#008751] font-mono tabular-nums">
                       ₦{item.price.toLocaleString("en-NG")}
                     </span>
                   </div>
@@ -120,12 +137,12 @@ export function VenueScannableMenu({ venue, menuItems = [] }: VenueScannableMenu
           </div>
         ) : (
           /* Limited Menu State */
-          <div className="p-6 rounded-2xl bg-[#FAF7F2] border border-[#EAE4DC] text-center space-y-3">
-            <div className="w-10 h-10 rounded-full bg-white border border-[#EAE4DC] flex items-center justify-center mx-auto text-text-muted">
+          <div className="p-6 rounded-2xl bg-[#FAF7F2] border-2 border-[#111111] text-center space-y-3">
+            <div className="w-10 h-10 rounded-full bg-white border-2 border-[#111111] flex items-center justify-center mx-auto text-text-muted shadow-xs">
               <Info className="w-5 h-5 text-[#008751]" />
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-bold text-midnight-lagoon">Menu indexing in progress</p>
+              <p className="text-sm font-black text-[#111111]">Menu indexing in progress</p>
               <p className="text-xs text-text-secondary max-w-md mx-auto">
                 We are actively gathering verified itemized menu pricing for {venue.name}. You can still simulate budget scenarios based on typical spend ranges.
               </p>
