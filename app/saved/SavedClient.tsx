@@ -94,8 +94,22 @@ export default function SavedClient({
     },
   ];
 
+  const totalPotentialDamage = React.useMemo(() => {
+    if (activeTab === "spots") {
+      return savedSpots.reduce((sum, s) => {
+        const p = knownPerPerson({ derived_typical_cost: s.price_per_person }) || 0;
+        return sum + p * 2; // base squad of 2
+      }, 0);
+    } else {
+      return serverSavedPlans.reduce((sum, item) => {
+        const plan = Array.isArray(item.shared_plans) ? item.shared_plans[0] : item.shared_plans;
+        return sum + (plan?.total_cost || 0);
+      }, 0);
+    }
+  }, [activeTab, savedSpots, serverSavedPlans]);
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 bg-[#F6F6F2] min-h-[100dvh] text-[#111111] antialiased font-sans">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 bg-[#F6F6F2] min-h-[100dvh] text-[#111111] antialiased font-sans selection:bg-[#F9E828] selection:text-[#111111]">
       {/* Header & Navigation Context */}
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5E5DE] pb-5">
@@ -111,33 +125,43 @@ export default function SavedClient({
             </p>
           </div>
 
-          {/* Segmented Tab Switcher with Neo-Brutalist styling */}
-          <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] w-fit self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setActiveTab("spots")}
-              aria-label={`Show saved spots (${savedSpots.length})`}
-              className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all tap-feedback cursor-pointer font-display ${
-                activeTab === "spots"
-                  ? "bg-[#111111] text-[#F9E828] shadow-xs"
-                  : "text-[#555555] hover:text-[#111111]"
-              }`}
-            >
-              {savedSpots.length > 0 ? `Saved Spots (${savedSpots.length})` : "Saved Spots"}
-            </button>
+          <div className="flex flex-col sm:items-end gap-3">
+            {/* Segmented Tab Switcher with Neo-Brutalist styling */}
+            <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] w-fit self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setActiveTab("spots")}
+                aria-label={`Show saved spots (${savedSpots.length})`}
+                className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all tap-feedback cursor-pointer font-display ${
+                  activeTab === "spots"
+                    ? "bg-[#111111] text-[#F9E828] shadow-xs"
+                    : "text-[#555555] hover:text-[#111111]"
+                }`}
+              >
+                {savedSpots.length > 0 ? `Saved Spots (${savedSpots.length})` : "Saved Spots"}
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("plans")}
-              aria-label={`Show saved plans (${serverSavedPlans.length})`}
-              className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all tap-feedback cursor-pointer font-display ${
-                activeTab === "plans"
-                  ? "bg-[#111111] text-[#F9E828] shadow-xs"
-                  : "text-[#555555] hover:text-[#111111]"
-              }`}
-            >
-              {serverSavedPlans.length > 0 ? `Saved Plans (${serverSavedPlans.length})` : "Saved Plans"}
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("plans")}
+                aria-label={`Show saved plans (${serverSavedPlans.length})`}
+                className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all tap-feedback cursor-pointer font-display ${
+                  activeTab === "plans"
+                    ? "bg-[#111111] text-[#F9E828] shadow-xs"
+                    : "text-[#555555] hover:text-[#111111]"
+                }`}
+              >
+                {serverSavedPlans.length > 0 ? `Saved Plans (${serverSavedPlans.length})` : "Saved Plans"}
+              </button>
+            </div>
+
+            {/* Total Potential Damage Counter Chip */}
+            {totalPotentialDamage > 0 && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111111] text-[#F9E828] border border-[#111111] shadow-[2px_2px_0px_0px_#111111] text-[11px] font-mono">
+                <span className="text-white/80 font-bold">Est. Damage:</span>
+                <span className="font-black text-[#F9E828]">₦{totalPotentialDamage.toLocaleString("en-NG")}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -171,9 +195,9 @@ export default function SavedClient({
                 return (
                   <div
                     key={spot.id}
-                    className="bg-white border border-[#EAE4DC] rounded-[24px] flex flex-col overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 h-full group"
+                    className="bg-white border-2 border-[#111111] rounded-3xl flex flex-col overflow-hidden shadow-[4px_4px_0px_0px_#111111] hover:shadow-[6px_6px_0px_0px_#111111] hover:-translate-y-0.5 transition-all duration-200 h-full group"
                   >
-                    <div className="w-full aspect-[16/10] relative bg-surface-grey overflow-hidden">
+                    <div className="w-full aspect-[16/10] relative bg-[#F6F6F2] overflow-hidden border-b-2 border-[#111111]">
                       <ScrubbablePhotos 
                         venueName={spot.name} 
                         imageUrl={spot.cover_url || spot.image_url || (spot.gallery_urls && spot.gallery_urls[0])} 
@@ -184,7 +208,7 @@ export default function SavedClient({
                           type="button"
                           onClick={() => handleRemoveSpot(spot.id, spot.name)}
                           aria-label={`Remove ${spot.name} from your Shortlist`}
-                          className="p-2 bg-white/95 backdrop-blur-md rounded-full border border-[#EAE4DC] text-red-500 hover:bg-red-50 transition-all tap-feedback cursor-pointer shadow-xs"
+                          className="p-2 bg-white rounded-full border-2 border-[#111111] text-red-500 hover:bg-red-50 transition-all tap-feedback cursor-pointer shadow-[2px_2px_0px_0px_#111111]"
                           title="Remove from Shortlist"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -192,7 +216,7 @@ export default function SavedClient({
                       </div>
                       {spot.category && (
                         <div className="absolute bottom-3 left-3 z-30">
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/20">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-[#111111] text-[#F9E828] border border-[#111111]">
                             {spot.category}
                           </span>
                         </div>
@@ -202,7 +226,7 @@ export default function SavedClient({
                     <div className="p-5 flex flex-col flex-grow text-left justify-between space-y-4">
                       <div className="space-y-1">
                         <Link href={`/venue/${spot.id}`}>
-                          <h3 className="font-black text-base sm:text-lg text-[#111111] uppercase leading-tight group-hover:underline underline-offset-4 transition-colors font-display">
+                          <h3 className="font-black text-base sm:text-lg text-[#111111] uppercase leading-tight group-hover:text-[#008751] transition-colors font-display">
                             {spot.name}
                           </h3>
                         </Link>
@@ -212,7 +236,7 @@ export default function SavedClient({
                         </p>
                       </div>
 
-                      <div className="pt-3 border-t border-[#E5E5DE] flex justify-between items-center">
+                      <div className="pt-3 border-t-2 border-[#111111]/10 flex justify-between items-center">
                         <div className="flex flex-col">
                           {knownPrice !== null ? (
                             <>
@@ -231,9 +255,9 @@ export default function SavedClient({
                         </div>
 
                         <Link href={planUrl}>
-                          <Button className="bg-[#111111] hover:bg-black text-[#F9E828] text-xs uppercase font-black px-4 py-2 rounded-xl tap-feedback cursor-pointer shadow-xs">
+                          <button className="bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-xs uppercase font-black px-4 py-2 rounded-xl tap-feedback cursor-pointer font-display">
                             Plan Outing
-                          </Button>
+                          </button>
                         </Link>
                       </div>
                     </div>
@@ -270,25 +294,28 @@ export default function SavedClient({
 
               {/* Empty State Copy */}
               <div className="space-y-2 max-w-md mx-auto">
+                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-[#FFFEE5] text-[#111111] border border-[#111111]">
+                  POCKET STATUS: SAFE FOR NOW
+                </span>
                 <h2 className="font-black text-xl sm:text-2xl text-[#111111] font-display uppercase tracking-tight">
-                  Your Lagos roster is empty.
+                  Your pocket is safe... for now.
                 </h2>
-                <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
-                  The group chat is depending on you. You haven&apos;t built your Lagos hitlist yet. Bookmark places as you explore, or steal a trending verified itinerary below.
+                <p className="text-xs sm:text-sm text-[#555555] leading-relaxed font-medium">
+                  The squad linkup is waiting on you. You haven&apos;t shortlisted any spots yet. Don&apos;t dull the group chat—bookmark places as you explore or steal a verified itinerary below.
                 </p>
               </div>
 
               {/* Action Buttons: Primary Explore + Steal a Trending Plan */}
-              <div className="flex items-center justify-center gap-3 flex-wrap pt-1">
+              <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
                 <Link href="/explore">
-                  <Button className="bg-[#111111] hover:bg-black text-[#F9E828] font-mono font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl shadow-xs tap-feedback cursor-pointer">
+                  <button className="h-12 px-6 rounded-2xl bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] font-display font-black text-xs uppercase tracking-wider border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all tap-feedback cursor-pointer">
                     Explore Lagos Spots
-                  </Button>
+                  </button>
                 </Link>
                 <Link href="/forge?vibe=chill&budget=45000&squad=2&area=lekki&fresh=true">
-                  <Button variant="outline" className="border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9E828] font-mono font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition-all tap-feedback cursor-pointer">
+                  <button className="h-12 px-6 rounded-2xl bg-white hover:bg-[#F6F6F2] text-[#111111] font-display font-black text-xs uppercase tracking-wider border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all tap-feedback cursor-pointer">
                     Steal a Trending Plan →
-                  </Button>
+                  </button>
                 </Link>
               </div>
 
@@ -334,24 +361,27 @@ export default function SavedClient({
       {activeTab === "plans" && (
         <section aria-label="Saved plans list" className="space-y-6">
           {!isAuthenticated ? (
-            <div className="bg-white rounded-[20px] border border-[#E5E5DE] p-8 text-center space-y-4 shadow-xs max-w-md mx-auto">
-              <div className="w-12 h-12 rounded-2xl bg-[#111111] text-[#F9E828] flex items-center justify-center mx-auto">
-                <Calendar className="w-6 h-6" />
+            <div className="bg-white rounded-3xl border-2 border-[#111111] p-8 text-center space-y-4 shadow-[6px_6px_0px_0px_#111111] max-w-md mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-[#111111] text-[#F9E828] border-2 border-[#111111] flex items-center justify-center mx-auto shadow-[3px_3px_0px_0px_#111111]">
+                <Calendar className="w-7 h-7" />
               </div>
               <div className="space-y-1">
-                <h3 className="font-black text-base text-[#111111] font-display uppercase tracking-tight">
+                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-[#F9E828] text-[#111111] border border-[#111111]">
+                  SYNC ACROSS DEVICES
+                </span>
+                <h3 className="font-black text-lg text-[#111111] font-display uppercase tracking-tight">
                   Sign in to view saved plans
                 </h3>
-                <p className="text-xs text-[#555555] leading-relaxed">
-                  Your outings and cost breakdowns sync across devices when signed in.
+                <p className="text-xs text-[#555555] leading-relaxed font-medium">
+                  Your outings and cost breakdowns sync across devices when signed in. No password required.
                 </p>
               </div>
-              <Button
+              <button
                 onClick={() => openModal("Sign in to view saved plans", "/saved")}
-                className="w-full bg-[#111111] hover:bg-black text-[#F9E828] font-bold text-xs py-2.5 rounded-xl tap-feedback"
+                className="w-full bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none font-display font-black text-xs uppercase tracking-wider py-3 rounded-2xl tap-feedback cursor-pointer"
               >
-                Sign In
-              </Button>
+                Sign In to Sync Plans
+              </button>
             </div>
           ) : serverSavedPlans.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -373,11 +403,11 @@ export default function SavedClient({
                 return (
                   <div
                     key={plan.id || index}
-                    className="bg-white border border-[#E5E5DE] rounded-[20px] p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 font-sans"
+                    className="bg-white border-2 border-[#111111] rounded-3xl p-6 shadow-[4px_4px_0px_0px_#111111] hover:shadow-[6px_6px_0px_0px_#111111] hover:-translate-y-0.5 transition-all flex flex-col justify-between space-y-4 font-sans"
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111] text-[#F9E828]">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-black uppercase tracking-wider bg-[#111111] text-[#F9E828]">
                           {plan.vibe || "Outing"}
                         </span>
                         <span className="text-[11px] font-mono font-bold text-[#6B7280]">
@@ -397,7 +427,7 @@ export default function SavedClient({
                       )}
                     </div>
 
-                    <div className="pt-3 border-t border-[#E5E5DE] flex items-center justify-between font-mono">
+                    <div className="pt-3 border-t-2 border-[#111111]/10 flex items-center justify-between font-mono">
                       <div>
                         <div className="font-black text-[#111111] text-base sm:text-lg">
                           ₦{plan.total_cost.toLocaleString("en-NG")}
@@ -409,10 +439,10 @@ export default function SavedClient({
                       </div>
 
                       <Link href={`/plan/${plan.id}`}>
-                        <Button className="bg-[#111111] hover:bg-black text-[#F9E828] text-xs font-black px-4 py-2 rounded-xl tap-feedback flex items-center gap-1.5 cursor-pointer">
+                        <button className="bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-xs font-display font-black uppercase px-4 py-2 rounded-xl tap-feedback flex items-center gap-1.5 cursor-pointer">
                           <span>View Slip</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </Button>
+                          <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
+                        </button>
                       </Link>
                     </div>
                   </div>
@@ -420,22 +450,25 @@ export default function SavedClient({
               })}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-white rounded-[20px] border border-[#E5E5DE] space-y-4 shadow-xs">
-              <div className="w-14 h-14 bg-[#111111] text-[#F9E828] rounded-2xl flex items-center justify-center mx-auto shadow-xs">
+            <div className="text-center py-16 px-4 bg-white rounded-3xl border-2 border-[#111111] space-y-4 shadow-[6px_6px_0px_0px_#111111] max-w-lg mx-auto">
+              <div className="w-14 h-14 bg-[#111111] text-[#F9E828] rounded-2xl border-2 border-[#111111] flex items-center justify-center mx-auto shadow-[3px_3px_0px_0px_#111111]">
                 <Calendar className="w-7 h-7" />
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
-                <h2 className="font-black text-lg text-[#111111] font-display uppercase tracking-tight">
+                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-[#FFFEE5] text-[#111111] border border-[#111111]">
+                  ZERO SAVED PLANS
+                </span>
+                <h2 className="font-black text-xl text-[#111111] font-display uppercase tracking-tight">
                   No saved plans yet.
                 </h2>
-                <p className="text-xs sm:text-sm text-[#555555] leading-relaxed">
-                  When you plan an outing for you and your squad, save it to access the plan anytime.
+                <p className="text-xs sm:text-sm text-[#555555] leading-relaxed font-medium">
+                  When you plan an outing for your squad, save it to access the damage slip and split calculations anytime.
                 </p>
               </div>
               <Link href="/" className="inline-block pt-2">
-                <Button className="bg-[#111111] hover:bg-black text-[#F9E828] font-bold text-xs px-6 py-2.5 rounded-full shadow-xs tap-feedback">
-                  Plan an Outing
-                </Button>
+                <button className="h-12 px-6 rounded-2xl bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] font-display font-black text-xs uppercase tracking-wider border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all tap-feedback cursor-pointer">
+                  Plan an Outing Now
+                </button>
               </Link>
             </div>
           )}

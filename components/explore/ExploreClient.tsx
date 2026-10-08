@@ -249,14 +249,52 @@ export function ExploreClient({
     { label: "₦100k+", value: 100000 },
   ];
 
+  const CURATED_LAGOS_PACKS = useMemo(() => [
+    {
+      id: "island-rooftops",
+      emoji: "🍸",
+      title: "Island Rooftops",
+      badge: "VI & LEKKI",
+      apply: () => handleUpdateFilters({ category: "bar", areaSlug: "vi", vibe: null }),
+    },
+    {
+      id: "mainland-suya",
+      emoji: "🥩",
+      title: "Mainland Suya & Chops",
+      badge: "YABA / IKEJA",
+      apply: () => handleUpdateFilters({ category: "restaurant", areaSlug: "yaba", vibe: null }),
+    },
+    {
+      id: "sunday-brunch",
+      emoji: "🥞",
+      title: "Soft Life Brunch",
+      badge: "IKOYI & LEKKI",
+      apply: () => handleUpdateFilters({ category: "cafe", areaSlug: "ikoyi", vibe: null }),
+    },
+    {
+      id: "low-damage",
+      emoji: "💰",
+      title: "Low Damage Squad",
+      badge: "< ₦15K/HEAD",
+      apply: () => handleUpdateFilters({ budget: 30000, squadSize: 2, category: "all" }),
+    },
+    {
+      id: "beach-breeze",
+      emoji: "🏖️",
+      title: "Beach Breeze Turn-up",
+      badge: "COASTAL",
+      apply: () => handleUpdateFilters({ category: "beach", areaSlug: "lekki", vibe: null }),
+    },
+  ], []);
+
   return (
-    <div className="min-h-[100dvh] bg-[#F6F6F2] pt-20 sm:pt-24 pb-20 px-4 sm:px-6 md:px-8 font-sans">
+    <div className="min-h-[100dvh] bg-[#F6F6F2] pt-20 sm:pt-24 pb-20 px-4 sm:px-6 md:px-8 font-sans selection:bg-[#F9E828] selection:text-[#111111]">
       <div className="max-w-5xl mx-auto space-y-8">
         
         {/* Editorial Discovery Hero */}
         <div className="text-left space-y-3">
-          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#F9E828] bg-[#111111] px-3 py-1 rounded-full shadow-xs">
-            <span>OYAPLAN SPOT DIRECTORY</span>
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-black uppercase tracking-widest text-[#111111] bg-[#F9E828] border border-[#111111] px-3 py-1 rounded-full shadow-[2px_2px_0px_0px_#111111]">
+            <span>OYAPLAN SPOT DIRECTORY • VERIFIED DATA</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#111111] tracking-tight font-display uppercase">
             {title}
@@ -264,6 +302,43 @@ export function ExploreClient({
           <p className="text-sm md:text-base text-[#555555] max-w-2xl font-medium leading-relaxed">
             {subtitle}
           </p>
+        </div>
+
+        {/* Curated Lagos Vibe Collections Rail */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#111111] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#008751]" />
+              <span>Curated Lagos Vibe Collections</span>
+            </span>
+            <span className="text-[10px] font-mono font-bold text-[#777777] hidden sm:inline">
+              1-Tap Vibe Filters
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            {CURATED_LAGOS_PACKS.map((pack) => (
+              <button
+                key={pack.id}
+                type="button"
+                onClick={() => {
+                  triggerHaptic("selection");
+                  pack.apply();
+                }}
+                className="p-3 bg-white hover:bg-[#FFFEE5] border-2 border-[#111111] rounded-2xl shadow-[3px_3px_0px_0px_#111111] hover:shadow-[4px_4px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex flex-col justify-between text-left group cursor-pointer"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xl">{pack.emoji}</span>
+                  <span className="text-[9px] font-mono font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111111] text-[#F9E828]">
+                    {pack.badge}
+                  </span>
+                </div>
+                <div className="font-black text-xs text-[#111111] font-display uppercase tracking-tight group-hover:text-[#008751] transition-colors truncate">
+                  {pack.title}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Factual Recently Viewed Shelf */}
@@ -288,7 +363,7 @@ export function ExploreClient({
                 triggerHaptic("selection");
                 setIsDecideModalOpen(true);
               }}
-              className="h-[50px] px-3.5 sm:px-4 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] border border-black font-mono font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shrink-0 tap-feedback cursor-pointer shadow-xs"
+              className="h-[50px] px-3.5 sm:px-4 rounded-2xl bg-[#111111] hover:bg-black text-[#F9E828] border-2 border-[#111111] font-mono font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shrink-0 tap-feedback cursor-pointer shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               aria-label="Decide for us: randomize an eligible Lagos spot"
             >
               <Sparkles className="w-4 h-4 text-[#F9E828]" />
@@ -299,10 +374,10 @@ export function ExploreClient({
               type="button"
               onClick={() => setIsFilterSheetOpen(true)}
               aria-label={`Open filters. ${activeFilterCount} active filters`}
-              className={`h-[50px] px-4 rounded-xl border font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 tap-feedback cursor-pointer ${
+              className={`h-[50px] px-4 rounded-2xl border-2 font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 tap-feedback cursor-pointer shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
                 activeFilterCount > 0
-                  ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
-                  : "bg-white border-[#E5E5DE] text-[#111111] hover:border-[#111111] shadow-2xs"
+                  ? "bg-[#111111] border-[#111111] text-[#F9E828]"
+                  : "bg-white border-[#111111] text-[#111111] hover:bg-[#F6F6F2]"
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
