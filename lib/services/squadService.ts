@@ -1,5 +1,7 @@
+import crypto from "crypto";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+
 import { getSharedPlanWithSpot } from "@/lib/queries/plans";
 import { calculateZoneFare } from "@/lib/planning/transport";
 import { captureServerException } from "@/lib/sentry";
@@ -141,6 +143,15 @@ export class SquadService {
 
     return token;
   }
+
+  /**
+   * Hashes a raw participant token using SHA-256 for secure database comparisons
+   */
+  public static hashParticipantToken(token: string): string {
+    if (!token) return "";
+    return crypto.createHash("sha256").update(token).digest("hex");
+  }
+
 
   /**
    * Fetches all Squad Room data including live headcount, non-custodial settlement details, and showdown options
@@ -412,7 +423,7 @@ export class SquadService {
   }
 
   /**
-   * Saves or updates non-custodial host bank settlement details on the plan
+   * Saves or updates non-custodial host bank settlement details on the plan via SECURITY DEFINER RPC
    */
   public static async saveSettlementDetails(
     planId: string,
@@ -428,41 +439,51 @@ export class SquadService {
       const cleanNumber = settlement.accountNumber.trim().replace(/\D/g, "");
       const cleanName = settlement.accountName.trim();
 
-      if (!cleanBank || cleanNumber.length < 9 || cleanNumber.length > 12 || !cleanName) {
+      if (!cleanBank || cleanNumber.length < 8 || cleanNumber.length > 15 || !cleanName) {
         return { success: false, error: "Please enter valid bank details (10-digit NUBAN account number)" };
       }
 
-      const supabase = await this.getSupabaseClient();
+      const [participantToken, supabase] = await Promise.all([
+        this.getOrCreateParticipantToken(),
+        this.getSupabaseClient(),
+      ]);
 
-      const { data, error } = await supabase
-        .from("plan_settlements")
-        .upsert(
-          {
-            plan_id: planId,
-            bank_name: cleanBank,
-            account_number: cleanNumber,
-            account_name: cleanName,
-            note: settlement.note?.trim() || null,
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: "plan_id",
-          }
-        )
-        .select()
-        .single();
+      const hashedToken = this.hashParticipantToken(participantToken);
 
-      if (error) {
-        captureServerException(error);
-        return { success: false, error: "Failed to save bank settlement details" };
+      const { data: rpcRes, error } = await supabase.rpc("save_settlement_rpc", {
+        p_plan_id: planId,
+        p_participant_token_hash: hashedToken,
+        p_bank_name: cleanBank,
+        p_account_number: cleanNumber,
+        p_account_name: cleanName,
+        p_note: settlement.note?.trim() || null,
+      });
+
+      if (error || (rpcRes && typeof rpcRes === "object" && (rpcRes as any).success === false)) {
+        const errMsg = (rpcRes as any)?.error || error?.message || "Failed to save bank settlement details";
+        captureServerException(error || new Error(errMsg));
+        return { success: false, error: errMsg };
       }
 
-      return { success: true, data: data as PlanSettlement };
+      return {
+        success: true,
+        data: {
+          id: `settle-${planId}`,
+          plan_id: planId,
+          bank_name: cleanBank,
+          account_number: cleanNumber,
+          account_name: cleanName,
+          note: settlement.note?.trim() || null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      };
     } catch (e) {
       captureServerException(e);
       return { success: false, error: "An unexpected error occurred" };
     }
   }
+
 
   /**
    * Casts a 1-tap blind vote for an option in the squad showdown

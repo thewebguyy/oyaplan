@@ -3,6 +3,8 @@
 import { createServerClient } from "@/lib/supabase-server";
 import { captureServerException } from "@/lib/sentry";
 import { TransportPricingProvider } from "@/lib/planning/transport";
+import { calculateOutsideMath } from "@/lib/venue/venueSpend";
+
 
 export async function togglePlanTransport(planId: string, hasCar: boolean) {
   try {
@@ -95,8 +97,7 @@ export async function togglePlanTransport(planId: string, hasCar: boolean) {
 
 export async function switchPlanSpot(
   planId: string,
-  newSpotId: string,
-  newSpotPrice: number
+  newSpotId: string
 ) {
   try {
     const supabase = await createServerClient();
@@ -112,21 +113,24 @@ export async function switchPlanSpot(
       throw new Error("Plan not found");
     }
 
-    const squadSize = existingPlan.squad_size;
-    const newFoodCost = newSpotPrice * squadSize;
-    const newTaxCost = Math.round((newFoodCost * 0.1) / 100) * 100;
-    
+    // Fetch the new spot's verified price and address metadata directly from database
+    const { data: newSpot, error: spotError } = await supabase
+      .from("spots")
+      .select("address_slug, transport_matrix, price_per_person, vat_pct, service_charge_pct")
+      .eq("id", newSpotId)
+      .single();
+
+    if (spotError || !newSpot || typeof newSpot.price_per_person !== "number" || newSpot.price_per_person <= 0) {
+      throw new Error("Target spot does not have a verified pricing baseline in database");
+    }
+
+    const squadSize = existingPlan.squad_size || 1;
+    const foodSubtotal = newSpot.price_per_person * squadSize;
+
     const explanation = existingPlan.explanation || {};
     explanation.previous_spot_id = existingPlan.spot_id;
 
     const currentlyHasCar = explanation.has_car === true;
-
-    // Fetch the new spot's address_slug and transport overrides
-    const { data: newSpot } = await supabase
-      .from("spots")
-      .select("address_slug, transport_matrix")
-      .eq("id", newSpotId)
-      .single();
 
     let newTransportCost = 0;
     let newTransportEstimate = null;
@@ -155,7 +159,18 @@ export async function switchPlanSpot(
       newTransportEstimate = estimate;
     }
 
-    const newTotalCost = newFoodCost + newTransportCost + newTaxCost;
+    const outsideMath = calculateOutsideMath({
+      foodSubtotal,
+      vatPct: newSpot.vat_pct ?? 7.5,
+      serviceChargePct: newSpot.service_charge_pct ?? 10,
+      transportCost: newTransportCost,
+      headcount: squadSize,
+    });
+
+    const newFoodCost = outsideMath.foodSubtotal;
+    const newTaxCost = outsideMath.vatAmount + outsideMath.serviceChargeAmount;
+    const newTotalCost = outsideMath.totalCost;
+
 
     // 2. Clone the row with new values
     const { id, created_at, ...planDataToClone } = existingPlan;

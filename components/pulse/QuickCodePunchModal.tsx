@@ -59,11 +59,12 @@ export function QuickCodePunchModal({
 
     const cleanInput = codeBuffer.trim().toUpperCase().replace(/^OYA-/, '');
 
-    // Search local squads
+    // Search local squads — require exact plan code match
     const matchedSquad = squads.find((s) => {
       const sCode = s.plan_code.toUpperCase().replace(/^OYA-/, '');
-      return sCode === cleanInput || sCode.includes(cleanInput);
+      return sCode === cleanInput;
     });
+
 
     if (matchedSquad) {
       try {

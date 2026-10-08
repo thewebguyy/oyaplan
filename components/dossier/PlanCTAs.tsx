@@ -123,10 +123,11 @@ ${shareUrl}`;
     router.push(`/?${params.toString()}`);
   };
 
-  const handleSwitchSpot = async (newSpotId: string, newSpotPrice: number, newSpotName: string) => {
+  const handleSwitchSpot = async (newSpotId: string, _newSpotPrice: number, newSpotName: string) => {
     setIsSwapping(true);
     try {
-      const result = await switchPlanSpot(planId, newSpotId, newSpotPrice);
+      const result = await switchPlanSpot(planId, newSpotId);
+
       if (result.success && result.id) {
         toast.success(`Switched spot to ${newSpotName}!`);
         setIsModifyOpen(false);

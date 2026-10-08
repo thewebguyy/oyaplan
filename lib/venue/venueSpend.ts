@@ -34,3 +34,56 @@ export function suggestPlanBudget(perPerson: number | null, squad: number): numb
   const food = venueFoodTotal(perPerson, squad);
   return Math.ceil(food / 5000) * 5000 + 5000;
 }
+
+export interface OutsideMathOptions {
+  foodSubtotal: number;
+  vatPct?: number; // Default 7.5%
+  serviceChargePct?: number; // Default 10%
+  transportCost?: number; // Default 0
+  surgeMultiplier?: number; // Default 1.0
+  headcount?: number; // Default 1
+}
+
+export interface OutsideMathBreakdown {
+  headcount: number;
+  foodSubtotal: number;
+  vatAmount: number;
+  serviceChargeAmount: number;
+  transportCost: number;
+  surgeCost: number;
+  totalCost: number;
+}
+
+/**
+ * Canonical Outside Math engine for OyaPlan.
+ * Consolidates VAT (7.5%), service charge (10%), transit, surge, and headcount.
+ * Uses strict integer-kobo arithmetic (Math.round) to prevent floating-point inaccuracies.
+ */
+export function calculateOutsideMath(opts: OutsideMathOptions): OutsideMathBreakdown {
+  const headcount = Math.max(1, Math.floor(opts.headcount ?? 1));
+  const baseFood = Math.max(0, Math.round(opts.foodSubtotal));
+  const surgeMult = Math.max(1.0, opts.surgeMultiplier ?? 1.0);
+  
+  const vatPct = typeof opts.vatPct === "number" ? opts.vatPct : 7.5;
+  const scPct = typeof opts.serviceChargePct === "number" ? opts.serviceChargePct : 10;
+  
+  const foodWithSurge = Math.round(baseFood * surgeMult);
+  const surgeCost = foodWithSurge - baseFood;
+  
+  const vatAmount = Math.round((foodWithSurge * vatPct) / 100);
+  const serviceChargeAmount = Math.round((foodWithSurge * scPct) / 100);
+  const transportCost = Math.max(0, Math.round(opts.transportCost ?? 0));
+  
+  const totalCost = foodWithSurge + vatAmount + serviceChargeAmount + transportCost;
+
+  return {
+    headcount,
+    foodSubtotal: baseFood,
+    vatAmount,
+    serviceChargeAmount,
+    transportCost,
+    surgeCost,
+    totalCost,
+  };
+}
+

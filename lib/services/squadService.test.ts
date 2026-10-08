@@ -27,11 +27,14 @@ vi.mock("next/headers", () => ({
 }));
 
 const mockFrom = vi.fn();
+const mockRpc = vi.fn();
 vi.mock("@supabase/ssr", () => ({
   createServerClient: vi.fn(() => ({
     from: mockFrom,
+    rpc: mockRpc,
   })),
 }));
+
 
 describe("SquadService (OyaSquad Collaborative Decision Engine & Tier 1)", () => {
   beforeEach(() => {
@@ -184,16 +187,11 @@ describe("SquadService (OyaSquad Collaborative Decision Engine & Tier 1)", () =>
         updated_at: new Date().toISOString(),
       };
 
-      mockFrom.mockReturnValue({
-        upsert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockSettlement,
-              error: null,
-            }),
-          }),
-        }),
+      mockRpc.mockResolvedValue({
+        data: { success: true },
+        error: null,
       });
+
 
       const res = await SquadService.saveSettlementDetails("plan-123", {
         bankName: "Guaranty Trust Bank (GTBank)",

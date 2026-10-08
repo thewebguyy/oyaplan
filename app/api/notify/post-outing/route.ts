@@ -30,19 +30,23 @@ import { Resend } from "resend";
 const NOTIFICATION_TYPE = "post_outing_spend_request";
 
 export async function POST(req: NextRequest) {
-  // Authenticate the cron caller
+  // Authenticate the cron caller strictly via Bearer CRON_SECRET
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  if (!cronSecret) {
-    // In development without CRON_SECRET, allow localhost callers only
-    const host = req.headers.get("host") || "";
-    if (!host.includes("localhost") && !host.includes("127.0.0.1")) {
-      return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
-    }
-  } else if (authHeader !== `Bearer ${cronSecret}`) {
+  if (process.env.NODE_ENV === "production" && !cronSecret) {
+    return NextResponse.json({ error: "CRON_SECRET not configured on server" }, { status: 500 });
+  }
+
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  if (!cronSecret && process.env.NODE_ENV !== "production") {
+    // Development local warning
+    console.warn("[post-outing] Running in development mode without CRON_SECRET");
+  }
+
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

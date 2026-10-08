@@ -43,12 +43,21 @@ function isBotRequest(userAgent: string | null): boolean {
 }
 
 function getClientIp(request: NextRequest): string {
-  return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  );
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+
+  const vercelIp = request.headers.get('x-vercel-forwarded-for');
+  if (vercelIp) return vercelIp.trim();
+
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const ips = forwarded.split(',').map((ip) => ip.trim()).filter(Boolean);
+    return ips[ips.length - 1] || 'unknown';
+  }
+
+  return 'unknown';
 }
+
 
 export async function proxy(request: NextRequest) {
   // Rate limit check — runs before Supabase auth to avoid wasted round-trips on blocked requests.
