@@ -18,8 +18,11 @@ import {
   ShieldCheck,
   Clock,
   Loader2,
-  Flame,
+  Receipt,
   CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  FileText,
 } from 'lucide-react';
 
 export interface VenueSearchItem {
@@ -33,6 +36,9 @@ export interface VenueSearchItem {
   cover_url?: string;
   logo_url?: string;
   gallery_urls?: string[];
+  derived_typical_cost?: number | null;
+  vat_pct?: number | null;
+  service_charge_pct?: number | null;
 }
 
 interface ClaimSearchClientProps {
@@ -59,7 +65,6 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [liveResults, setLiveResults] = useState<ClaimSearchVenueResult[] | null>(null);
-  const [monthlyBookingVol, setMonthlyBookingVol] = useState<number>(1000000);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Unify venues or spots into standardized initial list
@@ -76,6 +81,8 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         district_name: s.areas?.name,
         partner_state: 'unclaimed',
         cover_url: s.cover_url || s.image_url,
+        derived_typical_cost: s.price_per_person || (s as any).derived_typical_cost || null,
+
       }));
     }
     return [];
@@ -113,7 +120,7 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
     };
   }, [searchQuery]);
 
-  // Combined results: prioritize live database search, fallback to local memo
+  // Combined results
   const displayVenues = useMemo(() => {
     if (!searchQuery.trim()) {
       return allVenues.slice(0, 16);
@@ -139,201 +146,176 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
   const addVenueWaUrl = getBusinessWhatsAppUrl('add_venue', { query: searchQuery.trim() });
   const generalClaimWaUrl = getBusinessWhatsAppUrl('claim_support');
 
-  // Direct deposit savings math: 15% typical aggregator commission vs ₦0 on OyaPlan
-  const typicalAggregatorFee = Math.round(monthlyBookingVol * 0.15);
-
   return (
-    <div className="space-y-8 max-w-3xl mx-auto font-sans text-[#F8F9FA]">
-      {/* First-time welcoming state */}
-      {isFirstTime && (
-        <div className="p-4 bg-[#121418] border border-[#00E575]/40 rounded-2xl flex items-start gap-3 text-white text-xs leading-relaxed animate-in fade-in duration-200">
-          <Sparkles className="w-4 h-4 text-[#00E575] shrink-0 mt-0.5" />
-          <div>
-            <span className="font-bold text-white block text-sm">
-              Authenticated. Find your venue to take the floor.
-            </span>
-            <p className="mt-0.5 text-white/60">
-              Select your venue below to connect your host account and broadcast live demand, bottle menus, and table reservations directly to Lagos squads.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* The Live Frequency Search Header */}
-      <div className="space-y-3 text-center sm:text-left">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121418] border border-[#232732] text-[#00E575] text-xs font-mono font-bold uppercase tracking-wider shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#00E575] animate-pulse" />
-          <span>The Pulse • Find Your Venue</span>
+    <div className="space-y-12 max-w-4xl mx-auto font-sans text-[#F5F1E8]">
+      
+      {/* ── SECTION 01: HEADER & SEARCH ── */}
+      <div className="space-y-4 text-center sm:text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E59A28]/15 border border-[#E59A28]/35 text-[#E59A28] text-xs font-mono font-bold uppercase tracking-wider">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#E59A28] animate-pulse" />
+          <span>OYAPLAN VENUE LEDGER · PHYSICAL MENUS AUDITED</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-          Who&apos;s on the Floor?
+        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight font-serif">
+          Check your spot&apos;s Outside Math.
         </h1>
-        <p className="text-xs sm:text-sm text-white/60 leading-relaxed max-w-xl">
-          Locate your spot across Victoria Island, Ikoyi, Lekki, or Ikeja. Take the room, broadcast tonight&apos;s vibe, and capture squad outings with direct deposits and ₦0 commission.
+        <p className="text-sm sm:text-base text-[#A0978C] leading-relaxed max-w-2xl">
+          Lagosians are using OyaPlan to calculate what an outing at your venue costs—including food, drinks, taxes, and rides. Search your spot below to inspect your live Till Slip, update your prices, and earn the OyaPlan Vetted Venue badge.
         </p>
 
-        {/* Live Step Progression */}
-        <div className="flex items-center gap-2 sm:gap-3 text-[11px] font-mono font-bold text-white/40 overflow-x-auto py-2.5 border-y border-[#232732] scrollbar-none">
-          <span className="text-[#00E575] flex items-center gap-1.5 shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00E575]" />
-            <span>01 Find Venue</span>
-          </span>
-          <span className="text-[#232732]">→</span>
-          <span className="shrink-0 text-white/70">02 Verify Host Stand</span>
-          <span className="text-[#232732]">→</span>
-          <span className="shrink-0 text-white/70">03 Push Live Offerings</span>
-          <span className="text-[#232732]">→</span>
-          <span className="shrink-0 text-white/70">04 Run Tonight</span>
+        {/* Direct WhatsApp Audit Link Callout */}
+        <div className="p-3.5 bg-[#1E1B18] border border-[#2D2823] rounded-2xl flex items-center justify-between text-xs font-mono text-[#A0978C] flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <Link2 className="w-4 h-4 text-[#E59A28] shrink-0" />
+            <span>Have a direct audit link from our team on WhatsApp?</span>
+          </div>
+          {generalClaimWaUrl && (
+            <a
+              href={generalClaimWaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#E59A28] font-bold hover:underline"
+            >
+              Open your venue ledger →
+            </a>
+          )}
+        </div>
+
+        {/* Search Input Bar with Integrated CTA */}
+        <div className="pt-2">
+          <div className="flex flex-col sm:flex-row gap-2 relative">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A0978C]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                placeholder="Search your restaurant, café, lounge, or activity spot (e.g., Lekki Grill, Circa, Cactus)..."
+                className="w-full h-14 pl-11 pr-11 bg-[#1E1B18] border border-[#2D2823] rounded-2xl text-sm font-medium text-white placeholder:text-[#A0978C] focus:outline-none focus:border-[#E59A28] shadow-xl transition-all font-sans"
+              />
+              {isSearching && (
+                <Loader2 className="w-4 h-4 text-[#E59A28] animate-spin absolute right-4 top-1/2 -translate-y-1/2" />
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {}}
+              className="h-14 px-6 bg-[#E59A28] hover:bg-[#D48B1B] text-[#141210] font-mono font-black text-xs uppercase tracking-wider rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0 shadow-lg tap-feedback"
+            >
+              <span>Inspect Till Slip →</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Live Lagos Demand Alert */}
-      <div className="p-4 rounded-2xl bg-[#121418] border border-[#232732] flex items-center gap-3 text-xs font-mono text-white/80">
-        <div className="w-2.5 h-2.5 rounded-full bg-[#00E575] animate-ping shrink-0" />
-        <div>
-          <span className="text-white font-bold">Live Lagos Nightlife Demand: </span>
-          <span className="text-white/70">Squads are budgeting weekend outings right now. Confirm your presence to capture direct bookings before Friday night.</span>
-        </div>
-      </div>
-
-      {/* Direct WhatsApp Host Link Callout */}
-      <div className="p-4 bg-[#121418] border border-[#232732] rounded-2xl flex items-start gap-3 text-white/70 text-xs leading-relaxed">
-        <Link2 className="w-4 h-4 text-[#00E575] shrink-0 mt-0.5" />
-        <div>
-          <span className="font-bold text-white">Have a direct VIP host link?</span> If OyaPlan sent your management team a direct liaison link on WhatsApp, tap it to open your verified venue console instantly.
-        </div>
-      </div>
-
-      {/* Search Input Bar */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-          placeholder="Search venue name (e.g. The House, Circa, Cactus, Landmark, W Sarafina)..."
-          className="w-full h-14 pl-11 pr-11 bg-[#121418] border border-[#232732] rounded-2xl text-sm font-medium text-white placeholder:text-white/40 focus:outline-none focus:border-[#00E575] shadow-lg transition-all font-sans"
-        />
-        {isSearching && (
-          <Loader2 className="w-4 h-4 text-[#00E575] animate-spin absolute right-4 top-1/2 -translate-y-1/2" />
-        )}
-      </div>
-
-      {/* Results Grid: Rich Visual Cards */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs text-white/50 px-1">
-          <span className="font-mono font-bold uppercase tracking-wider text-[11px]">
-            {searchQuery.trim() ? `Search Results (${displayVenues.length})` : 'Popular Venues on the Floor in Lagos'}
+      {/* ── SECTION 02: LIVE VENUE TILL SLIPS IN LAGOS (Grid Below Search) ── */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between text-xs text-[#A0978C] px-1 font-mono">
+          <span className="font-bold uppercase tracking-wider text-[11px]">
+            {searchQuery.trim() ? `Search Results (${displayVenues.length})` : 'HOW LAGOS SPOTS APPEAR IN THE PLANNER TODAY'}
           </span>
           {isSearching && (
-            <span className="text-[10px] font-mono font-bold text-[#00E575] flex items-center gap-1">
-              <span>Searching live database...</span>
+            <span className="text-[10px] font-bold text-[#E59A28] flex items-center gap-1">
+              <span>Searching live ledger database...</span>
             </span>
           )}
         </div>
 
         {displayVenues.length === 0 ? (
-          <div className="bg-[#121418] rounded-2xl border border-[#232732] p-8 text-center space-y-3 shadow-xl">
-            <Building2 className="w-8 h-8 text-white/30 mx-auto stroke-[1.5]" />
-            <h3 className="font-bold text-sm text-white uppercase font-display">Can&apos;t find your venue on the floor?</h3>
-            <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-              We may not have listed your spot yet. Message our host liaison on WhatsApp and we will set up your live frequency promptly.
+          <div className="bg-[#1E1B18] rounded-3xl border border-[#2D2823] p-8 text-center space-y-3 shadow-xl">
+            <Building2 className="w-8 h-8 text-[#A0978C] mx-auto stroke-[1.5]" />
+            <h3 className="font-bold text-base text-white uppercase font-serif">Can&apos;t find your venue in the ledger?</h3>
+            <p className="text-xs text-[#A0978C] max-w-sm mx-auto leading-relaxed">
+              We may not have indexed your menu prices yet. Send a photo of your physical menu to our WhatsApp Audit Desk and we will set up your live Till Slip within 24 hours.
             </p>
             {addVenueWaUrl ? (
               <a
                 href={addVenueWaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#008751] hover:bg-[#007043] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer tap-feedback"
+                className="inline-flex items-center gap-1.5 h-11 px-5 bg-[#E59A28] hover:bg-[#D48B1B] text-[#141210] font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer tap-feedback shadow-lg"
               >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>Message Host Stand on WhatsApp</span>
+                <MessageSquare className="w-4 h-4" />
+                <span>Send Menu to Audit Desk on WhatsApp</span>
               </a>
             ) : null}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {displayVenues.map((venue: VenueSearchItem) => {
               const isVerified = venue.partner_state === 'verified_partner';
               const isPending = venue.partner_state === 'verification_pending';
-              const monogram = getVenueMonogram(venue.name);
-              const imageUrl = venue.cover_url || venue.logo_url;
+              const typicalCost = venue.derived_typical_cost || 14000;
+              const perHead = Math.round(typicalCost);
+              const dateNightTotal = perHead * 2;
 
               return (
                 <Link
                   key={venue.id}
                   href={`/venue/${venue.id}/claim`}
-                  className="group bg-[#121418] hover:bg-[#181B22] border border-[#232732] hover:border-[#00E575]/50 rounded-2xl overflow-hidden shadow-lg transition-all tap-feedback flex flex-col justify-between"
+                  className="group bg-[#F7F4EC] text-[#141210] hover:bg-[#FAF7F2] border-2 border-[#2D2823] rounded-3xl p-5 shadow-xl transition-all tap-feedback flex flex-col justify-between font-mono relative overflow-hidden"
                 >
-                  {/* Visual Header / Cover Image */}
-                  <div className="h-32 w-full relative bg-gradient-to-br from-[#1E2330] via-[#141720] to-[#0A0C10] overflow-hidden">
-                    {imageUrl ? (
-                      <Image
-                        src={imageUrl}
-                        alt={venue.name}
-                        fill
-                        sizes="(max-width: 640px) 100vw, 360px"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-between p-4 bg-gradient-to-r from-emerald-950/30 to-black/60">
-                        <div className="w-12 h-12 rounded-xl bg-black/60 border border-white/10 text-[#00E575] font-mono font-black text-lg flex items-center justify-center shadow-lg">
-                          {monogram}
-                        </div>
-                        <Flame className="w-6 h-6 text-white/20" />
-                      </div>
-                    )}
-
-                    {/* Gradient Overlay for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#121418] via-transparent to-black/40 pointer-events-none" />
-
-                    {/* Top Badges */}
-                    <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5 z-10">
-                      {venue.category ? (
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white/90 border border-white/15">
-                          {venue.category}
-                        </span>
-                      ) : <span />}
-
+                  {/* Decorative dashed tear line top */}
+                  <div className="pb-3 border-b-2 border-dashed border-[#141210]/20 flex items-center justify-between">
+                    <div>
                       {isVerified ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#008751]/90 text-white backdrop-blur-md shadow-xs">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#12A165] uppercase tracking-wider">
                           <ShieldCheck className="w-3 h-3" />
-                          <span>Live Partner</span>
+                          <span>✓ OYAPLAN VETTED VENUE · AUDITED TILL SLIP</span>
                         </span>
                       ) : isPending ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/80 text-white backdrop-blur-md">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 uppercase tracking-wider">
                           <Clock className="w-3 h-3" />
-                          <span>Review Pending</span>
+                          <span>REVIEW PENDING</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 backdrop-blur-md text-white/70 border border-white/15">
-                          <span>Unclaimed</span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#E85C33] uppercase tracking-wider">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>⚠️ ESTIMATED MENU DATA · UNCLAIMED</span>
                         </span>
                       )}
                     </div>
+                    <Receipt className="w-4 h-4 text-[#141210]/40 shrink-0" />
                   </div>
 
                   {/* Body Content */}
-                  <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
-                    <div className="space-y-1">
-                      <h2 className="font-serif font-black text-base text-white group-hover:text-[#00E575] transition-colors line-clamp-1">
-                        {venue.name}
-                      </h2>
-                      <div className="flex items-center gap-1 text-xs text-white/60 font-mono truncate">
-                        <MapPin className="w-3.5 h-3.5 text-[#00E575] shrink-0" />
-                        <span className="truncate">{venue.address || venue.district_name || 'Lagos'}</span>
+                  <div className="py-3 space-y-2">
+                    <h2 className="font-serif font-black text-lg text-[#141210] group-hover:text-[#E59A28] transition-colors truncate">
+                      {venue.name}
+                    </h2>
+                    <p className="text-xs text-[#141210]/60 truncate font-sans">
+                      {venue.address || venue.district_name || 'Lagos, Nigeria'}
+                    </p>
+
+                    {/* Till Slip Outing Math Lines */}
+                    <div className="bg-[#141210]/5 p-3 rounded-2xl space-y-1 text-xs text-[#141210]/80 border border-[#141210]/10">
+                      <div className="flex justify-between">
+                        <span>Dining &amp; Drinks (2x):</span>
+                        <span className="font-bold">~₦{dateNightTotal.toLocaleString('en-NG')}</span>
+                      </div>
+                      <div className="flex justify-between text-[11px]">
+                        <span>VAT &amp; Service:</span>
+                        <span className={`font-bold ${isVerified ? 'text-[#12A165]' : 'text-[#E85C33]'}`}>
+                          {isVerified ? 'Audited & Locked' : 'Unverified'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between pt-1 border-t border-[#141210]/10 font-bold text-[#141210]">
+                        <span>Est. Per Person:</span>
+                        <span>~₦{perHead.toLocaleString('en-NG')} / head</span>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Action Button */}
-                    <div className="pt-2 border-t border-[#232732] flex items-center justify-between text-xs font-mono font-bold">
-                      <span className="text-[11px] text-white/50">Direct Payouts</span>
-                      <span className="inline-flex items-center gap-1 text-[#00E575] group-hover:translate-x-0.5 transition-transform">
-                        <span>{isVerified ? 'Enter Console' : 'Take The Floor'}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
+                  {/* Action Footer Button */}
+                  <div className="pt-2 border-t-2 border-dashed border-[#141210]/20 flex items-center justify-between text-xs font-bold">
+                    <span className="text-[11px] text-[#141210]/60">
+                      {isVerified ? 'Updated by Management' : 'Run this spot?'}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[#141210] group-hover:translate-x-0.5 transition-transform bg-[#141210]/10 px-3 py-1.5 rounded-xl">
+                      <span>{isVerified ? 'Inspect Ledger' : 'Verify Real Prices'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
                   </div>
                 </Link>
               );
@@ -342,90 +324,97 @@ export function ClaimSearchClient({ initialVenues, initialSpots }: ClaimSearchCl
         )}
       </div>
 
-      {/* Direct Deposit vs Aggregator Cut (Keep 100% of Squad Spend) */}
-      <div className="p-6 bg-[#121418] rounded-3xl border border-[#232732] space-y-5 shadow-2xl">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#00E575]" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00E575]">
-                DIRECT DEPOSIT GUARANTEE
-              </span>
-            </div>
-            <h3 className="font-serif font-black text-xl text-white mt-1">
-              ₦0 Commission vs. 15% Aggregator Fees
-            </h3>
-          </div>
-          <span className="text-xl font-mono font-black text-[#00E575] tabular-nums">
-            ₦{typicalAggregatorFee.toLocaleString('en-NG')} saved monthly
-          </span>
-        </div>
-
-        <p className="text-xs text-white/60 leading-relaxed">
-          Aggregators take 15% of your food, cocktail, and table revenue. OyaPlan charges ₦0 commission. Squad booking deposits flow directly into your Nigerian bank account via Paystack/Monnify.
-        </p>
-
+      {/* ── SECTION 03: PRICE RUMOR VS VERIFIED TILL SLIP COMPARISON TABLE ── */}
+      <div className="bg-[#1E1B18] rounded-3xl border border-[#2D2823] p-6 sm:p-8 space-y-6 shadow-2xl">
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-mono text-white/60">
-            <span>Estimated Monthly Squad Outing Volume:</span>
-            <span className="text-white font-bold">₦{monthlyBookingVol.toLocaleString('en-NG')}</span>
-          </div>
-          <input
-            type="range"
-            min="200000"
-            max="5000000"
-            step="100000"
-            value={monthlyBookingVol}
-            onChange={(e) => setMonthlyBookingVol(Number(e.target.value))}
-            className="w-full h-2 bg-[#232732] rounded-lg appearance-none cursor-pointer accent-[#00E575]"
-            aria-label="Monthly squad volume slider"
-          />
+          <span className="text-[10px] font-mono font-bold text-[#E85C33] uppercase tracking-widest block">
+            THE COST OF UNVERIFIED PRICES
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif font-black text-white">
+            What happens when squads have to guess your prices?
+          </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs font-mono">
-          <div className="p-4 bg-black/40 rounded-2xl border border-[#008751]/30">
-            <span className="text-[10px] text-white/50 uppercase block">OyaPlan Venue Model</span>
-            <span className="text-lg font-black text-[#00E575] block mt-0.5">0% Commission</span>
-            <span className="text-[11px] text-white/70 mt-1 block leading-normal">
-              ₦0 deductions. Customers pay your venue directly.
-            </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+          {/* Column 1: Without OyaPlan Verification */}
+          <div className="p-5 rounded-2xl bg-[#141210] border border-red-500/20 space-y-4">
+            <div className="flex items-center gap-2 text-red-400 font-bold text-sm border-b border-red-500/20 pb-2">
+              <XCircle className="w-4 h-4 shrink-0" />
+              <span>Without OyaPlan Verification</span>
+            </div>
+
+            <div className="space-y-3 text-[#A0978C] text-[11px] leading-relaxed">
+              <div className="space-y-0.5">
+                <span className="text-white font-bold block">Group chats guess high:</span>
+                <p>Squads assume your spot costs ₦50k/head and pick somewhere else.</p>
+              </div>
+
+              <div className="space-y-0.5">
+                <span className="text-white font-bold block">Table shock when the bill drops:</span>
+                <p>Waiters waste 20 minutes explaining 7.5% VAT, 10% service charge, or minimum spend rules.</p>
+              </div>
+
+              <div className="space-y-0.5">
+                <span className="text-white font-bold block">Outdated menus circulate online:</span>
+                <p>Old blogs or random TikToks show wrong prices from two years ago.</p>
+              </div>
+            </div>
           </div>
-          <div className="p-4 bg-black/40 rounded-2xl border border-red-500/20">
-            <span className="text-[10px] text-white/50 uppercase block">Typical Delivery / Booking App</span>
-            <span className="text-lg font-black text-red-400 block mt-0.5">
-              -₦{typicalAggregatorFee.toLocaleString('en-NG')} lost
-            </span>
-            <span className="text-[11px] text-white/60 mt-1 block leading-normal">
-              Standard 15% cut shaved off every customer tab.
-            </span>
+
+          {/* Column 2: With Your Verified OyaPlan Till Slip */}
+          <div className="p-5 rounded-2xl bg-[#141210] border border-[#12A165]/30 space-y-4">
+            <div className="flex items-center gap-2 text-[#12A165] font-bold text-sm border-b border-[#12A165]/20 pb-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>With Your Verified OyaPlan Till Slip</span>
+            </div>
+
+            <div className="space-y-3 text-[#A0978C] text-[11px] leading-relaxed">
+              <div className="space-y-0.5">
+                <span className="text-white font-bold block">Exact pocket match:</span>
+                <p>Planners see they can do a proper 2-person outing at your spot for ₦28,000 total.</p>
+              </div>
+
+              <div className="space-y-0.5">
+                <span className="text-white font-bold block">Pre-agreed Outside Math:</span>
+                <p>Every tax, service charge, and house rule is locked into the squad&apos;s budget before they leave home.</p>
+              </div>
+
+              <div className="space-y-0.5">
+                <span className="text-white font-bold block">1-Tap Menu Updates:</span>
+                <p>Snap your current physical menu on WhatsApp or update dish prices in 10 seconds whenever costs shift.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Host Concierge WhatsApp Support */}
-      <div className="p-6 bg-[#121418] rounded-3xl border border-[#232732] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#00E575] uppercase tracking-wider">
-            <Sparkles className="w-3 h-3 text-[#00E575]" />
-            <span>Host Stand Fast-Track</span>
-          </div>
-          <h4 className="font-bold text-base text-white">Can&apos;t find your venue on the floor?</h4>
-          <p className="text-xs text-white/60 max-w-md">
-            Our Lagos hospitality team will verify and activate your venue frequency within 24 hours.
+      {/* ── SECTION 04: BOTTOM CONCIERGE BANNER ── */}
+      <div className="p-6 sm:p-8 bg-[#1E1B18] rounded-3xl border border-[#2D2823] flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left shadow-2xl">
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono font-bold text-[#E59A28] uppercase tracking-widest block">
+            PLUG YOUR SPOT INTO THE PLANNER
+          </span>
+          <h3 className="font-serif font-black text-xl text-white">
+            Not in the directory yet, or just updated your physical menu?
+          </h3>
+          <p className="text-xs text-[#A0978C] max-w-xl leading-relaxed">
+            Don&apos;t type out 50 menu items by hand. Send a photo or PDF of your current menu and house rules (VAT, service charge, corkage) to our Menu Audit Desk on WhatsApp—we&apos;ll build your live Till Slip within 24 hours for free.
           </p>
         </div>
+
         {generalClaimWaUrl && (
           <a
             href={generalClaimWaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 h-11 px-5 bg-[#008751] hover:bg-[#007043] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl flex items-center gap-2 transition-colors cursor-pointer tap-feedback"
+            className="shrink-0 h-13 px-6 bg-[#E59A28] hover:bg-[#D48B1B] text-[#141210] font-mono font-black text-xs uppercase tracking-wider rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback shadow-xl shadow-amber-950/40"
           >
-            <MessageSquare className="w-4 h-4 text-white" />
-            <span>Direct WhatsApp Stand</span>
+            <MessageSquare className="w-4 h-4 text-[#141210]" />
+            <span>Send Menu to Audit Desk on WhatsApp →</span>
           </a>
         )}
       </div>
+
     </div>
   );
 }

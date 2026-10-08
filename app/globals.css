@@ -60,28 +60,50 @@
   --color-lagos-warm-border: #E8E8E2;
 
   /* The Pulse — Lagos Hospitality Business Design Tokens */
-  --color-pulse-bg: #090A0D;
-  --color-pulse-card: #121418;
-  --color-pulse-elevated: #181B22;
-  --color-pulse-border: #232732;
-  --color-pulse-border-subtle: #16181F;
-  --color-pulse-green: #008751;
-  --color-pulse-electric: #00E575;
-  --color-pulse-glow: rgba(0, 229, 117, 0.15);
-  --color-pulse-red: #EF4444;
-  --color-pulse-text: #F8F9FA;
-  --color-pulse-muted: #94A3B8;
-  --color-pulse-dim: #64748B;
+  --color-pulse-bg: #141210;
+  --color-pulse-card: #1E1B18;
+  --color-pulse-elevated: #26221E;
+  --color-pulse-border: #2D2823;
+  --color-pulse-border-subtle: #1E1B18;
+  --color-pulse-green: #12A165;
+  --color-pulse-electric: #12A165;
+  --color-pulse-glow: rgba(18, 161, 101, 0.15);
+  --color-pulse-red: #E85C33;
+  --color-pulse-text: #F5F1E8;
+  --color-pulse-muted: #A0978C;
+  --color-pulse-dim: #635D55;
 
-  /* Hospitality Command Tokens (replaces legacy op tokens without yellow) */
-  --color-op-green: #008751;
-  --color-op-electric: #00E575;
-  --color-op-charcoal: #090A0D;
-  --color-op-black: #050607;
-  --color-op-cream: #F8F9FA;
-  --color-op-surface: #121418;
-  --color-op-border: #232732;
-  --color-op-muted: #94A3B8;
+  /* REVISED DUAL COLOR SYSTEM: THE TILL SLIP VS THE HOUSE LEDGER */
+  /* Client Palette — The Verified Till Slip */
+  --color-thermal-cream: #FAF7F2;
+  --color-crisp-till: #FFFFFF;
+  --color-kraft-sand: #F1ECE1;
+  --color-carbon-black: #141311;
+  --color-stamped-slate: #635D55;
+  --color-outside-pepper: #E04F26;
+  --color-audited-naira-green: #0D7A4B;
+
+  /* Business Palette — The House Ledger */
+  --color-espresso-ledger: #141210;
+  --color-toasted-walnut: #1E1B18;
+  --color-ivory-receipt: #F7F4EC;
+  --color-warm-parchment: #F5F1E8;
+  --color-muted-brass: #A0978C;
+  --color-stamped-brass: #E59A28;
+  --color-verified-emerald: #12A165;
+  --color-surge-terracotta: #E85C33;
+  --color-ledger-stitch: #2D2823;
+
+  /* Hospitality Command Tokens */
+  --color-op-green: #12A165;
+  --color-op-electric: #12A165;
+  --color-op-charcoal: #141210;
+  --color-op-black: #0D0B0A;
+  --color-op-cream: #F5F1E8;
+  --color-op-surface: #1E1B18;
+  --color-op-border: #2D2823;
+  --color-op-muted: #A0978C;
+
 
   /* Restrained Consumer Tokens */
   --radius-sm: 8px;

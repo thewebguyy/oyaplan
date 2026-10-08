@@ -9,8 +9,8 @@ import { getBusinessWhatsAppUrl } from '@/lib/config/businessWhatsApp';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Who's on the Floor? — OyaPlan for Business",
-  description: 'Search for your venue in Lagos to verify your host stand, broadcast live demand, and connect with squads planning outings.',
+  title: 'Check Your Outside Math — OyaPlan for Business',
+  description: 'Search your restaurant, café, or lounge in Lagos to inspect your live Till Slip, update prices, and earn the OyaPlan Vetted Venue badge.',
 };
 
 export default async function BusinessClaimSearchPage() {
@@ -18,9 +18,9 @@ export default async function BusinessClaimSearchPage() {
   const waUrl = getBusinessWhatsAppUrl('claim_support');
 
   return (
-    <div className="min-h-[100dvh] bg-[#090A0D] text-[#F8F9FA] antialiased flex flex-col font-sans selection:bg-[#008751]/30">
-      {/* ── Crisp White Business Header with Original Logo ── */}
-      <header className="w-full bg-[#FFFFFF] text-[#111111] border-b border-[#EAE4DC] shadow-xs sticky top-0 z-40">
+    <div className="min-h-[100dvh] bg-[#141210] text-[#F5F1E8] antialiased flex flex-col font-sans selection:bg-[#E59A28]/30">
+      {/* ── House Ledger Executive Header ── */}
+      <header className="w-full bg-[#1E1B18] text-[#F5F1E8] border-b border-[#2D2823] shadow-md sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/for-business" className="flex items-center gap-2.5 tap-feedback">
@@ -29,13 +29,13 @@ export default async function BusinessClaimSearchPage() {
                 alt="OyaPlan"
                 width={610}
                 height={143}
-                className="h-7 w-auto object-contain shrink-0"
+                className="h-7 w-auto object-contain shrink-0 invert brightness-200"
                 style={{ width: "auto", height: "26px" }}
                 priority
               />
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-[#008751] bg-[#008751]/10 border border-[#008751]/25 px-2.5 py-0.5 rounded-full uppercase">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#008751] animate-pulse" />
-                THE PULSE
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-[#E59A28] bg-[#E59A28]/15 border border-[#E59A28]/30 px-2.5 py-0.5 rounded-full uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E59A28] animate-pulse" />
+                VENUE LEDGER
               </span>
             </Link>
           </div>
@@ -46,15 +46,15 @@ export default async function BusinessClaimSearchPage() {
                 href={waUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[#008751] bg-[#008751]/10 hover:bg-[#008751]/20 border border-[#008751]/25 transition-colors tap-feedback"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[#E59A28] bg-[#E59A28]/10 hover:bg-[#E59A28]/20 border border-[#E59A28]/30 transition-colors tap-feedback"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
-                <span>Host Concierge</span>
+                <span>Menu Audit Desk</span>
               </a>
             )}
             <Link
               href="/for-business"
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors tap-feedback"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[#F5F1E8] bg-[#2D2823] hover:bg-[#38322C] border border-[#2D2823] transition-colors tap-feedback"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
