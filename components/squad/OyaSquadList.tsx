@@ -13,13 +13,22 @@ interface OyaSquadListProps {
   initialSquads: OyaSquadSummary[];
 }
 
-const DEFAULT_EMOJIS = ['⚡', '🍲', '🌴', '🍸', '🍕', '🎉', '🥂', '🚀'];
+const DEFAULT_EMOJIS = ['🔥', '🍖', '🌶️', '🏖️', '🛥️', '💸', '🎭', '🎨', '🥂', '🌴', '⚡'];
+
+const SQUAD_APPETITE_TAGS = [
+  { id: 'soft_life', label: '💸 Soft Life (No Ceiling)' },
+  { id: 'mid_range', label: '⚖️ Mid-Range Enjoyment' },
+  { id: 'sapa_defense', label: '🛡️ Sapa Defense (Trench-Friendly)' },
+  { id: 'suya_chops', label: '🍖 Suya & Chops Budget' },
+];
+
 
 export default function OyaSquadList({ initialSquads }: OyaSquadListProps) {
   const [squads, setSquads] = useState<OyaSquadSummary[]>(initialSquads);
   const [isCreating, setIsCreating] = useState(false);
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('⚡');
+  const [appetiteTag, setAppetiteTag] = useState('mid_range');
   const [memberInput, setMemberInput] = useState('');
   const [members, setMembers] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,24 +107,21 @@ export default function OyaSquadList({ initialSquads }: OyaSquadListProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header & Create Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="type-subheading text-text-primary flex items-center gap-2">
-            <span>My OyaSquads</span>
-            <span className="text-xs bg-brand-green/10 text-brand-green font-extrabold px-2.5 py-0.5 rounded-full">
-              {squads.length}
-            </span>
-          </h2>
-          <p className="type-body text-text-muted text-xs sm:text-sm mt-0.5">
-            The people you regularly go out with. Select them while planning to save time.
-          </p>
+      {/* Action Toolbar */}
+      <div className="flex items-center justify-between gap-4 pb-2 border-b border-border-default/60">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono font-bold text-text-primary uppercase tracking-wider">
+            Active Enjoyment Roster
+          </span>
+          <span className="text-xs bg-brand-green/10 text-brand-green font-extrabold px-2.5 py-0.5 rounded-full">
+            {squads.length}
+          </span>
         </div>
 
         {!isCreating && (
           <Button
             onClick={() => setIsCreating(true)}
-            className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-10 px-5 shadow-none border-none tap-feedback flex items-center gap-1.5 font-bold self-start sm:self-auto"
+            className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-10 px-5 shadow-none border-none tap-feedback flex items-center gap-1.5 font-bold cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create OyaSquad</span>
@@ -148,7 +154,7 @@ export default function OyaSquadList({ initialSquads }: OyaSquadListProps) {
               </label>
               <div className="flex gap-2">
                 {/* Emoji Selector */}
-                <div className="flex gap-1 overflow-x-auto py-1 items-center">
+                <div className="flex gap-1 overflow-x-auto py-1 items-center scrollbar-none">
                   {DEFAULT_EMOJIS.map((e) => (
                     <button
                       key={e}
@@ -169,11 +175,34 @@ export default function OyaSquadList({ initialSquads }: OyaSquadListProps) {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Friday Foodies, Lekki Crew, Sunday Brunchers"
+                placeholder="e.g. Outside Gang, Island Hoppers, Mainland Survivors, Owambe Crew, Payday Ballers, Suya & Chill"
                 maxLength={60}
                 required
                 className="w-full px-4 py-3 bg-surface-grey rounded-xl border border-border-default text-text-primary placeholder:text-text-muted/60 text-sm font-medium focus:outline-none focus:border-brand-green"
               />
+            </div>
+
+            {/* Squad Financial Vibe / Appetite Tags */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">
+                Squad Financial Vibe &amp; Appetite
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {SQUAD_APPETITE_TAGS.map((tag) => (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => setAppetiteTag(tag.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer ${
+                      appetiteTag === tag.id
+                        ? 'bg-midnight-lagoon text-white border-midnight-lagoon'
+                        : 'bg-surface-grey text-text-secondary border-border-default hover:border-brand-green/40'
+                    }`}
+                  >
+                    {tag.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Members Roster */}
@@ -182,7 +211,7 @@ export default function OyaSquadList({ initialSquads }: OyaSquadListProps) {
                 Who&apos;s in this squad? (Optional)
               </label>
               <p className="text-[11px] text-text-muted">
-                Add first names or nicknames. They don&apos;t need an OyaPlan account.
+                Drop their names or aliases (e.g., Tolu, Big Chief, Amaka). No account needed—just add them and calculate the damage.
               </p>
 
               <div className="flex gap-2">
@@ -196,8 +225,9 @@ export default function OyaSquadList({ initialSquads }: OyaSquadListProps) {
                       handleAddMember();
                     }
                   }}
-                  placeholder="e.g. Tolu, Amaka, Femi"
+                  placeholder="e.g. Tolu, Big Chief, Amaka"
                   maxLength={60}
+
                   className="flex-1 px-4 py-2.5 bg-surface-grey rounded-xl border border-border-default text-text-primary placeholder:text-text-muted/60 text-sm focus:outline-none focus:border-brand-green"
                 />
                 <Button

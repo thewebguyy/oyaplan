@@ -54,8 +54,9 @@ export default function DashboardTabs({ savedPlans, squads }: DashboardTabsProps
           <p className="type-body text-text-muted mt-1 text-sm">
             {activeTab === 'plans'
               ? 'Your upcoming Lagos outings & price breakdowns.'
-              : 'The people you regularly go out with. Select them while planning.'}
+              : "Your day-ones for outside. Group your people so planning doesn't end in the group chat."}
           </p>
+
         </div>
 
         <div className="flex items-center gap-1.5 bg-surface-grey p-1.5 rounded-full border border-border-default w-fit self-start sm:self-auto">

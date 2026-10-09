@@ -81,7 +81,7 @@ export default function OyaSquadCard({ squad }: OyaSquadCardProps) {
           <div className="p-3 bg-surface-grey/80 rounded-xl border border-border-default/50 text-xs space-y-1">
             <div className="flex items-center justify-between text-text-muted">
               <span className="font-semibold text-text-secondary flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-brand-green" /> Last Outing
+                <Sparkles className="w-3 h-3 text-brand-green" /> Last Outside Linkup
               </span>
               <span>
                 {new Date(squad.last_outing.date).toLocaleDateString('en-GB', {
@@ -93,19 +93,19 @@ export default function OyaSquadCard({ squad }: OyaSquadCardProps) {
             <div className="flex items-center justify-between font-bold text-text-primary">
               <span className="truncate max-w-[180px]">{squad.last_outing.venue_name}</span>
               <span className="text-brand-green">
-                ~₦{squad.last_outing.cost_per_person.toLocaleString('en-NG')}/person
+                ~₦{squad.last_outing.cost_per_person.toLocaleString('en-NG')}/head
               </span>
             </div>
           </div>
         ) : (
-          <p className="text-xs text-text-muted italic">No outings planned yet with this squad.</p>
+          <p className="text-xs text-text-muted italic">No Outside damage calculated yet for this squad.</p>
         )}
       </div>
 
       {/* Primary Action: PLAN AGAIN */}
       <div className="mt-6 pt-4 border-t border-border-default/70 flex items-center justify-between gap-3">
-        <span className="text-xs text-text-muted">
-          Ready for the next linkup?
+        <span className="text-xs text-text-muted font-medium">
+          Ready for Outside?
         </span>
 
         <Link
@@ -115,7 +115,7 @@ export default function OyaSquadCard({ squad }: OyaSquadCardProps) {
             size="sm"
             className="bg-brand-green hover:bg-brand-green-70 text-white rounded-full type-label h-9 px-4 shadow-none border-none tap-feedback flex items-center gap-1.5 font-bold"
           >
-            <span>Plan Again</span>
+            <span>Calculate Damage</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </Link>

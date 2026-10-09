@@ -403,7 +403,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
                 <span className="font-black text-[#111111] text-sm">
                   ~₦{Math.round((data.plan.food_cost || totalSpend * 0.75) / Math.max(1, currentHeadcount)).toLocaleString('en-NG')}
                 </span>
-                <span className="text-[9px] text-[#777777] block mt-0.5">menu + VAT baseline</span>
+                <span className="text-[9px] text-[#777777] block mt-0.5">menu + 7.5% VAT + 10% service</span>
               </div>
 
               <div className="bg-[#F6F6F2] p-3 rounded-2xl border-2 border-[#111111] text-xs">
@@ -416,7 +416,7 @@ export default function SquadRoomClient({ initialData }: SquadRoomClientProps) {
             </div>
 
             <p className="text-xs text-[#555555] pt-0.5 font-medium leading-relaxed">
-              Based on ~₦{totalSpend.toLocaleString("en-NG")} total landed spend for {currentHeadcount} {currentHeadcount === 1 ? "person" : "people"}.
+              Based on ~₦{totalSpend.toLocaleString("en-NG")} total landed spend (includes 7.5% VAT &amp; 10% service charge) for {currentHeadcount} {currentHeadcount === 1 ? "person" : "people"}.
             </p>
           </div>
 

@@ -235,7 +235,7 @@ export default function OyaSquadSelector({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Squad Name (e.g. Friday Linkup)"
+            placeholder="Squad Name (e.g. Outside Gang, Island Hoppers, Suya & Chill)"
             maxLength={60}
             required
             className="w-full px-3 py-2 bg-white rounded-xl border border-border-default text-xs font-medium focus:outline-none focus:border-brand-green"
@@ -252,10 +252,11 @@ export default function OyaSquadSelector({
                   handleAddMember();
                 }
               }}
-              placeholder="Add name (e.g. Tolu)"
+              placeholder="Add name or alias (e.g. Tolu, Big Chief, Amaka)"
               maxLength={60}
               className="flex-1 px-3 py-1.5 bg-white rounded-xl border border-border-default text-xs focus:outline-none focus:border-brand-green"
             />
+
             <button
               type="button"
               onClick={() => handleAddMember()}

@@ -111,10 +111,10 @@ export default function SaveAsSquadPrompt({
             </div>
             <div>
               <h4 className="text-xs font-bold text-text-primary">
-                Planning with these {squadSize} people again?
+                Heading outside with these {squadSize} day-ones again?
               </h4>
               <p className="text-[11px] text-text-muted mt-0.5">
-                Save as an OyaSquad so your next linkup takes just 1 tap.
+                Save as an OyaSquad to lock in your enjoyment roster and calculate per-person damage instantly.
               </p>
             </div>
           </div>
@@ -148,7 +148,7 @@ export default function SaveAsSquadPrompt({
             type="text"
             value={squadName}
             onChange={(e) => setSquadName(e.target.value)}
-            placeholder="e.g. Friday Linkup, Lekki Boys, Chow Gang"
+            placeholder="e.g. Outside Gang, Island Hoppers, Owambe Crew, Payday Ballers"
             maxLength={60}
             required
             autoFocus
@@ -166,7 +166,7 @@ export default function SaveAsSquadPrompt({
                   handleAddMember();
                 }
               }}
-              placeholder="Add friend's name (optional)"
+              placeholder="Drop friend's name or alias (e.g. Tolu, Big Chief, Amaka)"
               maxLength={60}
               className="flex-1 px-3 py-1.5 bg-surface-grey rounded-xl border border-border-default text-xs focus:outline-none focus:border-brand-green"
             />
