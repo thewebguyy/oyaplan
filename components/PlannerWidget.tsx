@@ -212,11 +212,11 @@ export default function PlannerWidget({
   const perPersonAmount = Math.round(budget / Math.max(1, squadSize));
 
   const getBudgetMicroCopy = (val: number): string => {
-    if (val <= 15000) return "Tight search — hunting high-value lowkey spots";
-    if (val <= 25000) return "Searching harder within this budget";
-    if (val <= 45000) return "Balanced outing";
-    if (val <= 75000) return "Comfortable Lagos outing";
-    return "Wide open options";
+    if (val <= 15000) return "Strictly vibes & water 💧 (Sapa friendly)";
+    if (val <= 35000) return "Soft enjoyment & Suya 🍢 (Standard linkup)";
+    if (val <= 70000) return "Full Lagos flexing 🍹 (Cocktails & main course)";
+    if (val <= 120000) return "Minister of Enjoyment level 👑 (VIP vibes)";
+    return "Odogwu status: We are balling today! 🍾";
   };
 
   return (

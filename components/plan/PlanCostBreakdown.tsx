@@ -5,6 +5,7 @@ import { ChevronDown, Calculator, Car, Receipt, Shield, Clock, CloudRain, CheckC
 import { TransportEstimate } from '@/lib/types';
 import { NairaSplitVisual } from '@/components/cultural/NairaSplitVisual';
 import { RainBufferVisual } from '@/components/cultural/RainBufferVisual';
+import { EmergencyBailoutButton } from './EmergencyBailoutButton';
 
 interface PlanCostBreakdownProps {
   foodCost: number;
@@ -19,6 +20,7 @@ interface PlanCostBreakdownProps {
   hasFood?: boolean;
   serviceChargePct?: number;
   vatPct?: number;
+  onSelectBailoutSpot?: (spotName: string) => void;
 }
 
 export function PlanCostBreakdown({
@@ -34,6 +36,7 @@ export function PlanCostBreakdown({
   hasFood = true,
   serviceChargePct = 5,
   vatPct = 7.5,
+  onSelectBailoutSpot,
 }: PlanCostBreakdownProps) {
   const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
   const [isRainSimulated, setIsRainSimulated] = useState(false);
@@ -49,7 +52,7 @@ export function PlanCostBreakdown({
   const perPersonCost = Math.round(totalCost / Math.max(1, squadSize));
 
   return (
-    <div className="relative w-full transition-all duration-300 font-mono">
+    <div className="relative w-full transition-all duration-300 font-mono space-y-4">
       {/* Subtle Halo Glow Behind Till Slip */}
       <div className="absolute -inset-1.5 bg-gradient-to-r from-[#F9E828]/20 via-[#008751]/15 to-[#F9E828]/20 rounded-3xl blur-xl opacity-75 pointer-events-none" />
 
@@ -181,6 +184,12 @@ export function PlanCostBreakdown({
               </span>
             </div>
           </div>
+
+          {/* Emergency "Bailout" Button */}
+          <EmergencyBailoutButton
+            currentDamagePerHead={perPersonCost}
+            onSelectBailoutSpot={onSelectBailoutSpot}
+          />
 
           {/* Surge Simulator: Worst-Case Lagos Downpour */}
           {!hasCar && transportCost > 0 && (

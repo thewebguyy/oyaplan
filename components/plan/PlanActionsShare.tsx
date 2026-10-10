@@ -3,10 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { trackEvent } from '@/lib/analytics/trackClient';
-import { Copy, Check, MessageSquare, Share2, Sliders, ShieldCheck, Sparkles, Send } from 'lucide-react';
+import { Copy, Check, MessageSquare, Share2, Sliders, ShieldCheck, Sparkles, Send, Printer, Dices, Users } from 'lucide-react';
 import { PlanCodeSquadPass } from './PlanCodeSquadPass';
 import SavePlanButton from '@/components/SavePlanButton';
 import { WhatsAppDropModal } from '@/components/motion/WhatsAppDropModal';
+import { PreReceiptModal } from './PreReceiptModal';
+import { SquadRoleAssigner } from '@/components/squad/SquadRoleAssigner';
+import { BillSplitRoulette } from './BillSplitRoulette';
 
 type BroadcastTone = 'chill' | 'strict' | 'baller';
 
@@ -40,6 +43,9 @@ export function PlanActionsShare({
   const [copiedLink, setCopiedLink] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
   const [selectedTone, setSelectedTone] = useState<BroadcastTone>('chill');
+  const [showPreReceiptModal, setShowPreReceiptModal] = useState(false);
+  const [showRoulette, setShowRoulette] = useState(false);
+  const [showSquadRoles, setShowSquadRoles] = useState(false);
 
   // Derive Edit URL for Forge
   const VIBE_TO_URL_MAP: Record<string, string> = {
@@ -136,32 +142,10 @@ export function PlanActionsShare({
     }
   };
 
-  const handleNativeShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Squad Outing at ${venueName} — OyaPlan`,
-          text: getBroadcastMessage(selectedTone),
-          url: getSquadUrl(),
-        });
-        trackEvent('plan_shared', {
-          category: 'Sharing',
-          plan_id: planId,
-          share_method: 'native_share',
-          version: '1.0',
-        });
-      } catch {
-        // User cancelled
-      }
-    } else {
-      handleCopyLink();
-    }
-  };
-
   const resolvedCode = planCode || `OYA-${planId.slice(0, 6).toUpperCase()}`;
 
   return (
-    <section className="space-y-4 font-sans">
+    <section className="space-y-5 font-sans">
       {/* 1. Share & Edit Primary Actions with Neo-Brutalist Danfo Styling */}
       <div className="bg-white border-3 border-[#111111] rounded-3xl p-5 sm:p-7 shadow-[8px_8px_0px_0px_#111111] space-y-5">
         
@@ -232,6 +216,54 @@ export function PlanActionsShare({
           {getBroadcastMessage(selectedTone)}
         </div>
 
+        {/* Lagos Viral Export Feature CTAs: Pre-Receipt & Roulette Buttons */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          {/* Pre-Receipt Generator Button */}
+          <button
+            type="button"
+            onClick={() => setShowPreReceiptModal(true)}
+            className="h-12 bg-[#F9E828] hover:bg-[#ffe710] text-[#111111] font-display font-black text-xs uppercase tracking-wider rounded-2xl border-2 border-[#111111] flex items-center justify-center gap-2 shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer tap-feedback"
+          >
+            <Printer className="w-4 h-4 text-[#111111]" />
+            <span>Generate Pre-Receipt Image 🧾</span>
+          </button>
+
+          {/* Bill Split Roulette Toggle */}
+          <button
+            type="button"
+            onClick={() => setShowRoulette(!showRoulette)}
+            className="h-12 bg-[#FFFEE5] hover:bg-white text-[#111111] font-display font-black text-xs uppercase tracking-wider rounded-2xl border-2 border-[#111111] flex items-center justify-center gap-2 shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer tap-feedback"
+          >
+            <Dices className="w-4 h-4 text-[#111111]" />
+            <span>{showRoulette ? 'Hide Bill Roulette' : 'Spin Bill Split Roulette 🎰'}</span>
+          </button>
+        </div>
+
+        {/* Toggle Squad Roles Section */}
+        <button
+          type="button"
+          onClick={() => setShowSquadRoles(!showSquadRoles)}
+          className="w-full h-10 bg-[#FAFAF6] hover:bg-white text-[#111111] text-xs font-mono font-bold uppercase tracking-wider rounded-xl border border-[#111111] flex items-center justify-center gap-2 transition-all cursor-pointer tap-feedback"
+        >
+          <Users className="w-4 h-4" />
+          <span>{showSquadRoles ? 'Close Official Squad Titles' : 'Assign Official Squad Titles (Minister, Accountant, Timekeeper) →'}</span>
+        </button>
+
+        {/* Interactive Bill Split Roulette Section */}
+        {showRoulette && (
+          <BillSplitRoulette
+            venueName={venueName}
+            totalCost={totalCost}
+          />
+        )}
+
+        {/* Interactive Squad Role Assigner Section */}
+        {showSquadRoles && (
+          <SquadRoleAssigner
+            squadName={`${venueName} Crew`}
+          />
+        )}
+
         {/* Squad Decision Room Hero CTA */}
         <Link
           href={`/squad/${planId}`}
@@ -294,6 +326,19 @@ export function PlanActionsShare({
         isDropping={isDropping}
         venueName={venueName}
         onDropComplete={() => setIsDropping(false)}
+      />
+
+      {/* Pre-Receipt Modal Generator */}
+      <PreReceiptModal
+        isOpen={showPreReceiptModal}
+        onClose={() => setShowPreReceiptModal(false)}
+        venueName={venueName}
+        squadSize={squadSize}
+        totalCost={totalCost}
+        foodCost={foodCost}
+        transportCost={transportCost}
+        startArea={startArea}
+        planCode={resolvedCode}
       />
     </section>
   );

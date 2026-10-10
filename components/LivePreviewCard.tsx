@@ -9,6 +9,7 @@ import { ExplainedPlan } from "@/lib/planning/types";
 import { TransportPricingProvider } from "@/lib/planning/transport";
 import { VenueImage } from "./ui/VenueImage";
 import { trackEvent } from "@/lib/analytics/trackClient";
+import { VibeCastMeter, CastLevel } from "./venue/VibeCastMeter";
 
 interface LivePreviewCardProps {
   squadSize: number;
@@ -74,6 +75,19 @@ export default function LivePreviewCard({
   // Ensure index is within bounds
   const currentSpotIndex = activeIndex >= spotsToUse.length ? 0 : activeIndex;
   const spot = spotsToUse[currentSpotIndex];
+
+  // Derive cast level based on spot tags or index
+  const getCastLevelForSpot = (s: Spot, idx: number): { level: CastLevel; score: number } => {
+    if (s.is_featured || idx === 0) {
+      return { level: 'bustling', score: 55 };
+    }
+    if (idx === 1) {
+      return { level: 'chill', score: 25 };
+    }
+    return { level: 'cast', score: 85 };
+  };
+
+  const castInfo = getCastLevelForSpot(spot, currentSpotIndex);
 
   // Canonical pricing calculations - single source of truth
   const isMatchingTopPlan = topPlan && topPlan.spot.id === spot.id;
@@ -218,6 +232,9 @@ export default function LivePreviewCard({
             </div>
           </div>
         )}
+
+        {/* Vibe & Cast Meter Indicator */}
+        <VibeCastMeter castLevel={castInfo.level} castScore={castInfo.score} />
 
         {/* Live Outside Math Slip Paper Breakdown */}
         <div className="bg-[#F6F6F2] border border-[#E5E5DE] rounded-xl p-3.5 space-y-2 font-mono text-xs">
