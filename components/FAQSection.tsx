@@ -163,10 +163,22 @@ export default function FAQSection() {
   const [voiceNotePlaying, setVoiceNotePlaying] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
 
-  // Auto-scroll chat feed to bottom on new message
+  // Auto-scroll chat feed container to bottom ONLY on user interaction (not initial page load)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (messagesEndRef.current && messagesEndRef.current.parentElement) {
+      const container = messagesEndRef.current.parentElement;
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [messages, isTyping]);
 
   const triggerHaptic = () => {
