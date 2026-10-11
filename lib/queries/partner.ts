@@ -1,4 +1,3 @@
-import { supabase } from '@/lib/supabase';
 import { createServerClient } from '@/lib/supabase-server';
 import { 
   Venue, 
@@ -19,6 +18,7 @@ export async function getPublicVenueById(
   idOrSlug: string
 ): Promise<{ data: Venue | null; error: string | null }> {
   try {
+    const supabase = await createServerClient();
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
     
     // 1. First attempt: Look up in venues table
@@ -107,6 +107,7 @@ export async function getPartnerVenuesForUser(
   userId: string
 ): Promise<Array<{ venue: Venue; role: string }>> {
   try {
+    const supabase = await createServerClient();
     // 1. Direct role memberships
     const { data: roles, error: rolesError } = await supabase
       .from('venue_roles')
@@ -158,7 +159,7 @@ export async function checkVenueAuthorization(
     // Check admin
     const { data: { user } } = await serverClient.auth.getUser();
     if (user?.email) {
-      const { data: adminRow } = await supabase
+      const { data: adminRow } = await serverClient
         .from('admin_users')
         .select('id')
         .ilike('email', user.email)
@@ -170,7 +171,7 @@ export async function checkVenueAuthorization(
     }
 
     // Check venue_roles
-    const { data: roleRow } = await supabase
+    const { data: roleRow } = await serverClient
       .from('venue_roles')
       .select('role')
       .eq('venue_id', venueId)
@@ -182,7 +183,7 @@ export async function checkVenueAuthorization(
     }
 
     // Check claimed_by on venue
-    const { data: venueRow } = await supabase
+    const { data: venueRow } = await serverClient
       .from('venues')
       .select('claimed_by')
       .eq('id', venueId)
@@ -211,7 +212,8 @@ export async function getPartnerVenue(
     return { data: null, error: 'Unauthorized to manage this venue' };
   }
 
-  const { data, error } = await supabase
+  const serverClient = await createServerClient();
+  const { data, error } = await serverClient
     .from('venues')
     .select('*, districts(name, slug)')
     .eq('id', venueId)
@@ -231,6 +233,7 @@ export async function getPartnerVenue(
 export async function getVenueMenuItems(
   venueId: string
 ): Promise<MenuItem[]> {
+  const supabase = await createServerClient();
   const { data, error } = await supabase
     .from('menu_items')
     .select('*')
@@ -249,6 +252,7 @@ export async function getVenueMenuItems(
 export async function getVenuePhotos(
   venueId: string
 ): Promise<VenuePhoto[]> {
+  const supabase = await createServerClient();
   const { data, error } = await supabase
     .from('venue_photos')
     .select('*')
@@ -270,6 +274,7 @@ export async function getNearbyVenues(
   limit: number = 3
 ): Promise<Venue[]> {
   try {
+    const supabase = await createServerClient();
     let query = supabase
       .from('venues')
       .select('*, districts(name, slug)')
@@ -446,6 +451,7 @@ export async function getVenueDemandActivity(
   venueId: string
 ): Promise<VenueDemandActivity> {
   try {
+    const supabase = await createServerClient();
     // 1. Count shared plans featuring this spot
     const { count: sharedCount } = await supabase
       .from('shared_plans')
@@ -490,6 +496,7 @@ export async function getVenuePlanningInsights(
   venueId: string
 ): Promise<VenuePlanningInsights> {
   try {
+    const supabase = await createServerClient();
     const { data: plans, error } = await supabase
       .from('shared_plans')
       .select('squad_size, budget, vibe')
@@ -551,6 +558,7 @@ export async function getVenueClaimByUser(
   venueId: string,
   userId: string
 ): Promise<VenueClaim | null> {
+  const supabase = await createServerClient();
   const { data, error } = await supabase
     .from('venue_claims')
     .select('*')

@@ -1,4 +1,3 @@
-import { supabase } from '@/lib/supabase';
 import { createServerClient } from '@/lib/supabase-server';
 
 export interface PulseSquadItem {

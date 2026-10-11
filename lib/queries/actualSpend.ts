@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { createServerClient } from '@/lib/supabase-server';
 
 export interface SpendSummary {
   count: number;
@@ -22,6 +23,7 @@ export interface SpendSummary {
 export async function getSpendSummaryForSpot(
   spotId: string
 ): Promise<SpendSummary | null> {
+  const supabase = await createServerClient();
   const { data, error } = await supabase
     .from('actual_spend_reports')
     .select('actual_total, estimated_total, submitted_at')
@@ -77,6 +79,7 @@ export async function getRecentSpendReports(limit: number = 20): Promise<
     submitted_at: string;
   }>
 > {
+  const supabase = await createServerClient();
   const { data, error } = await supabase
     .from('actual_spend_reports')
     .select('id, spot_id, estimated_total, actual_total, submitted_at')
@@ -109,9 +112,7 @@ export async function getRecentSpendReports(limit: number = 20): Promise<
  * across all spots, and the top spots with the highest variance.
  * Used in the admin dashboard Spend Accuracy section.
  */
-export async function getSpendAccuracyStats(serverClient: {
-  from: (table: string) => ReturnType<typeof supabase.from>;
-}): Promise<{
+export async function getSpendAccuracyStats(serverClient: Pick<SupabaseClient, 'from'>): Promise<{
   submissionsThisWeek: number;
   medianAccuracyPct: number;
   highVarianceSpots: Array<{ spot_id: string | null; variance_pct: number; count: number }>;
@@ -120,10 +121,12 @@ export async function getSpendAccuracyStats(serverClient: {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
   const [weekResult, allResult] = await Promise.all([
-    (serverClient.from('actual_spend_reports') as ReturnType<typeof supabase.from>)
+    serverClient
+      .from('actual_spend_reports')
       .select('id', { count: 'exact', head: true })
       .gte('submitted_at', sevenDaysAgo.toISOString()),
-    (serverClient.from('actual_spend_reports') as ReturnType<typeof supabase.from>)
+    serverClient
+      .from('actual_spend_reports')
       .select('spot_id, estimated_total, actual_total')
       .limit(500),
   ]);
