@@ -474,13 +474,6 @@ export default function SavedClient({
           )}
         </section>
       )}
-
-      {/* RECENTLY VIEWED SHELF (Strictly Factual History) */}
-      <RecentlyViewedRow
-        className="pt-8 border-t border-[#EAE4DC]"
-        title="Recently Viewed Spots"
-        subtitle="Places you looked at recently on this device. Not saved."
-      />
     </div>
   );
 }

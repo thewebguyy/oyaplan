@@ -24,13 +24,13 @@ export default function SaveForLater({ spot }: { spot: Spot }) {
   return (
     <button
       onClick={handleToggle}
-      aria-label={saved ? "Remove from Saved Plans" : "Save for Later"}
+      aria-label={saved ? "Remove from Saved Spots" : "Save for Later"}
       className={`p-2 min-w-[44px] min-h-[44px] rounded-full border transition-colors tap-feedback flex items-center justify-center ${
         saved 
           ? "bg-brand-green/10 border-brand-green text-brand-green" 
           : "bg-white border-border-default text-text-muted hover:text-text-primary"
       }`}
-      title={saved ? "Remove from Saved Plans" : "Save for Later"}
+      title={saved ? "Remove from Saved Spots" : "Save for Later"}
     >
       {saved ? (
         <BookmarkCheck className="w-5 h-5" />
