@@ -335,6 +335,7 @@ export function PlanActionsShare({
         venueName={venueName}
         squadSize={squadSize}
         totalCost={totalCost}
+        budget={budget}
         foodCost={foodCost}
         transportCost={transportCost}
         startArea={startArea}

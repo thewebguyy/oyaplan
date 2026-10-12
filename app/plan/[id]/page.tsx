@@ -13,6 +13,7 @@ import { PlanWhyThisWorks } from '@/components/plan/PlanWhyThisWorks';
 import { PlanActionsShare } from '@/components/plan/PlanActionsShare';
 import { PlanActualSpendPrompt } from '@/components/plan/PlanActualSpendPrompt';
 import { PlanMobileStickyBar } from '@/components/plan/PlanMobileStickyBar';
+import { BudgetModeProvider } from '@/components/plan/BudgetModeContext';
 import { TrustStatus } from '@/components/ui/trust-badge';
 import { SharedPlanRow, Venue, MenuItem } from '@/lib/types';
 import { LocationService } from '@/lib/services/LocationService';
@@ -161,6 +162,8 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           startAreaName={startAreaName}
         />
 
+        {/* 3-5 share budget-mode state (Street-Smart / Soft Life) */}
+        <BudgetModeProvider>
         {/* 3. Cost Breakdown & Landing Total */}
         <PlanCostBreakdown
           foodCost={plan.food_cost || 0}
@@ -202,6 +205,7 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
           planCode={plan.plan_code}
           venuePhone={venue?.contact_number}
         />
+        </BudgetModeProvider>
 
         {/* 6. Post-Outing Actual Spend Reporting */}
         <div id="actual-spend">

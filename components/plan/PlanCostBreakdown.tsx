@@ -6,6 +6,9 @@ import { TransportEstimate } from '@/lib/types';
 import { NairaSplitVisual } from '@/components/cultural/NairaSplitVisual';
 import { RainBufferVisual } from '@/components/cultural/RainBufferVisual';
 import { EmergencyBailoutButton } from './EmergencyBailoutButton';
+import { useBudgetMode } from './BudgetModeContext';
+import { applyBudgetMode, SOFT_LIFE_PER_HEAD_CUSHION } from '@/lib/planning/budgetMode';
+import { triggerHaptic } from '@/lib/ui/haptics';
 
 interface PlanCostBreakdownProps {
   foodCost: number;
@@ -41,15 +44,29 @@ export function PlanCostBreakdown({
   const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
   const [isRainSimulated, setIsRainSimulated] = useState(false);
 
+  const { mode: budgetMode, setMode: setBudgetMode } = useBudgetMode();
+  const modeResult = applyBudgetMode(
+    { foodCost, transportCost, totalCost, squadSize, hasCar },
+    budgetMode
+  );
+  const isSoftLife = budgetMode === 'soft-life';
+  const effectiveTotal = modeResult.effectiveTotal;
+
   const taxesCost = Math.max(0, totalCost - (foodCost + transportCost));
-  const remaining = budget - totalCost;
+  const remaining = budget - effectiveTotal;
 
   // Surge Simulator (Worst-Case Lagos Downpour scenario calculation)
   const simulatedRainTransport = Math.round((transportCost * 1.45) / 500) * 500;
   const surgeBuffer = Math.max(0, simulatedRainTransport - transportCost);
-  const simulatedTotalCost = totalCost + surgeBuffer;
+  const simulatedTotalCost = effectiveTotal + surgeBuffer;
 
-  const perPersonCost = Math.round(totalCost / Math.max(1, squadSize));
+  const perPersonCost = modeResult.effectivePerHead;
+
+  const selectMode = (next: typeof budgetMode) => {
+    if (next === budgetMode) return;
+    triggerHaptic('selection');
+    setBudgetMode(next);
+  };
 
   return (
     <div className="relative w-full transition-all duration-300 font-mono space-y-4">
@@ -79,6 +96,51 @@ export function PlanCostBreakdown({
           </p>
           <p className="text-[10px] text-[#777777] font-medium">
             Squad of {squadSize} • Departing from {startAreaName}
+          </p>
+        </div>
+
+        {/* Budget Mode Selector */}
+        <div className="space-y-2">
+          <div
+            role="radiogroup"
+            aria-label="Budget mode"
+            className="bg-[#F5F5F0] p-1.5 rounded-2xl border-2 border-[#111111] grid grid-cols-2 gap-1.5 shadow-[2px_2px_0px_0px_#111111]"
+          >
+            <button
+              id="budget-mode-street-smart"
+              type="button"
+              role="radio"
+              aria-checked={!isSoftLife}
+              onClick={() => selectMode('street-smart')}
+              className={`py-2 px-2 rounded-xl text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 cursor-pointer tap-feedback ${
+                !isSoftLife
+                  ? 'bg-[#111111] text-[#F9E828] shadow-[2px_2px_0px_0px_#111111]'
+                  : 'text-[#666666] hover:text-[#111111]'
+              }`}
+            >
+              <span>⚡ Street-Smart</span>
+              <span className="text-[10px] opacity-75 font-normal">Lean</span>
+            </button>
+            <button
+              id="budget-mode-soft-life"
+              type="button"
+              role="radio"
+              aria-checked={isSoftLife}
+              onClick={() => selectMode('soft-life')}
+              className={`py-2 px-2 rounded-xl text-xs font-mono font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 cursor-pointer tap-feedback ${
+                isSoftLife
+                  ? 'bg-[#008751] text-white shadow-[2px_2px_0px_0px_#111111]'
+                  : 'text-[#666666] hover:text-[#111111]'
+              }`}
+            >
+              <span>👑 Soft Life</span>
+              <span className="text-[10px] opacity-75 font-normal">Padded</span>
+            </button>
+          </div>
+          <p className="text-[10px] text-[#777777] font-medium italic text-center px-1" aria-live="polite">
+            {isSoftLife
+              ? 'Adds your own cushion for traffic surge and an extra drink each. Venue prices are unchanged.'
+              : 'Lean and direct: menu baseline, standard ride corridor, mandatory charges.'}
           </p>
         </div>
 
@@ -133,6 +195,24 @@ export function PlanCostBreakdown({
             </div>
           )}
 
+          {/* Soft Life Cushion (user padding, never merged into audited lines) */}
+          {isSoftLife && modeResult.cushionTotal > 0 && (
+            <div className="flex items-center justify-between py-1 border-b border-dashed border-[#111111]/15 animate-in fade-in duration-200">
+              <div className="flex flex-col text-left">
+                <span className="font-bold text-[#008751]">Soft Life Cushion</span>
+                <span className="text-[10px] text-[#777777]">
+                  Your padding, not a venue charge:{' '}
+                  {modeResult.transportCushion > 0 &&
+                    `+₦${modeResult.transportCushion.toLocaleString('en-NG')} ride surge • `}
+                  ₦{SOFT_LIFE_PER_HEAD_CUSHION.toLocaleString('en-NG')} × {Math.max(1, squadSize)} extras
+                </span>
+              </div>
+              <span className="font-black text-[#008751] tabular-nums shrink-0">
+                +₦{modeResult.cushionTotal.toLocaleString('en-NG')}
+              </span>
+            </div>
+          )}
+
           {/* Perforated Cut to Total */}
           <div className="border-t-2 border-dashed border-[#111111] my-3" />
 
@@ -147,7 +227,7 @@ export function PlanCostBreakdown({
               </span>
             </div>
             <span className="font-black text-2xl sm:text-3xl text-[#111111] tabular-nums">
-              ~₦{totalCost.toLocaleString('en-NG')}
+              ~₦{effectiveTotal.toLocaleString('en-NG')}
             </span>
           </div>
 
@@ -255,7 +335,7 @@ export function PlanCostBreakdown({
           {squadSize > 1 && (
             <div className="pt-2">
               <NairaSplitVisual
-                totalCost={totalCost}
+                totalCost={effectiveTotal}
                 squadSize={squadSize}
               />
             </div>

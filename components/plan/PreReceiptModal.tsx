@@ -4,6 +4,8 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Copy, Check, MessageSquare, X, ShieldCheck, Sparkles, Printer } from 'lucide-react';
 import { triggerHaptic } from '@/lib/ui/haptics';
+import { useBudgetMode } from './BudgetModeContext';
+import { applyBudgetMode, getReceiptOutcome } from '@/lib/planning/budgetMode';
 
 interface PreReceiptModalProps {
   isOpen: boolean;
@@ -11,6 +13,8 @@ interface PreReceiptModalProps {
   venueName: string;
   squadSize: number;
   totalCost: number;
+  /** User's target budget for the whole squad. Enables the outcome stamp. */
+  budget?: number;
   foodCost?: number;
   transportCost?: number;
   startArea?: string;
@@ -23,6 +27,7 @@ export function PreReceiptModal({
   venueName,
   squadSize,
   totalCost,
+  budget,
   foodCost,
   transportCost,
   startArea = 'Lekki Phase 1',
@@ -31,12 +36,23 @@ export function PreReceiptModal({
   const [copiedText, setCopiedText] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const receiptRef = useRef<HTMLDivElement>(null);
+  const { mode: budgetMode } = useBudgetMode();
 
-  const perHead = Math.ceil(totalCost / Math.max(1, squadSize));
+  const modeResult = applyBudgetMode(
+    { foodCost: foodCost ?? 0, transportCost: transportCost ?? 0, totalCost, squadSize },
+    budgetMode
+  );
+  const isSoftLife = budgetMode === 'soft-life';
+  const effectiveTotal = modeResult.effectiveTotal;
+  const outcome = getReceiptOutcome(budget, effectiveTotal);
+  const modeLabel = isSoftLife ? 'SOFT LIFE (PADDED)' : 'STREET-SMART (LEAN)';
+  const formattedCushion = modeResult.cushionTotal.toLocaleString('en-NG');
+
+  const perHead = modeResult.effectivePerHead;
   const estimatedFood = foodCost || Math.round(totalCost * 0.7);
   const estimatedTransport = transportCost || Math.round(totalCost * 0.3);
 
-  const formattedTotal = totalCost.toLocaleString('en-NG');
+  const formattedTotal = effectiveTotal.toLocaleString('en-NG');
   const formattedPerHead = perHead.toLocaleString('en-NG');
   const formattedFood = estimatedFood.toLocaleString('en-NG');
   const formattedTransport = estimatedTransport.toLocaleString('en-NG');
@@ -60,6 +76,7 @@ export function PreReceiptModal({
       `==============================\n` +
       `DATE: ${currentDateStr} ${currentTimeStr} WAT\n` +
       `REF: #${planCode}\n` +
+      `MODE: ${modeLabel}\n` +
       `------------------------------\n` +
       `VENUE: ${venueName.toUpperCase()}\n` +
       `HUB: ${startArea.toUpperCase()}\n` +
@@ -67,13 +84,16 @@ export function PreReceiptModal({
       `------------------------------\n` +
       `FOOD & DRINKS: ₦${formattedFood}\n` +
       `ROUND-TRIP UBER: ₦${formattedTransport}\n` +
+      (isSoftLife && modeResult.cushionTotal > 0
+        ? `SOFT LIFE CUSHION: ₦${formattedCushion}\n`
+        : '') +
       `COVER / SURPRISE FEES: ₦0\n` +
       `------------------------------\n` +
       `TOTAL DAMAGE: ₦${formattedTotal}\n` +
       `DAMAGE PER HEAD: ₦${formattedPerHead}\n` +
       `==============================\n` +
-      `  [ STAMP: OYAPLAN CERTIFIED ]\n` +
-      `  NO EXTRA BILLING ALLOWED!\n` +
+      `  [ STAMP: ${outcome.title} ]\n` +
+      `  ${outcome.subtitle}\n` +
       `==============================\n` +
       `Plan & lock it: https://oyaplan.vercel.app`
     );
@@ -166,6 +186,15 @@ export function PreReceiptModal({
         ctx.textAlign = 'right';
         ctx.fillText(`NGN 0 (VERIFIED)`, width - 30, 270);
 
+        if (isSoftLife && modeResult.cushionTotal > 0) {
+          ctx.fillStyle = '#008751';
+          ctx.textAlign = 'left';
+          ctx.fillText(`SOFT LIFE CUSHION:`, 30, 288);
+          ctx.textAlign = 'right';
+          ctx.fillText(`NGN ${formattedCushion}`, width - 30, 288);
+          ctx.fillStyle = '#111111';
+        }
+
         ctx.beginPath();
         ctx.lineWidth = 3;
         ctx.setLineDash([]);
@@ -186,21 +215,30 @@ export function PreReceiptModal({
         ctx.textAlign = 'right';
         ctx.fillText(`NGN ${formattedPerHead}`, width - 30, 365);
 
-        // Big Stamp
+        // Outcome Stamp (honest relative to the user's budget)
         ctx.save();
         ctx.translate(width / 2, 450);
-        ctx.rotate((-12 * Math.PI) / 180);
-        ctx.strokeStyle = '#D92D20';
+        ctx.rotate((-10 * Math.PI) / 180);
+        ctx.fillStyle = outcome.fill;
+        ctx.fillRect(-175, -35, 350, 70);
+        ctx.strokeStyle = outcome.stroke;
         ctx.lineWidth = 4;
-        ctx.strokeRect(-160, -35, 320, 70);
+        ctx.setLineDash([6, 3]);
+        ctx.strokeRect(-175, -35, 350, 70);
+        ctx.setLineDash([]);
 
-        ctx.fillStyle = '#D92D20';
-        ctx.font = '900 16px "Space Mono", sans-serif';
+        ctx.fillStyle = outcome.stroke;
+        ctx.font = '900 17px "Space Mono", monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('OYAPLAN CERTIFIED', 0, -10);
-        ctx.font = 'bold 12px "Space Mono", sans-serif';
-        ctx.fillText('NO EXTRA BILLING ALLOWED!', 0, 15);
+        ctx.fillText(`★ ${outcome.title} ★`, 0, -8);
+        ctx.font = 'bold 11px "Space Mono", monospace';
+        ctx.fillText(outcome.subtitle.replace('₦', 'NGN '), 0, 16);
         ctx.restore();
+
+        ctx.font = 'bold 10px "Space Mono", monospace';
+        ctx.fillStyle = '#666666';
+        ctx.textAlign = 'center';
+        ctx.fillText(`MODE: ${modeLabel}`, width / 2, 510);
 
         // Footer Barcode visual
         ctx.fillStyle = '#111111';
@@ -291,6 +329,10 @@ export function PreReceiptModal({
                 <span>HEADCOUNT:</span>
                 <span>{squadSize} PAX</span>
               </div>
+              <div className="flex justify-between text-[#555555]">
+                <span>MODE:</span>
+                <span>{modeLabel}</span>
+              </div>
             </div>
 
             <div className="border-t border-dashed border-[#111111]/30 pt-2 space-y-1">
@@ -306,6 +348,12 @@ export function PreReceiptModal({
                 <span>HIDDEN SURPRISES:</span>
                 <span className="font-bold">₦0 (VERIFIED)</span>
               </div>
+              {isSoftLife && modeResult.cushionTotal > 0 && (
+                <div className="flex justify-between text-[#008751]">
+                  <span>SOFT LIFE CUSHION:</span>
+                  <span className="font-bold">+₦{formattedCushion}</span>
+                </div>
+              )}
             </div>
 
             {/* Total Section */}
@@ -320,15 +368,20 @@ export function PreReceiptModal({
               </div>
             </div>
 
-            {/* THE BIG STAMP */}
+            {/* THE OUTCOME STAMP */}
             <div className="relative py-4 flex items-center justify-center">
-              <div className="transform -rotate-6 border-4 border-red-600 rounded-xl px-4 py-2 text-center text-red-600 bg-red-50/80 shadow-md">
+              <div
+                data-testid="receipt-outcome-stamp"
+                data-outcome={outcome.kind}
+                className="transform -rotate-6 border-4 border-dashed rounded-xl px-4 py-2 text-center shadow-md"
+                style={{ borderColor: outcome.stroke, color: outcome.stroke, backgroundColor: outcome.fill }}
+              >
                 <div className="font-black text-sm uppercase tracking-widest flex items-center justify-center gap-1">
-                  <ShieldCheck className="w-4 h-4 text-red-600 inline" />
-                  <span>OYA PLAN CERTIFIED</span>
+                  <ShieldCheck className="w-4 h-4 inline" />
+                  <span>{outcome.title}</span>
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-wider">
-                  NO BILLING ALLOWED ON OUTING
+                  {outcome.subtitle}
                 </div>
               </div>
             </div>
