@@ -4,6 +4,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { Toaster } from "@/components/ui/sonner";
 import AuthModal from "@/components/AuthModal";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://oyaplan.com"),
@@ -90,6 +91,7 @@ export default function RootLayout({
             </OriginProvider>
           </AuthProvider>
         </AnalyticsProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
