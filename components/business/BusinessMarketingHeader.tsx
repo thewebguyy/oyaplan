@@ -214,7 +214,7 @@ export function BusinessMarketingHeader() {
           {/* Business Get Started CTA */}
           <Link
             href="/business/claim"
-            className="h-9 sm:h-10 px-4 sm:px-5 bg-[#008751] hover:bg-[#007043] text-white text-xs font-bold font-mono rounded-xl flex items-center gap-2 transition-all shadow-xs tap-feedback cursor-pointer uppercase tracking-wider"
+            className="h-9 sm:h-10 px-4 sm:px-5 bg-[#E59A28] hover:bg-[#D48B1B] text-[#0D0E11] text-xs font-bold font-mono rounded-xl flex items-center gap-2 transition-all shadow-sm tap-feedback cursor-pointer uppercase tracking-wider"
           >
             <span>CLAIM VENUE</span>
           </Link>
