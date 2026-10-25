@@ -116,10 +116,7 @@ export async function getPartnerVenuesForUser(
 
     if (rolesError) {
       console.error('Error fetching partner venues:', rolesError);
-      return [];
-    }
-
-    if (roles && roles.length > 0) {
+    } else if (roles && roles.length > 0) {
       return roles.map((r: any) => ({
         venue: r.venues as Venue,
         role: r.role || 'manager'
@@ -139,6 +136,82 @@ export async function getPartnerVenuesForUser(
       }));
     }
 
+    // 3. Admin / Owner Simulation: If user is registered in admin_users or has admin role,
+    // grant them preview access to catalog venues on The Floor
+    const { data: { user } } = await supabase.auth.getUser();
+    let isAdmin = false;
+    if (user?.email) {
+      const { data: adminRow } = await supabase
+        .from('admin_users')
+        .select('id, role')
+        .ilike('email', user.email)
+        .maybeSingle();
+      if (adminRow) isAdmin = true;
+    }
+    if (!isAdmin) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+      if (profile?.role === 'admin') isAdmin = true;
+    }
+
+    if (isAdmin) {
+      const { data: adminVenues } = await supabase
+        .from('venues')
+        .select('*, districts(name, slug)')
+        .order('name', { ascending: true })
+        .limit(50);
+
+      if (adminVenues && adminVenues.length > 0) {
+        return adminVenues.map((v: any) => ({
+          venue: v as Venue,
+          role: 'owner (Admin Simulation)'
+        }));
+      }
+
+      // If venues table has not yet populated, fallback to spots
+      const { data: spots } = await supabase
+        .from('spots')
+        .select('*, areas(*)')
+        .eq('active', true)
+        .order('name', { ascending: true })
+        .limit(50);
+
+      if (spots && spots.length > 0) {
+        return spots.map((spot: any) => ({
+          venue: {
+            id: spot.id,
+            district_id: spot.area_id || '',
+            name: spot.name,
+            address: spot.address || 'Lagos, Nigeria',
+            description: spot.description || undefined,
+            vibe_tags: spot.vibe_tags || [],
+            category: (spot.category as any) || 'restaurant',
+            subcategory: spot.subcategory || null,
+            typical_duration_hours: spot.typical_duration_hours || 2,
+            instagram_handle: spot.instagram_handle || null,
+            is_featured: spot.is_featured || false,
+            active: spot.active !== false,
+            cover_url: spot.cover_url || spot.image_url || undefined,
+            gallery_urls: spot.gallery_urls || [],
+            districts: spot.areas ? { name: spot.areas.name, slug: spot.areas.slug } : { name: 'Lagos', slug: 'lagos' },
+            vat_pct: 7.5,
+            service_charge_pct: 10,
+            minimum_spend: 0,
+            partner_state: 'unclaimed',
+            operational_status: 'community_verified',
+            derived_typical_cost: spot.price_per_person || 0,
+            derived_price_tier: spot.price_tier || 2,
+            computed_confidence_score: 80,
+            confidence_reasons: ['Community Indexed Spot'],
+          } as Venue,
+          role: 'owner (Admin Simulation)'
+        }));
+      }
+    }
+
     return [];
   } catch {
     return [];
@@ -156,7 +229,7 @@ export async function checkVenueAuthorization(
   try {
     const serverClient = await createServerClient();
     
-    // Check admin
+    // 1. Check admin
     const { data: { user } } = await serverClient.auth.getUser();
     if (user?.email) {
       const { data: adminRow } = await serverClient
@@ -170,7 +243,7 @@ export async function checkVenueAuthorization(
       }
     }
 
-    // Check venue_roles
+    // 2. Check venue_roles
     const { data: roleRow } = await serverClient
       .from('venue_roles')
       .select('role')
@@ -182,7 +255,7 @@ export async function checkVenueAuthorization(
       return { authorized: true, role: roleRow.role };
     }
 
-    // Check claimed_by on venue
+    // 3. Check claimed_by on venue
     const { data: venueRow } = await serverClient
       .from('venues')
       .select('claimed_by')
@@ -201,29 +274,27 @@ export async function checkVenueAuthorization(
 
 /**
  * getPartnerVenue
- * Fetches venue ensuring server-side access control
+ * Fetches venue ensuring server-side access control with fallback to spots
  */
 export async function getPartnerVenue(
   venueId: string,
   userId: string
 ): Promise<{ data: Venue | null; error: string | null; role?: string }> {
-  const auth = await checkVenueAuthorization(venueId, userId);
+  // 1. Resiliently fetch venue by UUID, slug, name, or spots table
+  const { data: venue, error: venueError } = await getPublicVenueById(venueId);
+
+  if (venueError || !venue) {
+    return { data: null, error: venueError || 'Venue not found' };
+  }
+
+  // 2. Check authorization on canonical venue.id
+  const auth = await checkVenueAuthorization(venue.id, userId);
+
   if (!auth.authorized) {
     return { data: null, error: 'Unauthorized to manage this venue' };
   }
 
-  const serverClient = await createServerClient();
-  const { data, error } = await serverClient
-    .from('venues')
-    .select('*, districts(name, slug)')
-    .eq('id', venueId)
-    .single();
-
-  if (error || !data) {
-    return { data: null, error: error?.message || 'Venue not found' };
-  }
-
-  return { data: data as unknown as Venue, error: null, role: auth.role };
+  return { data: venue, error: null, role: auth.role };
 }
 
 /**

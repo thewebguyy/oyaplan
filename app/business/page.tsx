@@ -19,12 +19,14 @@ export default async function BusinessIndexPage() {
   if (identity.type === 'authenticated' && identity.profile) {
     const venues = await getPartnerVenuesForUser(identity.profile.id);
 
-    if (venues.length === 1 && venues[0]?.venue?.id) {
+    const isAdminUser = identity.profile.role === 'admin' || venues.some(v => v.role.includes('Admin'));
+
+    if (venues.length === 1 && venues[0]?.venue?.id && !isAdminUser) {
       redirect(`/business/${venues[0].venue.id}`);
       return null;
     }
 
-    if (venues.length > 1) {
+    if (venues.length >= 1) {
       return (
         <div className="min-h-[100dvh] bg-[#090A0D] text-white antialiased flex flex-col font-sans selection:bg-[#008751]/30">
           {/* ── Crisp White Business Header with Original Logo ── */}
@@ -42,30 +44,45 @@ export default async function BusinessIndexPage() {
                 />
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-widest text-[#008751] bg-[#008751]/10 border border-[#008751]/25 px-2.5 py-0.5 rounded-full uppercase">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#008751] animate-pulse" />
-                  THE PULSE
+                  THE FLOOR
                 </span>
               </div>
+
+              {isAdminUser && (
+                <Link
+                  href="/admin/venues"
+                  className="text-[11px] font-mono font-bold text-stone-600 hover:text-black bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-lg border border-stone-200 transition-colors"
+                >
+                  Admin Master Catalog →
+                </Link>
+              )}
             </div>
           </header>
 
           <main className="flex-1 max-w-xl w-full mx-auto py-10 px-4 sm:px-6 space-y-6">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                Your Venues on the Floor
-              </h1>
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                  Venues on The Floor
+                </h1>
+                {isAdminUser && (
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider bg-emerald-500/10 text-[#00E575] border border-emerald-500/20">
+                    Admin Preview Mode
+                  </span>
+                )}
+              </div>
               <p className="text-xs sm:text-sm text-white/60">
-                Select a venue to enter The Pulse command center.
+                Select a venue to enter live table management, guestlists, and pulse telemetry.
               </p>
             </div>
 
             <div className="space-y-3">
               {venues.map(({ venue, role }) => (
-                <Link
+                <div
                   key={venue.id}
-                  href={`/business/${venue.id}`}
-                  className="block bg-[#121418] rounded-2xl border border-[#232732] p-5 shadow-lg hover:border-[#008751] transition-all tap-feedback"
+                  className="bg-[#121418] rounded-2xl border border-[#232732] p-5 shadow-lg hover:border-[#008751]/60 transition-all space-y-4"
                 >
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1 min-w-0">
                       <h2 className="text-base font-bold text-white truncate">
                         {venue.name}
@@ -75,9 +92,25 @@ export default async function BusinessIndexPage() {
                         {role}
                       </span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-[#00E575] shrink-0" />
                   </div>
-                </Link>
+
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#232732]">
+                    <Link
+                      href={`/business/${venue.id}/reservations`}
+                      className="px-3 py-2 rounded-xl bg-[#008751] hover:bg-[#009E5F] text-white text-xs font-bold font-mono text-center transition-all flex items-center justify-center gap-1.5 tap-feedback"
+                    >
+                      <span>Access The Floor</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                    <Link
+                      href={`/business/${venue.id}`}
+                      className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold font-mono text-center transition-all flex items-center justify-center gap-1.5 tap-feedback"
+                    >
+                      <span>The Pulse</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-white/60" />
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
           </main>

@@ -36,7 +36,9 @@ export default function BusinessAuthBridge() {
     }
   }, [session, returnTo, router]);
 
+  const [authMethod, setAuthMethod] = useState<'password' | 'otp'>('password');
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -80,6 +82,47 @@ export default function BusinessAuthBridge() {
         setError(signInError.message || "Failed to send access link. Please try again.");
       } else {
         setSuccess(true);
+      }
+    } catch {
+      setError("Unable to connect right now. Please check your internet connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) {
+      setError("Please enter your venue management or operator email address.");
+      return;
+    }
+    if (!password) {
+      setError("Please enter your password.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    trackEvent("auth_initiated", {
+      category: "Activation",
+      source: "business_login_password",
+      path: window.location.pathname,
+      version: "1.0",
+    });
+
+    try {
+      const { error: signInError } = await supabaseBrowser.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message || "Invalid credentials. Please verify your email and password.");
+      } else {
+        const target = returnTo.startsWith("/business") ? returnTo : "/business";
+        router.push(target);
+        router.refresh();
       }
     } catch {
       setError("Unable to connect right now. Please check your internet connection.");
@@ -329,12 +372,38 @@ export default function BusinessAuthBridge() {
                   <div className="relative flex items-center justify-center">
                     <div className="w-full border-t border-white/10" />
                     <span className="bg-[#12151B] px-3 text-[10px] font-sans font-bold uppercase tracking-widest text-white/50 absolute">
-                      OR WORK EMAIL
+                      OR DIRECT ACCESS
                     </span>
                   </div>
 
-                  {/* High-Contrast Accessible Email Form */}
-                  <form onSubmit={handleEmailSubmit} className="space-y-4">
+                  {/* Auth Method Switcher Tabs */}
+                  <div className="flex rounded-xl bg-black/40 border border-white/10 p-1">
+                    <button
+                      type="button"
+                      onClick={() => { setAuthMethod('password'); setError(null); }}
+                      className={`flex-1 py-2 text-xs font-mono font-bold rounded-lg transition-all ${
+                        authMethod === 'password'
+                          ? 'bg-[#008751] text-white shadow-sm'
+                          : 'text-white/60 hover:text-white'
+                      }`}
+                    >
+                      Password Access
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setAuthMethod('otp'); setError(null); }}
+                      className={`flex-1 py-2 text-xs font-mono font-bold rounded-lg transition-all ${
+                        authMethod === 'otp'
+                          ? 'bg-[#008751] text-white shadow-sm'
+                          : 'text-white/60 hover:text-white'
+                      }`}
+                    >
+                      Magic Link / Code
+                    </button>
+                  </div>
+
+                  {/* High-Contrast Accessible Form */}
+                  <form onSubmit={authMethod === 'password' ? handlePasswordSubmit : handleEmailSubmit} className="space-y-4">
                     <div className="space-y-2 text-left">
                       <label htmlFor="business-email" className="block text-xs font-semibold text-white/90">
                         Venue Management Email
@@ -350,6 +419,23 @@ export default function BusinessAuthBridge() {
                       />
                     </div>
 
+                    {authMethod === 'password' && (
+                      <div className="space-y-2 text-left animate-in fade-in duration-150">
+                        <label htmlFor="business-password" className="block text-xs font-semibold text-white/90">
+                          Password
+                        </label>
+                        <input
+                          id="business-password"
+                          type="password"
+                          required
+                          placeholder="••••••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full h-13 rounded-xl bg-black/50 border border-white/20 focus:border-[#00E575] focus:bg-black/70 focus:ring-2 focus:ring-[#00E575]/20 text-sm text-white font-medium px-4 outline-none transition-all placeholder:text-white/60"
+                        />
+                      </div>
+                    )}
+
                     {/* Primary CTA with Smooth Micro-Interaction */}
                     <button
                       type="submit"
@@ -360,7 +446,7 @@ export default function BusinessAuthBridge() {
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
                         <>
-                          <span>Enter The Floor</span>
+                          <span>{authMethod === 'password' ? 'Sign In & Enter The Floor' : 'Send Access Code'}</span>
                           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </>
                       )}
