@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Flame,
   Check,
+  Sparkles,
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase";
 import { sanitizeReturnTo } from "@/lib/utils/returnTo";
@@ -453,18 +454,21 @@ export default function BusinessAuthBridge() {
                     </button>
                   </form>
 
-                  {/* Claim Footnote */}
+                  {/* Direct Entry to The Floor without claim barrier */}
                   <div className="pt-3 border-t border-white/10 text-center space-y-2">
-                    <p className="text-xs text-white/60">
-                      Haven&apos;t claimed your venue yet?
-                    </p>
                     <Link
-                      href="/business/claim"
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#00E575] hover:text-[#33FFA0] transition-colors"
+                      href="/business"
+                      className="w-full py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono font-bold text-[#00E575] hover:text-[#33FFA0] transition-colors flex items-center justify-center gap-1.5 tap-feedback"
                     >
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>Claim your Lagos venue on the floor →</span>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Enter The Floor Directly (No Claim Needed) →</span>
                     </Link>
+                    <p className="text-[11px] text-white/50">
+                      Want to officially register your venue?{" "}
+                      <Link href="/business/claim" className="text-white/70 hover:text-white underline">
+                        Claim spot
+                      </Link>
+                    </p>
                   </div>
 
                 </div>

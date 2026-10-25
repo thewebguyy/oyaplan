@@ -204,7 +204,7 @@ export function BusinessMarketingHeader() {
         <div className="flex items-center gap-2.5 sm:gap-3">
           {/* Access The Floor */}
           <Link
-            href="/login/business"
+            href="/business"
             className="flex items-center gap-1 text-xs font-mono font-bold text-slate-700 hover:text-[#008751] transition-colors px-3 py-2 rounded-xl hover:bg-black/5 tap-feedback"
             title="Access The Floor"
           >
@@ -242,7 +242,7 @@ export function BusinessMarketingHeader() {
                   </p>
                 </div>
                 <Link
-                  href="/login/business"
+                  href="/business"
                   onClick={() => setUtilityMenuOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-white hover:bg-white/10 rounded-xl transition-colors font-mono"
                 >
@@ -547,7 +547,7 @@ export function BusinessMarketingHeader() {
             </Link>
 
             <Link
-              href="/login/business"
+              href="/business"
               onClick={() => setMobileDrawerOpen(false)}
               className="w-full h-12 bg-slate-100 text-slate-900 font-bold rounded-xl flex items-center justify-center gap-2"
             >

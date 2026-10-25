@@ -268,12 +268,18 @@ export async function checkVenueAuthorization(
     // 3. Check claimed_by on venue
     const { data: venueRow } = await serverClient
       .from('venues')
-      .select('claimed_by')
+      .select('claimed_by, partner_state')
       .eq('id', venueId)
       .maybeSingle();
 
-    if (venueRow && venueRow.claimed_by === userId) {
-      return { authorized: true, role: 'owner' };
+    if (venueRow) {
+      if (venueRow.claimed_by === userId) {
+        return { authorized: true, role: 'owner' };
+      }
+      // If venue is unclaimed or community indexed, allow authenticated user floor operator preview access
+      if (!venueRow.claimed_by || venueRow.partner_state === 'unclaimed') {
+        return { authorized: true, role: 'operator_preview' };
+      }
     }
 
     return { authorized: false };
@@ -301,6 +307,11 @@ export async function getPartnerVenue(
   const auth = await checkVenueAuthorization(venue.id, userId);
 
   if (!auth.authorized) {
+    // If the venue is not owned by someone else, grant authenticated user operator preview access
+    // so they can access The Floor directly without claiming first!
+    if (!venue.claimed_by || venue.partner_state === 'unclaimed') {
+      return { data: venue, error: null, role: 'operator (Floor Access)' };
+    }
     return { data: null, error: 'Unauthorized to manage this venue' };
   }
 
@@ -862,5 +873,47 @@ export async function getVenuesForClaimSearch(): Promise<Array<{
   } catch (err) {
     console.error('Error fetching venues for claim search:', err);
     return [];
+  }
+}
+
+/**
+ * getDefaultFloorVenue
+ * Resolves the primary flagship venue for immediate access to The Floor without claiming
+ */
+export async function getDefaultFloorVenue(): Promise<Venue | null> {
+  try {
+    // 1. Check for 100 Hours first (flagship 24-hr lounge and floor pioneer)
+    const { data: flagship } = await getPublicVenueById('100-hours');
+    if (flagship) return flagship;
+
+    // 2. Fetch first available venue from venues table
+    const supabase = await createServerClient();
+    const { data: firstVenue } = await supabase
+      .from('venues')
+      .select('*, districts(name, slug)')
+      .eq('active', true)
+      .order('name', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (firstVenue) return firstVenue as unknown as Venue;
+
+    // 3. Fallback to spots
+    const { data: firstSpot } = await supabase
+      .from('spots')
+      .select('*, areas(*)')
+      .eq('active', true)
+      .order('name', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (firstSpot) {
+      const { data: normSpot } = await getPublicVenueById(firstSpot.id);
+      if (normSpot) return normSpot;
+    }
+
+    return null;
+  } catch {
+    return null;
   }
 }

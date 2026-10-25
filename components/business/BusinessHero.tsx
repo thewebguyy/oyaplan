@@ -103,20 +103,20 @@ export function BusinessHero() {
                 </Link>
 
                 <Link
-                  href="/login/business"
+                  href="/business"
                   className="h-12 sm:h-13 px-5 bg-[#17191E] hover:bg-[#20232A] active:scale-[0.98] text-[#F5F2EA] border border-[#272B35] text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all tap-feedback cursor-pointer uppercase tracking-wider"
                 >
                   <ShieldCheck className="w-4 h-4 text-[#10B981]" />
-                  <span>Open Dashboard</span>
+                  <span>Open The Floor</span>
                 </Link>
               </div>
 
               <div>
                 <Link
-                  href="/login/business"
+                  href="/business"
                   className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#8A90A0] hover:text-[#E59A28] transition-colors pt-1"
                 >
-                  <span>Already listed? Edit your menus and house rules →</span>
+                  <span>Already listed? Access The Floor and house rules →</span>
                 </Link>
               </div>
             </div>
