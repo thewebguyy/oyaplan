@@ -30,5 +30,11 @@ export const PLANNING_GUIDES: PlanningGuide[] = [
     title: "Hidden Foodie Gems (Under ₦15k)",
     description: "Incredible food without the premium price tag. Any area.",
     forgeParams: "?vibe=foodie&budget=15000&squad=2"
+  },
+  {
+    slug: "ikoyi-skyline-rooftops",
+    title: "Ikoyi Rooftops & Skyline Lounges",
+    description: "Curated open-air terraces, city skyline cocktails, and sunset vibes in Ikoyi.",
+    forgeParams: "?vibe=rooftop&budget=35000&area=vi&squad=2"
   }
 ];

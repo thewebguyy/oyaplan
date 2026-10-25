@@ -135,9 +135,12 @@ export function ExploreClient({
       if (q) {
         const nameMatch = spot.name?.toLowerCase().includes(q);
         const areaMatch = spot.areas?.name?.toLowerCase().includes(q) || spot.address?.toLowerCase().includes(q);
-        const catMatch = spot.category?.toLowerCase().includes(q);
+        const catMatch = spot.category?.toLowerCase().includes(q) || spot.subcategory?.toLowerCase().includes(q);
         const vibeMatch = spot.vibe_tags?.some((v) => v.toLowerCase().includes(q));
-        if (!nameMatch && !areaMatch && !catMatch && !vibeMatch) return false;
+        // Smart alias handling (e.g. searching "100 degrees" surfaces 100 Hours and Nine Zero Degrees)
+        const aliasMatch = (q.includes("100 degree") || q.includes("100 degrees") || q.includes("hundred degrees")) &&
+          (spot.name?.toLowerCase().includes("100 hours") || spot.name?.toLowerCase().includes("nine zero"));
+        if (!nameMatch && !areaMatch && !catMatch && !vibeMatch && !aliasMatch) return false;
       }
 
       // 2. Area Filter

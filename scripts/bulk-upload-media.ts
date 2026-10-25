@@ -31,7 +31,7 @@ async function run() {
     console.log(`
     [
       {
-        "venueName": "100 Degrees Rooftop (Ikoyi)",
+        "venueName": "100 Hours (Ikoyi)",
         "heroUrl": "https://...",
         "galleryUrls": ["https://...", "https://..."]
       }

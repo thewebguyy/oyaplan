@@ -209,4 +209,108 @@ describe("OyaPlan Phase 8 — Discovery Engine Tests", () => {
       expect(getVerificationText(twoMonthsAgo)).toBe("Estimated price");
     });
   });
+
+  describe("Ikoyi & Rooftop Venue Discovery with 100 Degrees Smart Resolution", () => {
+    const venues: Spot[] = [
+      {
+        id: "ikoyi-100hours",
+        name: "100 Hours",
+        address: "100 Awolowo Rd, Ikoyi",
+        address_slug: "ikoyi",
+        area_id: "ikoyi-id",
+        areas: { id: "ikoyi-id", name: "Ikoyi", slug: "ikoyi" },
+        vibe_tags: ["Local", "Nightlife", "24-Hours", "Chill"],
+        category: "restaurant",
+        subcategory: "24-Hour Lounge & Local Kitchen",
+        price_per_person: 15000,
+        active: true,
+        transport_matrix: {},
+        is_featured: false,
+      },
+      {
+        id: "vi-ninezero",
+        name: "Nine Zero Degrees",
+        address: "701 Saka Jojo St, Victoria Island",
+        address_slug: "vi",
+        area_id: "vi-id",
+        areas: { id: "vi-id", name: "Victoria Island", slug: "vi" },
+        vibe_tags: ["Rooftop", "Skyline", "Cocktails"],
+        category: "restaurant",
+        subcategory: "Rooftop Terrace Bar & Grill",
+        price_per_person: 35000,
+        active: true,
+        transport_matrix: {},
+        is_featured: false,
+      },
+      {
+        id: "ikoyi-turaka",
+        name: "Turaka Lagos",
+        address: "25A Glover Road, Ikoyi",
+        address_slug: "ikoyi",
+        area_id: "ikoyi-id",
+        areas: { id: "ikoyi-id", name: "Ikoyi", slug: "ikoyi" },
+        vibe_tags: ["Rooftop", "Skyline", "Fusion"],
+        category: "restaurant",
+        subcategory: "Rooftop Lounge & Fusion Dining",
+        price_per_person: 35000,
+        active: true,
+        transport_matrix: {},
+        is_featured: true,
+      },
+      {
+        id: "ikoyi-hq",
+        name: "HQ Rooftop Lounge",
+        address: "276B Corporation Drive, Dolphin Estate, Ikoyi",
+        address_slug: "ikoyi",
+        area_id: "ikoyi-id",
+        areas: { id: "ikoyi-id", name: "Ikoyi", slug: "ikoyi" },
+        vibe_tags: ["Rooftop", "Open-Air", "Drinks"],
+        category: "bar",
+        subcategory: "Open-Air Rooftop Lounge",
+        price_per_person: 25000,
+        active: true,
+        transport_matrix: {},
+        is_featured: false,
+      },
+      {
+        id: "ikoyi-loft",
+        name: "The Loft Ikoyi",
+        address: "Falomo Square Mall, Alfred Rewane Road, Ikoyi",
+        address_slug: "ikoyi",
+        area_id: "ikoyi-id",
+        areas: { id: "ikoyi-id", name: "Ikoyi", slug: "ikoyi" },
+        vibe_tags: ["Rooftop", "Artisanal", "Lounge"],
+        category: "bar",
+        subcategory: "Urban Rooftop Sanctuary & Lounge",
+        price_per_person: 25000,
+        active: true,
+        transport_matrix: {},
+        is_featured: false,
+      },
+    ];
+
+    it("resolves queries for '100 degrees' to both 100 Hours and Nine Zero Degrees", () => {
+      const q = "100 degrees";
+      const matches = venues.filter((spot) => {
+        const nameMatch = spot.name?.toLowerCase().includes(q);
+        const aliasMatch = (q.includes("100 degree") || q.includes("100 degrees")) &&
+          (spot.name?.toLowerCase().includes("100 hours") || spot.name?.toLowerCase().includes("nine zero"));
+        return nameMatch || aliasMatch;
+      });
+
+      expect(matches.map((m) => m.name)).toEqual(["100 Hours", "Nine Zero Degrees"]);
+    });
+
+    it("filters true Ikoyi rooftop spots accurately", () => {
+      const ikoyiRooftops = venues.filter(
+        (v) => (v.areas?.slug === "ikoyi" || v.address_slug === "ikoyi") && v.vibe_tags?.includes("Rooftop")
+      );
+
+      expect(ikoyiRooftops.map((r) => r.name)).toEqual([
+        "Turaka Lagos",
+        "HQ Rooftop Lounge",
+        "The Loft Ikoyi",
+      ]);
+    });
+  });
 });

@@ -96,7 +96,8 @@ export default async function GuideDetailPage({ params }: GuidePageProps) {
               {guide.slug === "ikeja-group-hangout" && "🎉 PLAN AN IKEJA HANGOUT"}
               {guide.slug === "lekki-brunch-spots" && "🥐 PLAN A LEKKI BRUNCH"}
               {guide.slug === "budget-friendly-foodies" && "🎯 PLAN A BUDGET OUTING"}
-              {!["lagos-island-date-night", "ikeja-group-hangout", "lekki-brunch-spots", "budget-friendly-foodies"].includes(guide.slug) && "⚡ START PLANNING WITH THIS GUIDE"}
+              {guide.slug === "ikoyi-skyline-rooftops" && "🍸 PLAN AN IKOYI ROOFTOP NIGHT"}
+              {!["lagos-island-date-night", "ikeja-group-hangout", "lekki-brunch-spots", "budget-friendly-foodies", "ikoyi-skyline-rooftops"].includes(guide.slug) && "⚡ START PLANNING WITH THIS GUIDE"}
             </Button>
           </Link>
         </div>
