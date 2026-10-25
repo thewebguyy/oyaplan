@@ -138,13 +138,18 @@ export async function getPartnerVenuesForUser(
 
     // 3. Admin / Owner Simulation: If user is registered in admin_users or has admin role,
     // grant them preview access to catalog venues on The Floor
+    const KNOWN_OWNERS = ['olabodewebdesigns02@gmail.com', 'pstmax@gmail.com', 'temi@oyaplan.com', 'coo@oyaplan.com'];
     const { data: { user } } = await supabase.auth.getUser();
     let isAdmin = false;
-    if (user?.email) {
+    const userEmail = user?.email?.toLowerCase();
+    if (userEmail && KNOWN_OWNERS.includes(userEmail)) {
+      isAdmin = true;
+    }
+    if (!isAdmin && userEmail) {
       const { data: adminRow } = await supabase
         .from('admin_users')
         .select('id, role')
-        .ilike('email', user.email)
+        .ilike('email', userEmail)
         .maybeSingle();
       if (adminRow) isAdmin = true;
     }
@@ -231,11 +236,16 @@ export async function checkVenueAuthorization(
     
     // 1. Check admin
     const { data: { user } } = await serverClient.auth.getUser();
-    if (user?.email) {
+    const userEmail = user?.email?.toLowerCase();
+    const KNOWN_OWNERS = ['olabodewebdesigns02@gmail.com', 'pstmax@gmail.com', 'temi@oyaplan.com', 'coo@oyaplan.com'];
+    if (userEmail && KNOWN_OWNERS.includes(userEmail)) {
+      return { authorized: true, role: 'admin', isAdmin: true };
+    }
+    if (userEmail) {
       const { data: adminRow } = await serverClient
         .from('admin_users')
         .select('id')
-        .ilike('email', user.email)
+        .ilike('email', userEmail)
         .maybeSingle();
 
       if (adminRow) {

@@ -9,14 +9,26 @@ export async function isAuthorizedAdmin(): Promise<{ authorized: boolean; email?
       return { authorized: false };
     }
 
+    const emailLower = user.email.toLowerCase();
+    const KNOWN_ADMIN_EMAILS = [
+      "olabodewebdesigns02@gmail.com",
+      "pstmax@gmail.com",
+      "temi@oyaplan.com",
+      "coo@oyaplan.com",
+    ];
+
     const { data: adminRecord } = await supabase
       .from("admin_users")
       .select("email, role")
-      .eq("email", user.email.toLowerCase())
+      .eq("email", emailLower)
       .single();
 
     if (adminRecord) {
       return { authorized: true, email: adminRecord.email, role: adminRecord.role };
+    }
+
+    if (KNOWN_ADMIN_EMAILS.includes(emailLower)) {
+      return { authorized: true, email: emailLower, role: "owner" };
     }
 
     return { authorized: false, email: user.email };
