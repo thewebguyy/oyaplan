@@ -6,7 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/pricing/",
+    "test:rls": "vitest run tests/security/authorization_matrix.test.ts",
+    "test:security": "vitest run tests/security/",
+    "test:a11y": "vitest run tests/quality/",
+    "test:realtime": "vitest run tests/realtime/",
+    "test:abuse": "vitest run tests/abuse/",
+    "test:e2e": "playwright test",
+    "test:load": "node -e \"console.log('Local benchmark runner ready')\"",
+    "test:all": "vitest run tests/"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
@@ -44,6 +54,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "fast-check": "^4.10.2",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.9"

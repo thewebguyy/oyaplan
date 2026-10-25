@@ -16,27 +16,27 @@ describe('Transport pricing and canonical temporary rules', () => {
 
   describe('getDepartureBucket()', () => {
     it('identifies weekday peak morning rush hours (7-10 AM)', () => {
-      const mondayMorning = new Date('2026-08-24T08:30:00'); // Monday 8:30 AM
+      const mondayMorning = new Date('2026-08-24T08:30:00+01:00'); // Monday 8:30 AM WAT
       expect(getDepartureBucket(mondayMorning)).toBe('peak');
     });
 
     it('identifies weekday peak evening rush hours (4-8 PM)', () => {
-      const wednesdayEvening = new Date('2026-08-26T17:45:00'); // Wednesday 5:45 PM
+      const wednesdayEvening = new Date('2026-08-26T17:45:00+01:00'); // Wednesday 5:45 PM WAT
       expect(getDepartureBucket(wednesdayEvening)).toBe('peak');
     });
 
     it('identifies Friday night peak hours (>= 8 PM)', () => {
-      const fridayNight = new Date('2026-08-28T21:00:00'); // Friday 9:00 PM
+      const fridayNight = new Date('2026-08-28T21:00:00+01:00'); // Friday 9:00 PM WAT
       expect(getDepartureBucket(fridayNight)).toBe('peak');
     });
 
     it('identifies off-peak weekday afternoon', () => {
-      const tuesdayAfternoon = new Date('2026-08-25T14:00:00'); // Tuesday 2:00 PM
+      const tuesdayAfternoon = new Date('2026-08-25T14:00:00+01:00'); // Tuesday 2:00 PM WAT
       expect(getDepartureBucket(tuesdayAfternoon)).toBe('off-peak');
     });
 
     it('identifies late-night low supply hours', () => {
-      const thursdayLateNight = new Date('2026-08-27T02:00:00'); // Thursday 2:00 AM
+      const thursdayLateNight = new Date('2026-08-27T02:00:00+01:00'); // Thursday 2:00 AM WAT
       expect(getDepartureBucket(thursdayLateNight)).toBe('late-night');
     });
   });

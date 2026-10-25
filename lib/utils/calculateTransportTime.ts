@@ -1,5 +1,6 @@
 import { LocationService } from "@/lib/services/LocationService";
 import { DISPLAY_LOCATIONS } from "@/lib/location/data/lagos_locations";
+import { isLagosWeekdayRushHour } from "./lagosTime";
 
 export interface TransportTimeEstimate {
   distanceKm: number;
@@ -53,9 +54,7 @@ export function calculateTransportTime(
   const distanceKm = LocationService.calculateDistance(fromCoords, toVenueCoordinates);
 
   const d = departureAt ? new Date(departureAt) : new Date();
-  const hour = d.getHours();
-  const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-  const isPeakHour = !isWeekend && ((hour >= 7 && hour <= 10) || (hour >= 16 && hour <= 20));
+  const isPeakHour = isLagosWeekdayRushHour(d);
 
   const speedKmH = isPeakHour ? 12 : 25;
   const baseMinutes = Math.ceil((distanceKm / speedKmH) * 60);

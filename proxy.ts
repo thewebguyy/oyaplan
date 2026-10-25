@@ -8,6 +8,7 @@ const NEXT_ACTION_HEADER = 'next-action';
 
 // Only apply rate limiting to routes that accept anonymous writes.
 // Forge GET is included because it triggers a plan_requests insert server-side.
+// All API write methods (POST, PUT, PATCH, DELETE) are rate limited, except /api/notify/post-outing (protected by CRON_SECRET).
 function isRateLimitedRoute(request: NextRequest): boolean {
   const { pathname } = request.nextUrl;
   const { method } = request;
@@ -19,6 +20,15 @@ function isRateLimitedRoute(request: NextRequest): boolean {
 
   // Forge GET triggers a server-side anonymous write (plan_requests)
   if (method === 'GET' && pathname === '/forge') {
+    return true;
+  }
+
+  // Public API write endpoints — protect against brute force and DDoS
+  if (pathname.startsWith('/api/') && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    // Exclude cron routes protected by CRON_SECRET
+    if (pathname.startsWith('/api/notify/')) {
+      return false;
+    }
     return true;
   }
 

@@ -1,5 +1,6 @@
 import { Coordinates } from "../location/types";
 import { LocationService } from "@/lib/services/LocationService";
+import { isLagosWeekdayRushHour } from "../utils/lagosTime";
 
 export interface RouteTimeEstimate {
   distanceKm: number;
@@ -15,10 +16,8 @@ export class BaseRouteTimeProvider implements RouteTimeProvider {
   async estimate(origin: Coordinates, destination: Coordinates): Promise<RouteTimeEstimate> {
     const distanceKm = LocationService.calculateDistance(origin, destination);
 
-    const now = new Date();
-    const hour = now.getHours();
-    const isWeekend = now.getDay() === 0 || now.getDay() === 6;
-    const isPeakHour = !isWeekend && ((hour >= 7 && hour <= 10) || (hour >= 16 && hour <= 20));
+    // Peak is judged in Lagos time, never the host's timezone.
+    const isPeakHour = isLagosWeekdayRushHour(new Date());
 
     const speedKmH = isPeakHour ? 12 : 25;
     const baseMinutes = Math.ceil((distanceKm / speedKmH) * 60);

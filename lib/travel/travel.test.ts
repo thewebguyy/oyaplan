@@ -16,8 +16,8 @@ describe('Travel Domain Tests', () => {
 
     const estimator = new MatrixTravelEstimator();
 
-    // 1. Mock off-peak hours (e.g., 2:00 PM local time)
-    const offPeakTime = new Date(2026, 7, 3, 14, 0, 0); // Monday 2:00 PM
+    // 1. Mock off-peak hours (2:00 PM Lagos time)
+    const offPeakTime = new Date('2026-08-03T14:00:00+01:00'); // Monday 2:00 PM WAT
     vi.setSystemTime(offPeakTime);
 
     const offPeakEstimate = estimator.estimateTravel(yabaCoords, lekkiCoords);
@@ -28,8 +28,8 @@ describe('Travel Domain Tests', () => {
     // Lekki is Island destination -> canonical temporary transport ₦10,000
     expect(offPeakEstimate.transportCost).toBe(10000);
 
-    // 2. Mock peak hours (e.g., 8:00 AM local time)
-    const peakTime = new Date(2026, 7, 3, 8, 0, 0); // Monday 8:00 AM
+    // 2. Mock peak hours (8:00 AM Lagos time)
+    const peakTime = new Date('2026-08-03T08:00:00+01:00'); // Monday 8:00 AM WAT
     vi.setSystemTime(peakTime);
 
     const peakEstimate = estimator.estimateTravel(yabaCoords, lekkiCoords);

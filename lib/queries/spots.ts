@@ -27,6 +27,29 @@ export async function getForgeSpots(
   }
 }
 
+/**
+ * Fetches a single venue straight from the database for server-side price
+ * recomputation (e.g. sharing a plan). Uses the same public `spots` view and
+ * anon client as getForgeSpots, so RLS applies exactly as it does for planning.
+ * `data: null, error: null` means the venue does not exist / is not visible.
+ */
+export async function getSpotForPricing(
+  spotId: string
+): Promise<{ data: Spot | null; error: string | null }> {
+  try {
+    const { data, error } = await supabase
+      .from('spots')
+      .select('*, areas(*)')
+      .eq('id', spotId)
+      .maybeSingle();
+
+    if (error) return { data: null, error: error.message };
+    return { data: (data as Spot | null) ?? null, error: null };
+  } catch {
+    return { data: null, error: 'Unexpected error fetching spot for pricing' };
+  }
+}
+
 export async function getExploreSpots(): Promise<{ data: Spot[] | null; error: string | null }> {
   try {
     const { data, error } = await supabase

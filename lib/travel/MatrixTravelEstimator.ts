@@ -3,6 +3,7 @@ import { TravelEstimate, TravelEstimator } from "./types";
 import { LocationService as LocationDataService } from "@/lib/services/LocationService";
 import { calculateZoneFare } from "@/lib/planning/transport";
 import { LocationService } from "../location/LocationService";
+import { isLagosWeekdayRushHour } from "../utils/lagosTime";
 
 export class MatrixTravelEstimator implements TravelEstimator {
   estimateTravel(origin: Coordinates, destination: Coordinates, departureAt?: Date): TravelEstimate {
@@ -15,10 +16,8 @@ export class MatrixTravelEstimator implements TravelEstimator {
     const transportCost = calculateZoneFare(originArea.id, destinationArea.id);
 
     // 3. Compute ETA
-    const d = departureAt ?? new Date();
-    const hour = d.getHours();
-    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-    const isPeakHour = !isWeekend && ((hour >= 7 && hour <= 10) || (hour >= 16 && hour <= 20));
+    // Peak is judged in Lagos time, never the host's timezone.
+    const isPeakHour = isLagosWeekdayRushHour(departureAt ?? new Date());
 
     const speedKmH = isPeakHour ? 12 : 25;
     const baseMinutes = Math.ceil((distanceKm / speedKmH) * 60);

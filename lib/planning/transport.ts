@@ -1,5 +1,6 @@
 import { TransportProvider } from './types';
 import { getTransportProfile, TransportMode } from './transportProfiles';
+import { getLagosTimeParts, isLagosWeekdayRushHour } from '../utils/lagosTime';
 import {
   getTemporaryTransportEstimate,
   classifyDestinationZone,
@@ -63,18 +64,17 @@ const ZONES: Record<string, string> = {
 
 /**
  * Departure time bucket for transport estimate assumptions.
- * Pure function — depends only on the provided departure time.
+ * Pure function — depends only on the provided departure time, evaluated in
+ * Africa/Lagos (WAT) regardless of the host process timezone.
  */
 export type DepartureBucket = "off-peak" | "peak" | "late-night";
 
 export function getDepartureBucket(departureAt?: Date): DepartureBucket {
   const d = departureAt ?? new Date();
-  const hour = d.getHours();
-  const day = d.getDay();
-  const isWeekend = day === 0 || day === 6;
+  const { hour, day } = getLagosTimeParts(d);
 
   // Weekday rush hours
-  if (!isWeekend && ((hour >= 7 && hour <= 10) || (hour >= 16 && hour <= 20))) {
+  if (isLagosWeekdayRushHour(d)) {
     return "peak";
   }
   // Friday/Saturday nights
