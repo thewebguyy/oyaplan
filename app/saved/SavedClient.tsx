@@ -44,19 +44,57 @@ interface SavedPlanItem {
 
 interface SavedClientProps {
   serverSavedPlans: SavedPlanItem[];
+  serverSavedSpots?: Spot[];
   isAuthenticated: boolean;
 }
 
 import { useSearchParams } from "next/navigation";
+import { Spot } from "@/lib/types";
 
 export default function SavedClient({
   serverSavedPlans,
+  serverSavedSpots = [],
   isAuthenticated,
 }: SavedClientProps) {
   const { savedSpots, isLoaded, removeSpot } = useSavedSpots();
   const { openModal } = useAuth();
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") === "plans" ? "plans" : "spots";
+
+  // Seamlessly merge client-cached spots with server-persisted spots across devices
+  const allSavedSpots = React.useMemo(() => {
+    const seen = new Set<string>();
+    const combined: Spot[] = [];
+
+    // Local spots first (newest interactions)
+    for (const s of savedSpots) {
+      if (s?.id && !seen.has(s.id)) {
+        seen.add(s.id);
+        combined.push(s);
+      }
+    }
+
+    // Server-synced spots next
+    for (const s of serverSavedSpots) {
+      if (s?.id && !seen.has(s.id)) {
+        seen.add(s.id);
+        combined.push(s);
+      }
+    }
+
+    return combined;
+  }, [savedSpots, serverSavedSpots]);
+
+  // Tab selection: If URL specifies a tab, respect it.
+  // Otherwise, if user has 0 saved spots but has saved plans, default to "plans" so their saves are immediately visible!
+  const urlTab = searchParams.get("tab");
+  const initialTab = urlTab === "plans" 
+    ? "plans" 
+    : urlTab === "spots" 
+    ? "spots" 
+    : (allSavedSpots.length === 0 && serverSavedPlans.length > 0) 
+    ? "plans" 
+    : "spots";
+
   const [activeTab, setActiveTab] = useState<"spots" | "plans">(initialTab);
 
   const handleRemoveSpot = (id: string, name: string) => {
@@ -96,7 +134,7 @@ export default function SavedClient({
 
   const totalPotentialDamage = React.useMemo(() => {
     if (activeTab === "spots") {
-      return savedSpots.reduce((sum, s) => {
+      return allSavedSpots.reduce((sum, s) => {
         const p = knownPerPerson({ derived_typical_cost: s.price_per_person }) || 0;
         return sum + p * 2; // base squad of 2
       }, 0);
@@ -106,7 +144,7 @@ export default function SavedClient({
         return sum + (plan?.total_cost || 0);
       }, 0);
     }
-  }, [activeTab, savedSpots, serverSavedPlans]);
+  }, [activeTab, allSavedSpots, serverSavedPlans]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 bg-[#F6F6F2] min-h-[100dvh] text-[#111111] antialiased font-sans selection:bg-[#F9E828] selection:text-[#111111]">
@@ -131,14 +169,14 @@ export default function SavedClient({
               <button
                 type="button"
                 onClick={() => setActiveTab("spots")}
-                aria-label={`Show saved spots (${savedSpots.length})`}
+                aria-label={`Show saved spots (${allSavedSpots.length})`}
                 className={`px-4 py-2 font-black text-xs uppercase tracking-wider rounded-xl transition-all tap-feedback cursor-pointer font-display ${
                   activeTab === "spots"
                     ? "bg-[#111111] text-[#F9E828] shadow-xs"
                     : "text-[#555555] hover:text-[#111111]"
                 }`}
               >
-                {savedSpots.length > 0 ? `Saved Spots (${savedSpots.length})` : "Saved Spots"}
+                {allSavedSpots.length > 0 ? `Saved Spots (${allSavedSpots.length})` : "Saved Spots"}
               </button>
 
               <button
@@ -176,9 +214,28 @@ export default function SavedClient({
       {/* TAB 1: SAVED SPOTS */}
       {activeTab === "spots" && (
         <section aria-label="Saved spots list" className="space-y-6">
-          {savedSpots.length > 0 ? (
+          {/* Helpful callout if user has saved plans but 0 saved spots */}
+          {allSavedSpots.length === 0 && serverSavedPlans.length > 0 && (
+            <div className="p-4 rounded-2xl bg-[#FFFEE5] border-2 border-[#111111] shadow-[3px_3px_0px_0px_#111111] flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4 text-[#E59A28] shrink-0" />
+                <p className="text-xs font-mono font-bold text-[#111111]">
+                  You have {serverSavedPlans.length} saved outing plan{serverSavedPlans.length > 1 ? 's' : ''} in your account!
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab("plans")}
+                className="px-3.5 py-1.5 rounded-xl bg-[#111111] text-[#F9E828] text-xs font-mono font-black uppercase tracking-wider tap-feedback cursor-pointer self-start sm:self-auto"
+              >
+                Switch to Saved Plans →
+              </button>
+            </div>
+          )}
+
+          {allSavedSpots.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-5 sm:gap-6">
-              {savedSpots.map((spot) => {
+              {allSavedSpots.map((spot) => {
                 const firstVibe = spot.vibe_tags?.[0] || "Chill";
                 const knownPrice = knownPerPerson({ derived_typical_cost: spot.price_per_person });
                 const estimatedBudget = suggestPlanBudget(knownPrice, 2);

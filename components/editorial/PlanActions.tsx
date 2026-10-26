@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Plan, ForgeInput } from "@/lib/types";
 import { savePlan } from "@/lib/actions/savePlan";
+import { saveVenueAction } from "@/lib/actions/savedVenueActions";
 import { createShareablePlan } from "@/lib/actions/sharePlan";
 import { trackEvent } from "@/lib/analytics/trackClient";
 import WhatsAppCopyButton from "../WhatsAppCopyButton";
@@ -39,8 +40,12 @@ export function PlanActions({
         const savedSpots = JSON.parse(localStorage.getItem("oyaplan_saved_ideas") || "[]");
         if (!savedSpots.some((s: { id: string }) => s.id === plan.spot.id)) {
           localStorage.setItem("oyaplan_saved_ideas", JSON.stringify([...savedSpots, plan.spot]));
+          window.dispatchEvent(new Event("oyaplan_saved_spots_updated"));
         }
       } catch { /* ignore localStorage issues */ }
+
+      // Also ensure the venue is synchronized with server
+      saveVenueAction(plan.spot.id).catch(() => {});
 
       setIsSaved(true);
       toast.success("Plan saved for later 📌");

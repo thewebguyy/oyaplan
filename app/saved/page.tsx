@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { SessionResolver } from "@/lib/services/identity/sessionResolver";
 import { SavedPlanService } from "@/lib/services/identity/savedPlanService";
+import { SavedVenueService } from "@/lib/services/identity/savedVenueService";
+import { Spot } from "@/lib/types";
 import SavedClient from "./SavedClient";
 
 export const dynamic = "force-dynamic";
@@ -10,11 +12,19 @@ export default async function SavedPage() {
   const isAuthenticated = identity.type === "authenticated";
 
   let serverSavedPlans: any[] = [];
+  let serverSavedSpots: Spot[] = [];
 
   if (isAuthenticated) {
-    const res = await SavedPlanService.getSavedPlans(identity.profile.id);
-    if (res.success && res.data) {
-      serverSavedPlans = res.data;
+    const [plansRes, venuesRes] = await Promise.all([
+      SavedPlanService.getSavedPlans(identity.profile.id),
+      SavedVenueService.getSavedVenues(identity.profile.id),
+    ]);
+
+    if (plansRes.success && plansRes.data) {
+      serverSavedPlans = plansRes.data;
+    }
+    if (venuesRes.success && venuesRes.data) {
+      serverSavedSpots = venuesRes.data;
     }
   }
 
@@ -22,6 +32,7 @@ export default async function SavedPage() {
     <Suspense fallback={<div className="min-h-[100dvh] bg-[#FAFAF8]" />}>
       <SavedClient
         serverSavedPlans={serverSavedPlans}
+        serverSavedSpots={serverSavedSpots}
         isAuthenticated={isAuthenticated}
       />
     </Suspense>

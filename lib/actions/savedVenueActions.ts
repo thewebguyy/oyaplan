@@ -13,3 +13,7 @@ export async function removeVenueAction(venueId: string) {
 export async function getSavedVenueIdsAction() {
   return await SavedVenueService.getSavedVenueIds();
 }
+
+export async function getSavedVenuesAction() {
+  return await SavedVenueService.getSavedVenues();
+}
