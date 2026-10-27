@@ -7,6 +7,7 @@ import { TransportDisplayFormatter } from "@/lib/planning/transport";
 import { LinkBridgeVisual } from "@/components/cultural/LinkBridgeVisual";
 
 interface TransportEstimateCardProps {
+  status?: "available" | "unavailable";
   minCost?: number;
   maxCost?: number;
   transportCost: number;
@@ -28,6 +29,7 @@ interface TransportEstimateCardProps {
 }
 
 export default function TransportEstimateCard({
+  status,
   minCost,
   maxCost,
   transportCost,
@@ -49,14 +51,14 @@ export default function TransportEstimateCard({
   const [showWhyModal, setShowWhyModal] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<string | null>(null);
 
-  // Do not fabricate fake precision. Rely on the canonical engine output.
-  const isUnavailable = !minCost && !maxCost && (!transportCost || transportCost === 0);
+  // Rely on explicit status when provided, or finite cost validity
+  const isUnavailable = status === "unavailable" || (status === undefined && minCost === undefined && maxCost === undefined && !transportCost);
   const displayMin = minCost ?? transportCost;
   const displayMax = maxCost ?? transportCost;
   
   const rangeCopy = isUnavailable 
     ? "Unavailable for this route" 
-    : TransportDisplayFormatter.formatRange(displayMin, displayMax);
+    : TransportDisplayFormatter.formatRange(displayMin, displayMax, status);
 
   const modeLabel = mode === "public-transit" 
     ? "Public transit round-trip" 

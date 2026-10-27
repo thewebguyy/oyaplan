@@ -46,9 +46,31 @@ describe("Transport Fallbacks & Boundary Reliability", () => {
       expect(confidence.label).toBe("Transport unavailable");
       expect(confidence.badgeColor).toBe("orange");
 
-      // Verify display formatter does not output ₦0 as a fake price
-      const formatted = TransportDisplayFormatter.formatRange(range.minCost, range.maxCost);
+      // Verify display formatter does not output ₦0 as a fake price when status is unavailable
+      const formatted = TransportDisplayFormatter.formatRange(range.minCost, range.maxCost, range.status);
       expect(formatted).toBe("Unavailable for this route");
+    });
+  });
+
+  describe("Route status vs genuine zero-fare formatting", () => {
+    it("formats unavailable route with zero bounds as Unavailable for this route", () => {
+      expect(TransportDisplayFormatter.formatRange(0, 0, "unavailable")).toBe("Unavailable for this route");
+    });
+
+    it("formats legitimate available route with zero bounds as genuine ₦0", () => {
+      expect(TransportDisplayFormatter.formatRange(0, 0, "available")).toBe("₦0");
+    });
+
+    it("formats available route with positive bounds accurately", () => {
+      expect(TransportDisplayFormatter.formatRange(5000, 5000, "available")).toBe("₦5,000");
+      expect(TransportDisplayFormatter.formatRange(5000, 8000, "available")).toBe("₦5,000 – ₦8,000");
+    });
+
+    it("supports backward-compatible legacy callers that do not supply an explicit status", () => {
+      expect(TransportDisplayFormatter.formatRange(5000, 5000)).toBe("₦5,000");
+      expect(TransportDisplayFormatter.formatRange(5000, 8000)).toBe("₦5,000 – ₦8,000");
+      expect(TransportDisplayFormatter.formatRange(0, 0)).toBe("₦0");
+      expect(TransportDisplayFormatter.formatRange(NaN, NaN)).toBe("Unavailable for this route");
     });
   });
 
@@ -65,11 +87,6 @@ describe("Transport Fallbacks & Boundary Reliability", () => {
       const negativeRange = TransportPricingProvider.calculateRange("yaba", "ikeja", "ride-hailing", undefined, undefined, -4);
       expect(Number.isFinite(negativeRange.costPerPerson)).toBe(true);
       expect(negativeRange.costPerPerson).toBe(5000);
-    });
-
-    it("formats known range cleanly without string degradation", () => {
-      expect(TransportDisplayFormatter.formatRange(5000, 5000)).toBe("₦5,000");
-      expect(TransportDisplayFormatter.formatRange(5000, 8000)).toBe("₦5,000 – ₦8,000");
     });
   });
 });

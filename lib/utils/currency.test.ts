@@ -75,6 +75,13 @@ describe("Canonical Naira Formatting (formatNaira)", () => {
       expect(formatNaira(undefined)).toBe("—");
     });
 
+    it("distinguishes genuine numeric zero from undefined and null", () => {
+      expect(formatNaira(0)).toBe("₦0");
+      expect(formatNaira(0, true)).toBe("₦0");
+      expect(formatNaira(undefined)).toBe("—");
+      expect(formatNaira(null)).toBe("—");
+    });
+
     it("respects custom fallback when provided", () => {
       expect(formatNaira(NaN, { fallback: "N/A" })).toBe("N/A");
       expect(formatNaira(Infinity, { fallback: "Unpriced" })).toBe("Unpriced");

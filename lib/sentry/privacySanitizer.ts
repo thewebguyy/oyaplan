@@ -145,7 +145,36 @@ export function sanitizeSentryEvent<T extends Record<string, any>>(event: T): T 
       copy.user = sanitizedUser;
     }
 
-    // 3. Sanitize extra, contexts, and tags
+    // 3. Sanitize top-level message and log entries
+    if (typeof copy.message === "string") {
+      copy.message = sanitizeString(copy.message);
+    }
+    if (copy.logentry && typeof copy.logentry === "object") {
+      const sanitizedLog = { ...copy.logentry };
+      if (typeof sanitizedLog.message === "string") {
+        sanitizedLog.message = sanitizeString(sanitizedLog.message);
+      }
+      if (typeof sanitizedLog.formatted === "string") {
+        sanitizedLog.formatted = sanitizeString(sanitizedLog.formatted);
+      }
+      copy.logentry = sanitizedLog;
+    }
+
+    // 4. Sanitize exception messages while strictly preserving types, stack traces, and mechanisms
+    if (copy.exception?.values && Array.isArray(copy.exception.values)) {
+      copy.exception = {
+        ...copy.exception,
+        values: copy.exception.values.map((v: any) => {
+          if (!v || typeof v !== "object") return v;
+          return {
+            ...v,
+            value: typeof v.value === "string" ? sanitizeString(v.value) : v.value,
+          };
+        }),
+      };
+    }
+
+    // 5. Sanitize extra, contexts, and tags
     if (copy.extra) {
       copy.extra = sanitizeData(copy.extra);
     }

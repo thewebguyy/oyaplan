@@ -260,13 +260,27 @@ export class TransportConfidenceProvider {
 }
 
 export class TransportDisplayFormatter {
-  static formatRange(minCost: number, maxCost: number): string {
-    if ((!minCost || minCost <= 0) && (!maxCost || maxCost <= 0)) {
+  static formatRange(
+    minCost: number,
+    maxCost: number,
+    status?: "available" | "unavailable"
+  ): string {
+    if (status === "unavailable") {
       return "Unavailable for this route";
     }
+
+    if (!Number.isFinite(minCost) || !Number.isFinite(maxCost) || minCost < 0 || maxCost < 0) {
+      return "Unavailable for this route";
+    }
+
+    if (minCost === 0 && maxCost === 0) {
+      return "₦0";
+    }
+
     if (minCost === maxCost) {
       return formatNaira(minCost);
     }
+
     return `${formatNaira(minCost)} – ${formatNaira(maxCost)}`;
   }
 

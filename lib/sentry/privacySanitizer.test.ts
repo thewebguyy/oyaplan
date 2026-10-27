@@ -131,13 +131,14 @@ describe("Privacy Sanitizer", () => {
       expect(sanitized?.user?.ip_address).toBe("[REDACTED_IP]");
     });
 
-    it("preserves stack traces and exception types for diagnostics", () => {
+    it("preserves stack traces and exception types while redacting sensitive values in messages", () => {
       const errorEvent = {
+        message: "Failed auth request for user +2348012345678 with Bearer secret-auth-token-123",
         exception: {
           values: [
             {
-              type: "TypeError",
-              value: "Cannot read property 'id' of undefined",
+              type: "PaymentGatewayError",
+              value: "Transaction failed for card 4111 2222 3333 4444 and phone 08098765432 with Bearer token-xyz",
               stacktrace: {
                 frames: [
                   { filename: "candidateEngine.ts", lineno: 42, function: "calculateCandidates" },
@@ -149,9 +150,18 @@ describe("Privacy Sanitizer", () => {
       };
 
       const sanitized = sanitizeSentryEvent(errorEvent);
-      expect(sanitized?.exception?.values[0].type).toBe("TypeError");
-      expect(sanitized?.exception?.values[0].value).toBe("Cannot read property 'id' of undefined");
+      // Top-level message redacted
+      expect(sanitized?.message).toBe(
+        "Failed auth request for user [REDACTED_PHONE] with Bearer [REDACTED]"
+      );
+      // Exception message redacted
+      expect(sanitized?.exception?.values[0].value).toBe(
+        "Transaction failed for card [REDACTED_CARD] and phone [REDACTED_PHONE] with Bearer [REDACTED]"
+      );
+      // Diagnostic metadata preserved
+      expect(sanitized?.exception?.values[0].type).toBe("PaymentGatewayError");
       expect(sanitized?.exception?.values[0].stacktrace.frames[0].filename).toBe("candidateEngine.ts");
+      expect(sanitized?.exception?.values[0].stacktrace.frames[0].lineno).toBe(42);
     });
   });
 

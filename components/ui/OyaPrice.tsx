@@ -49,10 +49,7 @@ export function OyaPrice({
       const highFormatted = formatNaira(range.high, true);
       return `${lowFormatted}–${highFormatted}`;
     }
-    if (amount !== undefined) {
-      return formatNaira(amount, compact);
-    }
-    return "₦0";
+    return formatNaira(amount, compact);
   }, [amount, range, compact]);
 
   // Size styling variants

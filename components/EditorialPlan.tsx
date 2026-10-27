@@ -264,6 +264,7 @@ export default function EditorialPlan({
           return (
             <>
               <TransportEstimateCard
+                status={plan.transportEstimate?.status}
                 minCost={plan.transportMinCost}
                 maxCost={plan.transportMaxCost}
                 transportCost={plan.transportCost}
