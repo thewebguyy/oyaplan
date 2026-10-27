@@ -13,7 +13,13 @@ export function TrustFooter({
   actions?: ReactNode;
   isTopPick?: boolean;
 }) {
-  const isPricingVerified = !!plan.spot.price_updated_at || (plan.spot.computed_confidence_score && plan.spot.computed_confidence_score > 60);
+  const isPricingVerified = Boolean(
+    ((plan.spot.verified_by && plan.spot.verified_by !== 'seed' && plan.spot.verified_by !== 'unverified') ||
+      plan.spot.price_source === 'manual_verification' ||
+      plan.spot.price_source === 'owner_submission') &&
+    plan.spot.price_updated_at &&
+    Math.floor((Date.now() - new Date(plan.spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24)) < 30
+  );
   const isTransportEstimated = plan.transportCost > 0;
   const hasHours = !!plan.spot.days_open && plan.spot.days_open.length > 0;
   const isAvailabilityVerified = false; // Always pending/unverified since no real-time API booking is available
@@ -48,9 +54,9 @@ export function TrustFooter({
               {hasHours ? (
                 <span className="text-[#008751] font-bold">✓</span>
               ) : (
-                <span className="text-[#008751] font-bold">✓</span> // Let's default to verified if standard hours exist or are checked by OyaPlan
+                <span className="text-text-muted">○</span>
               )}
-              <span className="text-text-primary font-medium">Open & Active</span>
+              <span className={hasHours ? "text-text-primary font-medium" : "text-text-muted"}>Open & Active</span>
             </div>
 
             <div className="flex items-center gap-2">

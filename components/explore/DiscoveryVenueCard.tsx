@@ -6,11 +6,11 @@ import { Bookmark, BookmarkCheck, MapPin, Sparkles, ArrowRight, Check } from "lu
 import { Spot } from "@/lib/types";
 import { VenueImage } from "@/components/ui/VenueImage";
 import { TrustBadge } from "@/components/ui/trust-badge";
-import { deriveTrustIndicator, getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
-import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
+import { deriveSpotTrustStatus, getVerificationText } from "@/lib/planning/presentation/decisionCardMapper";
 import { knownPerPerson, venueFoodTotal, suggestPlanBudget } from "@/lib/venue/venueSpend";
 import { ShortlistStamp } from "@/components/motion/ShortlistStamp";
 import { getTemporaryTransportEstimate } from "@/lib/planning/temporaryTransport";
+import { buildVenuePlanUrl } from "@/lib/planning/buildVenuePlanUrl";
 
 interface DiscoveryVenueCardProps {
   spot: Spot;
@@ -78,15 +78,12 @@ export function DiscoveryVenueCard({
   const categoryKey = (spot.category || "restaurant").toLowerCase();
   const catStyle = CATEGORY_COLORS[categoryKey] || { bg: "bg-gray-100", text: "text-gray-800" };
 
-  const confidenceScore = spot.computed_confidence_score || 75;
-  const trustIndicator = deriveTrustIndicator(confidenceScore);
+  const isVerifiedSource = Boolean(
+    (spot.verified_by && spot.verified_by !== 'seed' && spot.verified_by !== 'unverified') ||
+    (spot.price_source === 'manual_verification' || spot.price_source === 'owner_submission')
+  );
+  const trustStatus = deriveSpotTrustStatus(spot);
   const verificationText = getVerificationText(spot.price_updated_at);
-
-  const trustStatus = trustIndicator.level === "high" 
-    ? "verified" 
-    : trustIndicator.level === "medium" 
-      ? "estimated" 
-      : "pending";
 
   const forgeUrl = buildVenuePlanUrl({
     venueId: spot.id,

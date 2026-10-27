@@ -11,11 +11,25 @@ export class SavedVenueService {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(venueId);
     if (isUuid) return venueId;
 
-    // Look up by slug or name in venues
+    // Look up by name or slug in venues
+    try {
+      const { data: bySlug } = await supabase
+        .from('venues')
+        .select('id')
+        .eq('slug', venueId)
+        .maybeSingle();
+
+      if (bySlug?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bySlug.id)) {
+        return bySlug.id;
+      }
+    } catch {
+      // Ignore if slug column not present
+    }
+
     const { data: v } = await supabase
       .from('venues')
       .select('id')
-      .or(`slug.eq.${venueId},name.ilike.%${venueId.replace(/-/g, ' ')}%`)
+      .ilike('name', `%${venueId.replace(/-/g, ' ')}%`)
       .maybeSingle();
 
     if (v?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.id)) {

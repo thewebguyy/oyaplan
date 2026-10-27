@@ -27,14 +27,8 @@ export interface OyaPriceProps extends React.HTMLAttributes<HTMLDivElement> {
   inline?: boolean;
 }
 
-export function formatNaira(value: number, compact = false): string {
-  if (isNaN(value)) return "₦0";
-  if (compact && Math.abs(value) >= 1000) {
-    const inK = Math.round(value / 1000);
-    return `₦${inK}k`;
-  }
-  return `₦${Math.round(value).toLocaleString("en-NG")}`;
-}
+import { formatNaira } from "@/lib/utils/currency";
+export { formatNaira };
 
 export function OyaPrice({
   amount,

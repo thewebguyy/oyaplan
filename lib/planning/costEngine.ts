@@ -31,7 +31,8 @@ export class DefaultCostEngine implements CostEngine {
         transportMode,
         hasOverride,
         context.request.departureAt,
-        confidenceScore
+        confidenceScore,
+        range.status
       );
 
       const assumptions = TransportDisplayFormatter.formatAssumptions(areaKey, transportMode, context.request.departureAt);

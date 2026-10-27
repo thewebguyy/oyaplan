@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { calculateConfidence } from './confidenceEngine';
+import { calculateConfidence, calculateDataOperationsConfidenceScore } from './confidenceEngine';
 import type { PriceEvidence, MenuItem } from '../types';
 
 const BASE_MENU_ITEMS: MenuItem[] = [
@@ -155,3 +155,42 @@ describe('calculateConfidence', () => {
     });
   });
 });
+
+describe('calculateDataOperationsConfidenceScore', () => {
+  it('should calculate weighted score with 0.30 freshness, 0.30 report count, 0.40 accuracy', () => {
+    // 100 * 0.30 + 100 * 0.30 + 100 * 0.40 = 100
+    const perfectScore = calculateDataOperationsConfidenceScore({
+      freshnessScore: 100,
+      reportCountScore: 100,
+      historicalAccuracyScore: 100,
+    });
+    expect(perfectScore).toBe(100);
+
+    // 50 * 0.30 (15) + 50 * 0.30 (15) + 50 * 0.40 (20) = 50
+    const halfScore = calculateDataOperationsConfidenceScore({
+      freshnessScore: 50,
+      reportCountScore: 50,
+      historicalAccuracyScore: 50,
+    });
+    expect(halfScore).toBe(50);
+  });
+
+  it('should correctly derive scores from raw days, report counts, and accuracy percentages', () => {
+    // Freshness at day 0 = 100, 3 reports = 100, 100% accuracy = 100
+    const score = calculateDataOperationsConfidenceScore({
+      freshnessDays: 0,
+      reportCount: 3,
+      historicalAccuracyPct: 100,
+    });
+    expect(score).toBe(100);
+
+    // 0 reports = 0 report score (30 pts lost) -> max is 70
+    const zeroReports = calculateDataOperationsConfidenceScore({
+      freshnessDays: 0,
+      reportCount: 0,
+      historicalAccuracyPct: 100,
+    });
+    expect(zeroReports).toBe(70);
+  });
+});
+

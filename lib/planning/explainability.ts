@@ -3,6 +3,7 @@ import { RankedPlan, PlanningContext, ExplainedPlan, ExplainabilityEngine, Trave
 import { calculateZoneFare } from './transport';
 import { timeAgo } from '../utils/timeAgo';
 import { formatPlanTitle, formatPlanSubtitle, formatDecisionSummary } from '../utils/editorialFormatter';
+import { shouldDisplayConfidencePercentage } from './presentation/decisionCardMapper';
 
 function generateWhyItFits(spot: Spot, vibe: string, total: number, budget: number): string {
   const diff = budget - total;
@@ -149,10 +150,20 @@ function generateOrderedReasons(
   reasons.push(`Typical transport fare from ${originName} is predictable`);
 
   // 4. Menu Price Recency
-  if (spot.price_updated_at) {
-    reasons.push(`Menu prices verified ${timeAgo(spot.price_updated_at)}`);
-  } else if (spot.verified_by) {
+  const isVerifiedSource = Boolean(
+    (spot.verified_by && spot.verified_by !== 'seed' && spot.verified_by !== 'unverified') ||
+    (spot.price_source === 'manual_verification' || spot.price_source === 'owner_submission')
+  );
+  const daysAgo = spot.price_updated_at
+    ? Math.floor((Date.now() - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24))
+    : Infinity;
+
+  if (isVerifiedSource && daysAgo < 30) {
+    reasons.push(`Menu prices verified ${timeAgo(spot.price_updated_at!)}`);
+  } else if (spot.verified_by && spot.verified_by !== 'seed' && spot.verified_by !== 'unverified') {
     reasons.push(`Verified by Lagos Scout network`);
+  } else if (spot.price_updated_at && daysAgo < 60) {
+    reasons.push(`Estimated pricing updated ${timeAgo(spot.price_updated_at)}`);
   } else {
     reasons.push(`Taxes and service fees included in estimate`);
   }
@@ -213,6 +224,14 @@ export class DefaultExplainabilityEngine implements ExplainabilityEngine {
       const travelInfo = isAdjacent 
         ? formatTravelInfo(areaKey, spot.address_slug || spot.areas?.slug || "ikeja", transportCost)
         : undefined;
+
+      const isVerifiedSource = Boolean(
+        (spot.verified_by && spot.verified_by !== 'seed' && spot.verified_by !== 'unverified') ||
+        (spot.price_source === 'manual_verification' || spot.price_source === 'owner_submission')
+      );
+      const daysAgo = spot.price_updated_at
+        ? Math.floor((Date.now() - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24))
+        : Infinity;
 
       const status = spot.verified_by || 'verified';
 

@@ -29,6 +29,15 @@ export class DefaultCandidateEngine implements CandidateEngine {
       // Hard check: exclude temporarily closed venues (pinnedSpotId exempt so caller sees closure state)
       if (spot.id !== pinnedSpotId && isVenueCurrentlyClosed(spot)) return false;
 
+      // Freshness rule: exclude spots unverified for >= 60 days from active suggestions (pinnedSpotId exempt)
+      if (spot.id !== pinnedSpotId && spot.price_updated_at) {
+        const now = context.timestamp || Date.now();
+        const daysSinceVerified = Math.floor(
+          (now - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24)
+        );
+        if (daysSinceVerified >= 60) return false;
+      }
+
       // Daypart Filter
       if (daypart && daypart !== "Any time") {
         const cat = spot.category || "restaurant";

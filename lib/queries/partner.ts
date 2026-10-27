@@ -9,6 +9,7 @@ import {
   VenuePhoto, 
   VenueClaim 
 } from '@/lib/types';
+import { isAuthorizedAdmin } from '@/lib/admin/permissions';
 
 /**
  * getPublicVenueById
@@ -27,19 +28,32 @@ export async function getPublicVenueById(
       .select('*, districts(name, slug)');
 
     if (isUuid) {
-      query = query.eq('id', idOrSlug);
+      const { data: venueById } = await supabase
+        .from('venues')
+        .select('*, districts(name, slug)')
+        .eq('id', idOrSlug)
+        .maybeSingle();
+
+      if (venueById) {
+        return { data: (venueById as unknown as Venue), error: null };
+      }
     } else {
-      query = query.eq('slug', idOrSlug);
-    }
+      // 1. Try slug on venues
+      try {
+        const { data: venueBySlug } = await supabase
+          .from('venues')
+          .select('*, districts(name, slug)')
+          .eq('slug', idOrSlug)
+          .maybeSingle();
 
-    const { data, error } = await query.maybeSingle();
+        if (venueBySlug) {
+          return { data: (venueBySlug as unknown as Venue), error: null };
+        }
+      } catch {
+        // Fallback if slug column not yet populated in cache
+      }
 
-    if (data) {
-      return { data: (data as unknown as Venue), error: null };
-    }
-
-    // 2. Second attempt: Check venues by name if not UUID
-    if (!isUuid) {
+      // 2. Try matching name on venues
       const { data: venueByName } = await supabase
         .from('venues')
         .select('*, districts(name, slug)')
@@ -52,7 +66,7 @@ export async function getPublicVenueById(
     }
 
     // 3. Fallback: Look up in legacy spots table
-    const { data: spot } = await supabase
+    const { data: spot, error: spotError } = await supabase
       .from('spots')
       .select('*, areas(*)')
       .or(`id.eq.${idOrSlug},name.ilike.%${idOrSlug.replace(/-/g, ' ')}%`)
@@ -89,8 +103,8 @@ export async function getPublicVenueById(
       return { data: normalizedVenue, error: null };
     }
 
-    if (error) {
-      return { data: null, error: error.message };
+    if (spotError) {
+      return { data: null, error: spotError.message };
     }
 
     return { data: null, error: null };
@@ -138,20 +152,20 @@ export async function getPartnerVenuesForUser(
 
     // 3. Admin / Owner Simulation: If user is registered in admin_users or has admin role,
     // grant them preview access to catalog venues on The Floor
-    const KNOWN_OWNERS = ['olabodewebdesigns02@gmail.com', 'pstmax@gmail.com', 'temi@oyaplan.com', 'coo@oyaplan.com'];
-    const { data: { user } } = await supabase.auth.getUser();
     let isAdmin = false;
+    const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email?.toLowerCase();
-    if (userEmail && KNOWN_OWNERS.includes(userEmail)) {
-      isAdmin = true;
-    }
-    if (!isAdmin && userEmail) {
+    if (userEmail) {
       const { data: adminRow } = await supabase
         .from('admin_users')
         .select('id, role')
         .ilike('email', userEmail)
         .maybeSingle();
       if (adminRow) isAdmin = true;
+    }
+    if (!isAdmin) {
+      const adminCheck = await isAuthorizedAdmin();
+      if (adminCheck.authorized) isAdmin = true;
     }
     if (!isAdmin) {
       const { data: profile } = await supabase
@@ -237,20 +251,21 @@ export async function checkVenueAuthorization(
     // 1. Check admin
     const { data: { user } } = await serverClient.auth.getUser();
     const userEmail = user?.email?.toLowerCase();
-    const KNOWN_OWNERS = ['olabodewebdesigns02@gmail.com', 'pstmax@gmail.com', 'temi@oyaplan.com', 'coo@oyaplan.com'];
-    if (userEmail && KNOWN_OWNERS.includes(userEmail)) {
-      return { authorized: true, role: 'admin', isAdmin: true };
-    }
     if (userEmail) {
       const { data: adminRow } = await serverClient
         .from('admin_users')
-        .select('id')
+        .select('id, role')
         .ilike('email', userEmail)
         .maybeSingle();
 
       if (adminRow) {
-        return { authorized: true, role: 'admin', isAdmin: true };
+        return { authorized: true, role: adminRow.role || 'admin', isAdmin: true };
       }
+    }
+
+    const adminCheck = await isAuthorizedAdmin();
+    if (adminCheck.authorized) {
+      return { authorized: true, role: adminCheck.role || 'admin', isAdmin: true };
     }
 
     // 2. Check venue_roles

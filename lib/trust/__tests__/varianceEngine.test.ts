@@ -133,10 +133,31 @@ describe("OyaPlan Phase 9 — Trust & Variance Intelligence Engine", () => {
       expect(freshness.daysAgo).toBe(10);
     });
 
-    it("evaluates data between 31 and 60 days as needs_reverification", () => {
-      const fortyDaysAgo = new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString();
-      const freshness = VarianceEngine.evaluateFreshness(fortyDaysAgo);
+    it("evaluates day 29 boundary as fresh", () => {
+      const twentyNineDaysAgo = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString();
+      const freshness = VarianceEngine.evaluateFreshness(twentyNineDaysAgo);
+      expect(freshness.status).toBe("fresh");
+      expect(freshness.isStale).toBe(false);
+    });
+
+    it("evaluates day 30 boundary as needs_reverification", () => {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const freshness = VarianceEngine.evaluateFreshness(thirtyDaysAgo);
       expect(freshness.status).toBe("needs_reverification");
+      expect(freshness.isStale).toBe(true);
+    });
+
+    it("evaluates day 59 boundary as needs_reverification", () => {
+      const fiftyNineDaysAgo = new Date(Date.now() - 59 * 24 * 60 * 60 * 1000).toISOString();
+      const freshness = VarianceEngine.evaluateFreshness(fiftyNineDaysAgo);
+      expect(freshness.status).toBe("needs_reverification");
+      expect(freshness.isStale).toBe(true);
+    });
+
+    it("evaluates day 60 boundary as stale_deprioritize", () => {
+      const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
+      const freshness = VarianceEngine.evaluateFreshness(sixtyDaysAgo);
+      expect(freshness.status).toBe("stale_deprioritize");
       expect(freshness.isStale).toBe(true);
     });
 

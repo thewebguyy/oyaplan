@@ -37,11 +37,12 @@ export function suggestPlanBudget(perPerson: number | null, squad: number): numb
 
 export interface OutsideMathOptions {
   foodSubtotal: number;
-  vatPct?: number; // Default 7.5%
-  serviceChargePct?: number; // Default 10%
+  vatPct?: number; // Default 7.5% (or 0 if tax-inclusive/exempt)
+  serviceChargePct?: number; // Default 10% (or 0 if not charged)
   transportCost?: number; // Default 0
   surgeMultiplier?: number; // Default 1.0
   headcount?: number; // Default 1
+  mandatoryFees?: number; // Default 0 (e.g. explicitly supported cover charge, entrance fee)
 }
 
 export interface OutsideMathBreakdown {
@@ -51,21 +52,23 @@ export interface OutsideMathBreakdown {
   serviceChargeAmount: number;
   transportCost: number;
   surgeCost: number;
+  mandatoryFees: number;
   totalCost: number;
 }
 
 /**
  * Canonical Outside Math engine for OyaPlan.
- * Consolidates VAT (7.5%), service charge (10%), transit, surge, and headcount.
+ * Consolidates VAT, service charge, transit, surge, mandatory fees, and headcount.
  * Uses strict integer-kobo arithmetic (Math.round) to prevent floating-point inaccuracies.
+ * Guaranteed reconciliation: totalCost = (foodSubtotal + surgeCost) + vatAmount + serviceChargeAmount + transportCost + mandatoryFees.
  */
 export function calculateOutsideMath(opts: OutsideMathOptions): OutsideMathBreakdown {
   const headcount = Math.max(1, Math.floor(opts.headcount ?? 1));
   const baseFood = Math.max(0, Math.round(opts.foodSubtotal));
   const surgeMult = Math.max(1.0, opts.surgeMultiplier ?? 1.0);
   
-  const vatPct = typeof opts.vatPct === "number" ? opts.vatPct : 7.5;
-  const scPct = typeof opts.serviceChargePct === "number" ? opts.serviceChargePct : 10;
+  const vatPct = typeof opts.vatPct === "number" ? Math.max(0, opts.vatPct) : 7.5;
+  const scPct = typeof opts.serviceChargePct === "number" ? Math.max(0, opts.serviceChargePct) : 10;
   
   const foodWithSurge = Math.round(baseFood * surgeMult);
   const surgeCost = foodWithSurge - baseFood;
@@ -73,8 +76,9 @@ export function calculateOutsideMath(opts: OutsideMathOptions): OutsideMathBreak
   const vatAmount = Math.round((foodWithSurge * vatPct) / 100);
   const serviceChargeAmount = Math.round((foodWithSurge * scPct) / 100);
   const transportCost = Math.max(0, Math.round(opts.transportCost ?? 0));
+  const mandatoryFees = Math.max(0, Math.round(opts.mandatoryFees ?? 0));
   
-  const totalCost = foodWithSurge + vatAmount + serviceChargeAmount + transportCost;
+  const totalCost = foodWithSurge + vatAmount + serviceChargeAmount + transportCost + mandatoryFees;
 
   return {
     headcount,
@@ -83,6 +87,7 @@ export function calculateOutsideMath(opts: OutsideMathOptions): OutsideMathBreak
     serviceChargeAmount,
     transportCost,
     surgeCost,
+    mandatoryFees,
     totalCost,
   };
 }

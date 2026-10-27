@@ -47,6 +47,17 @@ export class DefaultRankingEngine implements RankingEngine {
       else if (status === 'needs_review')       statusBoost = -40;
       else if (status === 'incomplete')         statusBoost = -30;
 
+      // Deprioritize venues unverified for >= 30 days per Data Operations Manual
+      if (spot.price_updated_at) {
+        const now = context.timestamp || Date.now();
+        const daysSinceVerified = Math.floor(
+          (now - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24)
+        );
+        if (daysSinceVerified >= 30) {
+          statusBoost -= 25;
+        }
+      }
+
       const verificationBoost = statusBoost * config.verificationWeight;
 
       // 7. Pinned boost (always wins)

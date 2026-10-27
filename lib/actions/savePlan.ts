@@ -13,6 +13,7 @@ export async function savePlan(sharedPlanId: string) {
   
   if (res.success) {
     revalidatePath('/dashboard');
+    revalidatePath('/saved');
   }
   
   return res;

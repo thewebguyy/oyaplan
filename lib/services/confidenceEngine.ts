@@ -133,3 +133,40 @@ export function calculateConfidence(
     reasons: reasons
   };
 }
+
+export interface DataOperationsConfidenceInput {
+  freshnessDays?: number;
+  freshnessScore?: number;
+  reportCount?: number;
+  reportCountScore?: number;
+  historicalAccuracyPct?: number;
+  historicalAccuracyScore?: number;
+}
+
+/**
+ * Reconciled data operations confidence score formula:
+ * - Freshness weight: 0.30
+ * - Report count weight: 0.30
+ * - Historical accuracy weight: 0.40
+ */
+export function calculateDataOperationsConfidenceScore({
+  freshnessDays,
+  freshnessScore,
+  reportCount = 0,
+  reportCountScore,
+  historicalAccuracyPct = 100,
+  historicalAccuracyScore,
+}: DataOperationsConfidenceInput): number {
+  let fScore = freshnessScore ?? (freshnessDays !== undefined ? computeConfidenceDecay(freshnessDays) : 100);
+  fScore = Math.max(0, Math.min(100, fScore));
+
+  let rScore = reportCountScore ?? Math.min(100, (reportCount / 3) * 100);
+  rScore = Math.max(0, Math.min(100, rScore));
+
+  let aScore = historicalAccuracyScore ?? historicalAccuracyPct;
+  aScore = Math.max(0, Math.min(100, aScore));
+
+  const weighted = (fScore * 0.30) + (rScore * 0.30) + (aScore * 0.40);
+  return Math.round(Math.max(0, Math.min(100, weighted)) * 100) / 100;
+}
+

@@ -241,10 +241,10 @@ export class VarianceEngine {
     const verifiedDate = new Date(lastVerifiedAtIso).getTime();
     const daysAgo = Math.floor((Date.now() - verifiedDate) / (1000 * 60 * 60 * 24));
 
-    if (daysAgo > 60) {
+    if (daysAgo >= 60) {
       return { daysAgo, status: "stale_deprioritize", isStale: true };
     }
-    if (daysAgo > 30) {
+    if (daysAgo >= 30) {
       return { daysAgo, status: "needs_reverification", isStale: true };
     }
 

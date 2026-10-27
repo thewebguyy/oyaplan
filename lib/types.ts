@@ -218,6 +218,7 @@ export interface PlanEvaluation {
 
 export type SharedPlanRow = {
   id: string;
+  spot_id?: string;
   spot?: Spot;
   total_cost: number;
   food_cost: number;

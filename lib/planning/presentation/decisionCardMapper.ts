@@ -1,6 +1,64 @@
 import { ExplainedPlan } from '../types';
 import { DecisionCardViewModel, TrustIndicator } from './types';
 
+export type TrustStatus = "verified" | "estimated" | "pending" | "unavailable";
+
+export function shouldDisplayConfidencePercentage(spot: {
+  manual_verifications_count?: number;
+  user_reported_outcomes_count?: number;
+  verified_by?: string;
+  price_source?: string;
+  confidence_reasons?: string[];
+}): boolean {
+  if (spot.manual_verifications_count !== undefined && spot.user_reported_outcomes_count !== undefined) {
+    return spot.manual_verifications_count >= 1 && spot.user_reported_outcomes_count >= 3;
+  }
+  const hasManual = Boolean(
+    (spot.verified_by && spot.verified_by !== 'seed' && spot.verified_by !== 'unverified') ||
+    spot.price_source === 'manual_verification' ||
+    spot.price_source === 'owner_submission'
+  );
+  const hasOutcomes = Boolean(
+    spot.confidence_reasons && spot.confidence_reasons.some(r => r.includes('independent') || r.includes('receipt') || r.includes('3'))
+  );
+  return hasManual && hasOutcomes;
+}
+
+export function deriveSpotTrustStatus(spot: {
+  is_temporarily_closed?: boolean;
+  active?: boolean;
+  verified_by?: string;
+  price_source?: string;
+  price_updated_at?: string;
+}): TrustStatus {
+  if (spot.is_temporarily_closed || spot.active === false) {
+    return "unavailable";
+  }
+
+  const isVerifiedSource = Boolean(
+    (spot.verified_by && spot.verified_by !== 'seed' && spot.verified_by !== 'unverified') ||
+    (spot.price_source === 'manual_verification' || spot.price_source === 'owner_submission')
+  );
+
+  if (!spot.price_updated_at) {
+    return "pending";
+  }
+
+  const daysAgo = Math.floor(
+    (Date.now() - new Date(spot.price_updated_at).getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (daysAgo >= 60) {
+    return "pending";
+  }
+
+  if (isVerifiedSource && daysAgo < 30) {
+    return "verified";
+  }
+
+  return "estimated";
+}
+
 export function deriveTrustIndicator(confidenceScore: number): TrustIndicator {
   let level: "high" | "medium" | "low" = "low";
   let label = "Low confidence";
@@ -23,11 +81,16 @@ export function deriveTrustIndicator(confidenceScore: number): TrustIndicator {
   return { level, label, description };
 }
 
-export function getVerificationText(updatedAt: string | undefined): string {
+export function getVerificationText(updatedAt: string | undefined, isVerifiedSource?: boolean): string {
+  if (isVerifiedSource === false) return "Estimated price";
   if (!updatedAt) return "Estimated price";
   const daysAgo = Math.floor(
     (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24)
   );
+  if (isVerifiedSource === true) {
+    if (daysAgo >= 60) return "Pricing unverified";
+    if (daysAgo >= 30) return "Needs update";
+  }
   if (daysAgo === 0) return "Verified today";
   if (daysAgo === 1) return "Verified yesterday";
   if (daysAgo < 7) return "Verified this week";

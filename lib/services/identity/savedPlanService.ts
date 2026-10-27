@@ -91,7 +91,8 @@ export class SavedPlanService {
             squad_size,
             vibe,
             created_at,
-            spot:spots(
+            spot_id,
+            spot:venues(
               name,
               category,
               address

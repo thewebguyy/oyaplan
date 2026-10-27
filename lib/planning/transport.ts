@@ -139,6 +139,8 @@ export interface ConfidenceEvaluation {
   badgeColor: "green" | "yellow" | "orange";
 }
 
+import { formatNaira } from '../utils/currency';
+
 export class TransportPricingProvider {
   static calculateRange(
     origin: string,
@@ -166,8 +168,9 @@ export class TransportPricingProvider {
     }
 
     const estimate = getTemporaryTransportEstimate(destination);
-    const totalCost = estimate.cost;
-    const validParty = Math.max(1, partySize);
+    const rawCost = estimate.cost;
+    const totalCost = Number.isFinite(rawCost) && rawCost >= 0 ? Math.round(rawCost) : 0;
+    const validParty = Number.isFinite(partySize) && partySize > 0 ? Math.floor(partySize) : 1;
     const costPerPerson = Math.round(totalCost / validParty);
 
     return { 
@@ -194,7 +197,7 @@ export class TransportPricingProvider {
     const zone = classifyDestinationZone(destination);
     const originZone = classifyDestinationZone(origin);
     const isCrossWater = zone !== originZone;
-    const validParty = Math.max(1, partySize);
+    const validParty = Number.isFinite(partySize) && partySize > 0 ? Math.floor(partySize) : 1;
 
     return {
       status: range.status,
@@ -228,8 +231,19 @@ export class TransportConfidenceProvider {
     mode: TransportMode,
     hasVenueOverride: boolean = false,
     departureAt?: Date,
-    overrideScore?: number
+    overrideScore?: number,
+    rangeStatus?: "available" | "unavailable"
   ): ConfidenceEvaluation {
+    if (rangeStatus === "unavailable") {
+      return { score: 0, label: "Transport unavailable", badgeColor: "orange" };
+    }
+
+    const normOrigin = origin?.toLowerCase().trim();
+    const normDest = destination?.toLowerCase().trim();
+    if ((normOrigin === "anywhere" || !normOrigin) && (normDest === "anywhere" || !normDest || normDest === "unknown")) {
+      return { score: 0, label: "Transport unavailable", badgeColor: "orange" };
+    }
+
     if (overrideScore !== undefined) {
       const score = overrideScore;
       if (score >= 80) {
@@ -247,15 +261,18 @@ export class TransportConfidenceProvider {
 
 export class TransportDisplayFormatter {
   static formatRange(minCost: number, maxCost: number): string {
-    if (minCost === maxCost) {
-      return `₦${minCost.toLocaleString()}`;
+    if ((!minCost || minCost <= 0) && (!maxCost || maxCost <= 0)) {
+      return "Unavailable for this route";
     }
-    return `₦${minCost.toLocaleString()} – ₦${maxCost.toLocaleString()}`;
+    if (minCost === maxCost) {
+      return formatNaira(minCost);
+    }
+    return `${formatNaira(minCost)} – ${formatNaira(maxCost)}`;
   }
 
   static formatAssumptions(destination: string, _mode?: TransportMode, _departureAt?: Date): string {
     const estimate = getTemporaryTransportEstimate(destination);
-    return `${estimate.label} (${estimate.zoneLabel} zone: ₦${estimate.cost.toLocaleString()}) • ${estimate.disclaimer}`;
+    return `${estimate.label} (${estimate.zoneLabel} zone: ${formatNaira(estimate.cost)}) • ${estimate.disclaimer}`;
   }
 }
 

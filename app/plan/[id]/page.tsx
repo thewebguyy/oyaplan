@@ -91,11 +91,12 @@ export default async function PlanPage({ params, searchParams }: PlanPageProps) 
   let spendSummary: Awaited<ReturnType<typeof getSpendSummaryForSpot>> = null;
 
   try {
-    if (plan.spot?.id) {
+    const targetSpotId = plan.spot?.id || plan.spot_id;
+    if (targetSpotId) {
       const [venueRes, menuRes, spendRes] = await Promise.all([
-        getPublicVenueById(plan.spot.id),
-        getVenueMenuItems(plan.spot.id),
-        getSpendSummaryForSpot(plan.spot.id),
+        getPublicVenueById(targetSpotId),
+        getVenueMenuItems(targetSpotId),
+        getSpendSummaryForSpot(targetSpotId),
       ]);
       venue = venueRes.data;
       menuItems = menuRes;
