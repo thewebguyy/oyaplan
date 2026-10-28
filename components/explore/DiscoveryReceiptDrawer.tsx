@@ -77,25 +77,25 @@ export function DiscoveryReceiptDrawer({
             animate={{ y: "0%", opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 w-full max-w-lg bg-white rounded-t-[28px] sm:rounded-[24px] shadow-2xl border border-[#E5E5DE] p-6 sm:p-7 max-h-[90vh] overflow-y-auto text-left"
+            className="relative z-10 w-full max-w-lg bg-white rounded-t-[28px] sm:rounded-[24px] shadow-[8px_8px_0px_#111111] border-t-2 sm:border-2 border-[#111111] p-6 sm:p-7 max-h-[90vh] overflow-y-auto text-left"
             role="dialog"
             aria-modal="true"
             aria-labelledby="receipt-drawer-title"
           >
             {/* Grab Handle for Mobile */}
-            <div className="w-12 h-1.5 bg-[#E5E5DE] rounded-full mx-auto mb-4 sm:hidden" />
+            <div className="w-12 h-1.5 bg-[#111111]/30 rounded-full mx-auto mb-4 sm:hidden" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-3 border-b border-[#E5E5DE] pb-4">
+            <div className="flex items-start justify-between gap-3 border-b-2 border-[#111111]/15 pb-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#111111] text-[#F9E828] text-[10px] font-mono font-bold uppercase tracking-wider mb-1.5">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#010528] text-[#F9E828] border border-[#F9E828]/30 text-[10px] font-mono font-bold uppercase tracking-wider mb-1.5">
                   <Receipt className="w-3 h-3 text-[#F9E828]" />
-                  <span>THE OUTSIDE MATH</span>
+                  <span>THE OUTSIDE MATH • TILL SLIP</span>
                 </div>
-                <h3 id="receipt-drawer-title" className="text-xl sm:text-2xl font-black text-[#111111] font-display uppercase tracking-tight">
+                <h3 id="receipt-drawer-title" className="text-xl sm:text-2xl font-black text-[#010528] font-display uppercase tracking-tight">
                   {spot.name}
                 </h3>
-                <p className="text-xs text-[#6B7280] font-mono">
+                <p className="text-xs text-[#111111]/60 font-mono">
                   {spot.areas?.name || spot.address || "Lagos Outing"}
                 </p>
               </div>
@@ -106,7 +106,7 @@ export function DiscoveryReceiptDrawer({
                   triggerHaptic("light");
                   onClose();
                 }}
-                className="p-2 rounded-full bg-[#F6F6F2] hover:bg-[#EAEAE2] text-[#111111] transition-colors cursor-pointer tap-feedback"
+                className="p-2 rounded-lg bg-[#FAF8F8] hover:bg-[#111111]/5 border border-[#111111]/20 text-[#111111] transition-all cursor-pointer tap-feedback"
                 aria-label="Close sample receipt"
               >
                 <X className="w-4 h-4" />
@@ -115,58 +115,58 @@ export function DiscoveryReceiptDrawer({
 
             {/* Receipt Body */}
             <div className="py-5 space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between text-[#555555]">
+              <div className="flex items-center justify-between text-[#111111]/70">
                 <span className="flex items-center gap-1.5">
-                  <Utensils className="w-3.5 h-3.5 text-[#111111]" />
+                  <Utensils className="w-3.5 h-3.5 text-[#008751]" />
                   <span>Food &amp; Drinks ({squadSize} {squadSize === 1 ? "person" : "squad"})</span>
                 </span>
-                <span className="font-bold text-[#111111] tabular-nums">
+                <span className="font-bold text-[#010528] tabular-nums">
                   ₦{foodTotal.toLocaleString("en-NG")}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-[#555555]">
+              <div className="flex items-center justify-between text-[#111111]/70">
                 <span className="flex items-center gap-1.5">
-                  <Car className="w-3.5 h-3.5 text-[#111111]" />
+                  <Car className="w-3.5 h-3.5 text-[#008751]" />
                   <span>Est. Bolt Round-Trip ({carsNeeded} {carsNeeded === 1 ? "car" : "cars"})</span>
                 </span>
-                <span className="font-bold text-[#111111] tabular-nums">
+                <span className="font-bold text-[#010528] tabular-nums">
                   ~₦{estimatedBolt.toLocaleString("en-NG")}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-[#555555]">
+              <div className="flex items-center justify-between text-[#111111]/70">
                 <span>Service &amp; Consumption Tax (12.5%)</span>
-                <span className="font-bold text-[#111111] tabular-nums">
+                <span className="font-bold text-[#010528] tabular-nums">
                   ₦{taxesAndService.toLocaleString("en-NG")}
                 </span>
               </div>
 
               {/* Perforated Receipt Divider */}
-              <div className="pt-3 border-t-2 border-dashed border-[#111111]/25 flex items-baseline justify-between font-bold">
+              <div className="pt-3 border-t-2 border-dashed border-[#111111]/30 flex items-baseline justify-between font-bold">
                 <div>
-                  <span className="text-[#111111] text-base font-black uppercase tracking-wider block font-display">
+                  <span className="text-[#010528] text-base font-black uppercase tracking-wider block font-display">
                     Total Outing Cost
                   </span>
-                  <span className="text-[11px] text-[#555555] block font-mono">
+                  <span className="text-[11px] text-[#111111]/60 block font-mono">
                     ~₦{landedPerPerson.toLocaleString("en-NG")} each ({squadSize} people)
                   </span>
                 </div>
-                <span className="text-xl sm:text-2xl font-black text-[#111111] tabular-nums">
+                <span className="text-xl sm:text-2xl font-black text-[#010528] font-mono tabular-nums">
                   ₦{landedTotal.toLocaleString("en-NG")}
                 </span>
               </div>
 
               {/* Budget Comparison Callout */}
               {budget && (
-                <div className={`p-3 rounded-xl border text-xs font-mono font-bold mt-2 ${
+                <div className={`p-3 rounded-xl border-2 text-xs font-mono font-bold mt-2 ${
                   fitsBudget 
-                    ? "bg-[#F6F6F2] border-[#E5E5DE] text-[#111111]" 
-                    : "bg-red-50 border-red-200 text-[#E54D2E]"
+                    ? "bg-[#008751]/10 border-[#008751]/30 text-[#008751]" 
+                    : "bg-red-50 border-[#D72638]/30 text-[#D72638]"
                 }`}>
                   {fitsBudget ? (
                     <span className="flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-[#111111]" />
+                      <ShieldCheck className="w-4 h-4 text-[#008751]" />
                       <span>Fits your ₦{budget.toLocaleString("en-NG")} budget with ₦{(budget - landedTotal).toLocaleString("en-NG")} to spare.</span>
                     </span>
                   ) : (
@@ -177,7 +177,7 @@ export function DiscoveryReceiptDrawer({
             </div>
 
             {/* Action Footer */}
-            <div className="pt-4 border-t border-[#E5E5DE] flex items-center gap-3">
+            <div className="pt-4 border-t-2 border-[#111111]/15 flex items-center gap-3">
               <Link
                 href={planUrl}
                 className="w-full"
@@ -188,7 +188,7 @@ export function DiscoveryReceiptDrawer({
               >
                 <button
                   type="button"
-                  className="w-full h-13 bg-[#111111] hover:bg-black text-[#F9E828] font-mono font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer tap-feedback"
+                  className="w-full h-13 bg-[#010528] hover:bg-[#008751] text-[#F9E828] hover:text-white border-2 border-[#010528] hover:border-[#008751] font-mono font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[3px_3px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center gap-2 cursor-pointer tap-feedback"
                 >
                   <span>Run the Plan →</span>
                 </button>

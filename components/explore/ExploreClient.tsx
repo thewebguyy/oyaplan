@@ -291,18 +291,19 @@ export function ExploreClient({
   ], []);
 
   return (
-    <div className="min-h-[100dvh] bg-[#F6F6F2] pt-20 sm:pt-24 pb-20 px-4 sm:px-6 md:px-8 font-sans selection:bg-[#F9E828] selection:text-[#111111]">
+    <div className="min-h-[100dvh] bg-[#FAF8F8] pt-20 sm:pt-24 pb-20 px-4 sm:px-6 md:px-8 font-sans selection:bg-[#F9E828] selection:text-[#111111]">
       <div className="max-w-5xl mx-auto space-y-8">
         
         {/* Editorial Discovery Hero */}
         <div className="text-left space-y-3">
-          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-black uppercase tracking-widest text-[#111111] bg-[#F9E828] border border-[#111111] px-3 py-1 rounded-full shadow-[2px_2px_0px_0px_#111111]">
-            <span>OYAPLAN SPOT DIRECTORY • VERIFIED DATA</span>
+          <div className="inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-widest text-[#010528] bg-[#F6C642] border-2 border-[#111111] px-3.5 py-1 rounded-full shadow-[2px_2px_0px_#111111]">
+            <span className="w-2 h-2 rounded-full bg-[#008751] animate-pulse" />
+            <span>OYAPLAN SPOT DIRECTORY • VERIFIED LAGOS DATA</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#111111] tracking-tight font-display uppercase">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#010528] tracking-tight font-display uppercase">
             {title}
           </h1>
-          <p className="text-sm md:text-base text-[#555555] max-w-2xl font-medium leading-relaxed">
+          <p className="text-sm md:text-base text-[#111111]/70 max-w-2xl font-medium leading-relaxed">
             {subtitle}
           </p>
         </div>
@@ -310,37 +311,56 @@ export function ExploreClient({
         {/* Curated Lagos Vibe Collections Rail */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#111111] flex items-center gap-1.5">
+            <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#010528] flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-[#008751]" />
               <span>Curated Lagos Vibe Collections</span>
             </span>
-            <span className="text-[10px] font-mono font-bold text-[#777777] hidden sm:inline">
+            <span className="text-[10px] font-mono font-bold text-[#111111]/50 hidden sm:inline">
               1-Tap Vibe Filters
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
-            {CURATED_LAGOS_PACKS.map((pack) => (
-              <button
-                key={pack.id}
-                type="button"
-                onClick={() => {
-                  triggerHaptic("selection");
-                  pack.apply();
-                }}
-                className="p-3 bg-white hover:bg-[#FFFEE5] border-2 border-[#111111] rounded-2xl shadow-[3px_3px_0px_0px_#111111] hover:shadow-[4px_4px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex flex-col justify-between text-left group cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xl">{pack.emoji}</span>
-                  <span className="text-[9px] font-mono font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#111111] text-[#F9E828]">
-                    {pack.badge}
-                  </span>
-                </div>
-                <div className="font-black text-xs text-[#111111] font-display uppercase tracking-tight group-hover:text-[#008751] transition-colors truncate">
-                  {pack.title}
-                </div>
-              </button>
-            ))}
+            {CURATED_LAGOS_PACKS.map((pack) => {
+              const isPackActive = 
+                (pack.id === "island-rooftops" && filters.category === "bar" && filters.areaSlug === "vi") ||
+                (pack.id === "mainland-suya" && filters.category === "restaurant" && filters.areaSlug === "yaba") ||
+                (pack.id === "sunday-brunch" && filters.category === "cafe" && filters.areaSlug === "ikoyi") ||
+                (pack.id === "low-damage" && filters.budget === 30000 && filters.squadSize === 2) ||
+                (pack.id === "beach-breeze" && filters.category === "beach" && filters.areaSlug === "lekki");
+
+              return (
+                <button
+                  key={pack.id}
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic("selection");
+                    pack.apply();
+                  }}
+                  className={`p-3.5 border-2 border-[#111111] rounded-2xl shadow-[3px_3px_0px_#111111] hover:shadow-[5px_5px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex flex-col justify-between text-left group cursor-pointer ${
+                    isPackActive 
+                      ? "bg-[#010528] text-white" 
+                      : "bg-white hover:bg-[#FAF8F8] text-[#111111]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xl">{pack.emoji}</span>
+                    <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                      isPackActive
+                        ? "bg-[#F6C642] text-[#010528] border-[#F6C642]"
+                        : "bg-[#010528] text-[#F9E828] border-[#010528]"
+                    }`}>
+                      {pack.badge}
+                    </span>
+                  </div>
+                  <div className={`font-black text-xs font-display uppercase tracking-tight transition-colors truncate ${
+                    isPackActive ? "text-[#F9E828]" : "text-[#010528] group-hover:text-[#008751]"
+                  }`}>
+                    {pack.title}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -366,7 +386,7 @@ export function ExploreClient({
                 triggerHaptic("selection");
                 setIsDecideModalOpen(true);
               }}
-              className="h-[50px] px-3.5 sm:px-4 rounded-2xl bg-[#111111] hover:bg-black text-[#F9E828] border-2 border-[#111111] font-mono font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shrink-0 tap-feedback cursor-pointer shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+              className="h-[52px] px-3.5 sm:px-4 rounded-2xl bg-[#010528] hover:bg-[#008751] text-[#F9E828] hover:text-white border-2 border-[#111111] font-mono font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shrink-0 tap-feedback cursor-pointer shadow-[3px_3px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               aria-label="Decide for us: randomize an eligible Lagos spot"
             >
               <Sparkles className="w-4 h-4 text-[#F9E828]" />
@@ -377,16 +397,16 @@ export function ExploreClient({
               type="button"
               onClick={() => setIsFilterSheetOpen(true)}
               aria-label={`Open filters. ${activeFilterCount} active filters`}
-              className={`h-[50px] px-4 rounded-2xl border-2 font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 tap-feedback cursor-pointer shadow-[3px_3px_0px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
+              className={`h-[52px] px-4 rounded-2xl border-2 border-[#111111] font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 tap-feedback cursor-pointer shadow-[3px_3px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
                 activeFilterCount > 0
-                  ? "bg-[#111111] border-[#111111] text-[#F9E828]"
-                  : "bg-white border-[#111111] text-[#111111] hover:bg-[#F6F6F2]"
+                  ? "bg-[#010528] text-[#F9E828]"
+                  : "bg-white text-[#111111] hover:bg-[#FAF8F8]"
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>
               {activeFilterCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-[#F9E828] text-[#111111] text-[10px] flex items-center justify-center font-black">
+                <span className="w-5 h-5 rounded-full bg-[#F9E828] text-[#010528] text-[10px] flex items-center justify-center font-black">
                   {activeFilterCount}
                 </span>
               )}
@@ -394,10 +414,10 @@ export function ExploreClient({
           </div>
 
           {/* Sticky Horizontal Filter Rail for Mobile & Desktop */}
-          <div className="sticky top-[56px] z-30 bg-[#F6F6F2]/95 backdrop-blur-md py-2.5 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 border-y border-[#E5E5DE] space-y-2">
+          <div className="sticky top-[56px] z-30 bg-[#FAF8F8]/95 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 border-y-2 border-[#111111]/15 space-y-2.5">
             {/* Quick Budget Pills (Horizontal Snap Rail) */}
             <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none snap-x">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280] font-bold shrink-0 mr-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#111111]/60 font-bold shrink-0 mr-1">
                 Budget:
               </span>
               {BUDGET_PILLS.map((pill) => {
@@ -407,10 +427,10 @@ export function ExploreClient({
                     key={pill.label}
                     type="button"
                     onClick={() => handleUpdateFilters({ budget: pill.value })}
-                    className={`py-1.5 px-3 rounded-full border text-xs font-mono font-bold shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                    className={`py-1.5 px-3 rounded-full border-2 text-xs font-mono font-bold shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                       isSelected
-                        ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
-                        : "bg-white border-[#E5E5DE] text-[#555555] hover:text-[#111111] hover:border-[#111111]"
+                        ? "bg-[#010528] border-[#010528] text-[#F9E828] shadow-[2px_2px_0px_#111111]"
+                        : "bg-white border-[#111111]/20 text-[#111111]/70 hover:text-[#111111] hover:border-[#111111]"
                     }`}
                   >
                     {pill.label}
@@ -425,10 +445,10 @@ export function ExploreClient({
                 <button
                   type="button"
                   onClick={() => handleUpdateFilters({ areaSlug: "all" })}
-                  className={`py-1 px-3 rounded-full border text-xs font-bold uppercase tracking-wider shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                  className={`py-1.5 px-3 rounded-full border-2 text-xs font-mono font-bold uppercase tracking-wider shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                     filters.areaSlug === "all"
-                      ? "bg-[#111111] border-[#111111] text-white shadow-xs"
-                      : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
+                      ? "bg-[#010528] border-[#010528] text-white shadow-[2px_2px_0px_#111111]"
+                      : "bg-white border-[#111111]/20 text-[#111111]/70 hover:border-[#111111] hover:text-[#111111]"
                   }`}
                 >
                   All Lagos ({initialSpots.length})
@@ -440,10 +460,10 @@ export function ExploreClient({
                       key={area.slug}
                       type="button"
                       onClick={() => handleUpdateFilters({ areaSlug: area.slug })}
-                      className={`py-1 px-3 rounded-full border text-xs font-bold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                      className={`py-1.5 px-3 rounded-full border-2 text-xs font-mono font-bold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                         isSelected
-                          ? "bg-[#111111] border-[#111111] text-[#F9E828] shadow-xs"
-                          : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
+                          ? "bg-[#010528] border-[#010528] text-[#F9E828] shadow-[2px_2px_0px_#111111]"
+                          : "bg-white border-[#111111]/20 text-[#111111]/70 hover:border-[#111111] hover:text-[#111111]"
                       }`}
                     >
                       {area.name} {area.activeSpotCount ? `(${area.activeSpotCount})` : ""}
@@ -462,10 +482,10 @@ export function ExploreClient({
                     key={cat.value}
                     type="button"
                     onClick={() => handleUpdateFilters({ category: cat.value })}
-                    className={`py-1 px-3 rounded-full border text-xs font-bold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
+                    className={`py-1.5 px-3 rounded-full border-2 text-xs font-mono font-bold uppercase tracking-wide shrink-0 transition-all snap-start tap-feedback cursor-pointer ${
                       isSelected
-                        ? "bg-[#111111] border-[#111111] text-white shadow-xs"
-                        : "bg-white border-[#E5E5DE] text-[#555555] hover:border-[#111111]"
+                        ? "bg-[#010528] border-[#010528] text-white shadow-[2px_2px_0px_#111111]"
+                        : "bg-white border-[#111111]/20 text-[#111111]/70 hover:border-[#111111] hover:text-[#111111]"
                     }`}
                   >
                     {cat.label}
@@ -476,32 +496,34 @@ export function ExploreClient({
           </div>
 
           {/* Quick Active Controls Banner */}
-          <div className="p-3 bg-white rounded-xl border border-[#E5E5DE] shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-            <div className="flex items-center gap-4 flex-wrap">
+          <div className="p-3.5 bg-white rounded-xl border-2 border-[#111111] shadow-[3px_3px_0px_rgba(1,5,40,0.06)] flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+            <div className="flex items-center gap-5 flex-wrap">
               {/* Squad Selector Quick Indicator */}
-              <div className="flex items-center gap-1.5 text-[#555555] font-bold">
-                <Users className="w-4 h-4 text-[#111111]" />
+              <div className="flex items-center gap-2 text-[#111111]/70 font-bold">
+                <Users className="w-4 h-4 text-[#008751]" />
                 <span>Squad:</span>
-                <span className="font-black text-[#111111]">{filters.squadSize} people</span>
+                <span className="font-black text-[#010528] px-2 py-0.5 rounded bg-[#FAF8F8] border border-[#111111]/15 tabular-nums">
+                  {filters.squadSize} {filters.squadSize === 1 ? "person" : "people"}
+                </span>
               </div>
 
               {/* Budget Quick Indicator */}
-              <div className="flex items-center gap-1.5 text-[#555555] font-bold">
-                <Wallet className="w-4 h-4 text-[#111111]" />
+              <div className="flex items-center gap-2 text-[#111111]/70 font-bold">
+                <Wallet className="w-4 h-4 text-[#008751]" />
                 <span>Budget:</span>
-                <span className="font-black text-[#111111]">
-                  {filters.budget ? `₦${filters.budget.toLocaleString("en-NG")}` : "Any"}
+                <span className="font-black text-[#010528] px-2 py-0.5 rounded bg-[#FAF8F8] border border-[#111111]/15 tabular-nums">
+                  {filters.budget ? `₦${filters.budget.toLocaleString("en-NG")}` : "Any budget"}
                 </span>
               </div>
             </div>
 
             {/* Quick Sorting Dropdown */}
-            <div className="flex items-center gap-1.5 text-[#6B7280]">
-              <ArrowUpDown className="w-3.5 h-3.5 text-[#111111]" />
+            <div className="flex items-center gap-2 text-[#111111]/70">
+              <ArrowUpDown className="w-3.5 h-3.5 text-[#008751]" />
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleUpdateFilters({ sortBy: e.target.value as SortMode })}
-                className="bg-transparent border-none text-xs font-black text-[#111111] focus:ring-0 p-0 cursor-pointer font-mono"
+                className="bg-[#FAF8F8] border border-[#111111]/20 rounded px-2 py-1 text-xs font-bold text-[#010528] focus:border-[#008751] focus:ring-0 cursor-pointer font-mono"
                 aria-label="Sort venues"
               >
                 <option value="best-fit">Sort: Best Match</option>
@@ -516,17 +538,21 @@ export function ExploreClient({
 
         {/* Results Metadata Bar */}
         <div className="flex items-center justify-between pt-2">
-          <h2 className="text-xs sm:text-sm font-mono font-black uppercase tracking-wider text-[#6B7280]">
-            {sortedSpots.length === 1 ? "1 Verified Spot Fits" : `${sortedSpots.length} Verified Spots Fit`}
+          <h2 className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#111111]/70 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#008751]" />
+            <span>{sortedSpots.length === 1 ? "1 Verified Spot Fits" : `${sortedSpots.length} Verified Spots Fit`}</span>
+            {filters.areaSlug !== "all" && (
+              <span className="text-[#111111] font-black">• {activeAreaName}</span>
+            )}
           </h2>
 
           {activeFilterCount > 0 && (
             <button
               type="button"
               onClick={handleResetFilters}
-              className="text-xs font-mono font-bold text-[#111111] hover:underline cursor-pointer"
+              className="text-xs font-mono font-bold text-[#010528] hover:text-[#008751] hover:underline cursor-pointer transition-colors"
             >
-              Reset filters
+              Reset filters ({activeFilterCount})
             </button>
           )}
         </div>

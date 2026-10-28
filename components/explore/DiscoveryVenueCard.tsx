@@ -112,7 +112,7 @@ export function DiscoveryVenueCard({
 
   return (
     <article
-      className={`group bg-white sm:rounded-[20px] rounded-none border-y sm:border border-[#E5E5DE] hover:border-[#111111] -mx-4 sm:mx-0 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden relative font-sans ${className}`}
+      className={`group bg-white sm:rounded-2xl rounded-none border-2 border-[#111111] hover:border-[#111111] -mx-4 sm:mx-0 shadow-[4px_4px_0px_#111111] hover:shadow-[7px_7px_0px_#111111] hover:-translate-y-0.5 transition-all duration-200 flex flex-col overflow-hidden relative font-sans ${className}`}
     >
       {/* Shortlist Save Stamp Impact Overlay */}
       {showStamp && (
@@ -122,7 +122,7 @@ export function DiscoveryVenueCard({
       )}
 
       {/* Top Image Section (Aspect 16:9 for media-rich editorial presentation) */}
-      <div className="relative aspect-[16/9] w-full bg-[#F6F6F2] overflow-hidden shrink-0">
+      <div className="relative aspect-[16/9] w-full bg-[#FAF8F8] overflow-hidden shrink-0 border-b-2 border-[#111111]">
         <Link 
           href={`/venue/${spot.id}`} 
           className="absolute inset-0 block overflow-hidden"
@@ -152,12 +152,12 @@ export function DiscoveryVenueCard({
         </Link>
 
         {/* Subtle Dark Gradient Overlay for bottom-left cost readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
 
         {/* Top Badges Row — Max 2 Badges */}
         <div className="absolute top-3 inset-x-3 flex items-start justify-between z-10 pointer-events-none">
           <span 
-            className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider backdrop-blur-md shadow-xs bg-[#111111] text-[#F9E828]"
+            className="px-2.5 py-1 rounded text-[10px] font-mono font-bold uppercase tracking-wider backdrop-blur-md shadow-xs bg-[#010528] text-[#F9E828] border border-[#F9E828]/30"
           >
             {spot.category || "Spot"}
           </span>
@@ -166,26 +166,26 @@ export function DiscoveryVenueCard({
             status={trustStatus}
             freshnessText={verificationText}
             size="sm"
-            className="shadow-xs backdrop-blur-md bg-white/95 text-[#111111] border-none font-mono text-[10px]"
+            className="shadow-xs backdrop-blur-md bg-white/95 text-[#111111] border border-[#111111]/20 font-mono text-[10px] font-bold"
           />
         </div>
 
         {/* Bottom-left Overlaid Cost & Contextual "What This Covers" */}
         <div className="absolute bottom-3 left-3 right-3 z-10 pointer-events-none">
           {pricePerPerson !== null ? (
-            <div className="inline-flex flex-col bg-[#111111]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/15 shadow-md max-w-[90%]">
-              <div className="flex items-baseline gap-1 font-mono">
+            <div className="inline-flex flex-col bg-[#010528]/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/20 shadow-md max-w-[92%]">
+              <div className="flex items-baseline gap-1.5 font-mono">
                 <span className="text-lg sm:text-xl font-black text-[#F9E828] tabular-nums tracking-tight">
                   ₦{pricePerPerson.toLocaleString("en-NG")}
                 </span>
-                <span className="text-[10px] text-gray-300 font-medium font-sans">/ person</span>
+                <span className="text-[10px] text-white/80 font-medium font-sans">/ person</span>
               </div>
-              <span className="text-[9px] font-mono text-gray-300 truncate">
+              <span className="text-[9px] font-mono text-[#FAF8F8]/80 truncate">
                 {whatThisCovers}
               </span>
             </div>
           ) : (
-            <div className="inline-block bg-[#111111]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/15 text-[10px] font-mono font-bold text-gray-300">
+            <div className="inline-block bg-[#010528]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-[10px] font-mono font-bold text-[#FAF8F8]/80">
               Price not verified yet
             </div>
           )}
@@ -197,20 +197,20 @@ export function DiscoveryVenueCard({
         <div>
           {/* Header Row: Title & Save Bookmark */}
           <div className="flex items-start justify-between gap-2">
-            <div className="space-y-1 min-w-0">
+            <div className="space-y-1 min-w-0 flex-1">
               <Link 
                 href={`/venue/${spot.id}`} 
-                className="group-hover:text-[#111111] transition-colors block"
+                className="group-hover:text-[#008751] transition-colors block"
               >
-                <h3 className="text-lg sm:text-xl font-black text-[#111111] font-display uppercase tracking-tight truncate">
+                <h3 className="text-lg sm:text-xl font-black text-[#010528] font-display uppercase tracking-tight truncate">
                   {spot.name}
                 </h3>
               </Link>
-              <p className="text-xs text-[#6B7280] font-mono flex items-center gap-1 truncate">
-                <MapPin className="w-3.5 h-3.5 text-[#111111] shrink-0" />
+              <p className="text-xs text-[#111111]/70 font-mono flex items-center gap-1.5 truncate">
+                <MapPin className="w-3.5 h-3.5 text-[#008751] shrink-0" />
                 <span className="font-bold text-[#111111] truncate">{areaName}</span>
-                <span>•</span>
-                <span className="truncate">{spot.address}</span>
+                <span className="text-[#111111]/40">•</span>
+                <span className="truncate text-[#111111]/60">{spot.address}</span>
               </p>
             </div>
 
@@ -219,10 +219,10 @@ export function DiscoveryVenueCard({
               type="button"
               onClick={handleSaveClick}
               aria-label={isSaved ? `Remove ${spot.name} from saved` : `Save ${spot.name}`}
-              className={`p-2 rounded-xl border transition-all shrink-0 tap-feedback cursor-pointer ${
+              className={`p-2.5 rounded-xl border-2 transition-all shrink-0 tap-feedback cursor-pointer ${
                 isSaved
-                  ? "bg-[#111111] border-[#111111] text-[#F9E828]"
-                  : "bg-[#F6F6F2] border-[#E5E5DE] text-[#6B7280] hover:text-[#111111] hover:border-[#111111]"
+                  ? "bg-[#010528] border-[#010528] text-[#F9E828] shadow-[2px_2px_0px_#111111]"
+                  : "bg-[#FAF8F8] border-[#111111]/20 text-[#111111]/60 hover:text-[#111111] hover:border-[#111111]"
               }`}
             >
               {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
@@ -237,32 +237,32 @@ export function DiscoveryVenueCard({
               e.stopPropagation();
               onOpenReceipt?.();
             }}
-            className="mt-3 p-3.5 rounded-xl bg-[#F6F6F2] hover:bg-[#EAEAE2] border border-[#E5E5DE] hover:border-[#111111] flex items-baseline justify-between font-mono text-left w-full transition-all cursor-pointer group/price tap-feedback"
+            className="mt-3 p-3.5 rounded-xl bg-[#FAF8F8] hover:bg-white border-2 border-[#111111]/15 hover:border-[#111111] flex items-baseline justify-between font-mono text-left w-full transition-all cursor-pointer group/price tap-feedback shadow-[2px_2px_0px_rgba(1,5,40,0.04)]"
             aria-label={`View total outing cost receipt for ${spot.name}`}
           >
             <div>
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-[10px] uppercase font-bold text-[#6B7280] block font-mono">
+                <span className="text-[10px] uppercase font-bold text-[#111111]/60 block font-mono">
                   Total Outing Cost
                 </span>
-                <span className="text-[9px] font-mono font-bold text-[#111111] bg-white border border-[#E5E5DE] px-1.5 py-0.5 rounded group-hover/price:border-[#111111]">
+                <span className="text-[9px] font-mono font-bold text-[#010528] bg-white border border-[#111111]/20 px-1.5 py-0.5 rounded group-hover/price:border-[#008751] group-hover/price:text-[#008751]">
                   Receipt Slip ▾
                 </span>
               </div>
-              <div className="text-xs text-[#555555] font-mono">
+              <div className="text-xs text-[#111111]/70 font-mono">
                 {whatThisCovers}
               </div>
             </div>
 
             {estimatedTotal !== null && (
               <div className="text-right">
-                <span className="text-[10px] font-bold text-[#6B7280] block">
+                <span className="text-[10px] font-bold text-[#111111]/60 block">
                   {squadSize === 1 ? "Solo" : `Squad (${squadSize}x)`}
                 </span>
-                <span className="text-xs font-black text-[#111111] tabular-nums">
+                <span className="text-xs font-black text-[#010528] tabular-nums">
                   ~₦{estimatedTotal.toLocaleString("en-NG")}
                 </span>
-                <span className="text-[9px] text-[#6B7280] block">
+                <span className="text-[9px] text-[#111111]/60 block">
                   incl. ₦{transportInfo.cost.toLocaleString("en-NG")} transport
                 </span>
               </div>
@@ -273,15 +273,15 @@ export function DiscoveryVenueCard({
           {budget && estimatedTotal !== null && (
             <div className="mt-2 text-[11px] font-mono font-bold">
               {fitsBudget ? (
-                <span className="text-[#111111] flex items-center gap-1 flex-wrap">
-                  <Check className="w-3.5 h-3.5 stroke-[3] text-[#111111]" />
+                <span className="text-[#008751] flex items-center gap-1.5 flex-wrap">
+                  <Check className="w-3.5 h-3.5 stroke-[3] text-[#008751]" />
                   <span>Fits ₦{budget.toLocaleString("en-NG")} budget with transport</span>
                   {budgetRemaining !== null && budgetRemaining > 0 && (
-                    <span className="text-[#6B7280]">(₦{budgetRemaining.toLocaleString("en-NG")} left)</span>
+                    <span className="text-[#111111]/60">(₦{budgetRemaining.toLocaleString("en-NG")} left)</span>
                   )}
                 </span>
               ) : (
-                <span className="text-[#E54D2E] font-bold">
+                <span className="text-[#D72638] font-bold">
                   {(() => {
                     const diffOver = Math.abs(budgetRemaining || 0);
                     const kOver = diffOver >= 1000 ? `${(diffOver / 1000).toFixed(diffOver % 1000 === 0 ? 0 : 1)}k` : `${diffOver}`;
@@ -293,12 +293,12 @@ export function DiscoveryVenueCard({
           )}
 
           {/* Context Snippet */}
-          <div className="mt-3 pt-2.5 border-t border-[#E5E5DE] flex items-center justify-between text-xs font-mono">
-            <span className="font-bold text-[#555555] line-clamp-1 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-[#111111] shrink-0" />
+          <div className="mt-3 pt-2.5 border-t border-[#111111]/10 flex items-center justify-between text-xs font-mono">
+            <span className="font-bold text-[#111111]/70 line-clamp-1 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-[#008751] shrink-0" />
               <span>{firstVibe}</span>
             </span>
-            <span className="text-[10px] font-bold text-[#6B7280] shrink-0">
+            <span className="text-[10px] font-bold text-[#111111]/50 shrink-0">
               {verificationText}
             </span>
           </div>
@@ -308,7 +308,7 @@ export function DiscoveryVenueCard({
         <div className="pt-1 flex items-center gap-2">
           <Link
             href={`/venue/${spot.id}`}
-            className="px-3.5 py-2.5 rounded-xl border border-[#E5E5DE] hover:border-[#111111] bg-white text-[#111111] text-center text-xs font-bold uppercase tracking-wider transition-colors tap-feedback shrink-0"
+            className="px-4 py-2.5 rounded-xl border-2 border-[#111111]/25 hover:border-[#111111] bg-white hover:bg-[#FAF8F8] text-[#111111] text-center text-xs font-mono font-bold uppercase tracking-wider transition-all tap-feedback shrink-0"
           >
             Menu
           </Link>
@@ -316,7 +316,7 @@ export function DiscoveryVenueCard({
           <Link
             href={forgeUrl}
             aria-label={`Run plan for ${spot.name}`}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-[#111111] hover:bg-black text-[#F9E828] text-center text-xs font-black uppercase tracking-wider transition-all shadow-xs tap-feedback flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 py-2.5 px-4 rounded-xl bg-[#010528] hover:bg-[#008751] text-[#F9E828] hover:text-white border-2 border-[#010528] hover:border-[#008751] text-center text-xs font-mono font-black uppercase tracking-wider transition-all shadow-[2px_2px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none tap-feedback flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>Run the Plan →</span>
           </Link>

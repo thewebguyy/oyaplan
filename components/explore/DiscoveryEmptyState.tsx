@@ -41,16 +41,16 @@ export function DiscoveryEmptyState({
   const suggestedHigherBudget = currentBudget ? Math.round(currentBudget * 1.5 / 10000) * 10000 : null;
 
   return (
-    <div className="w-full max-w-lg mx-auto py-12 px-6 bg-white rounded-3xl border border-[#E5E7EB] text-center shadow-xs space-y-6">
-      <div className="w-16 h-16 rounded-2xl bg-[#008751]/10 text-[#008751] flex items-center justify-center mx-auto">
-        <Compass className="w-8 h-8" />
+    <div className="w-full max-w-lg mx-auto py-10 px-6 sm:px-8 bg-white rounded-2xl border-2 border-[#111111] text-center shadow-[6px_6px_0px_#111111] space-y-6">
+      <div className="w-14 h-14 rounded-xl bg-[#010528] text-[#F9E828] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] flex items-center justify-center mx-auto">
+        <Compass className="w-7 h-7" />
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xl font-black text-midnight-lagoon">
+        <h3 className="text-xl sm:text-2xl font-black text-[#010528] font-display uppercase tracking-tight">
           No verified spots fit all these constraints
         </h3>
-        <p className="text-xs text-text-muted max-w-md mx-auto leading-relaxed">
+        <p className="text-xs text-[#111111]/70 max-w-md mx-auto leading-relaxed font-mono">
           {constraints.length > 0 ? (
             <>We verified no spots {constraints.join(", ")}.</>
           ) : (
@@ -60,8 +60,8 @@ export function DiscoveryEmptyState({
       </div>
 
       {/* Relax One Thing Actions */}
-      <div className="pt-2 border-t border-[#E5E7EB] space-y-2.5 text-left">
-        <p className="text-[11px] font-black uppercase tracking-wider text-text-muted text-center">
+      <div className="pt-2 border-t-2 border-[#111111]/10 space-y-3 text-left">
+        <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#111111]/60 text-center">
           You can relax one constraint:
         </p>
 
@@ -70,10 +70,10 @@ export function DiscoveryEmptyState({
             <button
               type="button"
               onClick={onClearSearch}
-              className="w-full p-3 rounded-xl bg-[#FAFAF8] hover:bg-[#F4F3EF] border border-[#E5E7EB] text-xs font-black text-midnight-lagoon flex items-center justify-between transition-colors tap-feedback cursor-pointer"
+              className="w-full p-3.5 rounded-xl bg-[#FAF8F8] hover:bg-white border-2 border-[#111111]/20 hover:border-[#111111] text-xs font-mono font-bold text-[#111111] flex items-center justify-between transition-all shadow-[2px_2px_0px_rgba(1,5,40,0.04)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none tap-feedback cursor-pointer"
             >
               <span>Clear search query &ldquo;{searchQuery}&rdquo;</span>
-              <RotateCcw className="w-4 h-4 text-[#008751]" />
+              <RotateCcw className="w-4 h-4 text-[#008751] shrink-0" />
             </button>
           )}
 
@@ -81,10 +81,10 @@ export function DiscoveryEmptyState({
             <button
               type="button"
               onClick={() => onIncreaseBudget(suggestedHigherBudget)}
-              className="w-full p-3 rounded-xl bg-[#FAFAF8] hover:bg-[#F4F3EF] border border-[#E5E7EB] text-xs font-black text-midnight-lagoon flex items-center justify-between transition-colors tap-feedback cursor-pointer"
+              className="w-full p-3.5 rounded-xl bg-[#FAF8F8] hover:bg-white border-2 border-[#111111]/20 hover:border-[#111111] text-xs font-mono font-bold text-[#111111] flex items-center justify-between transition-all shadow-[2px_2px_0px_rgba(1,5,40,0.04)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none tap-feedback cursor-pointer"
             >
               <span>Increase budget to ₦{suggestedHigherBudget.toLocaleString("en-NG")}</span>
-              <PlusCircle className="w-4 h-4 text-[#008751]" />
+              <PlusCircle className="w-4 h-4 text-[#008751] shrink-0" />
             </button>
           )}
 
@@ -92,10 +92,10 @@ export function DiscoveryEmptyState({
             <button
               type="button"
               onClick={onExpandArea}
-              className="w-full p-3 rounded-xl bg-[#FAFAF8] hover:bg-[#F4F3EF] border border-[#E5E7EB] text-xs font-black text-midnight-lagoon flex items-center justify-between transition-colors tap-feedback cursor-pointer"
+              className="w-full p-3.5 rounded-xl bg-[#FAF8F8] hover:bg-white border-2 border-[#111111]/20 hover:border-[#111111] text-xs font-mono font-bold text-[#111111] flex items-center justify-between transition-all shadow-[2px_2px_0px_rgba(1,5,40,0.04)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none tap-feedback cursor-pointer"
             >
               <span>Expand to All Lagos Areas</span>
-              <Globe className="w-4 h-4 text-[#008751]" />
+              <Globe className="w-4 h-4 text-[#008751] shrink-0" />
             </button>
           )}
 
@@ -103,10 +103,10 @@ export function DiscoveryEmptyState({
             <button
               type="button"
               onClick={onClearVibe}
-              className="w-full p-3 rounded-xl bg-[#FAFAF8] hover:bg-[#F4F3EF] border border-[#E5E7EB] text-xs font-black text-midnight-lagoon flex items-center justify-between transition-colors tap-feedback cursor-pointer"
+              className="w-full p-3.5 rounded-xl bg-[#FAF8F8] hover:bg-white border-2 border-[#111111]/20 hover:border-[#111111] text-xs font-mono font-bold text-[#111111] flex items-center justify-between transition-all shadow-[2px_2px_0px_rgba(1,5,40,0.04)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none tap-feedback cursor-pointer"
             >
               <span>Clear vibe filter &ldquo;{activeVibe}&rdquo;</span>
-              <Sparkles className="w-4 h-4 text-[#008751]" />
+              <Sparkles className="w-4 h-4 text-[#008751] shrink-0" />
             </button>
           )}
 
@@ -114,7 +114,7 @@ export function DiscoveryEmptyState({
             <button
               type="button"
               onClick={onResetAll}
-              className="w-full py-2.5 text-center text-xs font-extrabold text-[#008751] hover:underline cursor-pointer"
+              className="w-full py-2.5 text-center text-xs font-mono font-bold uppercase tracking-wider text-[#010528] hover:text-[#008751] hover:underline transition-colors cursor-pointer"
             >
               Reset all filters to default
             </button>
