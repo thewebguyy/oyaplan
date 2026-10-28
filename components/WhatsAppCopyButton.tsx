@@ -137,18 +137,18 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled', sq
           transform: isPressed ? 'scale(0.96)' : 'scale(1)',
           transition: isPressed ? 'transform 80ms ease-out' : 'transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1)'
         }}
-        className={`w-full type-subheading flex items-center justify-center gap-2 h-[52px] rounded-[10px] tap-feedback border-2 whatsapp-confirm ${
+        className={`w-full type-subheading flex items-center justify-center gap-2 h-[52px] rounded-xl tap-feedback border-2 border-[#111111] shadow-[3px_3px_0px_#111111] font-black uppercase tracking-wider text-xs sm:text-sm cursor-pointer ${
           copied 
-            ? "bg-[#111111] border-[#111111] text-[#F9E828]" 
+            ? "bg-[#111111] text-[#F9E828]" 
             : variant === 'filled'
-              ? "bg-[#25D366] border-[#25D366] text-white hover:bg-[#128C7E] hover:border-[#128C7E]"
-              : "bg-white border-[#25D366] text-[#25D366] hover:bg-[#25D366]/5"
+              ? "bg-[#008751] hover:bg-[#007043] text-white"
+              : "bg-white text-[#008751] hover:bg-[#008751]/5"
         }`}
       >
         {sharing ? (
           <Loader2 className="w-[18px] h-[18px] animate-spin" />
         ) : copied ? (
-          <Check className="w-[18px] h-[18px]" />
+          <Check className="w-[18px] h-[18px] stroke-[3]" />
         ) : (
           <MessageSquare className="w-[18px] h-[18px]" />
         )}
@@ -164,12 +164,12 @@ export default function WhatsAppCopyButton({ plan, input, variant = 'filled', sq
       <Button
         onClick={handleShareLink}
         disabled={sharing}
-        className="w-full bg-surface-grey hover:bg-border-default text-text-secondary type-body flex items-center justify-center gap-2 h-[44px] transition-colors rounded-[10px] border-none tap-feedback"
+        className="w-full bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] type-body font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 h-[44px] transition-all rounded-xl tap-feedback cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
       >
         {sharing ? (
-          <Loader2 className="w-4 h-4 animate-spin text-brand-green" />
+          <Loader2 className="w-4 h-4 animate-spin text-[#008751]" />
         ) : (
-          <LinkIcon className="w-4 h-4 text-text-muted" />
+          <LinkIcon className="w-4 h-4 text-[#111111]" />
         )}
         {linkCopied ? (
           "Link copied!"

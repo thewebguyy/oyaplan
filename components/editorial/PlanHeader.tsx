@@ -59,38 +59,32 @@ export function PlanHeader({
   return (
     <div className={`p-6 sm:p-10 pb-8 flex flex-col items-center text-center ${getHeaderBg()}`}>
       {isStretch ? (
-        <div className="mb-6 flex items-center gap-2 bg-[#E54D2E]/10 border border-[#E54D2E]/30 text-[#E54D2E] px-4 py-1.5 rounded-full shadow-xs">
-          <span className="text-[11px] font-black uppercase tracking-[0.14em]">
-            THE STRETCH OPTION
-          </span>
+        <div className="mb-6 inline-flex items-center gap-2 bg-[#E54D2E]/10 border-2 border-[#E54D2E] text-[#E54D2E] px-3.5 py-1 rounded-md text-[10px] font-mono font-black uppercase tracking-widest shadow-[2px_2px_0px_#E54D2E]">
+          <span>THE STRETCH OPTION</span>
           <span className="text-[#E54D2E]/40">•</span>
-          <span className="text-[11px] font-mono font-bold">
-            Exceeds target by ₦{kOver} — the stretch option.
-          </span>
+          <span>Exceeds target by ₦{kOver} — the stretch option.</span>
         </div>
       ) : isTopPick ? (
-        <div className="mb-6 flex items-center gap-1.5 bg-[#111111] text-[#F9E828] px-4 py-1.5 rounded-full shadow-xs">
+        <div className="mb-6 inline-flex items-center gap-1.5 bg-[#111111] text-[#F9E828] border-2 border-[#111111] px-3.5 py-1 rounded-md text-[10px] font-mono font-black uppercase tracking-widest shadow-[2px_2px_0px_#008751]">
           <Sparkles className="w-3.5 h-3.5 text-[#F9E828]" />
-          <span className="text-[11px] font-black uppercase tracking-[0.14em]">Top Vibe Match</span>
+          <span>TOP VIBE MATCH</span>
         </div>
       ) : (
-        <div className="mb-6 flex items-center gap-2 bg-[#F6F6F2] border border-[#E5E5DE] text-[#111111] px-4 py-1.5 rounded-full shadow-xs">
-          <span className="text-[11px] font-black uppercase tracking-[0.14em]">
-            {getAlternativeLabel()}
-          </span>
+        <div className="mb-6 inline-flex items-center gap-2 bg-[#FAF7F2] border-2 border-[#111111] text-[#111111] px-3.5 py-1 rounded-md text-[10px] font-mono font-black uppercase tracking-widest shadow-[2px_2px_0px_#111111]">
+          <span>{getAlternativeLabel()}</span>
         </div>
       )}
 
-      {/* High-Converting Image Frame */}
+      {/* High-Converting Image Frame: Tactile Urban Ledger Format */}
       <Link 
         href={venueHref}
         aria-label={`Explore verified details and full menu for ${plan.spot.name}`}
-        className={`w-full max-w-2xl aspect-[16/9] mb-8 rounded-[24px] overflow-hidden img-zoom-container relative border block group cursor-pointer ${
+        className={`w-full max-w-2xl aspect-[16/9] mb-6 rounded-2xl overflow-hidden img-zoom-container relative block group cursor-pointer border-2 transition-transform duration-200 ${
           isStretch
-            ? "border-[#E54D2E]/40 shadow-xl ring-1 ring-[#E54D2E]/30"
+            ? "border-[#E54D2E] shadow-[6px_6px_0px_#E54D2E]"
             : isTopPick 
-            ? "border-[#111111] shadow-[0_16px_36px_-8px_rgba(17,17,17,0.18)] ring-1 ring-[#111111]/20" 
-            : "border-black/5 shadow-xl"
+            ? "border-[#111111] shadow-[6px_6px_0px_#111111]" 
+            : "border-[#111111] shadow-[4px_4px_0px_#111111]"
         }`}
       >
         <VenueImage 
@@ -99,43 +93,43 @@ export function PlanHeader({
           fallbackCategory={plan.spot.category}
           className="img-zoom group-hover:scale-105 transition-transform duration-500"
         />
-        {/* Subtle Dark Vignette & Live Badge Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/20 group-hover:from-black/80 transition-colors" />
+        {/* Subtle Dark Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/20 group-hover:from-black/85 transition-colors" />
         
         {/* Top hover indicator */}
-        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md text-[#111827] px-3 py-1.5 rounded-full text-xs font-bold shadow-md opacity-90 group-hover:opacity-100 group-hover:bg-[#111111] group-hover:text-[#F9E828] transition-all flex items-center gap-1">
+        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md text-[#111111] border border-[#111111]/20 px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-md opacity-90 group-hover:opacity-100 group-hover:bg-[#111111] group-hover:text-[#F9E828] transition-all flex items-center gap-1.5">
           <span>View Venue &amp; Menu</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </div>
 
         {/* Bottom Floating Pill Indicators */}
         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-bold pointer-events-none">
-          <span className="inline-flex items-center gap-1 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-[11px] font-mono uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1.5 bg-black/85 backdrop-blur-md px-3 py-1 rounded-md border border-white/20 text-[11px] font-mono uppercase tracking-wider">
             <MapPin className="w-3 h-3 text-[#F9E828]" />
             <span>{areaLabel}</span>
           </span>
         </div>
       </Link>
 
-      <h2 className="type-display-product text-[#111111] uppercase tracking-tight text-xl sm:text-3xl font-black mb-2 font-display">
+      <h2 className="type-display-product text-[#111111] uppercase tracking-tight text-2xl sm:text-3xl lg:text-4xl font-black mb-2 font-display">
         {plan.title || getHeadline()}
       </h2>
       <div className="flex items-center gap-2 justify-center flex-col sm:flex-row">
         <Link 
           href={venueHref}
-          className="type-tagline text-[#555555] hover:text-[#111111] text-lg font-semibold inline-flex items-center gap-1.5 transition-colors group cursor-pointer"
+          className="type-tagline text-[#444444] hover:text-[#111111] text-lg font-bold inline-flex items-center gap-1.5 transition-colors group cursor-pointer"
         >
           <span>{plan.subtitle || `at ${plan.spot.name}`}</span>
           <ExternalLink className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all text-[#111111]" />
         </Link>
       </div>
 
-      {/* Max 2 Clean Badges */}
+      {/* Clean Badges: Distinctive Rectangular Ledger Badges */}
       <div className="flex flex-wrap gap-2 justify-center mt-4 select-none">
-        <span className="px-3 py-1 bg-[#111111] text-[#F9E828] rounded-md text-[11px] font-mono font-bold uppercase tracking-wider shadow-xs">
+        <span className="px-3 py-1 bg-[#111111] text-[#F9E828] border-2 border-[#111111] rounded-md text-[10px] font-mono font-bold uppercase tracking-wider shadow-xs">
           ✓ {plan.spot.has_food === false ? "VERIFIED ADMISSION" : "MENU VERIFIED"}
         </span>
-        <span className="px-3 py-1 bg-[#F6F6F2] border border-[#E5E5DE] text-[#111111] rounded-md text-[11px] font-mono font-bold uppercase tracking-wider">
+        <span className="px-3 py-1 bg-[#FAF7F2] border-2 border-[#111111] text-[#111111] rounded-md text-[10px] font-mono font-bold uppercase tracking-wider shadow-xs">
           {plan.spot.category || 'Spot'} • {priceTier}
         </span>
       </div>

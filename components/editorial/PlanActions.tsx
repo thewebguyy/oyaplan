@@ -96,7 +96,7 @@ export function PlanActions({
         onClick={handleSavePlan}
         disabled={isSaving || isSaved}
         variant="outline"
-        className={`w-full md:w-auto h-12 px-6 rounded-[12px] type-label flex-1 md:flex-none transition-colors border-border-default text-text-primary hover:bg-surface-grey ${isSaved ? '!bg-brand-green/10 !text-brand-green !border-transparent' : ''}`}
+        className={`w-full md:w-auto h-12 px-6 rounded-xl type-label flex-1 md:flex-none transition-all border-2 border-[#111111] text-[#111111] bg-white hover:bg-[#FAF7F2] shadow-[2px_2px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] font-black uppercase tracking-wider text-xs ${isSaved ? '!bg-[#008751]/10 !text-[#008751] !border-[#008751] !shadow-none' : ''}`}
       >
         {isSaving ? (
           <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -110,7 +110,7 @@ export function PlanActions({
 
       {planId ? (
         <Link href={`/plan/${planId}`} className="w-full md:w-auto flex-1 md:flex-none">
-          <Button className="w-full h-12 px-6 rounded-[12px] type-label bg-midnight-lagoon hover:bg-charcoal text-white border-none shadow-none flex items-center justify-center">
+          <Button className="w-full h-12 px-6 rounded-xl type-label bg-[#111111] hover:bg-[#1D1D1F] text-[#F9E828] border-2 border-[#111111] shadow-[3px_3px_0px_#008751] active:translate-x-[2px] active:translate-y-[2px] font-black uppercase tracking-wider text-xs flex items-center justify-center">
             View Plan <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </Link>

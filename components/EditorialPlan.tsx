@@ -53,17 +53,17 @@ export default function EditorialPlan({
 
   const getCardClasses = () => {
     if (isStretch) {
-      return "border-2 border-[#E54D2E]/40 shadow-[0px_24px_48px_-12px_rgba(229,77,46,0.12)] rounded-[24px] bg-white";
+      return "border-2 border-[#E54D2E] shadow-[8px_8px_0px_#E54D2E] rounded-[24px] bg-white";
     }
     if (isTopPick) {
-      return "border border-[#111111] shadow-[0px_24px_48px_-12px_rgba(17,17,17,0.12)] rounded-[24px] bg-white";
+      return "border-2 border-[#111111] shadow-[8px_8px_0px_#111111] rounded-[24px] bg-white";
     }
     // Alternative 1: Subtle warm ecru accent
     if (alternativeIndex === 0) {
-      return "bg-[#F6F6F2] border border-[#E5E5DE] shadow-xs hover:shadow-md card-lift rounded-[20px]";
+      return "bg-[#FAF7F2] border-2 border-[#111111] shadow-[4px_4px_0px_#111111] rounded-[20px]";
     }
     // Alternative 2: Clean neutral style
-    return "bg-white border border-[#E5E5DE] shadow-xs hover:shadow-md card-lift rounded-[20px]";
+    return "bg-white border-2 border-[#111111] shadow-[4px_4px_0px_#111111] rounded-[20px]";
   };
 
   return (
@@ -72,7 +72,7 @@ export default function EditorialPlan({
       {/* 1. Venue & Experience Header */}
       <PlanHeader input={input} plan={plan} isTopPick={isTopPick} alternativeIndex={alternativeIndex} />
 
-      <div className="w-full h-px bg-border-default/50" />
+      <div className="w-full h-0.5 bg-[#111111]/15" />
 
       <div className={`${isTopPick ? 'px-6 sm:px-10 py-10 bg-white' : 'px-6 sm:px-10 py-8 bg-transparent'} space-y-6`}>
         {/* 2. Flagship Damage Slip */}
@@ -90,10 +90,10 @@ export default function EditorialPlan({
           const diffOver = plan.totalCost - (originalBudget || input.budget);
           const kOver = diffOver >= 1000 ? `${(diffOver / 1000).toFixed(diffOver % 1000 === 0 ? 0 : 1)}k` : `${diffOver}`;
           return (
-            <div className="bg-[#FFF5F3] border border-[#E54D2E]/30 rounded-[20px] p-5 shadow-xs relative overflow-hidden flex items-start gap-4">
+            <div className="bg-[#FFF5F3] border-2 border-[#E54D2E] rounded-[16px] p-5 shadow-[3px_3px_0px_#E54D2E] relative overflow-hidden flex items-start gap-4">
               <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#E54D2E]" />
               <div className="space-y-1">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E54D2E] block">
+                <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#E54D2E] block">
                   The Stretch Option
                 </span>
                 <p className="type-body text-[#111111] text-sm font-semibold leading-relaxed">
@@ -106,10 +106,9 @@ export default function EditorialPlan({
 
         {/* 3. Decision Summary Callout */}
         {plan.decisionSummary && (
-          <div className="bg-[#FAF7F2] border border-[#E5E5DE] rounded-[20px] p-6 shadow-xs relative overflow-hidden flex items-start gap-4">
-            <div className="w-1.5 h-full absolute left-0 top-0 bottom-0 bg-[#111111]" />
+          <div className="bg-[#FAF7F2] border-2 border-[#111111] rounded-[16px] p-5 sm:p-6 shadow-[3px_3px_0px_#111111] relative overflow-hidden flex items-start gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#111111] block">Decision Summary</span>
+              <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#111111] block">OYAPLAN DECISION AUDIT</span>
               <p className="type-body text-[#111111] text-sm font-semibold leading-relaxed">
                 {plan.decisionSummary}
               </p>
@@ -118,7 +117,7 @@ export default function EditorialPlan({
         )}
 
         {/* 4. Unified Landed Guarantee & Why We Picked This Spot (Collapsible Accordion for Mobile Simplicity) */}
-        <div className="bg-[#FAF7F2] border border-[#E5E5DE] rounded-[24px] overflow-hidden shadow-xs transition-all">
+        <div className="bg-[#FAF7F2] border-2 border-[#111111] rounded-[16px] overflow-hidden shadow-[3px_3px_0px_#111111] transition-all">
           <button
             type="button"
             onClick={() => setIsWhyDropdownOpen(!isWhyDropdownOpen)}

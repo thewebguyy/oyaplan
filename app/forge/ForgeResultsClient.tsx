@@ -206,7 +206,7 @@ export default function ForgeResultsClient({
     });
   };
 
-  const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput.startArea)?.areas?.name || forgeInput.startArea;
+  const startAreaLabel = allSpots.find(s => s.areas?.slug === forgeInput.startArea)?.areas?.name || forgeInput.startArea || "Lagos";
 
   // URL vibe mapper for redirecting back
   const VIBE_TO_URL_MAP: Record<string, string> = {
@@ -403,53 +403,81 @@ export default function ForgeResultsClient({
 
   return (
     <div className="max-w-4xl mx-auto space-y-10 pb-20 animate-holdup-slam">
-      {/* Recommendations Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2 animate-slide-up animation-delay-0">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 bg-[#111111] text-[#F9E828] text-[10px] font-mono font-bold uppercase rounded-full tracking-wider">
-              {allSpots.length > 0 ? Math.min(allSpots.length, 24) : 18} Venues Screened in {startAreaLabel}
-            </span>
+      {/* Recommendations Header: The Urban Ledger Masthead */}
+      <div className="space-y-4 px-2 animate-slide-up animation-delay-0">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 bg-[#111111] text-[#F9E828] border-2 border-[#111111] text-[10px] font-mono font-black uppercase tracking-widest rounded-md shadow-[2px_2px_0px_#008751]">
+                OYAPLAN LEDGER • {allSpots.length > 0 ? Math.min(allSpots.length, 24) : 18} VENUES SCREENED IN {startAreaLabel.toUpperCase()}
+              </span>
+            </div>
+            <h1 className="font-display text-[#111111] text-3xl sm:text-4xl lg:text-5xl tracking-tight font-black uppercase">
+              Your Outing Cost &amp; Plan
+            </h1>
+            <p className="type-body text-[#444444] font-medium text-sm sm:text-base max-w-2xl">
+              Estimated outing spend under <span className="text-[#111111] font-bold font-mono">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-[#111111] font-bold">{forgeInput.squadSize} {forgeInput.squadSize === 1 ? "person" : "people"}</span> starting from <span className="text-[#111111] font-bold">{startAreaLabel}</span>. Full breakdown includes venue dining and round-trip transport.
+            </p>
           </div>
-          <h1 className="font-display text-[#111111] text-2xl sm:text-3xl lg:text-4xl tracking-tight font-black uppercase">
-            Your Outing Cost &amp; Plan
-          </h1>
-          <p className="type-body text-[#555555] font-medium text-sm sm:text-base">
-            Verified total cost under <span className="text-[#111111] font-bold font-mono">₦{forgeInput.budget.toLocaleString()}</span> for <span className="text-[#111111] font-bold">{forgeInput.squadSize} {forgeInput.squadSize === 1 ? "person" : "people"}</span> starting from <span className="text-[#111111] font-bold">{startAreaLabel}</span>.
-          </p>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setIsAdjustingInline(!isAdjustingInline)}
+              className={`flex items-center justify-center gap-2 px-4 h-11 rounded-xl text-xs font-black uppercase tracking-wider border-2 border-[#111111] transition-transform active:translate-x-[1px] active:translate-y-[1px] cursor-pointer shadow-[2px_2px_0px_#111111] ${
+                isAdjustingInline ? "bg-[#111111] text-[#F9E828]" : "bg-white text-[#111111] hover:bg-[#FAF7F2]"
+              }`}
+            >
+              <Sliders className="w-4 h-4" />
+              <span>Adjust parameters</span>
+            </button>
+            <button 
+              className="bg-[#111111] hover:bg-[#1D1D1F] text-[#F9E828] border-2 border-[#111111] font-black text-xs uppercase tracking-wider h-11 px-5 rounded-xl transition-transform active:translate-x-[2px] active:translate-y-[2px] flex items-center justify-center gap-2 cursor-pointer shadow-[3px_3px_0px_#008751]"
+              onClick={() => router.refresh()}
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Shuffle Spots</span>
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsAdjustingInline(!isAdjustingInline)}
-            className={`type-label text-[#555555] transition-colors flex items-center gap-2 tap-feedback px-3 py-2 rounded-xl text-xs font-bold border border-[#E5E5DE] ${
-              isAdjustingInline ? "bg-[#111111] text-[#F9E828]" : "bg-white hover:bg-[#F6F6F2]"
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            Adjust parameters
-          </button>
-          <button 
-            className="bg-[#111111] hover:bg-black text-[#F9E828] font-black text-xs uppercase tracking-wider h-[42px] px-5 rounded-xl tap-feedback btn-spring flex items-center gap-2 border-none shadow-xs transition-colors cursor-pointer"
-            onClick={() => router.refresh()}
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Shuffle Spots
-          </button>
+
+        {/* Structured Ledger Parameter Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 select-none">
+          <div className="bg-white border-2 border-[#111111] px-3.5 py-2 rounded-xl shadow-[2px_2px_0px_#111111]">
+            <span className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">TARGET BUDGET</span>
+            <span className="text-xs sm:text-sm font-mono font-black text-[#111111] tabular-nums">₦{forgeInput.budget.toLocaleString()}</span>
+          </div>
+          <div className="bg-white border-2 border-[#111111] px-3.5 py-2 rounded-xl shadow-[2px_2px_0px_#111111]">
+            <span className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">SQUAD SIZE</span>
+            <span className="text-xs sm:text-sm font-mono font-black text-[#111111]">{forgeInput.squadSize} {forgeInput.squadSize === 1 ? "PERSON" : "PEOPLE"}</span>
+          </div>
+          <div className="bg-white border-2 border-[#111111] px-3.5 py-2 rounded-xl shadow-[2px_2px_0px_#111111]">
+            <span className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">STARTING ORIGIN</span>
+            <span className="text-xs sm:text-sm font-mono font-black text-[#111111] uppercase truncate block">{startAreaLabel}</span>
+          </div>
+          <div className="bg-white border-2 border-[#111111] px-3.5 py-2 rounded-xl shadow-[2px_2px_0px_#111111]">
+            <span className="text-[9px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">VIBE TARGET</span>
+            <span className="text-xs sm:text-sm font-mono font-black text-[#111111] uppercase">{forgeInput.vibe}</span>
+          </div>
         </div>
       </div>
 
-      {/* Inline Adjuster Panel */}
+      {/* Inline Adjuster Panel: Urban Ledger Adjustment Slip */}
       {isAdjustingInline && (
-        <div className="bg-white border border-border-default rounded-2xl p-6 shadow-lagoon animate-in slide-in-from-top duration-200 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-            <h3 className="text-sm font-black text-midnight-lagoon uppercase tracking-wider">Adjust Outing Parameters</h3>
-            <button onClick={() => setIsAdjustingInline(false)} className="text-text-muted hover:text-black">
+        <div className="bg-white border-2 border-[#111111] rounded-2xl p-6 shadow-[6px_6px_0px_#111111] animate-in slide-in-from-top duration-200 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b-2 border-[#111111]/15">
+            <h3 className="text-xs font-mono font-black text-[#111111] uppercase tracking-wider">
+              OYAPLAN LEDGER • ADJUST OUTING PARAMETERS
+            </h3>
+            <button 
+              onClick={() => setIsAdjustingInline(false)} 
+              className="p-1 rounded-md text-[#6B7280] hover:text-[#111111] hover:bg-[#FAF7F2] border border-transparent hover:border-[#111111]"
+              aria-label="Close adjustment panel"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Budget (₦)</label>
+              <label className="text-[10px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">Budget Ceiling (₦)</label>
               <input
                 type="text"
                 value={tempBudget}
@@ -459,11 +487,11 @@ export default function ForgeResultsClient({
                     setTempBudget(String(forgeInput.budget));
                   }
                 }}
-                className="w-full h-10 px-3 bg-surface-grey border border-border-default rounded-[8px] text-xs font-bold focus:outline-none"
+                className="w-full h-10 px-3 bg-[#FCFCFA] border-2 border-[#111111]/30 focus:border-[#111111] rounded-lg text-xs font-mono font-bold focus:outline-none"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Squad Size</label>
+              <label className="text-[10px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">Squad Size</label>
               <input
                 type="number"
                 min="1"
@@ -478,15 +506,15 @@ export default function ForgeResultsClient({
                     setTempSquadSize("20");
                   }
                 }}
-                className="w-full h-10 px-3 bg-surface-grey border border-border-default rounded-[8px] text-xs focus:outline-none"
+                className="w-full h-10 px-3 bg-[#FCFCFA] border-2 border-[#111111]/30 focus:border-[#111111] rounded-lg text-xs font-mono font-bold focus:outline-none"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Vibe</label>
+              <label className="text-[10px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">Vibe</label>
               <select
                 value={tempVibe}
                 onChange={(e) => setTempVibe(e.target.value)}
-                className="w-full h-10 px-2 bg-surface-grey border border-border-default rounded-[8px] text-xs focus:outline-none"
+                className="w-full h-10 px-2 bg-[#FCFCFA] border-2 border-[#111111]/30 focus:border-[#111111] rounded-lg text-xs font-mono font-bold focus:outline-none"
               >
                 <option value="Dinner">Date Night</option>
                 <option value="Chill">Chill Vibe</option>
@@ -497,11 +525,11 @@ export default function ForgeResultsClient({
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">Area</label>
+              <label className="text-[10px] font-mono font-bold text-[#6B7280] uppercase tracking-wider block">Area</label>
               <select
                 value={tempArea}
                 onChange={(e) => setTempArea(e.target.value)}
-                className="w-full h-10 px-2 bg-surface-grey border border-border-default rounded-[8px] text-xs focus:outline-none"
+                className="w-full h-10 px-2 bg-[#FCFCFA] border-2 border-[#111111]/30 focus:border-[#111111] rounded-lg text-xs font-mono font-bold focus:outline-none"
               >
                 <option value="anywhere">Anywhere</option>
                 {LocationService.getVerifiedAreas().map((a: Location) => (
@@ -515,14 +543,14 @@ export default function ForgeResultsClient({
           <div className="flex justify-end gap-3 pt-2">
             <button
               onClick={() => setIsAdjustingInline(false)}
-              className="px-4 h-9 border border-border-default text-text-primary text-xs font-bold uppercase rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 h-10 border-2 border-[#111111] text-[#111111] text-xs font-black uppercase rounded-lg hover:bg-[#FAF7F2] transition-colors shadow-[2px_2px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px]"
             >
               Cancel
             </button>
             <button
               onClick={handleApplyInlineAdjust}
               disabled={isPending}
-              className="px-5 h-9 bg-[#111111] hover:bg-[#2a2a2a] text-[#F9E828] text-xs font-black uppercase rounded-lg flex items-center gap-1 transition-colors"
+              className="px-5 h-10 bg-[#111111] hover:bg-[#1D1D1F] text-[#F9E828] border-2 border-[#111111] text-xs font-black uppercase rounded-lg flex items-center gap-1.5 transition-colors shadow-[3px_3px_0px_#008751] active:translate-x-[2px] active:translate-y-[2px]"
             >
               {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
               <span>Update Plan</span>
