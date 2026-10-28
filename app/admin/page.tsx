@@ -70,43 +70,47 @@ export default async function AdminDashboardPage() {
       {/* Primary Operational Checklist & Beta Coverage Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Quality Checklist */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+        <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-6 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] space-y-4">
+          <div className="flex items-center justify-between border-b border-[#111111]/10 pb-3">
+            <h2 className="font-display font-black text-sm text-[#111111] flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-[#008751]" /> Operational Checklist
-            </h3>
-            <span className="text-xs text-[#008751] font-bold">Auto-Monitored</span>
+            </h2>
+            <span className="font-mono text-[10px] font-bold text-[#008751] px-2 py-0.5 bg-[#008751]/10 border border-[#008751]/30 rounded uppercase tracking-wider">
+              Auto-Monitored
+            </span>
           </div>
 
-          <div className="space-y-3 text-xs font-medium text-gray-600">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <span>Venues Missing Hero Image</span>
-              <span className="font-bold text-red-600">{metrics.venuesMissingImagesCount}</span>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between p-3 bg-[#FAF8F8] border border-[#111111]/10 rounded hover:bg-white hover:border-[#111111]/20 transition-all">
+              <span className="font-mono text-xs font-bold text-[#111111]/80">Venues Missing Hero Image</span>
+              <span className="font-mono font-black text-base text-[#D72638] tabular-nums">{metrics.venuesMissingImagesCount}</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <span>Venues Missing Price Range</span>
-              <span className="font-bold text-amber-600">{metrics.venuesMissingPricesCount}</span>
+            <div className="flex items-center justify-between p-3 bg-[#FAF8F8] border border-[#111111]/10 rounded hover:bg-white hover:border-[#111111]/20 transition-all">
+              <span className="font-mono text-xs font-bold text-[#111111]/80">Venues Missing Price Range</span>
+              <span className="font-mono font-black text-base text-[#B45309] tabular-nums">{metrics.venuesMissingPricesCount}</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <span>Pending Scout Submissions</span>
-              <span className="font-bold text-blue-600">{metrics.pendingSubmissionsCount}</span>
+            <div className="flex items-center justify-between p-3 bg-[#FAF8F8] border border-[#111111]/10 rounded hover:bg-white hover:border-[#111111]/20 transition-all">
+              <span className="font-mono text-xs font-bold text-[#111111]/80">Pending Scout Submissions</span>
+              <span className="font-mono font-black text-base text-[#004B8E] tabular-nums">{metrics.pendingSubmissionsCount}</span>
             </div>
           </div>
         </div>
 
         {/* Beta Launch Coverage Gating */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+        <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-6 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] space-y-4">
+          <div className="flex items-center justify-between border-b border-[#111111]/10 pb-3">
+            <h2 className="font-display font-black text-sm text-[#111111] flex items-center gap-2">
               <Compass className="w-4 h-4 text-[#008751]" /> Beta Launch Coverage
-            </h3>
-            <span className="text-xs text-text-muted font-semibold">Active Gate</span>
+            </h2>
+            <span className="font-mono text-[10px] font-bold text-[#111111]/60 px-2 py-0.5 bg-[#111111]/5 border border-[#111111]/10 rounded uppercase tracking-wider">
+              Active Gate
+            </span>
           </div>
 
-          <div className="space-y-2 max-h-[140px] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
             {activeAreas.map((area) => (
-              <div key={area.id} className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl text-xs font-medium">
-                <span className="font-bold text-gray-900">{area.name}</span>
+              <div key={area.id} className="flex items-center justify-between p-2.5 bg-[#FAF8F8] border border-[#111111]/10 rounded hover:bg-white hover:border-[#111111]/20 transition-all text-xs font-mono">
+                <span className="font-bold text-[#111111]">{area.name}</span>
                 <StatusBadge 
                   status={area.isBetaLive ? "Beta Active" : "Gated (Deactivated)"} 
                   type={area.isBetaLive ? "success" : "default"} 
@@ -114,29 +118,32 @@ export default async function AdminDashboardPage() {
               </div>
             ))}
             {activeAreas.length === 0 && (
-              <p className="text-gray-400 py-4 text-center text-xs">No coverage areas found in database.</p>
+              <p className="font-mono text-gray-400 py-4 text-center text-xs">No coverage areas found in database.</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Recent Operational Activity Feed */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl">
-        <div className="flex items-center justify-between">
-          <h3 className="font-bold text-gray-900 text-sm">Recent Operational Activity Feed</h3>
-          <Clock className="w-4 h-4 text-gray-400" />
+      <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-6 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] space-y-4 max-w-4xl">
+        <div className="flex items-center justify-between border-b border-[#111111]/10 pb-3">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-[#008751]" />
+            <h2 className="font-display font-black text-sm text-[#111111]">Recent Operational Activity Feed</h2>
+          </div>
+          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#111111]/40">AUDIT LOG</span>
         </div>
 
-        <div className="space-y-3 text-xs font-medium text-gray-600">
+        <div className="space-y-2">
           {recentActivity.length === 0 ? (
-            <p className="text-gray-400 py-4 text-center">No recent admin activity logged.</p>
+            <p className="font-mono text-gray-400 py-4 text-center text-xs">No recent admin activity logged.</p>
           ) : (
             recentActivity.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl">
-                <div className="truncate">
-                  <span className="font-bold text-gray-900">{item.actor_email.split("@")[0]}</span>
-                  <span className="mx-1 text-gray-400">•</span>
-                  <span>{item.action}</span>
+              <div key={item.id} className="flex items-center justify-between p-3 bg-[#FAF8F8] border border-[#111111]/10 rounded hover:bg-white hover:border-[#111111]/20 transition-all text-xs">
+                <div className="flex items-center gap-2 min-w-0 pr-2">
+                  <span className="font-mono font-bold text-[#111111]">{item.actor_email.split("@")[0]}</span>
+                  <span className="text-[#111111]/30 font-mono">::</span>
+                  <span className="font-mono text-[#111111]/80 truncate">{item.action}</span>
                 </div>
                 <StatusBadge status={item.target_type} type="info" />
               </div>

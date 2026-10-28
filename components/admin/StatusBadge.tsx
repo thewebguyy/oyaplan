@@ -9,22 +9,23 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, type, className = "" }: StatusBadgeProps) {
   const normalized = status.toLowerCase();
 
-  let colorClasses = "bg-gray-100 text-gray-700 border-gray-200";
+  let colorClasses = "bg-[#111111]/5 text-[#111111]/80 border-[#111111]/20";
 
-  if (type === "success" || ["published", "accepted", "active", "approved"].includes(normalized)) {
-    colorClasses = "bg-emerald-50 text-emerald-700 border-emerald-200";
+  if (type === "success" || ["published", "accepted", "active", "approved", "beta active"].includes(normalized)) {
+    colorClasses = "bg-[#008751]/10 text-[#008751] border-[#008751]/30";
   } else if (type === "warning" || ["draft", "pending", "scheduled", "medium"].includes(normalized)) {
-    colorClasses = "bg-amber-50 text-amber-700 border-amber-200";
-  } else if (type === "error" || ["rejected", "ended", "paused", "high"].includes(normalized)) {
-    colorClasses = "bg-red-50 text-red-700 border-red-200";
+    colorClasses = "bg-[#F6C642]/20 text-[#92400E] border-[#F6C642]/60";
+  } else if (type === "error" || ["rejected", "ended", "paused", "high", "gated (deactivated)"].includes(normalized)) {
+    colorClasses = "bg-[#D72638]/10 text-[#D72638] border-[#D72638]/30";
   } else if (type === "info" || ["not registered", "low"].includes(normalized)) {
-    colorClasses = "bg-blue-50 text-blue-700 border-blue-200";
+    colorClasses = "bg-[#004B8E]/10 text-[#004B8E] border-[#004B8E]/30";
   }
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wider ${colorClasses} ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold border uppercase tracking-wider select-none ${colorClasses} ${className}`}
     >
+      <span className="w-1.5 h-1.5 rounded-full mr-1.5 bg-current shrink-0" />
       {status}
     </span>
   );

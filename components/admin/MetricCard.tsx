@@ -15,23 +15,26 @@ interface MetricCardProps {
 
 export function MetricCard({ label, value, subtext, href, icon, variant = "default" }: MetricCardProps) {
   const cardContent = (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer h-full">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{label}</span>
-        {icon && <span className="text-gray-400 group-hover:text-[#008751] transition-colors">{icon}</span>}
+    <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-5 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] hover:border-[#111111] hover:shadow-[4px_4px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] transition-all flex flex-col justify-between group cursor-pointer h-full relative overflow-hidden">
+      {/* Subtle top indicator bar */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-[#111111]/10 group-hover:bg-[#008751] transition-colors" />
+
+      <div className="flex items-center justify-between mb-3 pt-1">
+        <span className="font-mono text-[11px] font-bold text-[#111111]/70 uppercase tracking-wider">{label}</span>
+        {icon && <span className="text-[#111111]/40 group-hover:text-[#008751] transition-colors">{icon}</span>}
       </div>
 
       <div className="flex items-baseline justify-between">
-        <span className="text-3xl font-black text-gray-900 tracking-tight">{value}</span>
-        {href && <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />}
+        <span className="text-3xl sm:text-4xl font-mono font-black text-[#111111] tracking-tight tabular-nums">{value}</span>
+        {href && <ChevronRight className="w-4 h-4 text-[#111111]/40 group-hover:text-[#111111] group-hover:translate-x-1 transition-all" />}
       </div>
 
-      {subtext && <span className="text-[11px] font-semibold text-gray-400 mt-2">{subtext}</span>}
+      {subtext && <span className="text-[11px] font-mono font-medium text-[#111111]/60 mt-3 pt-2 border-t border-[#111111]/10">{subtext}</span>}
     </div>
   );
 
   if (href) {
-    return <Link href={href}>{cardContent}</Link>;
+    return <Link href={href} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008751] rounded-lg block h-full">{cardContent}</Link>;
   }
 
   return cardContent;

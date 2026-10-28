@@ -45,18 +45,25 @@ export function Sidebar({ userEmail = "admin@oyaplan.com", role = "admin" }: Sid
   ];
 
   return (
-    <aside className="w-full md:w-64 bg-[#010528] text-white flex flex-col justify-between shrink-0 border-r border-white/10 select-none md:sticky md:top-14 md:h-[calc(100vh-56px)] md:overflow-y-auto">
+    <aside className="w-full md:w-64 bg-[#010528] text-white flex flex-col justify-between shrink-0 border-r-2 border-[#111111]/40 select-none md:sticky md:top-14 md:h-[calc(100vh-56px)] md:overflow-y-auto">
       <div>
         {/* Brand Header */}
-        <div className="h-16 px-6 flex items-center justify-between border-b border-white/10">
-          <Link href="/admin" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-[#008751] text-white flex items-center justify-center font-black text-xs">
+        <div className="h-16 px-5 flex items-center justify-between border-b border-white/10 bg-[#010528]">
+          <Link href="/admin" className="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C642] rounded">
+            <span className="w-7 h-7 rounded bg-[#008751] text-white flex items-center justify-center font-mono font-black text-xs border border-white/20 shadow-[1px_1px_0px_#000]">
               OP
             </span>
-            <span className="font-extrabold text-sm tracking-tight text-white">Control Center</span>
+            <span className="font-display font-black text-sm tracking-tight text-white">Control Center</span>
           </Link>
-          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FCC630] text-[#00603A]">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#F6C642] text-[#010528] border border-[#E5B535]">
             v1.0
+          </span>
+        </div>
+
+        {/* Ledger Category Marker */}
+        <div className="px-4 pt-4 pb-1">
+          <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-white/40 block">
+            NAVIGATION // MODULES
           </span>
         </div>
 
@@ -73,17 +80,17 @@ export function Sidebar({ userEmail = "admin@oyaplan.com", role = "admin" }: Sid
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all tap-feedback ${
+                className={`flex items-center justify-between px-3 py-2 rounded text-xs font-mono font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F6C642] ${
                   isActive
-                    ? "bg-[#008751] text-white shadow-sm"
-                    : "text-white/70 hover:text-white hover:bg-white/5"
+                    ? "bg-[#008751] text-white border-l-4 border-l-[#F6C642] shadow-[2px_2px_0px_rgba(0,0,0,0.3)] pl-2"
+                    : "text-white/70 hover:text-white hover:bg-white/10 border-l-4 border-l-transparent"
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <Icon className="w-4 h-4" />
+                  <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-white/60"}`} />
                   <span>{item.name}</span>
                 </div>
-                {isActive && <ChevronRight className="w-3.5 h-3.5 text-white/80" />}
+                {isActive && <ChevronRight className="w-3.5 h-3.5 text-white/90" />}
               </Link>
             );
           })}
@@ -91,22 +98,22 @@ export function Sidebar({ userEmail = "admin@oyaplan.com", role = "admin" }: Sid
       </div>
 
       {/* User Footer */}
-      <div className="p-4 border-t border-white/10 bg-white/5 space-y-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#008751]/20 text-[#008751] flex items-center justify-center font-black text-xs border border-[#008751]/40">
+      <div className="p-4 border-t border-white/10 bg-white/[0.03] space-y-3">
+        <div className="flex items-center gap-2.5 p-2 rounded bg-white/[0.04] border border-white/5">
+          <div className="w-8 h-8 rounded bg-[#008751]/30 text-[#008751] flex items-center justify-center font-mono font-black text-xs border border-[#008751]/60">
             {userEmail.charAt(0).toUpperCase()}
           </div>
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-xs font-bold text-white truncate">{userEmail}</span>
-            <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider capitalize">
-              {role}
+            <span className="font-mono text-xs font-bold text-white truncate">{userEmail}</span>
+            <span className="font-mono text-[9px] font-semibold text-white/50 uppercase tracking-widest">
+              ROLE: {role}
             </span>
           </div>
         </div>
 
         <button
           onClick={() => signOutAdmin()}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-red-400 hover:bg-red-500/10 transition-colors tap-feedback"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded text-xs font-mono font-bold text-[#E54D2E] hover:bg-[#E54D2E]/15 hover:text-white border border-[#E54D2E]/30 active:translate-x-[1px] active:translate-y-[1px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E54D2E]"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
