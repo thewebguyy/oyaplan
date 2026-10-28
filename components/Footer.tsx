@@ -33,7 +33,7 @@ export default function Footer() {
     <footer className="relative w-full bg-[#111111] text-[#F6F6F2] rounded-t-[24px] sm:rounded-t-[36px] overflow-hidden border-t-2 border-[#222222] font-sans selection:bg-[#F9E828] selection:text-[#111111]">
       {/* ── Visual Anchor: Lekki-Ikoyi Link Bridge Skyline Watermark ── */}
       <div 
-        className="absolute inset-x-0 bottom-0 pointer-events-none select-none opacity-[0.06] sm:opacity-[0.08] overflow-hidden flex justify-end"
+        className="absolute inset-x-0 bottom-0 pointer-events-none select-none opacity-[0.05] sm:opacity-[0.07] overflow-hidden flex justify-end"
         aria-hidden="true"
       >
         <svg
@@ -83,7 +83,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center justify-between">
             {/* Left: FOMO Newsletter CTA */}
             <div className="lg:col-span-7 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A1A1A] border border-[#F9E828]/30 text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-[#F9E828]/40 text-[#F9E828] text-xs font-mono font-bold uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Lasgidi Dispatch</span>
               </div>
@@ -91,7 +91,7 @@ export default function Footer() {
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase font-display leading-[1.05]">
                   Don&apos;t dull.
                 </h2>
-                <p className="text-sm sm:text-base text-[#AAAAAA] font-medium mt-2 max-w-xl leading-relaxed">
+                <p className="text-sm sm:text-base text-[#D4D4D8] font-medium mt-2 max-w-xl leading-relaxed">
                   Get the latest spots, hidden gems, and menu updates dropped in your inbox before they cast.
                 </p>
               </div>
@@ -106,20 +106,20 @@ export default function Footer() {
                 ) : (
                   <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2.5 max-w-md">
                     <div className="relative flex-1">
-                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 pointer-events-none" />
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="yourname@domain.com"
                         required
-                        className="w-full h-12 pl-10 pr-4 rounded-xl bg-[#1A1A1A] border-2 border-white/15 focus:border-[#F9E828] focus:outline-hidden text-sm text-white placeholder:text-white/40 transition-colors font-medium"
+                        className="w-full h-12 pl-10 pr-4 rounded-xl bg-[#1C1C1E] border-2 border-white/20 focus:border-[#F9E828] focus:outline-none text-sm text-white placeholder:text-white/40 transition-colors font-medium"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="h-12 px-6 rounded-xl bg-[#F9E828] hover:bg-[#ffe600] active:scale-95 text-[#111111] font-display font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-[0_0_20px_rgba(249,232,40,0.3)] shrink-0 disabled:opacity-50"
+                      className="h-12 px-6 rounded-xl bg-[#F9E828] hover:bg-[#F6C642] active:scale-95 text-[#111111] font-display font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-[0_4px_16px_rgba(249,232,40,0.3)] shrink-0 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828]"
                     >
                       <span>{loading ? "Plugging..." : "Update Me"}</span>
                       <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
@@ -131,7 +131,7 @@ export default function Footer() {
 
             {/* Right: Stylized Brand Anchor & Danfo-themed Social Hub */}
             <div className="lg:col-span-5 flex flex-col lg:items-end justify-between space-y-6">
-              <Link href="/" className="inline-block group">
+              <Link href="/" className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828] rounded">
                 <Image
                   src="/logo.png"
                   alt="OyaPlan"
@@ -140,7 +140,7 @@ export default function Footer() {
                   className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-[1.02]"
                 />
               </Link>
-              <p className="text-xs sm:text-sm text-[#888888] font-medium lg:text-right max-w-sm">
+              <p className="text-xs sm:text-sm text-[#A8A8A2] font-medium lg:text-right max-w-sm">
                 Lagos&apos; verified outing calculator and price breakdown engine. Know the real cost before stepping out.
               </p>
 
@@ -152,7 +152,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="OyaPlan on X"
-                  className="w-10 h-10 rounded-xl bg-[#1A1A1A] border-2 border-white/10 text-white hover:bg-[#F9E828] hover:text-[#111111] hover:border-[#F9E828] hover:shadow-[0_4px_12px_rgba(249,232,40,0.25)] transition-all flex items-center justify-center tap-feedback cursor-pointer group"
+                  className="w-10 h-10 rounded-xl bg-[#1A1A1A] border-2 border-white/15 text-white hover:bg-[#F9E828] hover:text-[#111111] hover:border-[#F9E828] hover:shadow-[0_4px_12px_rgba(249,232,40,0.25)] transition-all flex items-center justify-center tap-feedback cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828]"
                 >
                   <svg className="w-4 h-4 fill-current transition-transform group-hover:scale-110" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -165,7 +165,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="OyaPlan on Instagram"
-                  className="w-10 h-10 rounded-xl bg-[#1A1A1A] border-2 border-white/10 text-white hover:bg-[#F9E828] hover:text-[#111111] hover:border-[#F9E828] hover:shadow-[0_4px_12px_rgba(249,232,40,0.25)] transition-all flex items-center justify-center tap-feedback cursor-pointer group"
+                  className="w-10 h-10 rounded-xl bg-[#1A1A1A] border-2 border-white/15 text-white hover:bg-[#F9E828] hover:text-[#111111] hover:border-[#F9E828] hover:shadow-[0_4px_12px_rgba(249,232,40,0.25)] transition-all flex items-center justify-center tap-feedback cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828]"
                 >
                   <svg className="w-4 h-4 fill-current transition-transform group-hover:scale-110" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -178,7 +178,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="OyaPlan on TikTok"
-                  className="w-10 h-10 rounded-xl bg-[#1A1A1A] border-2 border-white/10 text-white hover:bg-[#F9E828] hover:text-[#111111] hover:border-[#F9E828] hover:shadow-[0_4px_12px_rgba(249,232,40,0.25)] transition-all flex items-center justify-center tap-feedback cursor-pointer group"
+                  className="w-10 h-10 rounded-xl bg-[#1A1A1A] border-2 border-white/15 text-white hover:bg-[#F9E828] hover:text-[#111111] hover:border-[#F9E828] hover:shadow-[0_4px_12px_rgba(249,232,40,0.25)] transition-all flex items-center justify-center tap-feedback cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828]"
                 >
                   <svg className="w-4 h-4 fill-current transition-transform group-hover:scale-110" viewBox="0 0 24 24">
                     <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
@@ -196,15 +196,15 @@ export default function Footer() {
             <div className="col-span-2 md:col-span-1 space-y-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#F9E828]" />
-                <h3 className="font-display font-black text-xs uppercase tracking-widest text-white">
+                <h3 className="font-display font-black text-xs uppercase tracking-widest text-[#F9E828]">
                   OyaPlan
                 </h3>
               </div>
-              <p className="text-xs text-[#888888] leading-relaxed font-medium">
+              <p className="text-xs text-[#A8A8A2] leading-relaxed font-medium">
                 The only outing intelligence platform built specifically for how Lagosians actually spend, move, and flex.
               </p>
               <div className="pt-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#1C1C1E] border border-white/10 text-[10px] font-mono font-bold text-[#F9E828] uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] font-mono font-bold text-[#F9E828] uppercase tracking-wider">
                   Verified Outing Engine
                 </span>
               </div>
@@ -212,14 +212,15 @@ export default function Footer() {
 
             {/* Column 2: Set the Vibe */}
             <div>
-              <h3 className="font-display font-black text-xs uppercase tracking-widest text-white mb-5 flex items-center gap-2">
+              <h3 className="font-display font-black text-xs uppercase tracking-widest text-[#F9E828] mb-5 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828]" />
                 <span>Set the Vibe</span>
               </h3>
               <ul className="flex flex-col gap-3 font-medium text-xs sm:text-sm">
                 <li>
                   <Link
                     href="/guides"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Romantic Settings</span>
@@ -228,7 +229,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/guides"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Squad Linkups</span>
@@ -237,7 +238,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/guides"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Birthday Turn Up</span>
@@ -246,7 +247,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/guides"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Just Me (Solo Waka)</span>
@@ -257,14 +258,15 @@ export default function Footer() {
 
             {/* Column 3: Island or Mainland? */}
             <div>
-              <h3 className="font-display font-black text-xs uppercase tracking-widest text-white mb-5 flex items-center gap-2">
+              <h3 className="font-display font-black text-xs uppercase tracking-widest text-[#F9E828] mb-5 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828]" />
                 <span>Island or Mainland?</span>
               </h3>
               <ul className="flex flex-col gap-3 font-medium text-xs sm:text-sm">
                 <li>
                   <Link
                     href="/explore/ikeja"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Ikeja &amp; Environs</span>
@@ -273,7 +275,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/explore/lekki-phase-1"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Lekki / Ikate</span>
@@ -282,7 +284,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/explore/vi"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>VI / Ikoyi</span>
@@ -291,7 +293,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/explore/yaba"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Yaba / Surulere</span>
@@ -302,14 +304,15 @@ export default function Footer() {
 
             {/* Column 4: The Movement */}
             <div>
-              <h3 className="font-display font-black text-xs uppercase tracking-widest text-white mb-5 flex items-center gap-2">
+              <h3 className="font-display font-black text-xs uppercase tracking-widest text-[#F9E828] mb-5 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F9E828]" />
                 <span>The Movement</span>
               </h3>
               <ul className="flex flex-col gap-3 font-medium text-xs sm:text-sm">
                 <li>
                   <Link
                     href="/suggest-a-spot"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Plug a Spot</span>
@@ -318,7 +321,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/explore"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>The Full Directory</span>
@@ -327,7 +330,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/feedback"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Tell Us Your Mind</span>
@@ -336,7 +339,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/about"
-                    className="text-[#999999] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-1.5 group"
+                    className="text-[#D1D1CB] hover:text-[#F9E828] hover:translate-x-1 transition-all inline-flex items-center gap-2 group focus-visible:outline-none focus-visible:text-[#F9E828]"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#F9E828] transition-colors" />
                     <span>Our Story</span>
@@ -350,7 +353,7 @@ export default function Footer() {
         {/* ── BOTTOM BAR: THE LEGAL & DANFO SCROLL TO TOP ── */}
         <div className="pt-8 pb-12 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Culturally Grounded "Made In" Badge */}
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-[#777777] font-medium text-center md:text-left">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-[#A1A1AA] font-medium text-center md:text-left">
             <span>Built with 💛 and Traffic in Lagos, Nigeria. © {new Date().getFullYear()} OyaPlan.</span>
           </div>
 
@@ -358,19 +361,19 @@ export default function Footer() {
           <div className="flex items-center gap-6">
             <Link
               href="/privacy"
-              className="text-xs text-[#777777] hover:text-white transition-colors"
+              className="text-xs text-[#A1A1AA] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828] rounded"
             >
               Privacy
             </Link>
             <Link
               href="/terms"
-              className="text-xs text-[#777777] hover:text-white transition-colors"
+              className="text-xs text-[#A1A1AA] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828] rounded"
             >
               Terms
             </Link>
             <Link
               href="/beta"
-              className="text-xs text-[#F9E828] hover:underline font-bold font-mono transition-colors"
+              className="text-xs text-[#F9E828] hover:underline font-bold font-mono transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828] rounded"
             >
               Beta Program
             </Link>
@@ -381,11 +384,11 @@ export default function Footer() {
               onClick={scrollToTop}
               title="Drive to top of page"
               aria-label="Back to top"
-              className={`relative flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-full bg-[#1A1A1A] hover:bg-[#252525] border border-white/15 hover:border-[#F9E828] text-xs font-mono font-bold text-white transition-all cursor-pointer tap-feedback group ${
+              className={`relative flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-full bg-[#1A1A1A] hover:bg-[#252525] border border-white/20 hover:border-[#F9E828] text-xs font-mono font-bold text-white transition-all cursor-pointer tap-feedback group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9E828] ${
                 isDriving ? "-translate-y-3 opacity-90 transition-transform duration-500 ease-out" : ""
               }`}
             >
-              <span className="text-[10px] uppercase tracking-wider text-[#AAAAAA] group-hover:text-white">
+              <span className="text-[10px] uppercase tracking-wider text-[#D4D4D8] group-hover:text-white font-mono">
                 Top
               </span>
 
@@ -416,3 +419,4 @@ export default function Footer() {
     </footer>
   );
 }
+

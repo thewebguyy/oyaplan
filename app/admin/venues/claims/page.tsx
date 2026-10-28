@@ -50,7 +50,7 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
       <div className="flex items-center justify-between">
         <Link
           href="/admin/venues"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-white border-2 border-[#111111]/15 text-xs font-mono font-bold text-[#111111] hover:border-[#008751] hover:text-[#008751] active:translate-x-[1px] active:translate-y-[1px] shadow-[1px_1px_0px_rgba(0,0,0,0.05)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008751]"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Venues Catalog
         </Link>
@@ -63,70 +63,77 @@ export default async function AdminVenueClaimsPage({ searchParams }: AdminClaims
 
       {/* Pipeline Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="bg-white border border-amber-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">Pending Claims</span>
-            <Clock className="w-4 h-4 text-amber-500" />
+        <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-4 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] hover:border-[#111111] transition-all relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#F6C642]" />
+          <div className="flex items-center justify-between pt-1">
+            <span className="font-mono text-[10px] font-bold text-[#111111]/70 uppercase tracking-wider">Pending Claims</span>
+            <Clock className="w-4 h-4 text-[#B45309]" />
           </div>
-          <div className="text-2xl font-bold text-stone-900 mt-2">{stats.pendingClaims}</div>
-          <span className="text-[11px] text-stone-500 mt-0.5 block">Requires operator review</span>
+          <div className="text-2xl sm:text-3xl font-mono font-black text-[#111111] tabular-nums mt-2">{stats.pendingClaims}</div>
+          <span className="text-[10px] font-mono text-[#111111]/60 mt-2 pt-1.5 border-t border-[#111111]/10 block">Requires operator review</span>
         </div>
 
-        <div className="bg-white border border-emerald-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#008751] uppercase tracking-wider">Verified Partners</span>
+        <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-4 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] hover:border-[#111111] transition-all relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#008751]" />
+          <div className="flex items-center justify-between pt-1">
+            <span className="font-mono text-[10px] font-bold text-[#008751] uppercase tracking-wider">Verified Partners</span>
             <ShieldCheck className="w-4 h-4 text-[#008751]" />
           </div>
-          <div className="text-2xl font-bold text-stone-900 mt-2">{stats.verifiedPartners}</div>
-          <span className="text-[11px] text-stone-500 mt-0.5 block">Fully verified listings</span>
+          <div className="text-2xl sm:text-3xl font-mono font-black text-[#111111] tabular-nums mt-2">{stats.verifiedPartners}</div>
+          <span className="text-[10px] font-mono text-[#111111]/60 mt-2 pt-1.5 border-t border-[#111111]/10 block">Fully verified listings</span>
         </div>
 
-        <div className="bg-white border border-blue-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider">Awaiting Verification</span>
-            <FileText className="w-4 h-4 text-blue-500" />
+        <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-4 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] hover:border-[#111111] transition-all relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#004B8E]" />
+          <div className="flex items-center justify-between pt-1">
+            <span className="font-mono text-[10px] font-bold text-[#004B8E] uppercase tracking-wider">Awaiting Verification</span>
+            <FileText className="w-4 h-4 text-[#004B8E]" />
           </div>
-          <div className="text-2xl font-bold text-stone-900 mt-2">{stats.verificationPendingVenues}</div>
-          <span className="text-[11px] text-stone-500 mt-0.5 block">Submitted by partners</span>
+          <div className="text-2xl sm:text-3xl font-mono font-black text-[#111111] tabular-nums mt-2">{stats.verificationPendingVenues}</div>
+          <span className="text-[10px] font-mono text-[#111111]/60 mt-2 pt-1.5 border-t border-[#111111]/10 block">Submitted by partners</span>
         </div>
 
-        <div className="bg-white border border-purple-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-purple-700 uppercase tracking-wider">In Onboarding</span>
-            <Building2 className="w-4 h-4 text-purple-500" />
+        <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-4 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] hover:border-[#111111] transition-all relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#6D28D9]" />
+          <div className="flex items-center justify-between pt-1">
+            <span className="font-mono text-[10px] font-bold text-[#6D28D9] uppercase tracking-wider">In Onboarding</span>
+            <Building2 className="w-4 h-4 text-[#6D28D9]" />
           </div>
-          <div className="text-2xl font-bold text-stone-900 mt-2">{stats.onboardingVenues}</div>
-          <span className="text-[11px] text-stone-500 mt-0.5 block">Claimed but incomplete</span>
+          <div className="text-2xl sm:text-3xl font-mono font-black text-[#111111] tabular-nums mt-2">{stats.onboardingVenues}</div>
+          <span className="text-[10px] font-mono text-[#111111]/60 mt-2 pt-1.5 border-t border-[#111111]/10 block">Claimed but incomplete</span>
         </div>
 
-        <div className="bg-white border border-rose-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-700 uppercase tracking-wider">Open Corrections</span>
-            <AlertCircle className="w-4 h-4 text-rose-500" />
+        <div className="bg-white border-2 border-[#111111]/20 rounded-lg p-4 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] hover:border-[#111111] transition-all relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#D72638]" />
+          <div className="flex items-center justify-between pt-1">
+            <span className="font-mono text-[10px] font-bold text-[#D72638] uppercase tracking-wider">Open Corrections</span>
+            <AlertCircle className="w-4 h-4 text-[#D72638]" />
           </div>
-          <div className="text-2xl font-bold text-stone-900 mt-2">{stats.pendingChangeRequests}</div>
-          <span className="text-[11px] text-stone-500 mt-0.5 block">"Something incorrect?"</span>
+          <div className="text-2xl sm:text-3xl font-mono font-black text-[#111111] tabular-nums mt-2">{stats.pendingChangeRequests}</div>
+          <span className="text-[10px] font-mono text-[#111111]/60 mt-2 pt-1.5 border-t border-[#111111]/10 block">&quot;Something incorrect?&quot;</span>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 border-b border-stone-200 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 border-b-2 border-[#111111]/15 pb-3 overflow-x-auto">
         {filterTabs.map((tab: { key: string; label: string; badge?: number }) => {
           const isActive = status === tab.key;
           return (
             <Link
               key={tab.key}
               href={`/admin/venues/claims?status=${tab.key}`}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap ${isActive
-                  ? 'bg-[#010528] text-white shadow-sm'
-                  : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
-                }`}
+              className={`px-3 py-1.5 rounded text-xs font-mono font-bold transition-all flex items-center gap-1.5 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008751] ${
+                isActive
+                  ? 'bg-[#010528] text-white border-2 border-[#010528] shadow-[2px_2px_0px_#111111]'
+                  : 'bg-white text-[#111111]/70 hover:text-[#111111] hover:bg-[#FAF8F8] border-2 border-[#111111]/15'
+              }`}
             >
-              {tab.label}
+              <span>{tab.label}</span>
               {tab.badge !== undefined && tab.badge > 0 && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive ? 'bg-[#FCC630] text-[#010528]' : 'bg-stone-200 text-stone-700'
-                    }`}
+                  className={`text-[10px] px-1.5 py-0.2 rounded font-black font-mono ${
+                    isActive ? 'bg-[#F6C642] text-[#010528] border border-[#E5B535]' : 'bg-[#111111]/10 text-[#111111]'
+                  }`}
                 >
                   {tab.badge}
                 </span>

@@ -124,66 +124,84 @@ export default function BulkMediaUploadButton() {
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={uiState !== "idle"}
-        className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+        className="flex items-center gap-2 px-3.5 py-2 bg-[#008751] hover:bg-[#007345] text-white text-xs font-mono font-bold uppercase tracking-wider rounded border border-[#006e42] shadow-[2px_2px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:opacity-50 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008751]"
       >
-        {uiState === "parsing" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+        {uiState === "parsing" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
         {uiState === "parsing" ? "Parsing..." : "Bulk Upload Media"}
       </button>
 
       {errorMsg && uiState === "idle" && (
-        <div className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
-          <AlertTriangle className="w-4 h-4 inline mr-1" /> {errorMsg}
+        <div className="mt-2 text-xs font-mono font-bold text-[#D72638] bg-red-50 p-2.5 rounded border border-[#D72638]/30 flex items-center gap-1.5">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Preview Modal */}
       {uiState === "preview" && preview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Import Preview</h2>
-              <button onClick={reset} className="text-gray-400 hover:text-gray-600">
-                <XCircle className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="bg-white border-2 border-[#111111] rounded-lg shadow-[8px_8px_0px_#111111] w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="p-5 bg-[#010528] text-white flex items-center justify-between border-b-2 border-[#111111]">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#008751]" />
+                <h2 className="text-base font-display font-black text-white uppercase tracking-wider">
+                  Bulk Media Import Preview
+                </h2>
+              </div>
+              <button onClick={reset} className="text-white/60 hover:text-white transition-colors" title="Close">
+                <XCircle className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="p-6 bg-gray-50 flex gap-6 text-sm">
-              <div className="flex flex-col">
-                <span className="text-gray-500 font-medium text-xs uppercase">Detected</span>
-                <span className="font-bold text-gray-900 text-lg">{preview.previewRows.length} venues</span>
+            <div className="p-5 bg-[#FAF8F8] border-b border-[#111111]/10 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3 bg-white border border-[#111111]/15 rounded flex flex-col">
+                <span className="text-[#111111]/60 font-mono font-bold text-[10px] uppercase tracking-wider">Detected</span>
+                <span className="font-mono font-black text-[#111111] text-xl mt-1">{preview.previewRows.length} venues</span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500 font-medium text-xs uppercase">Ready to Import</span>
-                <span className="font-bold text-green-600 text-lg">{preview.matched}</span>
+              <div className="p-3 bg-white border border-emerald-300 rounded flex flex-col">
+                <span className="text-[#008751] font-mono font-bold text-[10px] uppercase tracking-wider">Ready to Import</span>
+                <span className="font-mono font-black text-[#008751] text-xl mt-1">{preview.matched}</span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500 font-medium text-xs uppercase">Not Found</span>
-                <span className="font-bold text-red-500 text-lg">{preview.unmatched}</span>
+              <div className="p-3 bg-white border border-red-300 rounded flex flex-col">
+                <span className="text-[#D72638] font-mono font-bold text-[10px] uppercase tracking-wider">Not Found</span>
+                <span className="font-mono font-black text-[#D72638] text-xl mt-1">{preview.unmatched}</span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500 font-medium text-xs uppercase">Ambiguous</span>
-                <span className="font-bold text-amber-500 text-lg">{preview.ambiguous}</span>
+              <div className="p-3 bg-white border border-amber-300 rounded flex flex-col">
+                <span className="text-[#B45309] font-mono font-bold text-[10px] uppercase tracking-wider">Ambiguous</span>
+                <span className="font-mono font-black text-[#B45309] text-xl mt-1">{preview.ambiguous}</span>
               </div>
             </div>
 
-            <div className="flex-1 overflow-auto p-6">
-              <table className="w-full text-sm text-left">
-                <thead className="text-xs text-gray-500 uppercase bg-gray-50 sticky top-0">
+            <div className="flex-1 overflow-auto p-4 sm:p-5">
+              <table className="w-full text-xs text-left border-collapse">
+                <thead className="text-[10px] text-[#111111]/70 font-mono font-bold uppercase tracking-wider bg-[#F1ECE1]/50 sticky top-0 border-b border-[#111111]/15">
                   <tr>
-                    <th className="py-3 px-4 rounded-tl-lg">Venue</th>
-                    <th className="py-3 px-4">Images</th>
-                    <th className="py-3 px-4 rounded-tr-lg">Status</th>
+                    <th className="py-2.5 px-3">Venue</th>
+                    <th className="py-2.5 px-3">Images</th>
+                    <th className="py-2.5 px-3">Status</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-[#111111]/10 font-mono">
                   {preview.previewRows.map((row, i) => (
-                    <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50">
-                      <td className="py-3 px-4 font-medium text-gray-900">{row.originalName}</td>
-                      <td className="py-3 px-4 text-gray-500">{row.imagesCount}</td>
-                      <td className="py-3 px-4">
-                        {row.status === 'Ready' && <span className="inline-flex items-center gap-1 text-green-700 bg-green-50 px-2 py-1 rounded text-xs font-medium"><CheckCircle2 className="w-3 h-3"/> Ready</span>}
-                        {row.status === 'Not Found' && <span className="inline-flex items-center gap-1 text-red-700 bg-red-50 px-2 py-1 rounded text-xs font-medium"><AlertTriangle className="w-3 h-3"/> Not Found</span>}
-                        {row.status === 'Ambiguous' && <span className="inline-flex items-center gap-1 text-amber-700 bg-amber-50 px-2 py-1 rounded text-xs font-medium"><AlertTriangle className="w-3 h-3"/> Ambiguous</span>}
+                    <tr key={i} className="hover:bg-[#FAF8F8] transition-colors">
+                      <td className="py-2.5 px-3 font-bold text-[#111111]">{row.originalName}</td>
+                      <td className="py-2.5 px-3 text-[#111111]/70">{row.imagesCount}</td>
+                      <td className="py-2.5 px-3">
+                        {row.status === 'Ready' && (
+                          <span className="inline-flex items-center gap-1 text-[#008751] bg-[#008751]/10 px-2 py-0.5 rounded text-[10px] font-bold border border-[#008751]/30 uppercase tracking-wider">
+                            <CheckCircle2 className="w-3 h-3"/> Ready
+                          </span>
+                        )}
+                        {row.status === 'Not Found' && (
+                          <span className="inline-flex items-center gap-1 text-[#D72638] bg-red-50 px-2 py-0.5 rounded text-[10px] font-bold border border-[#D72638]/30 uppercase tracking-wider">
+                            <AlertTriangle className="w-3 h-3"/> Not Found
+                          </span>
+                        )}
+                        {row.status === 'Ambiguous' && (
+                          <span className="inline-flex items-center gap-1 text-[#B45309] bg-amber-50 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-300 uppercase tracking-wider">
+                            <AlertTriangle className="w-3 h-3"/> Ambiguous
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -191,14 +209,17 @@ export default function BulkMediaUploadButton() {
               </table>
             </div>
 
-            <div className="p-6 border-t border-gray-100 flex justify-end gap-3 bg-white">
-              <button onClick={reset} className="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+            <div className="p-4 sm:p-5 border-t border-[#111111]/10 flex justify-end gap-2.5 bg-[#FAF8F8]">
+              <button
+                onClick={reset}
+                className="px-4 py-2 text-xs font-mono font-bold text-[#111111]/70 hover:bg-white rounded border border-[#111111]/20 transition-all cursor-pointer"
+              >
                 Cancel
               </button>
               <button 
                 onClick={handleConfirm} 
                 disabled={preview.matched === 0}
-                className="px-6 py-2 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                className="px-5 py-2 bg-[#008751] hover:bg-[#007345] text-white text-xs font-mono font-bold uppercase tracking-wider rounded border border-[#006e42] shadow-[2px_2px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50 transition-all cursor-pointer"
               >
                 Import {preview.matched} Venues
               </button>
@@ -209,39 +230,42 @@ export default function BulkMediaUploadButton() {
 
       {/* Uploading State */}
       {uiState === "uploading" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-xl p-8 flex flex-col items-center">
-            <Loader2 className="w-8 h-8 text-gray-900 animate-spin mb-4" />
-            <h3 className="text-lg font-bold text-gray-900">Importing Media...</h3>
-            <p className="text-sm text-gray-500 mt-2">Please do not close this window.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="bg-white border-2 border-[#111111] rounded-lg shadow-[8px_8px_0px_#111111] p-8 flex flex-col items-center">
+            <Loader2 className="w-8 h-8 text-[#008751] animate-spin mb-4" />
+            <h3 className="text-base font-display font-black text-[#111111]">Importing Media...</h3>
+            <p className="text-xs font-mono text-[#111111]/60 mt-2">Please do not close this window.</p>
           </div>
         </div>
       )}
 
       {/* Result State */}
       {uiState === "result" && result && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Import Complete</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="bg-white border-2 border-[#111111] rounded-lg shadow-[8px_8px_0px_#111111] w-full max-w-lg overflow-hidden">
+            <div className="p-5 bg-[#010528] text-white flex items-center justify-between border-b-2 border-[#111111]">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#008751]" />
+                <h2 className="text-base font-display font-black text-white uppercase tracking-wider">Import Complete</h2>
+              </div>
             </div>
             
             <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-green-700">{result.updated}</div>
-                  <div className="text-sm text-green-600 font-medium">Successfully Updated</div>
+              <div className="grid grid-cols-2 gap-3 font-mono">
+                <div className="bg-[#008751]/10 border border-[#008751]/30 p-4 rounded">
+                  <div className="text-3xl font-black text-[#008751] tabular-nums">{result.updated}</div>
+                  <div className="text-xs text-[#008751] font-bold mt-1">Successfully Updated</div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-gray-700">{result.skipped}</div>
-                  <div className="text-sm text-gray-600 font-medium">Skipped</div>
+                <div className="bg-[#111111]/5 border border-[#111111]/15 p-4 rounded">
+                  <div className="text-3xl font-black text-[#111111] tabular-nums">{result.skipped}</div>
+                  <div className="text-xs text-[#111111]/70 font-bold mt-1">Skipped</div>
                 </div>
               </div>
 
               {result.failed > 0 && (
-                <div className="bg-red-50 p-4 rounded-lg">
-                  <div className="text-sm text-red-600 font-bold mb-2">{result.failed} Failed</div>
-                  <ul className="text-xs text-red-700 space-y-1 max-h-32 overflow-auto">
+                <div className="bg-red-50 border border-[#D72638]/30 p-4 rounded font-mono">
+                  <div className="text-xs text-[#D72638] font-bold mb-2">{result.failed} Failed</div>
+                  <ul className="text-xs text-[#D72638]/90 space-y-1 max-h-32 overflow-auto">
                     {result.errors.map((e, i) => (
                       <li key={i}><strong>{e.venueName || e.venueId}</strong>: {e.reason}</li>
                     ))}
@@ -250,8 +274,11 @@ export default function BulkMediaUploadButton() {
               )}
             </div>
 
-            <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end">
-              <button onClick={() => { reset(); window.location.reload(); }} className="px-6 py-2 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors">
+            <div className="p-4 border-t border-[#111111]/10 bg-[#FAF8F8] flex justify-end">
+              <button
+                onClick={() => { reset(); window.location.reload(); }}
+                className="px-5 py-2.5 bg-[#010528] hover:bg-[#111111] text-white text-xs font-mono font-bold uppercase tracking-wider rounded border border-[#010528] shadow-[2px_2px_0px_#111111] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer"
+              >
                 Done
               </button>
             </div>

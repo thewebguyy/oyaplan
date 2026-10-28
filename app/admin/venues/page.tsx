@@ -26,10 +26,10 @@ export default async function AdminVenuesPage({
         title="Venues Catalog"
         description={`Managing ${total} Lagos outing spots and venues.`}
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Link
               href="/admin/venues/claims"
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-semibold border border-stone-200 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-2 bg-white hover:bg-[#FAF8F8] text-[#111111] rounded border-2 border-[#111111]/20 shadow-[2px_2px_0px_rgba(1,5,40,0.06)] hover:border-[#111111] active:translate-x-[1px] active:translate-y-[1px] text-xs font-mono font-bold uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008751]"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-[#008751]" />
               Claims Pipeline
